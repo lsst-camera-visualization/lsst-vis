@@ -2,9 +2,9 @@ import json
 import os
 from optparse import OptionParser
 import sys
-from shutil import copyfile
 import tempfile
 import numpy
+import os
 
 from tasks import tasks
 
@@ -23,6 +23,7 @@ parser.add_option("-o", "--outdir", dest="outdir",
 parser.add_option("-s", "--sep", dest="separator", default='___TASK STATUS___',
                   help="separator string, after which task status is written", metavar="STR")
 
+
 # read the paremeters
 (options, args) = parser.parse_args()
 taskParams = None
@@ -30,11 +31,13 @@ with open(options.infile) as paramfile:
     taskParams = json.load(paramfile)
 
 
-result, error = tasks(params)
+result, error = tasks(taskParams)
+
 
 (fd, outfile) = tempfile.mktemp(suffix=".json", prefix=options.tasks, dir=options.outdir)
 f = os.open(fd)
 json.dump(result, f)
+json.dump(result, open('/www/algorithm/log2', 'w'))
 
 if error:
     status = {"error": " ".join(errors)}

@@ -1,3 +1,3 @@
-def tasks(param)
+def tasks(param):
     return {"result": "success"}
 

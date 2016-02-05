@@ -12,7 +12,7 @@ var showRegionPointCB = function(data){
 function loadFirefly(viewId){
     var primaryViewer = firefly.makeImageViewer(viewId);
     primaryViewer.plot({
-        "URL" : "static/images/image.fits",
+        "URL" : document.location.origin+"/static/images/image.fits",
         "Title" : "Some WISE image",
         "ZoomType" : "TO_WIDTH"
     });

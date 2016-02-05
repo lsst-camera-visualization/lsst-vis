@@ -1,3 +1,3 @@
 def tasks(param):
-    return {"result": "success"}
+    return ({"result": "success"}, None)
 

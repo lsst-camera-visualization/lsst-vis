@@ -21,7 +21,8 @@ parser.add_option("-n", "--name", dest="task",
 parser.add_option("-o", "--outdir", dest="outdir",
                   help="directory for the final output file", metavar="DIR")
 parser.add_option("-s", "--sep", dest="separator", default='___TASK STATUS___',
-                  help="separator string, after which task status is written", metavar="STR")
+                  help="separator string, after which task status is written",
+                  metavar="STR")
 
 
 # read the paremeters
@@ -33,20 +34,19 @@ with open(options.infile) as paramfile:
 
 result, error = tasks(taskParams)
 
+(fd, outfile) = tempfile.mkstemp(suffix=".json",
+                                 prefix=options.task,
+                                 dir=options.outdir)
+f = os.fdopen(fd, "w")
 
-(fd, outfile) = tempfile.mktemp(suffix=".json", prefix=options.tasks, dir=options.outdir)
-f = os.open(fd)
+
 json.dump(result, f)
-json.dump(result, open('/www/algorithm/log2', 'w'))
 
+print(options.separator)
 if error:
-    status = {"error": " ".join(errors)}
+    status = {"error": " ".join(error)}
     print(json.dumps(status))
     sys.exit(1)
 else:
     status = {"outfile": outfile}
     print(json.dumps(status))
-
-
-
-

@@ -287,6 +287,14 @@ cmds = {
             // var x_point = first_line.append('span').attr('id', 'read_about'+name);
             var second_line = content.append('p').text('top: '+cmd_args[3]+' bottom: '+cmd_args[4]+' left: '+cmd_args[5]+' right: '+cmd_args[6]);
             var third_line = content.append('p').text('value: 0');
+            var region_id = plotid+'-boundary';
+            if (state.lsstviewers[region_id]){
+                firefly.removeRegionData(state.lsstviewers[region_id], region_id);
+                state.lsstviewers[region_id] = undefined;
+            }
+            var content = ['box', cmd_args[4], cmd_args[3], cmd_args[6], cmd_args[5], 0, '#color=red'].join(' ');
+            state.lsstviewers[region_id] = [content];
+            firefly.overlayRegionData(regions, region_id, "Boundary", plotid);
         }
     }
 }

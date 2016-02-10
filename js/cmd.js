@@ -100,6 +100,9 @@ cmds = {
             case "read_mouse":
                 state.term.echo("read_mouse <name> -> add the mouse position parameters inside the box");
                 state.term.echo("currently showing the pixel coordinates of x,y and the region it correspond to");
+            case "average pixels":
+                state.term.echo("calculate the average pixels value from the given region");
+                state.term.echo("takes 4 parameter <top> <left> <bottom> <right>");
             default:
                 state.term.echo("The followings are the functionality we wish to provide");
                 state.term.echo("For further detail, type `help <command>` for specific command");
@@ -269,9 +272,24 @@ cmds = {
                 state.show_readouts.remove(name);
             };
         }
+    },
+
+    average_pixel: function(state, args){
+    var name = cmd_args[1];
+        if (!state.boxes[name]){
+            state.term.echo("The box "+name+" cannot be found\n");
+        }else{
+            var viewer = cmd_args[2] || 'ffview';
+            cmds.clear_box(state, ['', name]);
+            var content = state.boxes[name].select.select('.box-content').attr('id', 'readout-'+name);
+            var first_line = content.append('p');
+            first_line.append('span').text('average pixel value around region');
+            // var x_point = first_line.append('span').attr('id', 'read_about'+name);
+            var second_line = content.append('p').text('top: '+cmd_args[3]+' bottom: '+cmd_args[4]+' left: '+cmd_args[5]+' right: '+cmd_args[6]);
+            var third_line = content.append('p').text('value: 0');
+        }
     }
 }
-    
 
 
 

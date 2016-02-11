@@ -1,6 +1,6 @@
 
 state = {
-    boxes:{}, // this stores necessary command the box could do. 
+    boxes:{}, // this stores necessary command the box could do.
     // operations {select, clear}
     lsstviewers:{ // this select firefly object of certain id
     },
@@ -39,7 +39,7 @@ jQuery(function($, undefined) {
     $("#cmd").terminal(function(cmd_str, term){
         cmd_args = cmd_str.split(" ");
         state.term = term;
-        var executed = false; 
+        var executed = false;
         for (var name in cmds){
             cmd = cmds[name];
             if (name == cmd_args[0]){
@@ -285,7 +285,7 @@ cmds = {
             var first_line = content.append('p');
             first_line.append('span').text('average pixel value around region');
             // var x_point = first_line.append('span').attr('id', 'read_about'+name);
-            var second_line = content.append('p').text('top: '+cmd_args[3]+' bottom: '+cmd_args[4]+' left: '+cmd_args[5]+' right: '+cmd_args[6]);
+            var second_line = content.append('p').text('top: '+cmd_args[3]+' bottom: '+cmd_args[5]+' left: '+cmd_args[4]+' right: '+cmd_args[6]);
             var third_line = content.append('p').text('value: 0');
             var region_id = viewer+'-boundary';
             if (state.lsstviewers[region_id]){
@@ -294,7 +294,15 @@ cmds = {
             }
             var content = ['box', cmd_args[4], cmd_args[3], cmd_args[6], cmd_args[5], 0, '#color=red'].join(' ');
             state.lsstviewers[region_id] = [content];
-            firefly.overlayRegionData(regions, region_id, "Boundary", plotid);
+            if (firefly.overlayRegionData)
+                firefly.overlayRegionData(regions, region_id, "Boundary", plotid);
+            var top = cmd_args[3];
+            var left = cmd_args[4];
+            var bottom = cmd_args[5];
+            var right = cmd_args[6];
+            firefly.getJsonFromTask("python", "task", [top, left, bottom, right]).then((data)=>{
+                third_line.select('p').text('value: '+data.result);
+            });
         }
     }
 }

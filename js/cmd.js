@@ -294,8 +294,8 @@ cmds = {
             }
             var content = ['box', cmd_args[4], cmd_args[3], cmd_args[6], cmd_args[5], 0, '#color=red'].join(' ');
             state.lsstviewers[region_id] = [content];
-            if (firefly.overlayRegionData)
-                firefly.overlayRegionData(regions, region_id, "Boundary", plotid);
+            if (firefly.overlayRegionData){}
+                // firefly.overlayRegionData(regions, region_id, "Boundary", plotid);
             var top = cmd_args[3];
             var left = cmd_args[4];
             var bottom = cmd_args[5];

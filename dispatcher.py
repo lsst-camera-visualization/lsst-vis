@@ -4,9 +4,23 @@ from optparse import OptionParser
 import sys
 import tempfile
 from tasks import tasks
+import numpy as np
+from astropy.io import fits
 
 # def tasks(param):
 #     return {'result': 'success'}, None
+
+# Simple task calculating average value in a region.
+# Boundary assumes the expected format being sent in.
+def average_value(boundary):
+    filename = "/www/static/images/image.fits"
+    x_start, x_end = boundary[0], boundary[2]
+    y_start, y_end = boundary[1], boundary[3]
+    hdulist = fits.open(filename)
+    region = hdulist[0].data[y_start:y_end, x_start:x_end]
+    avg = str(np.mean(region))
+    hdulist.close()
+    return {"result":avg},None
 
 os.system("echo here > /www/algorithm/log3")
 
@@ -34,7 +48,8 @@ taskParams = None
 with open(options.infile) as paramfile:
     taskParams = json.load(paramfile)
 
-result, error = tasks(taskParams)
+# result, error = tasks(taskParams)
+result,error = average_value(taskParams)
 
 (fd, outfile) = tempfile.mkstemp(suffix=".json",
                                  prefix=options.task,

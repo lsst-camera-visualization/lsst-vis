@@ -1,12 +1,12 @@
-import numpy as np
-from astropy.io import fits
+# import numpy as np
+# from astropy.io import fits
 
 
 # filename = os.getcwd()+"../frontend/images/image.fits"
-filename = "/www/static/images/image.fits"
+# filename = "/www/static/images/image.fits"
 
 def tasks(param):
-    return {"result": param}
+    return {"result": "success"},None
 
 # Simple task calculating average value in a region.
 # Boundary assumes the expected format being sent in.

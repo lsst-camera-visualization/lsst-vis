@@ -3,13 +3,12 @@ import os
 from optparse import OptionParser
 import sys
 import tempfile
-import numpy
+from tasks import tasks
 
+# def tasks(param):
+#     return {'result': 'success'}, None
 
-# from tasks import tasks
-
-def tasks(param):
-    return {'result': 'success'}, None
+os.system("echo here > /www/algorithm/log3")
 
 usage = "usage: %prog [options]"
 parser = OptionParser(usage=usage)
@@ -37,15 +36,15 @@ with open(options.infile) as paramfile:
 result, error = tasks(taskParams)
 
 
-(fd, outfile) = tempfile.mkstemp(suffix=".json", prefix=options.tasks, dir=options.outdir)
-f = os.open(fd)
+(fd, outfile) = tempfile.mkstemp(suffix=".json", prefix=options.task, dir=options.outdir)
+f = os.fdopen(fd,"w")
 json.dump(result, f)
 json.dump(result, open('/www/algorithm/log2', 'w'))
 
-os.system("echo here > /www/algorithm/log3")
 
+print(options.separator)
 if error:
-    status = {"error": " ".join(errors)}
+    status = {"error": error }
     print(json.dumps(status))
     sys.exit(1)
 else:

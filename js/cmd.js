@@ -285,7 +285,7 @@ cmds = {
             var first_line = content.append('p');
             first_line.append('span').text('average pixel value around region');
             // var x_point = first_line.append('span').attr('id', 'read_about'+name);
-            var second_line = content.append('p').text('top: '+cmd_args[4]+' bottom: '+cmd_args[6]+' left: '+cmd_args[5]+' right: '+cmd_args[7]);
+            var second_line = content.append('p').text('top: '+cmd_args[3]+' bottom: '+cmd_args[5]+' left: '+cmd_args[4]+' right: '+cmd_args[6]);
             var third_line = content.append('p').text('value: 0');
             var plotid = viewer;
             var region_id = plotid+'-boundary';
@@ -297,10 +297,11 @@ cmds = {
             state.lsstviewers[region_id] = [content];
             if (firefly.overlayRegionData){}
                 // firefly.overlayRegionData(regions, region_id, "Boundary", plotid);
-            var top = cmd_args[4];
-            var left = cmd_args[5];
-            var bottom = cmd_args[6];
-            var right = cmd_args[7];
+            var top = parseInt(cmd_args[3]);
+            var left = parseInt(cmd_args[4]);
+            var bottom = parseInt(cmd_args[5]);
+            var right = parseInt(cmd_args[6]);
+            console.log([top, left, bottom, right]);
             firefly.getJsonFromTask("python", "task", [top, left, bottom, right]).then((data)=>{
                 third_line.select('p').text('value: '+data.result);
             });

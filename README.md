@@ -3,8 +3,8 @@
 This directory contains all the function and algorithm that are being used by the server side. In addtion there is a dispatcher file that parse the command from JSON format into specific tasks and perform in python (or any other environment if possible).
 ### Dispatcher
 
->>>We have extended Firefly to allow getting image, table, or JSON (any data in JSON format) from an external process. Whenever server-side Firefly receives an external task request, it checks its properties to find the executable, which is then launched with the JSON task parameters passed from the client.
->>>
+>We have extended Firefly to allow getting image, table, or JSON (any data in JSON format) from an external process. Whenever server-side Firefly receives an external task request, it checks its properties to find the executable, which is then launched with the JSON task parameters passed from the client.
+>
 According to [LSST Firefly documentation](https://github.com/lsst/firefly/blob/master/docs/firefly-external-task-launcher.md#server-side-python-task-launcher-interface-with-firefly), we need to have an external task launcher `dispatcher.py` on server side to follow the firefly protocol and do the communication between actual client side and actual requested tasks.
 
 ### Other files

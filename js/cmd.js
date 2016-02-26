@@ -61,62 +61,7 @@ jQuery(function($, undefined) {
 
 cmds = {
     help : function(state, args){
-        switch (args[1]){
-            case "show_boundary":
-                state.term.echo("show_boundary -> show boundary on the main view");
-                state.term.echo("show_boundary id -> currently not supported");
-                break;
-            case "hide_boundary":
-                state.term.echo("hide_boundary -> hide the boundary of the main view if it is presented");
-                state.term.echo("currently the command is shaky, sometimes need to zoom in to see the effect.");
-                break;
-            case "create_box":
-                state.term.echo("create_box <name> -> will create a box for graph or analysis on the right of the screen.")
-                state.term.echo("Note that the box will be empty, to add content to the box, see other options");
-                state.term.echo("Note that the name be one word and please do not use the space in between");
-                state.term.echo("And if there exists a box with the same name, the new box will not be created");
-                break;
-            case "delete_box":
-                state.term.echo("delete_box <name> -> will delete the box (completely)");
-                state.term.echo("Note that if the box does not exists, nothing will happen");
-                state.term.echo("If you wish to have a mininal view of the box, see hide_box");
-                break;
-            case "hide_box":
-                state.term.echo("hide_box <name> -> will hide the box with only title left");
-                state.term.echo("If you wish to delete the box completely, use delete_box");
-                break;
-            case "viewer":
-                state.term.echo("viewer <name> -> add firefly viewer view inside the box");
-                state.term.echo("If the box does not exists, nothing will happen");
-                break;
-            case "chart":
-                state.term.echo("chart <name> -> add a dummy chart inside the box");
-                state.term.echo("The next step would probably connect to backend, stay tune");
-                break;
-            case "chart2":
-                state.term.echo("chart2 <name> -> add another dummy chart inside the box");
-                state.term.echo("The next step would probably connect to backend, stay tune");
-                break;
-            case "read_mouse":
-                state.term.echo("read_mouse <name> -> add the mouse position parameters inside the box");
-                state.term.echo("currently showing the pixel coordinates of x,y and the region it correspond to");
-            case "average pixels":
-                state.term.echo("calculate the average pixels value from the given region");
-                state.term.echo("takes 4 parameter <top> <left> <bottom> <right>");
-            default:
-                state.term.echo("The followings are the functionality we wish to provide");
-                state.term.echo("For further detail, type `help <command>` for specific command");
-                state.term.echo("show_boundary");
-                state.term.echo("hide_boundary");
-                state.term.echo("create_box");
-                state.term.echo("delete_box");
-                state.term.echo("hide_box");
-                state.term.echo("show_box");
-                state.term.echo("viewer");
-                state.term.echo("chart");
-                state.term.echo("chart2");
-                state.term.echo("read_mouse");
-        }
+        state.term.echo('please check the <a href="https://github.com/lsst-camera-visualization/frontend/wiki" target =" blank">documentation</a>',{raw: true});
     },
     show_boundary : function(state, cmd_args){
         var plotid = 'ffview'; // ffview as a default

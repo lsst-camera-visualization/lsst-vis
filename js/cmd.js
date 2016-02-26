@@ -240,15 +240,18 @@ cmds = {
             }
             var content = ['box', cmd_args[4], cmd_args[3], cmd_args[6], cmd_args[5], 0, '#color=red'].join(' ');
             state.lsstviewers[region_id] = [content];
-            if (firefly.overlayRegionData){}
-                // firefly.overlayRegionData(regions, region_id, "Boundary", plotid);
+            if (firefly.overlayRegionData){
+                firefly.overlayRegionData([content], region_id, "Boundary", plotid);
+            }
             var top = parseInt(cmd_args[3]);
             var left = parseInt(cmd_args[4]);
             var bottom = parseInt(cmd_args[5]);
             var right = parseInt(cmd_args[6]);
             console.log([top, left, bottom, right]);
             firefly.getJsonFromTask("python", "task", [top, left, bottom, right]).then((data)=>{
-                third_line.select('p').text('value: '+data.result);
+                console.log(data);
+                console.log(third_line.text('value: '+data["result"]));
+                // third_line.select('p').text('value: '+data["result"]);
             });
         }
     }

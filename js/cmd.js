@@ -303,7 +303,7 @@ cmds = {
             var bottom = parseInt(cmd_args[5]);
             var right = parseInt(cmd_args[6]);
             console.log([top, left, bottom, right]);
-            firefly.getJsonFromTask("python", "task", [top, left, bottom, right]).then((data)=>{
+            firefly.getJsonFromTask("python", "task", [top, left, bottom, right]).then(function(data){
                 console.log(data);
                 console.log(third_line.text('value: '+data["result"]));
                 // third_line.select('p').text('value: '+data["result"]);

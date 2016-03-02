@@ -3,31 +3,13 @@ import os
 from optparse import OptionParser
 import sys
 import tempfile
-from tasks import tasks
-import numpy as np
-from astropy.io import fits
-
-# def tasks(param):
-#     return {'result': 'success'}, None
-
-# Simple task calculating average value in a region.
-# Boundary assumes the expected format being sent in.
-
-
-def average_value(boundary):
-    filename = "/www/static/images/image.fits"
-    x_start, x_end = boundary[0], boundary[2]
-    y_start, y_end = boundary[1], boundary[3]
-    hdulist = fits.open(filename)
-    region = hdulist[0].data[y_start:y_end, x_start:x_end]
-    avg = str(np.mean(region))
-    hdulist.close()
-    return {"result": avg}, None
+import tasks
 
 
 usage = "usage: %prog [options]"
 parser = OptionParser(usage=usage)
 
+# TODO: Consider svwithcing to argparse since optparse is deprecated.
 
 # add parameter readings
 parser.add_option("-d", "--work", dest="workdir",
@@ -49,8 +31,18 @@ taskParams = None
 with open(options.infile) as paramfile:
     taskParams = json.load(paramfile)
 
-# result, error = tasks(taskParams)
-result, error = average_value(taskParams)
+task_name = options.name
+
+if (task_name == "task"):
+    task = tasks.tasks_test
+elif (task_name == "average_value"):
+    task = tasks.average_value
+elif (task_name == "boundary"):
+    task = tasks.get_boudary
+
+result, error = task(taskParams)
+# result,error = average_value(taskParams)
+# result, error = boundary(taskParams)
 
 (fd, outfile) = tempfile.mkstemp(suffix=".json",
                                  prefix=options.task,

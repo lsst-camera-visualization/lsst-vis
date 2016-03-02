@@ -1,30 +1,8 @@
+from astropy.io import fits
+from copy import deepcopy
 import numpy as np
 import json
-from copy import deepcopy
-from astropy.io import fits
-
-
-# filename = os.getcwd()+"../frontend/images/image.fits"
-
-# Return the parameter without any modification. For test and debug purpose.
-def tasks_test(param):
-    return ({"result": param}, None)
-
-# Simple task calculating average value in a region.
-# Boundary assumes the expected format being sent in.
-def average_value(boundary):
-    filename = "/www/static/images/image.fits"
-    x_start, x_end = boundary[0], boundary[2]
-    y_start, y_end = boundary[1], boundary[3]
-    hdulist = fits.open(filename)
-    region = hdulist[0].data[y_start:y_end, x_start:x_end]
-    avg = str(np.mean(region))
-    hdulist.close()
-    return {"result":avg},None
-
-# Return amplifier boundries of a FITS file based on its header information.
-def boundary(filename):
-    return {"overscan_off":{"filename":"imageE2V_trimmed.fits","X_Y_dim_full":[4096,4004],"overscan":False,"X_Y_seg":[512,2002],"X_Y_seg_data":[512,2002],"data_seg_regions":[[[[3584,2002],[4096,4004]],[[3072,2002],[3584,4004]],[[2560,2002],[3072,4004]],[[2048,2002],[2560,4004]],[[1536,2002],[2048,4004]],[[1024,2002],[1536,4004]],[[512,2002],[1024,4004]],[[0,2002],[512,4004]]],[[[3584,0],[4096,2002]],[[3072,0],[3584,2002]],[[2560,0],[3072,2002]],[[2048,0],[2560,2002]],[[1536,0],[2048,2002]],[[1024,0],[1536,2002]],[[512,0],[1024,2002]],[[0,0],[512,2002]]]],"overscan_regions":None},"overscan_on":{"filename":"imageE2V_untrimmed.fits","X_Y_dim_full":[4352,4096],"overscan":True,"X_Y_seg":[544,2048],"X_Y_seg_data":[512,2002],"data_seg_regions":[[[[3818,2094],[4330,4096]],[[3274,2094],[3786,4096]],[[2730,2094],[3242,4096]],[[2186,2094],[2698,4096]],[[1642,2094],[2154,4096]],[[1098,2094],[1610,4096]],[[554,2094],[1066,4096]],[[10,2094],[522,4096]]],[[[3830,0],[4342,2002]],[[3286,0],[3798,2002]],[[2742,0],[3254,2002]],[[2198,0],[2710,2002]],[[1654,0],[2166,2002]],[[1110,0],[1622,2002]],[[566,0],[1078,2002]],[[22,0],[534,2002]]]],"overscan_regions":[[[[3808,2048],[4352,4096]],[[3264,2048],[3808,4096]],[[2720,2048],[3264,4096]],[[2176,2048],[2720,4096]],[[1632,2048],[2176,4096]],[[1088,2048],[1632,4096]],[[544,2048],[1088,4096]],[[0,2048],[544,4096]]],[[[3808,0],[4352,2048]],[[3264,0],[3808,2048]],[[2720,0],[3264,2048]],[[2176,0],[2720,2048]],[[1632,0],[2176,2048]],[[1088,0],[1632,2048]],[[544,0],[1088,2048]],[[0,0],[544,2048]]]]}}
+import argparse
 
 # Convert the boundary coordincates from string(as in the header) to values.
 # Assume to be a rectangular region (2-dimensional)
@@ -163,14 +141,28 @@ def generate_json(filename, header):
     return json.dumps({'WITHOUT_OSCN':off, 'WITH_OSCN':on}, sort_keys=True, indent = 2)
 
 def generate_fits(filename, header):
-    construct_CCD(filename, False, header)
-    construct_CCD(filename, True, header)
+    construct_CCD(FITS, False, header_info)
+    construct_CCD(FITS, True, header_info)
 
-# Debug line
-# print average_value([0,0,10,10])
-### :sDebug line
-# def histogram(boundary):
-    # x_start, x_end = boundary[0][0], boundary[1][0]
-    # y_start, y_end = boundary[0][1], boundary[1][1]
-    # hdulist = fits.open(filename)
-    # region = hdulist[0].data[y_start:y_end, x_start:x_end]
+'''
+parser = argparse.ArgumentParser(description='Construct the CCD level single extension FITS based on a multi-extension FITS file.')
+parser.add_argument("Filename", type = str, help='Filename of the input fits file.')
+parser.add_argument("-on", "--overscan_ON", action='store_true', help = "Output a FITS file with overscan area displayed in the image.")
+parser.add_argument("-off", "--overscan_OFF", action='store_true', help = "Output a FITS file without overscan area.")
+parser.add_argument("--noJSON", action='store_false', help = "Do not create a json describing the region.")
+'''
+FITS = "s99_r01.fits"
+header_info = get_Header_Info(FITS)
+generate_fits(FITS, header_info)
+json_string = generate_json(FITS, header_info)
+print(json_string)
+
+
+# TODO:
+# 1. Display header only
+# 2. generate a a single extention FITS file based on multi-extention version
+# 3. generate json object that describes the boundaries of each amplifier
+# 4. Implement command line like usage
+# 5. __class__.__name__ (IMPORTANT!)
+# 6. Inclusive or exclusive boundary; 0 or 1 based index
+# 7. What information should we kept when generating the single extention file.

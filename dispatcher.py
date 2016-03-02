@@ -12,6 +12,8 @@ from astropy.io import fits
 
 # Simple task calculating average value in a region.
 # Boundary assumes the expected format being sent in.
+
+
 def average_value(boundary):
     filename = "/www/static/images/image.fits"
     x_start, x_end = boundary[0], boundary[2]
@@ -20,9 +22,8 @@ def average_value(boundary):
     region = hdulist[0].data[y_start:y_end, x_start:x_end]
     avg = str(np.mean(region))
     hdulist.close()
-    return {"result":avg},None
+    return {"result": avg}, None
 
-os.system("echo here > /www/algorithm/log3")
 
 usage = "usage: %prog [options]"
 parser = OptionParser(usage=usage)
@@ -49,7 +50,7 @@ with open(options.infile) as paramfile:
     taskParams = json.load(paramfile)
 
 # result, error = tasks(taskParams)
-result,error = average_value(taskParams)
+result, error = average_value(taskParams)
 
 (fd, outfile) = tempfile.mkstemp(suffix=".json",
                                  prefix=options.task,

@@ -6,10 +6,11 @@ import tempfile
 import tasks
 
 
+
 usage = "usage: %prog [options]"
 parser = OptionParser(usage=usage)
 
-# TODO: Consider svwithcing to argparse since optparse is deprecated.
+# TODO: Consider swithcing to argparse since optparse is deprecated.
 
 # add parameter readings
 parser.add_option("-d", "--work", dest="workdir",
@@ -31,7 +32,12 @@ taskParams = None
 with open(options.infile) as paramfile:
     taskParams = json.load(paramfile)
 
-task_name = options.name
+
+task_name = options.task
+# echo_debug = "echo "+task_name+" > /www/algorithm/debug_file"
+# os.system(echo_debug)
+
+# os.system("echo DEBUG LINE > /www/algorithm/debug_file")
 
 if (task_name == "task"):
     task = tasks.tasks_test

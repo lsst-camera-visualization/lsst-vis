@@ -34,21 +34,20 @@ with open(options.infile) as paramfile:
 
 
 task_name = options.task
-# echo_debug = "echo "+task_name+" > /www/algorithm/debug_file"
-# os.system(echo_debug)
 
-# os.system("echo DEBUG LINE > /www/algorithm/debug_file")
 
 if (task_name == "task"):
     task = tasks.tasks_test
 elif (task_name == "average_value"):
     task = tasks.average_value
 elif (task_name == "boundary"):
-    task = tasks.get_boudary
+    task = tasks.boundary
 
 result, error = task(taskParams)
 # result,error = average_value(taskParams)
 # result, error = boundary(taskParams)
+# echo_debug = "echo "+json.dumps(result)+" > /www/algorithm/debug_file"
+# os.system(echo_debug)
 
 (fd, outfile) = tempfile.mkstemp(suffix=".json",
                                  prefix=options.task,

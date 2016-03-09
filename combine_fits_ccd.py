@@ -1,8 +1,9 @@
 from astropy.io import fits
 from copy import deepcopy
 import numpy as np
-import json
-import argparse
+# import os
+# import json
+# import argparse
 
 # Convert the boundary coordincates from string(as in the header) to values.
 # Assume to be a rectangular region (2-dimensional)
@@ -50,6 +51,7 @@ def get_Header_Info(filename): # Get Header information
     namps = num_X*num_Y
     hdulist.close()
     return {'DETSIZE':[X_max, Y_max], 'NUM_AMPS':namps, 'SEG_SIZE':[seg_X, seg_Y], 'SIZE':[num_X*seg_X, num_Y*seg_Y], 'SEG_DATA_SIZE':[seg_data_X, seg_data_Y], 'NUM_X':num_X, 'NUM_Y':num_Y}
+
 
 def construct_CCD(filename, overscan, header):
     hdulist = fits.open(filename)
@@ -138,11 +140,11 @@ def generate_json(filename, header):
     ### To generate json object without the overscan area
     off = _generate_json_helper(filename, False, header)
 
-    return json.dumps({'WITHOUT_OSCN':off, 'WITH_OSCN':on}, sort_keys=True, indent = 2)
+    return {'WITHOUT_OSCN':off, 'WITH_OSCN':on}
 
 def generate_fits(filename, header):
-    construct_CCD(FITS, False, header_info)
-    construct_CCD(FITS, True, header_info)
+    construct_CCD(FITS, False, header)
+    construct_CCD(FITS, True, header)
 
 '''
 parser = argparse.ArgumentParser(description='Construct the CCD level single extension FITS based on a multi-extension FITS file.')
@@ -151,12 +153,15 @@ parser.add_argument("-on", "--overscan_ON", action='store_true', help = "Output 
 parser.add_argument("-off", "--overscan_OFF", action='store_true', help = "Output a FITS file without overscan area.")
 parser.add_argument("--noJSON", action='store_false', help = "Do not create a json describing the region.")
 '''
-FITS = "s99_r01.fits"
-header_info = get_Header_Info(FITS)
-generate_fits(FITS, header_info)
-json_string = generate_json(FITS, header_info)
-print(json_string)
 
+FITS = "./images/imageE2V.fits"
+def get_boundary(filename):
+    header_info = get_Header_Info(filename)
+    json_string = generate_json(filename, header_info)
+    return json_string
+
+# print(json_string)
+# generate_fits(FITS, header_info)
 
 # TODO:
 # 1. Display header only

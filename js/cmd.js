@@ -70,20 +70,10 @@ cmds = {
             firefly.removeRegionData(state.lsstviewers[region_id], region_id);
             state.lsstviewers[region_id] = undefined;
         }
-        var regions = [];
-        var height = 2000;
-        var width = 502;
-        var color = 'black';
-        var rows = 3;
-        var columns = 16;
-        for (var x=0; x<columns; x++){
-            for (var y=0; y<rows; y++){
-                var content = ['box', x*width, (y+1)*height, width, height, 0, '#color='+color].join(' ');
-                regions.push(content);
-            }
-        }
-        state.lsstviewers[region_id] = regions;
-        firefly.overlayRegionData(regions, region_id, "Boundary", plotid);
+        read_boundary(plotid, function(regions){
+            state.lsstviewers[region_id] = regions;
+            firefly.overlayRegionData(regions, region_id, 'Boundary', plotid);
+        })
     },
     hide_boundary : function(state, cmd_args) {
         var plotid = 'ffview';

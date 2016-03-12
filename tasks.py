@@ -7,7 +7,7 @@ from combine_fits_ccd import get_boundary
 
 # Return the parameter without any modification. For test and debug purpose.
 def tasks_test(param):
-    return ({"result": param}, None)
+    return ({"result": "Test function or wrong function call!"}, None)
 
 # Simple task calculating average value in a region.
 # Boundary assumes the expected format being sent in.

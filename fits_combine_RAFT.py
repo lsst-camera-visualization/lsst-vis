@@ -4,7 +4,7 @@ from glob import glob
 import os
 import time
 
-# Todo: Plannig to wrap this as a class
+# TODO: Plannig to wrap this as a class
 
 PATH = os.getcwd()
 # Helper function to get d
@@ -15,15 +15,15 @@ def get_subFITS(DIR, fileExt):
     file_list = [os.path.normcase(f) for f in os.listdir(DIR)]
     return [os.path.join(DIR, f) for f in file_list if os.path.splitext(f)[-1] == fileExt and not f[0]=='.']
 
-# Todo: Right now it's size fixed. Maybe decide by header is better.
+# TODO: Right now it's size fixed. Maybe decide by header is better.
 def combine_Sensor(sensor_list):
-    # Todo: image dimension to be retrived from header
+    # TODO: image dimension to be retrived from header
     # Right now assume it's 4072*4000 only for our purpose
     dim_x, dim_y = 4072, 4000
     new_data = np.zeros(shape=(dim_x*3,dim_y*3), dtype = np.float32)
     for elem in sensor_list:
         hdulist = fits.open(elem)
-        # Todo: datatype to retrive from header.
+        # TODO: datatype to retrive from header.
         # Right now assume it's floating point.
         sensor_image_data = hdulist[0].data
         # To check: gzip'ed fits always in the form 'eimage_886947091_R01_S00_E000.fits.gz'
@@ -39,8 +39,8 @@ def combine_Sensor(sensor_list):
     hdulist.writeto(os.path.join(write_Path, '%s_CCD_%s.fits' % ((sensor_list[0].split('_')[-1][:4]).upper(), (sensor_list[0].split('_')[-3]).upper())))
     print('Processed Raft %s' % sensor_list[0].split('_')[-3])
 
-# Todo: See comments in the combine_Sensor function
-# Todo: still need to fix memory error !
+# TODO: See comments in the combine_Sensor function
+# TODO: still need to fix memory error !
 def combine_RAFT(CCD_list):
     # Using fixed X & Y coordinates
     dim_x, dim_y = 4072*3, 4000*3
@@ -75,7 +75,7 @@ fits_gz_list = [[get_subFITS(sub_dir, '.gz') for sub_dir in elem] for elem in R_
 
 #combine_Sensor(fits_gz_list[0][0])
 
-# Todo: Get keywords from header file
+# TODO: Get keywords from header file
 
 # Testing the runnig time
 t = time.process_time()

@@ -16,4 +16,4 @@ We also implemented a virtualized environment in [Docker image](https://github.c
 - [ ] Add more detailed documentation on Docker.
 
 ### Known Issues
-- [ ] Updating the python script might not be effective immediately. Probably due to file I/O issue with docker volume being attached. 
+- [ ] Updating the python script might not be effective immediately. Probably due to file I/O issue with docker volume being attached. Both front end and back end code are attached as separate volume. 

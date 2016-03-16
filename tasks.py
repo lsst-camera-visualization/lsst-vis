@@ -31,7 +31,18 @@ def boundary(filename):
     return json_str,None
 
 
+# Return a hot pixel in the defined region
+def hot_pixel(params):
+    # Assume the arguments are passed in this format:
+    # [filename, N(the threshold value), [region file]]
+    # if [region file] is not provided, by default will find all the hot pixels in the image.
+    # Note: for test purpose we ignore [region file] for now.
 
+    filename, threshold = params[0], params[1]
+    hdulist = fits.open(filename)
+    ROI = hdulist[0].data
+    pixels = ROI.where(ROI>=threshold)
+    return pixels
 
 # Debug line
 # print average_value([0,0,10,10])

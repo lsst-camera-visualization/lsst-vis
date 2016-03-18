@@ -42,6 +42,8 @@ if (task_name == "average"):
 	task = tasks.average_value
 elif (task_name == "boundary"):
 	task = tasks.boundary
+elif (task_name == "hot_pixel")
+	task = tasks.hot_pixel
 else:
 	task = tasks.tasks_test
 

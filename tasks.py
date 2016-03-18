@@ -25,7 +25,7 @@ def average_value(boundary):
 def boundary(filename):
     # Currently backend only have this particular FITS file "imageE2V" with valid header
     # Later on we should track which image is displaying based on client request
-    filename = "/www/algorithm/images/imageE2V.fits"
+    filename = "/home/dyue2/algorithms/images/imageE2V.fits"
     json_str = get_boundary(filename)
     json_str['comment']='Note that We are only showing amplifier boundaries of a particular FITS (imageE2V.fits) on backend.'
     return json_str,None

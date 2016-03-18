@@ -41,8 +41,11 @@ def hot_pixel(params):
     filename, threshold = params[0], params[1]
     hdulist = fits.open(filename)
     ROI = hdulist[0].data
+    # TODO: add (circle?) boundary? Or done by front end.
     rows, cols = np.where(ROI>=threshold)
-    return [rows, cols] # TODO: add (circle?) boundary to the returned pixels. 
+    # Return the 100 elems on average in distance
+    l = [list(elem) for elem in zip(rows[::len(rows)//100], col[::len(cols)//100])]
+    return l, None
 
 # Debug line
 # print average_value([0,0,10,10])

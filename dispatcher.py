@@ -14,23 +14,23 @@ parser = OptionParser(usage=usage)
 
 # add parameter readings
 parser.add_option("-d", "--work", dest="workdir",
-                  help="work directory", metavar="DIR")
+				  help="work directory", metavar="DIR")
 parser.add_option("-i", "--in", dest="infile",
-                  help="json file with task params", metavar="FILE")
+				  help="json file with task params", metavar="FILE")
 parser.add_option("-n", "--name", dest="task",
-                  help="task name (no spaces)", metavar="TASK")
+				  help="task name (no spaces)", metavar="TASK")
 parser.add_option("-o", "--outdir", dest="outdir",
-                  help="directory for the final output file", metavar="DIR")
+				  help="directory for the final output file", metavar="DIR")
 parser.add_option("-s", "--sep", dest="separator", default='___TASK STATUS___',
-                  help="separator string, after which task status is written",
-                  metavar="STR")
+				  help="separator string, after which task status is written",
+				  metavar="STR")
 
 
 # read the paremeters
 (options, args) = parser.parse_args()
 taskParams = None
 with open(options.infile) as paramfile:
-    taskParams = json.load(paramfile)
+	taskParams = json.load(paramfile)
 
 
 task_name = options.task
@@ -39,11 +39,11 @@ task_name = options.task
 # os.system(echo_debug)
 
 if (task_name == "average"):
-    task = tasks.average_value
+	task = tasks.average_value
 elif (task_name == "boundary"):
-    task = tasks.boundary
+	task = tasks.boundary
 else:
-    task = tasks.tasks_test
+	task = tasks.tasks_test
 
 
 result, error = task(taskParams)
@@ -52,8 +52,8 @@ result, error = task(taskParams)
 # os.system(echo_debug)
 
 (fd, outfile) = tempfile.mkstemp(suffix=".json",
-                                 prefix=options.task,
-                                 dir=options.outdir)
+								 prefix=options.task,
+								 dir=options.outdir)
 f = os.fdopen(fd, "w")
 
 
@@ -62,9 +62,9 @@ json.dump(result, f)
 
 print(options.separator)
 if error:
-    status = {"error": error}
-    print(json.dumps(status))
-    sys.exit(1)
+	status = {"error": error}
+	print(json.dumps(status))
+	sys.exit(1)
 else:
-    status = {"outfile": outfile}
-    print(json.dumps(status))
+	status = {"outfile": outfile}
+	print(json.dumps(status))

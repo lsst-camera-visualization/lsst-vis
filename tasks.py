@@ -44,12 +44,15 @@ def hot_pixel(params):
     # TODO: add (circle?) boundary? Or done by front end.
     rows, cols = np.where(ROI>=threshold)
     # Return the 100 elems on average in distance
-    l = [list(elem) for elem in zip(rows[::len(rows)//100], col[::len(cols)//100])]
+    l = [list(elem) for elem in zip(rows[::len(rows)//100], cols[::len(cols)//100])]
+    hdulist.close()
     return l, None
 
 # Debug line
 # print average_value([0,0,10,10])
-### :sDebug line
+# print hot_pixel(["../frontend/images/image.fits", 2200])
+### Debug line
+
 # def histogram(boundary):
     # x_start, x_end = boundary[0][0], boundary[1][0]
     # y_start, y_end = boundary[0][1], boundary[1][1]

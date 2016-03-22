@@ -44,12 +44,18 @@ def hot_pixel(params):
     filename = filename or  "/home/dyue2/algorithms/images/imageE2V.fits"
     hdulist = fits.open(filename)
     ROI = hdulist[0].data
+    # TODO: add (circle?) boundary? Or done by front end.
     rows, cols = np.where(ROI>=threshold)
-    return [rows, cols] # TODO: add (circle?) boundary to the returned pixels. 
+    # Return the 100 elems on average in distance
+    l = [list(elem) for elem in zip(rows[::len(rows)//100], cols[::len(cols)//100])]
+    hdulist.close()
+    return l, None
 
 # Debug line
 # print average_value([0,0,10,10])
-### :sDebug line
+# print hot_pixel(["../frontend/images/image.fits", 2200])
+### Debug line
+
 # def histogram(boundary):
     # x_start, x_end = boundary[0][0], boundary[1][0]
     # y_start, y_end = boundary[0][1], boundary[1][1]

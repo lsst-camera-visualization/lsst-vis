@@ -38,7 +38,10 @@ def hot_pixel(params):
     # if [region file] is not provided, by default will find all the hot pixels in the image.
     # NOTE: for test purpose we ignore [region file] for now.
 
-    filename, threshold = params[0], params[1]
+    # filename, threshold = params[0], params[1]
+    json.dump(params, open("/home/dyue2/algorithms/hello", 'w'))
+    filename, threshold, _ = params
+    filename = filename or  "/home/dyue2/algorithms/images/imageE2V.fits"
     hdulist = fits.open(filename)
     ROI = hdulist[0].data
     rows, cols = np.where(ROI>=threshold)

@@ -35,13 +35,15 @@ with open(options.infile) as paramfile:
 
 task_name = options.task
 
-# echo_debug = "echo "+ str(task_name) + " > /www/algorithm/debug_file"
-# os.system(echo_debug)
+echo_debug = "echo "+ str(task_name) + " > /www/algorithm/debug_file"
 
 if (task_name == "average"):
     task = tasks.average_value
 elif (task_name == "boundary"):
     task = tasks.boundary
+elif (task_name == "hotpixel"):
+    task = tasks.hot_pixel
+    os.system(echo_debug)
 else:
     task = tasks.tasks_test
 

@@ -34,17 +34,21 @@ def boundary(filename):
 # Return a hot pixel in the defined region
 def hot_pixel(params):
     # Assume the arguments are passed in this format:
-    # [filename, N(the threshold value), [region file]]
-    # if [region file] is not provided, by default will find all the hot pixels in the image.
+    # [region_of_interest, N(the threshold value)]
+    # if ROI is 'all', then by default it will find all the hot pixels in the image.
     # NOTE: for test purpose we ignore [region file] for now.
 
-    filename, threshold = params[0], params[1]
+    filename = "/www/static/images/image.fits"
+    roi, threshold = params[0], params[1]
+
     hdulist = fits.open(filename)
-    ROI = hdulist[0].data
+    if (roi=='all'):
+        region = hdulist[0].data
     # TODO: add (circle?) boundary? Or done by front end.
-    rows, cols = np.where(ROI>=threshold)
+    rows, cols = np.where(region>=threshold)
     # Return the 100 elems on average in distance
-    l = [list(elem) for elem in zip(rows[::len(rows)//100], cols[::len(cols)//100])]
+    # l = [list(elem) for elem in zip(rows, cols)]
+    l = [list(elem) for elem in zip(rows[::len(rows)//5000], cols[::len(cols)//5000])]
     hdulist.close()
     return l, None
 

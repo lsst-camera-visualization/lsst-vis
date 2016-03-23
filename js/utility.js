@@ -19,3 +19,19 @@ function read_boundary(data, cb){
         cb(regions);
     });
 }
+
+function read_hotpixels(data, cb){
+    firefly.getJsonFromTask('python', 'hot_pixels', data).then(function(data){
+        var rows = data[0];
+        var colums = data[1];
+        var regions = [];
+        var color = 'red';
+        for (var i=0; i<rows.length; i++){
+            var r = rows[i];
+            var c = colums[i];
+            var content = ['circle', c, r, 10, '#color='+color].join(' ');
+            regions.push(content);
+        }
+        cb(regions);
+    })
+}

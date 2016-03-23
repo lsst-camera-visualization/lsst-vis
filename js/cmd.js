@@ -209,6 +209,32 @@ cmds = {
         }
     },
 
+    hot_pixel : function(state, cmd_args){
+        var plotid = 'ffview'; // ffview as a default
+        var region_id = plotid+'-hot_pixel';
+        if (state.lsstviewers[region_id]){
+            firefly.removeRegionData(state.lsstviewers[region_id], region_id);
+            state.lsstviewers[region_id] = undefined;
+        }
+
+        regions = [];
+        roi = "all";
+        threshold = "max"; // Hardcoded with max value.
+        // regions.push('point 2500 2000 # point=circle 1 color=red');
+        firefly.getJsonFromTask("python", "hot_pixel", ["all", threshold]).then(function(data){
+
+          for (var coords in data){
+            // console.log(data[coords]);
+            var point = ['point', data[coords][0], data[coords][1], '#point=circle 1 color=red'].join(' ');
+            regions.push(point);
+          }
+          console.log(regions);
+
+          state.lsstviewers[region_id] = regions;
+          firefly.overlayRegionData(regions, region_id, 'hot pixels', plotid);
+        });
+    },
+
     average_pixel: function(state, args){
     var name = cmd_args[1];
         if (!state.boxes[name]){
@@ -246,6 +272,3 @@ cmds = {
         }
     }
 }
-
-
-

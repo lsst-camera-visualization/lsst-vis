@@ -38,7 +38,12 @@ def hot_pixel(params):
     # if ROI is 'all', then by default it will find all the hot pixels in the image.
     # NOTE: for test purpose we ignore [region file] for now.
 
+    # CMD: hot_pixel ffview max rect 200 200 400 400
+    # Example JSON:
+    # {"filename":"default", "threshold":"max", "region":{"rect":[0,0,100,100]}}
+
     filename = "/www/static/images/imageE2V_trimmed.fits"
+
     # filename = "../frontend/images/image.fits"
     roi, threshold = params[0], params[1]
 
@@ -50,7 +55,7 @@ def hot_pixel(params):
     rows, cols = np.where(region>=threshold)
     # Return the 100 elems on average in distance
     # l = [list(elem) for elem in zip(rows, cols)]
-    l = [list(elem) for elem in zip(cols[::len(cols)//5000],rows[::len(rows)//5000])]
+    l = [list(elem) for elem in zip(cols[::len(cols)//5000], rows[::len(rows)//5000])]
     hdulist.close()
     return l, None
 

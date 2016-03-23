@@ -143,8 +143,8 @@ def generate_json(filename, header):
     return {'WITHOUT_OSCN':off, 'WITH_OSCN':on}
 
 def generate_fits(filename, header):
-    construct_CCD(FITS, False, header)
-    construct_CCD(FITS, True, header)
+    construct_CCD(filename, False, header)
+    construct_CCD(filename, True, header)
 
 '''
 parser = argparse.ArgumentParser(description='Construct the CCD level single extension FITS based on a multi-extension FITS file.')
@@ -154,14 +154,14 @@ parser.add_argument("-off", "--overscan_OFF", action='store_true', help = "Outpu
 parser.add_argument("--noJSON", action='store_false', help = "Do not create a json describing the region.")
 '''
 
-FITS = "./images/imageE2V.fits"
+FITS = "imageE2V.fits"
 def get_boundary(filename):
     header_info = get_Header_Info(filename)
     json_string = generate_json(filename, header_info)
     return json_string
 
 # print(json_string)
-# generate_fits(FITS, header_info)
+# generate_fits(FITS, get_Header_Info(FITS))
 
 # TODO:
 # 1. Display header only

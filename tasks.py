@@ -12,7 +12,7 @@ def tasks_test(param):
 # Simple task calculating average value in a region.
 # Boundary assumes the expected format being sent in.
 def average_value(boundary):
-    filename = "/www/static/images/image.fits"
+    filename = "/www/static/images/imageE2V_trimmed.fits"
     x_start, x_end = boundary[0], boundary[2]
     y_start, y_end = boundary[1], boundary[3]
     hdulist = fits.open(filename)
@@ -38,23 +38,26 @@ def hot_pixel(params):
     # if ROI is 'all', then by default it will find all the hot pixels in the image.
     # NOTE: for test purpose we ignore [region file] for now.
 
-    filename = "/www/static/images/image.fits"
+    filename = "/www/static/images/imageE2V_trimmed.fits"
+    # filename = "../frontend/images/image.fits"
     roi, threshold = params[0], params[1]
 
     hdulist = fits.open(filename)
     if (roi=='all'):
         region = hdulist[0].data
+    threshold = np.max(region)
     # TODO: add (circle?) boundary? Or done by front end.
     rows, cols = np.where(region>=threshold)
     # Return the 100 elems on average in distance
     # l = [list(elem) for elem in zip(rows, cols)]
-    l = [list(elem) for elem in zip(rows[::len(rows)//5000], cols[::len(cols)//5000])]
+    l = [list(elem) for elem in zip(cols[::len(cols)//5000],rows[::len(rows)//5000])]
     hdulist.close()
     return l, None
 
 # Debug line
 # print average_value([0,0,10,10])
 # print hot_pixel(["../frontend/images/image.fits", 2200])
+# print(hot_pixel(["all", 1000]))
 ### Debug line
 
 # def histogram(boundary):

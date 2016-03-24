@@ -58,7 +58,7 @@ def hot_pixel(params):
     region = hdulist[0].data
 
     # NOTE: use six for cross compatibility!
-    if ((not isinstance(roi, six.string_types)) and roi['rect']):
+    if ((not isinstance(roi, six.string_types)) and ('rect' in roi)):
         # os.system("echo here > /www/algorithm/debug_file")
         x_start, x_end, y_start, y_end = valid_boundary(roi['rect'])
     elif (isinstance(roi, six.string_types) and roi=="all"):
@@ -69,14 +69,15 @@ def hot_pixel(params):
         x_start, y_start = 0, 0
         y_end, x_end = region.shape # Total image size
 
-    # os.system("echo %d %d %d %d > /www/algorithm/debug_file" % (x_start, x_end, y_start, y_end))
     region = region[y_start:y_end, x_start:x_end]
+    # os.system("echo %d %d %d %d > /www/algorithm/debug_file" % (x_start, x_end, y_start, y_end))
+
     # Threshold
     if (threshold == 'max'):
         threshold = np.max(region)
     rows, cols = np.where(region>=threshold)
     # l = [list(elem) for elem in zip(rows, cols)]
-    l = [[elem[0]+y_start, elem[1]+x_start] for elem in list(zip(cols, rows))]
+    l = [[elem[0]+x_start, elem[1]+y_start] for elem in list(zip(cols, rows))]
     num_points = 5000 # Set to 5000 so that at most it will return 10,000 points
     if (len(l)>=num_points):
         l = l[::len(l)//num_points]
@@ -87,7 +88,7 @@ def hot_pixel(params):
 # print average_value([0,0,10,10])
 # print hot_pixel(["../frontend/images/image.fits", 2200])
 # print(hot_pixel({"filename":"../frontend/images/image.fits", "threshold":"max", "region":{"rect":['1000','1000','2000','2000']}}))
-# print(hot_pixel({"filename":"default", "threshold":"max", "region":{'rect':[3000, 3000, 1000, 1000]}}))
+# print(hot_pixel({"filename":"default", "threshold":"max", "region":{'rect':['3000', '3000', '1000', '1000']}}))
 
 ### Debug line
 

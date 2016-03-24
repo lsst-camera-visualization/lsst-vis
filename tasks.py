@@ -21,6 +21,7 @@ def tasks_test(param):
 def average_value(boundary):
     filename = image_display
     x_start, x_end, y_start, y_end = valid_boundary(boundary)
+    os.system("echo here > /www/algorithm/debug_file")
     hdulist = fits.open(filename)
     region = hdulist[0].data[y_start:y_end, x_start:x_end]
     avg = str(np.mean(region))
@@ -59,7 +60,6 @@ def hot_pixel(params):
 
     # NOTE: use six for cross compatibility!
     if ((not isinstance(roi, six.string_types)) and ('rect' in roi)):
-        # os.system("echo here > /www/algorithm/debug_file")
         x_start, x_end, y_start, y_end = valid_boundary(roi['rect'])
     elif (isinstance(roi, six.string_types) and roi=="all"):
         x_start, y_start = 0, 0

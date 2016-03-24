@@ -211,28 +211,31 @@ cmds = {
 
     hot_pixel : function(state, cmd_args){
         var plotid = 'ffview'; // ffview as a default
+        if (state.lsstviewers[cmd_args[1]]){
+            plotid = cmd_args[1]; // Otherwise use viewer that user specified.
+        }
+
         var region_id = plotid+'-hot_pixel';
         if (state.lsstviewers[region_id]){
             firefly.removeRegionData(state.lsstviewers[region_id], region_id);
             state.lsstviewers[region_id] = undefined;
         }
 
-        regions = [];
-        roi = "all";
-        threshold = "max"; // Hardcoded with max value.
-        // regions.push('point 2500 2000 # point=circle 1 color=red');
-        firefly.getJsonFromTask("python", "hot_pixel", ["all", threshold]).then(function(data){
-
-          for (var coords in data){
-            // console.log(data[coords]);
-            var point = ['point', data[coords][0], data[coords][1], '#point=circle 1 color=red'].join(' ');
-            regions.push(point);
-          }
-          console.log(regions);
-
-          state.lsstviewers[region_id] = regions;
-          firefly.overlayRegionData(regions, region_id, 'hot pixels', plotid);
-        });
+        args={};
+        args['filename'] = 'default'; // Use default image (displayed) for now.
+        args['threshold'] = cmd_args[2];
+        if (cmd_args[3]=='all' || !cmd_args[3]){
+          args['region'] = 'all';
+        }else{
+          r = {};
+          r[cmd_args[3]] = cmd_args.slice(4);
+          args['region'] = r;
+        }
+        console.log(args);
+        read_hotpixels(args, function(regions){
+            state.lsstviewers[region_id] = regions;
+            firefly.overlayRegionData(regions, region_id, 'hot pixel', plotid);
+        })
     },
 
     average_pixel: function(state, args){
@@ -264,7 +267,7 @@ cmds = {
             var bottom = parseInt(cmd_args[5]);
             var right = parseInt(cmd_args[6]);
             console.log([top, left, bottom, right]);
-            firefly.getJsonFromTask("python", "task", [top, left, bottom, right]).then(function(data){
+            firefly.getJsonFromTask("python", "average", [top, left, bottom, right]).then(function(data){
                 console.log(data);
                 console.log(third_line.text('value: '+data["result"]));
                 // third_line.select('p').text('value: '+data["result"]);

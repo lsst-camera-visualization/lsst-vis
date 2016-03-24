@@ -35,8 +35,6 @@ with open(options.infile) as paramfile:
 
 task_name = options.task
 
-# echo_debug = "echo "+ str(task_name) + " > /www/algorithm/debug_file"
-# os.system(echo_debug)
 
 if (task_name == "average"):
 	task = tasks.average_value
@@ -47,8 +45,12 @@ elif (task_name == "hot_pixel"):
 else:
 	task = tasks.tasks_test
 
+#
 
 result, error = task(taskParams)
+
+# echo_debug = "echo "+ task_name + " > /www/algorithm/debug_file"
+# os.system(echo_debug)
 
 # result,error = average_value(taskParams)
 # os.system(echo_debug)

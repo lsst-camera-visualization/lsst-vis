@@ -42,7 +42,7 @@ jQuery(function($, undefined) {
         var executed = false;
         for (var name in cmds){
             cmd = cmds[name];
-            if (name == cmd_args[0]){
+            if (name == cmd_args[0].toLowerCase()){
                 executed = true;
                 cmd(state, cmd_args);
                 break;
@@ -62,6 +62,25 @@ jQuery(function($, undefined) {
 cmds = {
     help : function(state, args){
         state.term.echo('please check the <a href="https://github.com/lsst-camera-visualization/frontend/wiki" target =" blank">documentation</a>',{raw: true});
+    },
+    hot_pixel : function(data, cmd_args){
+        var plotid = 'ffview';
+        var region_id = plotid+'-hotpixel';
+        var threshold = parseInt(cmd_args[2]);
+        var region = cmd_args[3] == "rect" ? {rect: [parseInt(cmd_args[4]),parseInt(cmd_args[5]),parseInt(cmd_args[6]),parseInt(cmd_args[7]) ]} : "all";
+        if (state.lsstviewers[region_id]){
+            firefly.removeRegionData(state.lsstviewers[region_id], region_id);
+            state.lsstviewers[region_id] = undefined;
+        }
+        read_hotpixels({
+            filename: "default",
+            threshold: "max",
+            "region": region
+        },
+        function(regions){
+            state.lsstviewers[region_id] = regions;
+            firefly.overlayRegionData(regions, region_id, 'hotpixel', plotid);
+        });
     },
     show_boundary : function(state, cmd_args){
         var plotid = 'ffview'; // ffview as a default
@@ -238,7 +257,7 @@ cmds = {
             var bottom = parseInt(cmd_args[5]);
             var right = parseInt(cmd_args[6]);
             console.log([top, left, bottom, right]);
-            firefly.getJsonFromTask("python", "task", [top, left, bottom, right]).then(function(data){
+            firefly.getJsonFromTask("python", "average", [top, left, bottom, right]).then(function(data){
                 console.log(data);
                 console.log(third_line.text('value: '+data["result"]));
                 // third_line.select('p').text('value: '+data["result"]);
@@ -246,6 +265,4 @@ cmds = {
         }
     }
 }
-
-
 

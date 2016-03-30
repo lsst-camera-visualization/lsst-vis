@@ -266,7 +266,7 @@ cmds = {
       if (firefly.overlayRegionData) {
         firefly.overlayRegionData([content], region_id, "Boundary", plotid);
       }
-      firefly.getJsonFromTask("python", "average", [top, left, bottom, right]).then(function(data) {
+      firefly.getJsonFromTask("python", "average", [region.top, region.left, region.bottom, region.right]).then(function(data) {
         console.log(data);
         console.log(third_line.text('value: ' + data["result"]));
         third_line.select('p').text('value: ' + data["result"]);

@@ -45,5 +45,5 @@ function parse_region(cmd) {
 
 function parse_rect(cmd) {
   cmd.shift();
-  return {'top': cmd.shift(), 'left': cmd.shift(), 'down': cmd.shift(), 'right': cmd.shift()}
+  return {'top': cmd.shift(), 'left': cmd.shift(), 'bottom': cmd.shift(), 'right': cmd.shift()}
 }

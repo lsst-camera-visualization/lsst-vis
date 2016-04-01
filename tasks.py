@@ -10,7 +10,7 @@ from helper_functions import valid_boundary, rect2slice
 # TODO: incorporate with a file name management
 image_original = "/www/algorithm/images/imageE2V.fits"
 image_display = "/www/static/images/imageE2V_trimmed.fits"
-image_display = "/home/dyue2/apache-tomcat-7.0.63/webapps/static/images/image.fits"
+# image_display = "/home/dyue2/apache-tomcat-7.0.63/webapps/static/images/image.fits"
 ###
 
 # Return the parameter without any modification. For test and debug purpose.

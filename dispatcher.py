@@ -48,7 +48,7 @@ else:
 
 try:
     result, error = task(taskParams)
-except Exception, e:
+except Exception as e:
     result = {"error": str(e)}
 
 # echo_debug = "echo "+ task_name + " > /www/algorithm/debug_file"

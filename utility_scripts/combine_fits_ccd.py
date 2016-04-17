@@ -1,6 +1,7 @@
 from astropy.io import fits
 from copy import deepcopy
 import numpy as np
+import sys
 # import os
 # import json
 # import argparse
@@ -154,14 +155,16 @@ parser.add_argument("-off", "--overscan_OFF", action='store_true', help = "Outpu
 parser.add_argument("--noJSON", action='store_false', help = "Do not create a json describing the region.")
 '''
 
-FITS = "imageE2V.fits"
+# FITS = "imageE2V.fits"
 def get_boundary(filename):
     header_info = get_Header_Info(filename)
     json_string = generate_json(filename, header_info)
     return json_string
 
 # print(json_string)
-# generate_fits(FITS, get_Header_Info(FITS))
+# FITS = sys.argv[1]
+# for i in range(9):
+#     generate_fits(FITS, get_Header_Info(FITS))
 
 # TODO:
 # 1. Display header only

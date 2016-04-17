@@ -2,7 +2,7 @@ import numpy as np
 import os
 import six
 from astropy.io import fits
-from combine_fits_ccd import get_boundary
+from utility_scripts.combine_fits_ccd import get_boundary
 from helper_functions import valid_boundary, rect2slice
 
 ###
@@ -10,6 +10,7 @@ from helper_functions import valid_boundary, rect2slice
 # TODO: incorporate with a file name management
 image_original = "/www/algorithm/images/imageE2V.fits"
 image_display = "/www/static/images/imageE2V_trimmed.fits"
+# image_display = "/home/wei/lsst_firefly/frontend/images/image.fits"
 # image_display = "/home/dyue2/apache-tomcat-7.0.63/webapps/static/images/image.fits"
 ###
 
@@ -58,18 +59,16 @@ def hot_pixel(params):
     # Region
     region = hdulist[0].data
 
-    # NOTE: use six for cross compatibility!
     if (isinstance(roi, dict) and ('rect' in roi)):
         region_slice = rect2slice(roi)
     elif (isinstance(roi, six.string_types) and roi=="all"):
         region_slice = slice(None)
     else:
-        # error handling
+        # TODO: error handling
         region_slice = slice(None)
-    print(region_slice) 
+    # print(region_slice)
     region = region[region_slice]
     # os.system("echo %d %d %d %d > /www/algorithm/debug_file" % (x_start, x_end, y_start, y_end))
-
     # Threshold
     if (threshold == 'max'):
         threshold = float(np.max(region))

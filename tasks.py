@@ -3,7 +3,7 @@ import os
 import six
 from astropy.io import fits
 from utility_scripts.combine_fits_ccd import get_boundary
-from helper_functions import valid_boundary, rect2slice
+from utility_scripts.helper_functions import valid_boundary, rect2slice
 
 ###
 # Hardcoded filenames for tasks to use!

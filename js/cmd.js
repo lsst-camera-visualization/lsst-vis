@@ -68,16 +68,16 @@ cmds = {
     var plotid = 'ffview';
     var region_id = plotid + '-hotpixel';
     var threshold = parseInt(cmd_args[2]);
-    // var region = cmd_args[3] == "rect" ? {rect: [parseInt(cmd_args[4]),parseInt(cmd_args[5]),parseInt(cmd_args[6]),parseInt(cmd_args[7]) ]} : "all";
     var region = parse_region(cmd_args.slice(3)) || "all";
     if (state.lsstviewers[region_id]) {
       firefly.removeRegionData(state.lsstviewers[region_id], region_id);
       state.lsstviewers[region_id] = undefined;
     }
+    console.log(region);
     read_hotpixels({
         filename: "default",
         threshold: "max",
-        "region": region
+        "region": {"rect": region}
       },
       function(regions) {
         state.lsstviewers[region_id] = regions;
@@ -250,8 +250,8 @@ cmds = {
       var region = parse_region(cmd_args.slice(3)) || {
         top: 0,
         left: 0,
-        bottom: 0,
-        right: 0
+        bottom: 1,
+        right: 1
       };
       var second_line = content.append('p').text('top: ' + region.top + ' bottom: ' + region.bottom + ' left: ' + region.left + ' right: ' + region.right);
       var third_line = content.append('p').text('value: 0');
@@ -261,12 +261,13 @@ cmds = {
         firefly.removeRegionData(state.lsstviewers[region_id], region_id);
         state.lsstviewers[region_id] = undefined;
       }
-      var content = ['box', region.left, region.top, region.right - region.top, region.bottom - region.top, 0, '#color=red'].join(' ');
+      var content = ['box', region.left, region.bottom, region.right - region.left, region.bottom - region.top, 0, '#color=red'].join(' ');
+      console.log(content);
       state.lsstviewers[region_id] = [content];
       if (firefly.overlayRegionData) {
         firefly.overlayRegionData([content], region_id, "Boundary", plotid);
       }
-      firefly.getJsonFromTask("python", "average", [region.top, region.left, region.bottom, region.right]).then(function(data) {
+      firefly.getJsonFromTask("python", "average", {'rect': region}).then(function(data) {
         console.log(data);
         console.log(third_line.text('value: ' + data["result"]));
         third_line.select('p').text('value: ' + data["result"]);

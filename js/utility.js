@@ -23,7 +23,6 @@ function read_boundary(data, cb) {
 function read_hotpixels(data, cb) {
   console.log(data);
   firefly.getJsonFromTask('python', 'hot_pixel', data).then(function(data) {
-    console.log(data);
     var regions = [];
     var color = 'red';
     for (var i = 0; i < data.length; i++) {
@@ -32,7 +31,11 @@ function read_hotpixels(data, cb) {
       regions.push(content);
     }
     cb(regions);
-  })
+  });
+}
+
+function shape2points(data, cb){
+
 }
 
 // take the cmd and consume the region
@@ -45,5 +48,5 @@ function parse_region(cmd) {
 
 function parse_rect(cmd) {
   cmd.shift();
-  return {'top': cmd.shift(), 'left': cmd.shift(), 'bottom': cmd.shift(), 'right': cmd.shift()}
+  return {'top': parseInt(cmd.shift()), 'left': parseInt(cmd.shift()), 'bottom': parseInt(cmd.shift()), 'right': parseInt(cmd.shift())}
 }

@@ -74,7 +74,7 @@ def hot_pixel(params):
     else:
         threshold = float(threshold)
 
-    rows, cols = np.where(region>=threshold)
+    cols, rows = np.where(region>=threshold)
 
     num_points = 500  # Set to 500 so that at most it will return 1000 points
     num_points = rows.size if num_points>rows.size else num_points

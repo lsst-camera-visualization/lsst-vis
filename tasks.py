@@ -9,7 +9,7 @@ from utility_scripts.helper_functions import valid_boundary, rect2slice
 # Hardcoded filenames for tasks to use!
 # TODO: incorporate with a file name management
 image_original = "/www/algorithm/images/imageE2V.fits"
-image_display = "/www/static/images/imageE2V_trimmed.fits"
+image_display = "/www/static/images/image.fits"
 # image_display = "/home/wei/lsst_firefly/frontend/images/image.fits"
 # image_display = "/home/dyue2/apache-tomcat-7.0.63/webapps/static/images/image.fits"
 ###
@@ -54,7 +54,6 @@ def hot_pixel(params):
     if (filename == 'default'):
         filename = image_display
     hdulist = fits.open(filename)
-
     threshold, roi = params['threshold'], params['region']
     # Region
     region = hdulist[0].data
@@ -77,7 +76,9 @@ def hot_pixel(params):
 
     rows, cols = np.where(region>=threshold)
 
-    num_points = 500 # Set to 500 so that at most it will return 1000 points
+    num_points = 500  # Set to 500 so that at most it will return 1000 points
+    num_points = rows.size if num_points>rows.size else num_points
+
     rows = rows[::rows.size//num_points]
     cols = cols[::cols.size//num_points]
     l = np.zeros((rows.size, 2))

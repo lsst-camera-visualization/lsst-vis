@@ -5,6 +5,7 @@ state = {
   },
   show_readouts: undefined,
   term: undefined, // this will be a terminal object
+  updatelist: {ffview: true}
 };
 
 
@@ -33,6 +34,12 @@ var onFireflyLoaded = function() {
   var viewer = loadFirefly('ffview');
   state.lsstviewers['ffview'] = viewer;
   state.show_readouts = new readouts();
+  // currently will update the image automatically 10 sec
+  window.setTimeInterval(function(){
+    if (state.updatelist['ffview']){
+      cmds.update_viewer(state, ['', 'ffview'])
+    }
+  }, 10000)
 }
 jQuery(function($, undefined) {
   $("#cmd").terminal(function(cmd_str, term) {
@@ -64,7 +71,24 @@ cmds = {
       raw: true
     });
   },
-  hot_pixel: function(data, cmd_args) {
+  update_viewer: function(state, cmd_args){
+    var id = cmd_args[1];
+    firefly.getJsonFromTask('python', 'fetch_latest', null).then(function(data){
+      var url = data.url;
+      state.lsstviewers[id].plot({url: url, Title: id, ZoomType: 'TO_WIDTH'});
+    });
+  },
+  resume: function(state, cmd_args){
+    var id = cmd_args[1];
+    state.updatelist[id] = true;
+    d3.select('#pause-resume').text('pause');
+  },
+  pause: function(state, cmd_args){
+    var id = cmd_args[1];
+    state.updatelist[id] = false;
+    d3.select('#pause-resume').text('resume');
+  },
+  hot_pixel: function(state, cmd_args) {
     var plotid = 'ffview';
     var region_id = plotid + '-hotpixel';
     var threshold = parseInt(cmd_args[2]);

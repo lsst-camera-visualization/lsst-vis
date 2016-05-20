@@ -11,7 +11,7 @@
     <script src='./js/new.js'></script>
     <script src='./js/cmd.js'></script>
     <script src='./js/chart.js'></script>
-	<script src='./js/utility.js'></script>
+    <script src='./js/utility.js'></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.1/nv.d3.min.css" rel="stylesheet">
     <link rel='stylesheet' href='http://terminal.jcubic.pl/css/jquery.terminal.css'></link>
 </head>
@@ -71,10 +71,18 @@
     height: 100px;
 }
 </style>
-
+<script>
+function change()
+{
+    var elem = document.getElementById("pause-resume");
+    if (elem.value=="pause") elem.value = "resume";
+    else elem.value = "pause";
+}
+</script>
 <div id="header">
     <div id="leftside">
         <div id="ffview"></div>
+		<input onclick="change()" type="button" value="pause" id="pause-resume"></input>
         <div id="cmd">
         </div>
     </div>

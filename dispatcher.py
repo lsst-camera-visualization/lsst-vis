@@ -32,6 +32,8 @@ elif (task_name == "boundary"):
 	task = tasks.boundary
 elif (task_name == "hot_pixel"):
 	task = tasks.hot_pixel
+elif (task_name == "fetch_latest"):
+	task = tasks.fetch_latest
 else:
 	task = tasks.tasks_test
 

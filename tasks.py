@@ -1,6 +1,7 @@
 import numpy as np
 import os
 import six
+import json
 from astropy.io import fits
 from utility_scripts.combine_fits_ccd import get_boundary
 from utility_scripts.helper_functions import valid_boundary, rect2slice
@@ -29,6 +30,18 @@ def average_value(boundary):
     avg = str(np.mean(region))
     hdulist.close()
     return {"result":avg},None
+
+
+
+# Fetches the latest image
+# @author - Joe Pagliuco
+# @param params - Not used
+# @return Returns a json object with the following keys: "uri", "timestamp", "name"
+def fetch_latest(params):
+	test_dict = { "uri" : "test_uri", "timestamp" : "test_timestamp", "name" : "test_name" };
+	return json.dumps(test_dict), None
+
+
 
 # Return amplifier boundries of a FITS file based on its header information.
 def boundary(filename):

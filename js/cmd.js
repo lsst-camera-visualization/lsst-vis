@@ -5,7 +5,7 @@ state = {
   },
   show_readouts: undefined,
   term: undefined, // this will be a terminal object
-  updatetime: 5000,
+  updatetime: 5000, 
   updatelist: {ffview: true}
 };
 

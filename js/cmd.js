@@ -5,6 +5,7 @@ state = {
   },
   show_readouts: undefined,
   term: undefined, // this will be a terminal object
+  updatetime: 5000,
   updatelist: {ffview: true}
 };
 
@@ -40,7 +41,7 @@ var onFireflyLoaded = function() {
     if (state.updatelist['ffview']){ // check if we need to update the image 
       cmds.update_viewer(state, ['', 'ffview'])
     }
-  }, 5000)
+  }, state.updatetime)
 }
 jQuery(function($, undefined) {
   $("#cmd").terminal(function(cmd_str, term) {
@@ -78,6 +79,17 @@ function change()
 }
 
 cmds = {
+  // user can change the frequency of updating images.
+  fetch_freq: function(state, cmd_args){
+    var time = cmd_args[1];
+    if (time < 5000) {
+      // lower bound for automatic update.
+      time = 5000;
+    }
+    state.updatetime = time;
+    // testing code.
+    // state.term.echo(state.updatetime, {raw: true});  
+  },
   help: function(state, args) {
     state.term.echo('please check the <a href="https://github.com/lsst-camera-visualization/frontend/wiki" target =" blank">documentation</a>', {
       raw: true

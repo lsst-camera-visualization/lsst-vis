@@ -98,7 +98,7 @@ cmds = {
   update_viewer: function(state, cmd_args){
     var id = cmd_args[1];
     firefly.getJsonFromTask('python', 'fetch_latest', null).then(function(data){
-      var url = data.url;
+      var url = data.uri; //should be data.uri not data.url
       state.lsstviewers[id].plot({url: url, Title: id, ZoomType: 'TO_WIDTH'});
     });
   },

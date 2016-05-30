@@ -1,24 +1,33 @@
 import json
 import os
+from optparse import OptionParser
 import sys
 import tempfile
 import tasks
 
-import argparser
 
-parser = argparse.ArgumentParser()
-parser.add_argument("-d", "--work", dest="workdir",
-					help="work directory")
-parser.add_argument("-i", "--in", dest="infile",
-					help="json file with task params")
-parser.add_argument("-n", "--name", dest="task",
-					help="task name (no spaces)")
-parser.add_argument("-o", "--outdir", dest="outdir",
-					help="directory for the final output file")
-parser.add_argument("-s", "--sep", dest="separator", default="___TASK STATUS___",
-					help="separator string, after which task status is written")
 
-options = parser.parse_args()
+usage = "usage: %prog [options]"
+parser = OptionParser(usage=usage)
+
+# TODO: Consider swithcing to argparse since optparse is deprecated.
+
+# add parameter readings
+parser.add_option("-d", "--work", dest="workdir",
+				  help="work directory", metavar="DIR")
+parser.add_option("-i", "--in", dest="infile",
+				  help="json file with task params", metavar="FILE")
+parser.add_option("-n", "--name", dest="task",
+				  help="task name (no spaces)", metavar="TASK")
+parser.add_option("-o", "--outdir", dest="outdir",
+				  help="directory for the final output file", metavar="DIR")
+parser.add_option("-s", "--sep", dest="separator", default='___TASK STATUS___',
+				  help="separator string, after which task status is written",
+				  metavar="STR")
+
+
+# read the paremeters
+(options, args) = parser.parse_args()
 taskParams = None
 with open(options.infile) as paramfile:
 	taskParams = json.load(paramfile)
@@ -34,6 +43,8 @@ elif (task_name == "hot_pixel"):
 	task = tasks.hot_pixel
 else:
 	task = tasks.tasks_test
+
+#
 
 try:
     result, error = task(taskParams)

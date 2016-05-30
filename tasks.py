@@ -18,6 +18,16 @@ image_display = "/www/static/images/image.fits"
 def tasks_test(param):
     return ({"result": "Test function or wrong function call!"}, None)
 
+
+# Fetches the latest image
+# @author - Joe Pagliuco
+# @param params - Not used
+# @return Returns a json object with the following keys: "uri", "timestamp", "name"
+def fetch_latest(params):
+	test_dict = { "uri" : "test_uri", "timestamp" : "test_timestamp", "name" : "test_name" };
+	return test_dict, None
+
+
 # Simple task calculating average value in a region.
 # Boundary assumes the expected format being sent in.
 def average_value(boundary):
@@ -29,6 +39,7 @@ def average_value(boundary):
     avg = str(np.mean(region))
     hdulist.close()
     return {"result":avg},None
+
 
 # Return amplifier boundries of a FITS file based on its header information.
 def boundary(filename):

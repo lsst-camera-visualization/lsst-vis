@@ -3,6 +3,13 @@ from task_scripts.boundary import task as task_boundary
 from task_scripts.fetch_latest import task as task_fetch_latest
 from task_scripts.hot_pixel import task as task_hot_pixel
 
+# Dictionary mapping task names to functions
+_tasks = {} # DO NOT MODIFY THIS LINE (see generate_new_task.sh)
+_tasks["average"] = task_average_pixel
+_tasks["boundary"] = task_boundary
+_tasks["fetch_latest"] = task_fetch_latest
+_tasks["hot_pixel"] = task_hot_pixel
+
 # Return the parameter without any modification. For test and debug purpose.
 def task_not_found(param):
     return ({"result": "Test function or wrong function call!"}, None)
@@ -18,14 +25,8 @@ def execute_task(task_name, task_params):
 	'''
 	task = None
 	
-	if (task_name == "averasge"):
-		task = task_average_pixel
-	elif (task_name == "boundary"):
-		task = task_boundary # NOTE: THIS TASK DOESN'T ACTUALLY WORK
-	elif (task_name == "fetch_latest"):
-		task = task_fetch_latest
-	elif (task_name == "hot_pixel"):
-		task = task_hot_pixel
+	if task_name in _tasks:
+		task = _tasks[task_name]
 	else:
 		task = task_not_found
 	

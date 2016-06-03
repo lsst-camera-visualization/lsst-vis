@@ -2,7 +2,7 @@ import json
 import os
 import sys
 import tempfile
-import tasks
+from tasks import execute_task
 
 import argparse
 
@@ -25,22 +25,10 @@ taskParams = None
 with open(options.infile) as paramfile:
 	taskParams = json.load(paramfile)
 
-
 task_name = options.task
 
-if (task_name == "average"):
-	task = tasks.average_value
-elif (task_name == "boundary"):
-	task = tasks.boundary
-elif (task_name == "hot_pixel"):
-	task = tasks.hot_pixel
-elif (task_name == "fetch_latest"):
-	task = tasks.fetch_latest
-else:
-	task = tasks.tasks_test
-
 try:
-    result, error = task(taskParams)
+    result, error = execute_task(task_name, taskParams)
 except Exception as e:
     result = {"error": str(e)}
 

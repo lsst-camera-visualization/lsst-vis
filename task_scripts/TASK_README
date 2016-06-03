@@ -1,0 +1,6 @@
+To create a task, the following must be done:
+
+1. Create a file for this task
+2. Create a function called task(), which receives one parameter. This is the main function to be executed for a task
+3. Add an import statement into backend/tasks.py for this specific task
+4. Add the task to the function execute_task()

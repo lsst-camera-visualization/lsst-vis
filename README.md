@@ -9,6 +9,7 @@ According to [LSST Firefly documentation](https://github.com/lsst/firefly/blob/m
 
 ### Tasks
 All tasks are put in their own separate files in the task_scripts/ directory. The entry point of all tasks a function called task, which takes in one parameter. This function should return a dictionary of necessary results, and an error if necessary.  
+
 In order to create a new task, one must use the script called "generate_new_task.sh", passing in only the name of the new task. This script will create a file in task_scripts/, and add the task function and an empty docstring (fill it out!). In addition, it will add the task to list of executable tasks, so all that is necessary is run this script and write the code.
 
 

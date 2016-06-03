@@ -1,3 +1,7 @@
+'''
+This file contains variable and function definition usable by all tasks.
+'''
+
 
 
 ###

@@ -60,13 +60,14 @@ def _get_Header_Info(hdulist):
     if (DETSIZE[0]%seg_dimension[0]!=0) and (DETSIZE[1]%seg_dimension[1]!=0):
         raise ValueError('Incorrect segment/amplifier dimension.')
     num_X, num_Y = DETSIZE[0]//seg_dimension[0], DETSIZE[1]//seg_dimension[1]
-    num_ccds = num_X*num_Y
+    num_amps = num_X*num_Y
 
     boundary = [[{} for x in range(num_X)] for y in range(num_Y)]
     boundary_overscan = [[{} for x in range(num_X)] for y in range(num_Y)]
     # Traverse the list of headers
     for i in range(num_amps):
         header = imgHDUs[i]
+        seg_dimension = [header['NAXIS1'], header['NAXIS2']]
         seg_detsec = getCoord(header['DETSEC'])
         seg_datasec = getCoord(header['DATASEC'])
         seg_bias_Size = getDim(getCoord(header['BIASSEC']))
@@ -78,32 +79,19 @@ def _get_Header_Info(hdulist):
         boundary[seg_Y][seg_X] = convert_to_Box(seg_detsec)
 
         # Add correct offset for each segment.
-        boundary_overscan[seg_Y][seg_X] = {'x':seg_X*DETSIZE[0], 'y':seg_Y*DETSIZE[1], 'width':DETSIZE[0], 'height':DETSIZE[1]}
+        boundary_overscan[seg_Y][seg_X] = {'x':seg_X*seg_dimension[0], 'y':seg_Y*seg_dimension[1], 'width':seg_dimension[0], 'height':seg_dimension[1]}
         boundary_overscan[seg_Y][seg_X]['x'] += seg_bias_Size[0] if is_Slice_Reverse['x'] else (min(seg_datasec['start_X'], seg_datasec['end_X'])-1)
-        boundary_overscan[seg_Y][seg_X]['y'] += (DETSIZE[1]-getDim(seg_datasec)[1]) if is_Slice_Reverse['y']
+        boundary_overscan[seg_Y][seg_X]['y'] += (seg_dimension[1]-getDim(seg_datasec)[1]) if is_Slice_Reverse['y']
 
-
-
-        # temp_max = [max(temp) for temp in temp_DETSEC]
-        # X_max = temp_max[0] if (X_max < temp_max[0]) else X_max
-        # Y_max = temp_max[1] if (Y_max < temp_max[1]) else Y_max
-
-    seg_header = imgHDUs[0].header
-
-    # Caculate dimension based on DATASEC (considering overscan)
-    seg_DATASEC_DIM = getDim(getCoord(seg_header['DATASEC']))
-    seg_data_X, seg_data_Y = seg_DATASEC_DIM[0], seg_DATASEC_DIM[1]
-
-    # # Get segment number based on actual dimension (regardless of overscan)
-    # seg_X, seg_Y = seg_header['NAXIS1'], seg_header['NAXIS2']
-
-    # # Sanity Check
-    # if (X_max%seg_data_X!=0) and (Y_max%seg_data_Y!=0):
-    #     raise ValueError("Incorrect Segment Dimension.")
-    # num_X, num_Y = X_max//seg_data_X, Y_max//seg_data_Y
-    # namps = num_X*num_Y
     hdulist.close()
-    return {'DETSIZE':[X_max, Y_max], 'NUM_AMPS':namps, 'SEG_SIZE':[seg_X, seg_Y], 'SIZE':[num_X*seg_X, num_Y*seg_Y], 'SEG_DATA_SIZE':[seg_data_X, seg_data_Y], 'NUM_X':num_X, 'NUM_Y':num_Y}
+    # TODO: **ADD segment name!!!** 
+    return {
+            'DETSIZE'   : {'x':DETSIZE[0], 'y':DETSIZE[1]},
+            'NUM_AMPS'  : num_amps,
+            'SEG_SIZE'  : {'x':seg_dimension[0], 'y':seg_dimension[1]},
+            'BOUNDARY'  : boundary,
+            'BOUNDARY_OVERSCAN' : boundary_overscan
+    }
 
 # Get Header information from multiple extension
 # return as a dictionary object

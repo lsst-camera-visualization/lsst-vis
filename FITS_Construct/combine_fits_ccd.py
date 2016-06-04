@@ -16,12 +16,16 @@ def getCoord(s):
     coord_list[0] = coord_list[0].split('[')[1].split(':')
     coord_list[1] = coord_list[1].split(']')[0].split(':')
     coord_list = [[int(value) for value in elem] for elem in coord_list]
-    return {'start_X':coord_list[0][0], 'start_Y':coord_list[1][0], 'end_X':coord_list[0][1], 'end_Y':coord_list[1][1]}
+    return {'start_X'   :coord_list[0][0],
+            'start_Y'   :coord_list[1][0],
+            'end_X'     :coord_list[0][1],
+            'end_Y'     :coord_list[1][1]}
 
 
 # Get dimension information from a region.
 def getDim(coords):
-    return [abs(coords['end_X']-coords['start_X'])+1, abs(coords['end_Y']-coords['start_Y'])+1]
+    return [abs(coords['end_X']-coords['start_X'])+1,
+            abs(coords['end_Y']-coords['start_Y'])+1]
 
 # Get a section size based on dimension
 def getSIZE(d):
@@ -36,6 +40,12 @@ def convert_to_Box(coords):
     width = abs(coords['end_X']-coords['start_X'])+1
     height = abs(coords['end_Y']-coords['start_Y'])+1
     return {'x':x, 'y':y, 'width':width, 'height':height}
+
+# Check if the segment data slicing should be reversed or not.
+def check_Reverse_Slicing(detsec, datasec):
+    return {'x':(detsec['start_X']>detsec['end_X'])!=(datasec['start_X']>datasec['end_X']),
+            'y':(detsec['start_Y']>detsec['end_Y'])!=(datasec['start_Y']>datasec['end_Y'])}
+
 
 # Actual function getting head info.
 # Called by **get_Header_Info** .
@@ -59,8 +69,16 @@ def _get_Header_Info(hdulist):
         header = imgHDUs[i]
         seg_detsec = getCoord(header['DETSEC'])
         seg_datasec = getCoord(header['DATASEC'])
-        seg_X, seg_Y = (seg_detsec['start_X']-1)//seg_dimension[0], (seg_detsec['start_Y']-1)//seg_dimension[1] # Segment/amplifier coordinates in a CCD.
+        seg_bias_Size = getDim(getCoord(header['BIASSEC']))
+        # Segment/amplifier coordinates in a CCD.
+        seg_X, seg_Y = (seg_detsec['start_X']-1)//seg_dimension[0], (seg_detsec['start_Y']-1)//seg_dimension[1]
+        # Condition about X & Y slicing in segment data.
+        is_Slice_Reverse = check_Reverse_Slicing(seg_detsec, seg_datasec)
+
         boundary[seg_Y][seg_X] = convert_to_Box(seg_detsec)
+
+        boundary_overscan[seg_Y][seg_X] = convert_to_Box(seg_detsec)
+        boundary_overscan[seg_Y][seg_X]['x']+=seg_bias_Size[0] if is_Slice_Reverse['x'] else (min(seg_datasec['start_X'], seg_datasec['end_X'])-1)
 
 
 

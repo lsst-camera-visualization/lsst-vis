@@ -77,8 +77,10 @@ def _get_Header_Info(hdulist):
 
         boundary[seg_Y][seg_X] = convert_to_Box(seg_detsec)
 
-        boundary_overscan[seg_Y][seg_X] = convert_to_Box(seg_detsec)
-        boundary_overscan[seg_Y][seg_X]['x']+=seg_bias_Size[0] if is_Slice_Reverse['x'] else (min(seg_datasec['start_X'], seg_datasec['end_X'])-1)
+        # Add correct offset for each segment.
+        boundary_overscan[seg_Y][seg_X] = {'x':seg_X*DETSIZE[0], 'y':seg_Y*DETSIZE[1], 'width':DETSIZE[0], 'height':DETSIZE[1]}
+        boundary_overscan[seg_Y][seg_X]['x'] += seg_bias_Size[0] if is_Slice_Reverse['x'] else (min(seg_datasec['start_X'], seg_datasec['end_X'])-1)
+        boundary_overscan[seg_Y][seg_X]['y'] += (DETSIZE[1]-getDim(seg_datasec)[1]) if is_Slice_Reverse['y']
 
 
 

@@ -72,6 +72,12 @@ def _get_Header_Info(hdulist):
         seg_datasec = getCoord(header['DATASEC'])
         seg_bias_Size = getDim(getCoord(header['BIASSEC']))
         # Segment/amplifier coordinates in a CCD.
+        # Format: amplifier[Y][X] (origin at top left corner).
+            # +----+----+----+----+----+----+----+----+
+            # | 00 | 01 | 02 | 03 | 04 | 05 | 06 | 07 |
+            # +----+----+----+----+----+----+----+----+
+            # | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 |
+            # +----+----+----+----+----+----+----+----+
         seg_X, seg_Y = (seg_detsec['start_X']-1)//seg_dimension[0], (seg_detsec['start_Y']-1)//seg_dimension[1]
         # Condition about X & Y slicing in segment data.
         is_Slice_Reverse = check_Reverse_Slicing(seg_detsec, seg_datasec)
@@ -84,7 +90,6 @@ def _get_Header_Info(hdulist):
         boundary_overscan[seg_Y][seg_X]['y'] += (seg_dimension[1]-getDim(seg_datasec)[1]) if is_Slice_Reverse['y']
 
     hdulist.close()
-    # TODO: **ADD segment name!!!** 
     return {
             'DETSIZE'   : {'x':DETSIZE[0], 'y':DETSIZE[1]},
             'NUM_AMPS'  : num_amps,

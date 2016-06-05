@@ -87,7 +87,7 @@ def _get_Header_Info(hdulist):
         # Add correct offset for each segment.
         boundary_overscan[seg_Y][seg_X] = {'x':seg_X*seg_dimension[0], 'y':seg_Y*seg_dimension[1], 'width':seg_dimension[0], 'height':seg_dimension[1]}
         boundary_overscan[seg_Y][seg_X]['x'] += seg_bias_Size[0] if is_Slice_Reverse['x'] else (min(seg_datasec['start_X'], seg_datasec['end_X'])-1)
-        boundary_overscan[seg_Y][seg_X]['y'] += (seg_dimension[1]-getDim(seg_datasec)[1]) if is_Slice_Reverse['y']
+        boundary_overscan[seg_Y][seg_X]['y'] += (seg_dimension[1]-getDim(seg_datasec)[1]) if is_Slice_Reverse['y'] else 0
 
     hdulist.close()
     return {
@@ -214,6 +214,8 @@ def get_boundary(filename):
     json_string = generate_json(filename, header_info)
     return json_string
 
+if __name__ == "__main__":
+    print(get_Header_Info("/home/wei/backend/images/imageE2V.fits"))
 # print(json_string)
 # FITS = sys.argv[1]
 # for i in range(9):

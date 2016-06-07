@@ -70,6 +70,7 @@ def _get_Header_Info(hdulist):
         seg_dimension = [header['NAXIS1'], header['NAXIS2']]
         seg_detsec = getCoord(header['DETSEC'])
         seg_datasec = getCoord(header['DATASEC'])
+        seg_datadim = getDim(seg_datasec)
         seg_bias_Size = getDim(getCoord(header['BIASSEC']))
         # Segment/amplifier coordinates in a CCD.
         # Format: amplifier[Y][X] (origin at top left corner).
@@ -78,12 +79,10 @@ def _get_Header_Info(hdulist):
             # +----+----+----+----+----+----+----+----+
             # | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 |
             # +----+----+----+----+----+----+----+----+
-        seg_X, seg_Y = (seg_detsec['start_X']-1)//seg_dimension[0], (seg_detsec['start_Y']-1)//seg_dimension[1]
+        seg_X, seg_Y = (seg_detsec['start_X']-1)//seg_datadim[0], (seg_detsec['start_Y']-1)//seg_datadim[1]
         # Condition about X & Y slicing in segment data.
         is_Slice_Reverse = check_Reverse_Slicing(seg_detsec, seg_datasec)
-
         boundary[seg_Y][seg_X] = convert_to_Box(seg_detsec)
-
         # Add correct offset for each segment.
         boundary_overscan[seg_Y][seg_X] = {'x':seg_X*seg_dimension[0], 'y':seg_Y*seg_dimension[1], 'width':seg_dimension[0], 'height':seg_dimension[1]}
         boundary_overscan[seg_Y][seg_X]['x'] += seg_bias_Size[0] if is_Slice_Reverse['x'] else (min(seg_datasec['start_X'], seg_datasec['end_X'])-1)
@@ -92,6 +91,7 @@ def _get_Header_Info(hdulist):
     hdulist.close()
     return {
             'DETSIZE'   : {'x':DETSIZE[0], 'y':DETSIZE[1]},
+            'DATASIZE'  : {'x':num_X*seg_datadim[0], 'y':num_Y*seg_datadim[1]},
             'NUM_AMPS'  : num_amps,
             'SEG_SIZE'  : {'x':seg_dimension[0], 'y':seg_dimension[1]},
             'BOUNDARY'  : boundary,

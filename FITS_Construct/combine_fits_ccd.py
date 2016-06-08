@@ -1,7 +1,7 @@
 from astropy.io import fits
 from copy import deepcopy
 import numpy as np
-import sys
+# import sys
 # import os
 # import json
 # import argparse
@@ -10,16 +10,17 @@ import sys
 # Convert the boundary coordincates from string(as in the header) to values.
 # Assume to be a rectangular region (2-dimensional)
 # Return value: list containing X and Y boundaries(in list form).
-#               [[start_X, end_X], [start_Y, end_Y]]
+# NOTE: slicing are inclusive here.
 def getCoord(s):
     coord_list = s.split(',')
     coord_list[0] = coord_list[0].split('[')[1].split(':')
     coord_list[1] = coord_list[1].split(']')[0].split(':')
     coord_list = [[int(value) for value in elem] for elem in coord_list]
-    return {'start_X'   :coord_list[0][0],
-            'start_Y'   :coord_list[1][0],
-            'end_X'     :coord_list[0][1],
-            'end_Y'     :coord_list[1][1]}
+    return {'start_X'   :coord_list[0][0]-1,
+            'start_Y'   :coord_list[1][0]-1,
+            'end_X'     :coord_list[0][1]-1,
+            'end_Y'     :coord_list[1][1]-1
+        }
 
 
 # Get dimension information from a region.
@@ -27,16 +28,12 @@ def getDim(coords):
     return [abs(coords['end_X']-coords['start_X'])+1,
             abs(coords['end_Y']-coords['start_Y'])+1]
 
-# Get a section size based on dimension
-def getSIZE(d):
-    return [[1,elem] for elem in d]
-
 # Correct the order of the coordinate.
 # Same format as ds9 box region
 # NOTE: ds9 region uses image coord (start with 0).
 def convert_to_Box(coords):
-    x = min(coords['start_X'], coords['end_X'])-1
-    y = min(coords['start_Y'], coords['end_Y'])-1
+    x = min(coords['start_X'], coords['end_X'])
+    y = min(coords['start_Y'], coords['end_Y'])
     width = abs(coords['end_X']-coords['start_X'])+1
     height = abs(coords['end_Y']-coords['start_Y'])+1
     return {'x':x, 'y':y, 'width':width, 'height':height}
@@ -79,7 +76,7 @@ def _get_Header_Info(imgHDUs):
             # +----+----+----+----+----+----+----+----+
             # | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 |
             # +----+----+----+----+----+----+----+----+
-        seg_X, seg_Y = (seg_detsec['start_X']-1)//seg_datadim[0], (seg_detsec['start_Y']-1)//seg_datadim[1]
+        seg_X, seg_Y = (seg_detsec['start_X'])//seg_datadim[0], (seg_detsec['start_Y'])//seg_datadim[1]
         boundary[seg_Y][seg_X] = convert_to_Box(seg_detsec)
         # Condition about X & Y slicing in segment data.
         is_Slice_Reverse = check_Reverse_Slicing(seg_detsec, seg_datasec)
@@ -88,7 +85,7 @@ def _get_Header_Info(imgHDUs):
                                             'y':seg_Y*seg_dimension[1],
                                             'width':seg_dimension[0],
                                             'height':seg_dimension[1]}
-        boundary_overscan[seg_Y][seg_X]['x'] += seg_bias_Size[0] if is_Slice_Reverse['x'] else (min(seg_datasec['start_X'], seg_datasec['end_X'])-1)
+        boundary_overscan[seg_Y][seg_X]['x'] += seg_bias_Size[0] if is_Slice_Reverse['x'] else (min(seg_datasec['start_X'], seg_datasec['end_X']))
         boundary_overscan[seg_Y][seg_X]['y'] += (seg_dimension[1]-getDim(seg_datasec)[1]) if is_Slice_Reverse['y'] else 0
         boundary[seg_Y][seg_X]['index'] = boundary_overscan[seg_Y][seg_X]['index'] = i
         boundary[seg_Y][seg_X]['reverse_slice'] = boundary_overscan[seg_Y][seg_X]['reverse_slice'] = is_Slice_Reverse
@@ -123,9 +120,11 @@ def construct_CCD(filename):
         return ["Error constructing the single extension FITS file (CCD level)."]
 
 def _construct_CCD(hdulist, header):
-    new_data = np.zeros(shape=(header['DATASIZE']['y'], header['DATASIZE']['x']), dtype=np.float32)
-    SEG_DATASIZE = header['SEG_SIZE']
+    SEG_DATASIZE = header['SEG_DATASIZE']
+    SEG_SIZE = header['SEG_SIZE']
+
     # Traverse the amplifier headers
+    new_data = np.zeros(shape=(header['DATASIZE']['y'], header['DATASIZE']['x']), dtype=np.float32)
     for amps_row in header['BOUNDARY']:
         for amp in amps_row:
             data_slice_x = slice(SEG_DATASIZE['x']-1, None, -1) if amp['reverse_slice']['x'] else slice(0, SEG_DATASIZE['x'])
@@ -133,41 +132,20 @@ def _construct_CCD(hdulist, header):
             slice_x = slice(amp['x'], amp['x']+amp['width'])
             slice_y = slice(amp['y'], amp['y']+amp['width'])
             new_data[slice_y, slice_x] = (hdulist[amp['index']].data)[data_slice_y, data_slice_x]
+    new_hdu = fits.PrimaryHDU(new_data)
+    new_hdulist = fits.HDUList([new_hdu])
+    new_hdulist.writeto(filename_gen, clobber=True)
 
-    trim  = '_trimmed' if not overscan else '_untrimmed'
-    index = filename.find('.')
-    filename_gen = filename[:index]+trim+filename[index:]
-    total_dim = header['DETSIZE'] if not overscan else header['SIZE']
-    new_data = np.zeros(shape=(total_dim[1],total_dim[0]), dtype = np.float32)
-    SEG_DATA_SIZE = header['SEG_DATA_SIZE']
-    SEG_SIZE = header['SEG_SIZE']
-    for elem in imgHDUs:
-        temp_DETSEC = getCoord(elem.header['DETSEC'])
-        temp_DATASEC = getCoord(elem.header['DATASEC'])
-        temp_DETSEC = [[temp[0]-1,temp[1]-1] for temp in temp_DETSEC]
-        direction_X = -1 if temp_DETSEC[0][0]>temp_DETSEC[0][1] else 1
-        direction_Y = -1 if temp_DETSEC[1][0]>temp_DETSEC[1][1] else 1
-        temp_DATASEC = [[min(temp)-1, max(temp)] for temp in temp_DATASEC] # TODO: check if 'DATASEC' in the header always follows increasing order.
-        if overscan:
-            if direction_X == 1:
-                temp_DETSEC[0] = [(temp_DETSEC[0][0]//SEG_DATA_SIZE[0])*SEG_SIZE[0], (temp_DETSEC[0][0]//SEG_DATA_SIZE[0]+1)*SEG_SIZE[0]-1]
-            elif direction_X == -1:
-                temp_DETSEC[0] = [(min(temp_DETSEC[0])//SEG_DATA_SIZE[0]+1)*SEG_SIZE[0]-1, (min(temp_DETSEC[0])//SEG_DATA_SIZE[0])*SEG_SIZE[0]]
-
-            if direction_Y == 1:
-                temp_DETSEC[1] = [(temp_DETSEC[1][0]//SEG_DATA_SIZE[1])*SEG_SIZE[1], (temp_DETSEC[1][0]//SEG_DATA_SIZE[1]+1)*SEG_SIZE[1]-1]
-            elif direction_Y == -1:
-                temp_DETSEC[1] = [(min(temp_DETSEC[1])//SEG_DATA_SIZE[1]+1)*SEG_SIZE[1]-1, (min(temp_DETSEC[1])//SEG_DATA_SIZE[1])*SEG_SIZE[1]]
-
-        if temp_DETSEC[1][1]==0 and temp_DETSEC[0][1]==0:
-            new_data[temp_DETSEC[1][0] : : direction_Y, temp_DETSEC[0][0] : : direction_X] = elem.data[temp_DATASEC[1][0]:temp_DATASEC[1][1], temp_DATASEC[0][0]:temp_DATASEC[0][1]] if not overscan else elem.data
-        elif temp_DETSEC[1][1]==0:
-            new_data[temp_DETSEC[1][0] : : direction_Y, temp_DETSEC[0][0] : temp_DETSEC[0][1]+direction_X : direction_X] = elem.data[temp_DATASEC[1][0]:temp_DATASEC[1][1], temp_DATASEC[0][0]:temp_DATASEC[0][1]] if not overscan else elem.data
-        elif temp_DETSEC[0][1]==0:
-            new_data[temp_DETSEC[1][0] : temp_DETSEC[1][1]+direction_Y : direction_Y, temp_DETSEC[0][0] : : direction_X] = elem.data[temp_DATASEC[1][0]:temp_DATASEC[1][1], temp_DATASEC[0][0]:temp_DATASEC[0][1]] if not overscan else elem.data
-        else:
-            new_data[temp_DETSEC[1][0] : temp_DETSEC[1][1]+direction_Y : direction_Y, temp_DETSEC[0][0] : temp_DETSEC[0][1]+direction_X : direction_X] = elem.data[temp_DATASEC[1][0]:temp_DATASEC[1][1], temp_DATASEC[0][0]:temp_DATASEC[0][1]] if not overscan else elem.data
-    hdulist.close()
+    new_data = np.zeros(shape=(header['DETSIZE']['y'], header['DETSIZE']['x']), dtype=np.float32)
+    for amps_row in header['BOUNDARY_OVERSCAN']:
+        for amp in amps_row:
+            data_slice_x = slice(SEG_SIZE['x']-1, None, -1) if amp['reverse_slice']['x'] else slice(0, SEG_SIZE['x'])
+            data_slice_y = slice(SEG_SIZE['y']-1, None, -1) if amp['reverse_slice']['y'] else slice(0, SEG_SIZE['y'])
+            start_X = (amp['x']//SEG_SIZE['x'])*SEG_SIZE['x']
+            start_Y = (amp['y']//SEG_SIZE['y'])*SEG_SIZE['y']
+            slice_x = slice(start_X, start_X+SEG_SIZE['x'])
+            slice_y = slice(start_Y, start_Y+SEG_SIZE['y'])
+            new_data[slice_y, slice_x] = (hdulist[amp['index']].data)[data_slice_y, data_slice_x]
     new_hdu = fits.PrimaryHDU(new_data)
     new_hdulist = fits.HDUList([new_hdu])
     new_hdulist.writeto(filename_gen, clobber=True)

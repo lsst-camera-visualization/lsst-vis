@@ -49,9 +49,9 @@ def check_Reverse_Slicing(detsec, datasec):
 
 # Actual function getting head info.
 # Called by **get_Header_Info** .
-def _get_Header_Info(hdulist):
-    imgHDUs = [elem.header for elem in hdulist if elem.__class__.__name__ == 'ImageHDU']
-
+def _get_Header_Info(imgHDUs):
+    if not imgHDUs:
+        raise RuntimeError('The given file is not a multi-extension FITS image.')
     # Get info from the first amplifier header.
     first_seg = imgHDUs[0]
     seg_dimension = [first_seg['NAXIS1'], first_seg['NAXIS2']]
@@ -80,21 +80,26 @@ def _get_Header_Info(hdulist):
             # | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 |
             # +----+----+----+----+----+----+----+----+
         seg_X, seg_Y = (seg_detsec['start_X']-1)//seg_datadim[0], (seg_detsec['start_Y']-1)//seg_datadim[1]
+        boundary[seg_Y][seg_X] = convert_to_Box(seg_detsec)
         # Condition about X & Y slicing in segment data.
         is_Slice_Reverse = check_Reverse_Slicing(seg_detsec, seg_datasec)
-        boundary[seg_Y][seg_X] = convert_to_Box(seg_detsec)
         # Add correct offset for each segment.
-        boundary_overscan[seg_Y][seg_X] = {'x':seg_X*seg_dimension[0], 'y':seg_Y*seg_dimension[1], 'width':seg_dimension[0], 'height':seg_dimension[1]}
+        boundary_overscan[seg_Y][seg_X] = { 'x':seg_X*seg_dimension[0],
+                                            'y':seg_Y*seg_dimension[1],
+                                            'width':seg_dimension[0],
+                                            'height':seg_dimension[1]}
         boundary_overscan[seg_Y][seg_X]['x'] += seg_bias_Size[0] if is_Slice_Reverse['x'] else (min(seg_datasec['start_X'], seg_datasec['end_X'])-1)
         boundary_overscan[seg_Y][seg_X]['y'] += (seg_dimension[1]-getDim(seg_datasec)[1]) if is_Slice_Reverse['y'] else 0
+        boundary[seg_Y][seg_X]['index'] = boundary_overscan[seg_Y][seg_X]['index'] = i
+        boundary[seg_Y][seg_X]['reverse_slice'] = boundary_overscan[seg_Y][seg_X]['reverse_slice'] = is_Slice_Reverse
 
-    hdulist.close()
     return {
-            'DETSIZE'   : {'x':DETSIZE[0], 'y':DETSIZE[1]},
-            'DATASIZE'  : {'x':num_X*seg_datadim[0], 'y':num_Y*seg_datadim[1]},
-            'NUM_AMPS'  : num_amps,
-            'SEG_SIZE'  : {'x':seg_dimension[0], 'y':seg_dimension[1]},
-            'BOUNDARY'  : boundary,
+            'DETSIZE'       : {'x':DETSIZE[0], 'y':DETSIZE[1]},
+            'DATASIZE'      : {'x':num_X*seg_datadim[0], 'y':num_Y*seg_datadim[1]},
+            'NUM_AMPS'      : num_amps,
+            'SEG_SIZE'      : {'x':seg_dimension[0], 'y':seg_dimension[1]},
+            'SEG_DATASIZE'  : {'x':seg_datadim[0], 'y':seg_datadim[1]},
+            'BOUNDARY'      : boundary,
             'BOUNDARY_OVERSCAN' : boundary_overscan
     }
 
@@ -103,13 +108,32 @@ def _get_Header_Info(hdulist):
 def get_Header_Info(filename):
     try:
         with fits.open(filename) as fits_object:
-            return _get_Header_Info(fits_object)
+            hdulist = [elem.header for elem in hdulist if elem.__class__.__name__ == 'ImageHDU']
+            return _get_Header_Info(hdulist)
     except Exception as e:
         return ["Error getting header info!"]
 
-def construct_CCD(filename, overscan, header):
-    hdulist = fits.open(filename)
-    imgHDUs = [elem for elem in hdulist if elem.__class__.__name__ == 'ImageHDU']
+def construct_CCD(filename):
+    try:
+        with fits.open(filename) as fits_object:
+            hdulist = [elem.header for elem in hdulist if elem.__class__.__name__ == 'ImageHDU']
+            header_info = _get_Header_Info(hdulist)
+            return _construct_CCD(hdulist, header_info)
+    except Exception as e:
+        return ["Error constructing the single extension FITS file (CCD level)."]
+
+def _construct_CCD(hdulist, header):
+    new_data = np.zeros(shape=(header['DATASIZE']['y'], header['DATASIZE']['x']), dtype=np.float32)
+    SEG_DATASIZE = header['SEG_SIZE']
+    # Traverse the amplifier headers
+    for amps_row in header['BOUNDARY']:
+        for amp in amps_row:
+            data_slice_x = slice(SEG_DATASIZE['x']-1, None, -1) if amp['reverse_slice']['x'] else slice(0, SEG_DATASIZE['x'])
+            data_slice_y = slice(SEG_DATASIZE['y']-1, None, -1) if amp['reverse_slice']['y'] else slice(0, SEG_DATASIZE['y'])
+            slice_x = slice(amp['x'], amp['x']+amp['width'])
+            slice_y = slice(amp['y'], amp['y']+amp['width'])
+            new_data[slice_y, slice_x] = (hdulist[amp['index']].data)[data_slice_y, data_slice_x]
+
     trim  = '_trimmed' if not overscan else '_untrimmed'
     index = filename.find('.')
     filename_gen = filename[:index]+trim+filename[index:]

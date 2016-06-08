@@ -6,6 +6,7 @@ state = {
   show_readouts: undefined,
   term: undefined, // this will be a terminal object
   updatetime: 5000, 
+  latest_time: 0,
   updatelist: {ffview: true}
 };
 
@@ -37,9 +38,10 @@ var onFireflyLoaded = function() {
   state.show_readouts = new readouts();
   // currently will update the image automatically 10 sec
   window.setTimeInterval(function(){
-    if (state.updatelist['ffview']){
-      cmds.update_viewer(state, ['', 'ffview'])
-    }
+//   if (state.updatelist['ffview']){
+//      cmds.update_viewer(state, ['', 'ffview'])
+//    }
+    cmds.update_viewer(state, ['', 'ffview'])
   }, state.updatetime)
 }
 jQuery(function($, undefined) {
@@ -84,11 +86,19 @@ cmds = {
     // state.term.echo(state.updatetime, {raw: true});  
   },
   update_viewer: function(state, cmd_args){
-    var id = cmd_args[1];
-    firefly.getJsonFromTask('python', 'fetch_latest', null).then(function(data){
-      var url = data.uri; //should be data.uri not data.url
-      state.lsstviewers[id].plot({url: url, Title: id, ZoomType: 'TO_WIDTH'});
-    });
+    if (state.updatelist['ffview']){
+      var id = cmd_args[1];
+      firefly.getJsonFromTask('python', 'fetch_latest', null).then(function(data){
+        if (data.timestamp > latest_time) { // new image
+          d3.select('#notification').text('There is a new image.');
+          var url = data.uri; //should be data.uri not data.url
+          state.lsstviewers[id].plot({url: url, Title: id, ZoomType: 'TO_WIDTH'});
+        }
+        else{
+          d3.select('#notification').text('No new image.');
+        }
+      });
+    }
   },
   resume: function(state, cmd_args){
     var id = cmd_args[1];

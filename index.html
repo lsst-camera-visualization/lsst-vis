@@ -66,23 +66,25 @@
     width: 100%;
     height: 95%;
 }
+.alert-box {
+    color:#555;
+    background:#e3f7fc;
+    border-radius:10px;
+    font-family:Tahoma,Geneva,Arial,sans-serif;font-size:11px;
+    padding:10px 10px 10px 36px;
+    margin:10px;
+    width: 30%;
+}
 #cmd{
     margin: 20px 0px;
     height: 100px;
 }
 </style>
-<script>
-function change()
-{
-    var elem = document.getElementById("pause-resume");
-    if (elem.value=="pause") elem.value = "resume";
-    else elem.value = "pause";
-}
-</script>
 <div id="header">
     <div id="leftside">
         <div id="ffview"></div>
 		<input onclick="change()" type="button" value="pause" id="pause-resume"></input>
+		<div class="alert-box" id="notification">There is a new image.</div>
         <div id="cmd">
         </div>
     </div>
@@ -91,3 +93,12 @@ function change()
 </div>
 
 </body>
+<script>
+function change()
+{
+    var elem = document.getElementById("pause-resume");
+    if (elem.value=="pause") elem.value = "resume";
+    else elem.value = "pause";
+}
+</script>
+</html>

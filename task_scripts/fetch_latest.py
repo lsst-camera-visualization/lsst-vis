@@ -10,7 +10,7 @@ CHECK_IMAGE_URI = "http://172.17.0.1:" + CHECK_IMAGE_PORT + "/vis/checkImage"
 
 def task(task_params):
 	'''
-	Fetches the latest image from the Rest API (https://github.com/lsst-camera-visualization/visualization-server).
+	Fetches the latest image from the visualization server (https://github.com/lsst-camera-visualization/visualization-server).
 	@author Joe Pagliuco
 	@param task_params - Not used
 	@return Returns a dictionary containing the following keys: "uri", "timestamp", "name"

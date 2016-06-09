@@ -90,9 +90,11 @@ cmds = {
       var id = cmd_args[1];
       firefly.getJsonFromTask('python', 'fetch_latest', null).then(function(data){
         if (data.timestamp > latest_time) { // new image
+          latest_time = data.timestamp;
           d3.select('#notification').text('There is a new image.');
           var url = data.uri; //should be data.uri not data.url
           state.lsstviewers[id].plot({url: url, Title: id, ZoomType: 'TO_WIDTH'});
+          state.term.echo(data.timestamp, {raw: true});
         }
         else{
           d3.select('#notification').text('No new image.');

@@ -40,8 +40,7 @@ var onFireflyLoaded = function() {
   window.setTimeInterval(function(){
     cmds.update_viewer(state, ['', 'ffview'])
   }, state.updatetime)
-};
-
+}
 jQuery(function($, undefined) {
   $("#cmd").terminal(function(cmd_str, term) {
     cmd_args = cmd_str.split(" ");

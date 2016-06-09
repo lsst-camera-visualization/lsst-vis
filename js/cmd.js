@@ -37,7 +37,8 @@ var onFireflyLoaded = function() {
   state.lsstviewers['ffview'] = viewer;
   state.show_readouts = new readouts();
   // currently will update the image automatically 10 sec
-  window.setTimeInterval(function(){
+
+  var timeinterval = window.setInterval(function(){
     cmds.update_viewer(state, ['', 'ffview'])
   }, state.updatetime)
 }
@@ -65,6 +66,16 @@ jQuery(function($, undefined) {
   });
 });
 
+var change = function(){
+    var elem = document.getElementById("pause-resume");
+    if (elem.value=="pause"){
+      cmds.pause(state, ['', 'ffview']);
+    } 
+    else {
+        cmds.resume(state, ['', 'ffview']);
+      }
+};
+
 cmds = {
   help: function(state, args) {
     state.term.echo('please check the <a href="https://github.com/lsst-camera-visualization/frontend/wiki" target =" blank">documentation</a>', {
@@ -78,19 +89,24 @@ cmds = {
       // lower bound for automatic update.
       time = 5000;
     }
+    clearInterval(timeinterval);
     state.updatetime = time;
+    timeinterval = window.setInterval(function(){
+    cmds.update_viewer(state, ['', 'ffview'])
+  }, state.updatetime)
     // testing code.
     // state.term.echo(state.updatetime, {raw: true});  
   },
   update_viewer: function(state, cmd_args){
     if (state.updatelist['ffview']){
       var id = cmd_args[1];
-      firefly.getJsonFromTask('python', 'fetch_latest', null).then(function(data){
+      firefly.getJsonFromTask("python", "fetch_latest", null).then(function(data){
+        state.term.echo(data.timestamp, {raw: true});
         if (data.timestamp > state.latest_time) { // new image
           state.latest_time = data.timestamp;
           d3.select('#notification').text('There is a new image.');
           var url = data.uri; //should be data.uri not data.url
-          state.lsstviewers[id].plot({url: url, Title: id, ZoomType: 'TO_WIDTH'});
+          state.lsstviewers['ffview'].plot({url: url, Title: id, ZoomType: 'TO_WIDTH'});
           state.term.echo(data.timestamp, {raw: true});
         }
         else{
@@ -102,14 +118,14 @@ cmds = {
   resume: function(state, cmd_args){
     var id = cmd_args[1];
     var elem = document.getElementById("pause-resume"); 
-    state.updatelist[id] = true;
+    state.updatelist['ffview'] = true;
     elem.value = "pause";
     //d3.select('#pause-resume').text('pause');
   },
   pause: function(state, cmd_args){
     var id = cmd_args[1];
     var elem = document.getElementById("pause-resume"); 
-    state.updatelist[id] = false;
+    state.updatelist['ffview'] = false;
     elem.value = "resume";
     //d3.select('#pause-resume').text('resume');
   },

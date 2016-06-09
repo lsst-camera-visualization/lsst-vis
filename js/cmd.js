@@ -7,7 +7,8 @@ state = {
   term: undefined, // this will be a terminal object
   updatetime: 5000, 
   latest_time: 0,
-  updatelist: {ffview: true}
+  updatelist: {ffview: true},
+  timeinterval: 5000
 };
 
 
@@ -38,7 +39,7 @@ var onFireflyLoaded = function() {
   state.show_readouts = new readouts();
   // currently will update the image automatically 10 sec
 
-  var timeinterval = window.setInterval(function(){
+  state.timeinterval = window.setInterval(function(){
     cmds.update_viewer(state, ['', 'ffview'])
   }, state.updatetime)
 }
@@ -89,19 +90,18 @@ cmds = {
       // lower bound for automatic update.
       time = 5000;
     }
-    clearInterval(timeinterval);
+    clearInterval(state.timeinterval);
     state.updatetime = time;
-    timeinterval = window.setInterval(function(){
+    state.timeinterval = window.setInterval(function(){
     cmds.update_viewer(state, ['', 'ffview'])
   }, state.updatetime)
     // testing code.
-    // state.term.echo(state.updatetime, {raw: true});  
+    //state.term.echo(state.updatetime, {raw: true});  
   },
   update_viewer: function(state, cmd_args){
     if (state.updatelist['ffview']){
       var id = cmd_args[1];
       firefly.getJsonFromTask("python", "fetch_latest", null).then(function(data){
-        state.term.echo(data.timestamp, {raw: true});
         if (data.timestamp > state.latest_time) { // new image
           state.latest_time = data.timestamp;
           d3.select('#notification').text('There is a new image.');

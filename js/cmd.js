@@ -38,12 +38,10 @@ var onFireflyLoaded = function() {
   state.show_readouts = new readouts();
   // currently will update the image automatically 10 sec
   window.setTimeInterval(function(){
-//   if (state.updatelist['ffview']){
-//      cmds.update_viewer(state, ['', 'ffview'])
-//    }
     cmds.update_viewer(state, ['', 'ffview'])
   }, state.updatetime)
-}
+};
+
 jQuery(function($, undefined) {
   $("#cmd").terminal(function(cmd_str, term) {
     cmd_args = cmd_str.split(" ");

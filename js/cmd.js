@@ -89,8 +89,8 @@ cmds = {
     if (state.updatelist['ffview']){
       var id = cmd_args[1];
       firefly.getJsonFromTask('python', 'fetch_latest', null).then(function(data){
-        if (data.timestamp > latest_time) { // new image
-          latest_time = data.timestamp;
+        if (data.timestamp > state.latest_time) { // new image
+          state.latest_time = data.timestamp;
           d3.select('#notification').text('There is a new image.');
           var url = data.uri; //should be data.uri not data.url
           state.lsstviewers[id].plot({url: url, Title: id, ZoomType: 'TO_WIDTH'});

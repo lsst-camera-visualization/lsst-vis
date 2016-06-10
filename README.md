@@ -26,4 +26,4 @@ We also implemented a virtualized environment in [Docker image](https://github.c
 - [ ] Updating the python script might not be effective immediately. Probably due to file I/O issue with docker volume being attached. Both front end and back end code are attached as separate volume. 
 
 ### Python Conventions
-We follow the conventions according to the [LSST definitions](https://developer.lsst.io/coding/python_style_guide.html#raise-valueerror-message-should-be-used-instead-of-the-deprecated-form).
+We follow the conventions according to the [LSST documentation](https://developer.lsst.io/coding/python_style_guide.html).

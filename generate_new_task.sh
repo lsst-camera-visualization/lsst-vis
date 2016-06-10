@@ -16,7 +16,9 @@ TASKS_FILENAME="tasks.py"
 
 cat > ${FILENAME} << EOL
 
-import task_def
+
+
+import taskDef
 
 def task(task_params):
 	''' 

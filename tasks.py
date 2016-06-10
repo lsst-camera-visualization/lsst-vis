@@ -1,7 +1,7 @@
-from task_scripts.average_pixel import task as task_average_pixel
+from task_scripts.averagePixel import task as task_average_pixel
 from task_scripts.boundary import task as task_boundary
-from task_scripts.fetch_latest import task as task_fetch_latest
-from task_scripts.hot_pixel import task as task_hot_pixel
+from task_scripts.fetchLatest import task as task_fetch_latest
+from task_scripts.hotPixel import task as task_hot_pixel
 
 # Dictionary mapping task names to functions
 _tasks = {} # DO NOT MODIFY THIS LINE (see generate_new_task.sh)
@@ -11,26 +11,26 @@ _tasks["fetch_latest"] = task_fetch_latest
 _tasks["hot_pixel"] = task_hot_pixel
 
 # Return the parameter without any modification. For test and debug purpose.
-def task_not_found(param):
+def _taskNotFound(param):
     return ({"result": "Test function or wrong function call!"}, None)
 
 
 def execute_task(task_name, task_params):
-	'''
-	Executes a task (identified by @task_name) with the parameters @task_params
-	@author Joe Pagliuco
-	@param task_name - The name of the task to be executed
-	@param task_params - The parameters to be passed into the task
-	@return Returns the result of the executed task, and an error, if necessary
-	'''
-	task = None
-	
-	if task_name in _tasks:
-		task = _tasks[task_name]
-	else:
-		task = task_not_found
-	
-	return task(task_params) # returns result, error
+    ''' Executes a task (identified by @task_name) with the parameters @task_params
+    @author Joe Pagliuco
+    @param task_name - The name of the task to be executed
+    @param task_params - The parameters to be passed into the task
+    @return Returns the result of the executed task, and an error, if necessary
+    '''
+    task = None
+
+    if task_name in _tasks:
+        task = _tasks[task_name]
+    else:
+        task = _taskNotFound
+
+    # returns result, error
+    return task(task_params) 
 	
 
 

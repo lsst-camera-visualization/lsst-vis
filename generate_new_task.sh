@@ -1,7 +1,7 @@
 #!/bin/bash
 
 function display_usage() {
-	echo -e "\nUsage: $0 task_name\n"
+	echo -e "\nUsage: $0 taskName\n"
 }
 
 if [[ ( $1 == "--help") ||  $1 == "-h" ]]
@@ -19,8 +19,7 @@ cat > ${FILENAME} << EOL
 import task_def
 
 def task(task_params):
-	'''
-	
+	''' 
 	@author 
 	@param task_params - 
 	@return 

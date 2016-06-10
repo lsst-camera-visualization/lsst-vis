@@ -1,6 +1,7 @@
 # Back End
 
 This directory contains all the function and algorithm that are being used by the server side. In addtion there is a dispatcher file that parse the command from JSON format into specific tasks and perform in python (or any other environment if possible).
+
 ### Dispatcher
 
 >We have extended Firefly to allow getting image, table, or JSON (any data in JSON format) from an external process. Whenever server-side Firefly receives an external task request, it checks its properties to find the executable, which is then launched with the JSON task parameters passed from the client.
@@ -23,3 +24,6 @@ We also implemented a virtualized environment in [Docker image](https://github.c
 
 ### Known Issues
 - [ ] Updating the python script might not be effective immediately. Probably due to file I/O issue with docker volume being attached. Both front end and back end code are attached as separate volume. 
+
+### Python Conventions
+We follow the conventions according to the [LSST definitions](https://developer.lsst.io/coding/python_style_guide.html#raise-valueerror-message-should-be-used-instead-of-the-deprecated-form)

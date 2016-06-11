@@ -44,7 +44,7 @@ var onFireflyLoaded = function() {
   }, state.updatetime)
 }
 jQuery(function($, undefined) {
-  $("#cmd").terminal(function(cmd_str, term) {
+  var tmn = $("#cmd").terminal(function(cmd_str, term) {
     cmd_args = cmd_str.split(" ");
     state.term = term;
     var executed = false;
@@ -66,7 +66,7 @@ jQuery(function($, undefined) {
     prompt: '~>  '
   });
 });
-
+var tmn = $.terminal.active();
 var change = function(){
     var elem = document.getElementById("pause-resume");
     if (elem.value=="pause"){
@@ -128,6 +128,31 @@ cmds = {
     state.updatelist['ffview'] = false;
     elem.value = "resume";
     //d3.select('#pause-resume').text('resume');
+  },
+  load_image: function(state, cmd_args) {
+    var help_string = 'load an image from a URI';
+    var uri = cmd_args[1];
+    var re = /^https?:/;
+    var result = "";
+    result = "Image: " + uri;
+    var viewer = state.lsstviewers.ffview;
+    if (re.test(uri)) { // this is a URL
+        viewer.plot({
+            "URL" : uri,
+            "Title" : result,
+            "ZoomType" : "TO_WIDTH"
+        });
+        state.term.echo(result);
+    } else {
+        result = uri + " !matched " + re;
+        viewer.plot({
+            "File" : uri,
+            "Title" : result,
+            "ZoomType" : "TO_WIDTH"
+        });
+        state.term.echo(result);
+    }
+    return null;
   },
   hot_pixel: function(state, cmd_args) {
     var plotid = 'ffview';

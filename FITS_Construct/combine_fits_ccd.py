@@ -49,7 +49,7 @@ def convert_slice(start, end):
         end = None if end==0 else (end-1)
         return slice(start, end, -1)
     else:
-        return slice(start, end)
+        return slice(start, end+1)
 
 # Actual function getting head info.
 # Called by **get_Header_Info** .
@@ -138,20 +138,10 @@ def _construct_CCD(hdulist, headers, filename):
     for amps_row in headers['BOUNDARY']:
         for amp in amps_row:
             hdu = hdulist[amp['index']]
-            print(hdu.header)
             data_sec = getCoord((hdu.header)['DATASEC'])
             det_sec = getCoord((hdu.header)['DETSEC'])
-
-            start_X, end_X = data_sec['start_X'], data_sec['end_X']
-            start_Y, end_Y = data_sec['start_Y'], data_sec['end_Y']
-            if amp['reverse_slice']['x']:
-                start_X, end_X = end_X, start_X
-            if amp['reverse_slice']['y']:
-                start_Y, end_Y = end_Y, start_Y
-            print(start_X)
-            print(end_X)
-            data_slice_x = convert_slice(start_X, end_X)
-            data_slice_y = convert_slice(start_Y, end_Y)
+            data_slice_x = convert_slice(data_sec['start_X'], data_sec['end_X'])
+            data_slice_y = convert_slice(data_sec['start_Y'], data_sec['end_Y'])
             slice_x = convert_slice(det_sec['start_X'], det_sec['end_X'])
             slice_y = convert_slice(det_sec['start_Y'], det_sec['end_Y'])
             print(data_slice_x)

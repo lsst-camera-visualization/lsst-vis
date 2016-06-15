@@ -2,7 +2,7 @@ from astropy.io import fits
 from copy import deepcopy
 import numpy as np
 import os
-# import sys
+import sys, traceback
 # import json
 # import argparse
 
@@ -46,10 +46,10 @@ def check_Reverse_Slicing(detsec, datasec):
 # Return the correct slice for ndarray
 def convert_slice(start, end):
     if start > end:
-        end = None if end==1 else (end-2)
-        return slice(start-1, end, -1)
-    else
-        return slice(start-1, end)
+        end = None if end==0 else (end-1)
+        return slice(start, end, -1)
+    else:
+        return slice(start, end)
 
 # Actual function getting head info.
 # Called by **get_Header_Info** .
@@ -112,18 +112,21 @@ def _get_Header_Info(imgHDUs):
 def get_Header_Info(filename):
     try:
         with fits.open(filename) as fits_object:
-            hdulist = [elem.header for elem in hdulist if elem.__class__.__name__ == 'ImageHDU']
+            hdulist = [elem.header for elem in fits_object if elem.__class__.__name__ == 'ImageHDU']
             return _get_Header_Info(hdulist)
     except Exception as e:
-        return ["Error getting header info!"]
+        print("Error getting header info!\nException: " + str(e) + "\n")
+        return ["Error when getting header info"]
 
 def construct_CCD(filename):
     try:
         with fits.open(filename) as fits_object:
-            hdulist = [elem.header for elem in hdulist if elem.__class__.__name__ == 'ImageHDU']
-            header_info = _get_Header_Info(hdulist)
+            hdulist = [elem for elem in fits_object if elem.__class__.__name__ == 'ImageHDU']
+            header_info = _get_Header_Info([elem.header for elem in hdulist])
             return _construct_CCD(hdulist, header_info, os.path.splitext(filename)[0])
     except Exception as e:
+        print("Error constructing FITS.\nException: "+str(e)+"\n")
+        traceback.print_exc(file=sys.stdout)
         return ["Error constructing the single extension FITS file (CCD level)."]
 
 def _construct_CCD(hdulist, headers, filename):
@@ -135,8 +138,8 @@ def _construct_CCD(hdulist, headers, filename):
     for amps_row in headers['BOUNDARY']:
         for amp in amps_row:
             hdu = hdulist[amp['index']]
-            data_sec = getCoord((hdu.headers)['DATASEC'])
-            det_sec = getCoord((hdu.headers)['DETSEC'])
+            data_sec = getCoord((hdu.header)['DATASEC'])
+            det_sec = getCoord((hdu.header)['DETSEC'])
 
             start_X, end_X = data_sec['start_X'], data_sec['end_X']
             start_Y, end_Y = data_sec['start_Y'], data_sec['end_Y']
@@ -149,6 +152,7 @@ def _construct_CCD(hdulist, headers, filename):
             data_slice_y = convert_slice(start_Y, end_Y)
             slice_x = convert_slice(det_sec['start_X'], det_sec['end_X'])
             slice_y = convert_slice(det_sec['start_Y'], det_sec['end_Y'])
+            print(slice_x)
             new_data[slice_y, slice_x] = (hdu.data)[data_slice_y, data_slice_x]
     new_hdu = fits.PrimaryHDU(new_data)
     new_hdulist = fits.HDUList([new_hdu])
@@ -167,6 +171,7 @@ def _construct_CCD(hdulist, headers, filename):
     new_hdu = fits.PrimaryHDU(new_data)
     new_hdulist = fits.HDUList([new_hdu])
     new_hdulist.writeto(filename+"_mosaicked_untrimmed"+".fits", clobber=True)
+    return ["Created single-extension FITS file."]
 
 def _generate_json_helper(filename, overscan, header):
     num_X, num_Y = header['NUM_X'], header['NUM_Y']
@@ -235,7 +240,9 @@ def get_boundary(filename):
     return json_string
 
 if __name__ == "__main__":
-    print(get_Header_Info("/home/wei/backend/images/imageE2V.fits"))
+    filename = "/home/wei/backend/images/imageE2V.fits"
+    # print(get_Header_Info(filename))
+    print(construct_CCD(filename))
 # print(json_string)
 # FITS = sys.argv[1]
 # for i in range(9):

@@ -138,6 +138,7 @@ def _construct_CCD(hdulist, headers, filename):
     for amps_row in headers['BOUNDARY']:
         for amp in amps_row:
             hdu = hdulist[amp['index']]
+            print(hdu.header)
             data_sec = getCoord((hdu.header)['DATASEC'])
             det_sec = getCoord((hdu.header)['DETSEC'])
 
@@ -147,12 +148,17 @@ def _construct_CCD(hdulist, headers, filename):
                 start_X, end_X = end_X, start_X
             if amp['reverse_slice']['y']:
                 start_Y, end_Y = end_Y, start_Y
-
+            print(start_X)
+            print(end_X)
             data_slice_x = convert_slice(start_X, end_X)
             data_slice_y = convert_slice(start_Y, end_Y)
             slice_x = convert_slice(det_sec['start_X'], det_sec['end_X'])
             slice_y = convert_slice(det_sec['start_Y'], det_sec['end_Y'])
+            print(data_slice_x)
+            print(data_slice_y)
             print(slice_x)
+            print(slice_y)
+            print()
             new_data[slice_y, slice_x] = (hdu.data)[data_slice_y, data_slice_x]
     new_hdu = fits.PrimaryHDU(new_data)
     new_hdulist = fits.HDUList([new_hdu])

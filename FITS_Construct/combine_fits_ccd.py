@@ -1,8 +1,8 @@
 from astropy.io import fits
 from copy import deepcopy
 import numpy as np
+import os
 # import sys
-# import os
 # import json
 # import argparse
 
@@ -43,6 +43,13 @@ def check_Reverse_Slicing(detsec, datasec):
     return {'x':(detsec['start_X']>detsec['end_X'])!=(datasec['start_X']>datasec['end_X']),
             'y':(detsec['start_Y']>detsec['end_Y'])!=(datasec['start_Y']>datasec['end_Y'])}
 
+# Return the correct slice for ndarray
+def convert_slice(start, end):
+    if start > end:
+        end = None if end==1 else (end-2)
+        return slice(start-1, end, -1)
+    else
+        return slice(start-1, end)
 
 # Actual function getting head info.
 # Called by **get_Header_Info** .
@@ -115,29 +122,40 @@ def construct_CCD(filename):
         with fits.open(filename) as fits_object:
             hdulist = [elem.header for elem in hdulist if elem.__class__.__name__ == 'ImageHDU']
             header_info = _get_Header_Info(hdulist)
-            return _construct_CCD(hdulist, header_info)
+            return _construct_CCD(hdulist, header_info, os.path.splitext(filename)[0])
     except Exception as e:
         return ["Error constructing the single extension FITS file (CCD level)."]
 
-def _construct_CCD(hdulist, header):
-    SEG_DATASIZE = header['SEG_DATASIZE']
-    SEG_SIZE = header['SEG_SIZE']
+def _construct_CCD(hdulist, headers, filename):
+    SEG_DATASIZE = headers['SEG_DATASIZE']
+    SEG_SIZE = headers['SEG_SIZE']
 
     # Traverse the amplifier headers
-    new_data = np.zeros(shape=(header['DATASIZE']['y'], header['DATASIZE']['x']), dtype=np.float32)
-    for amps_row in header['BOUNDARY']:
+    new_data = np.zeros(shape=(headers['DATASIZE']['y'], headers['DATASIZE']['x']), dtype=np.float32)
+    for amps_row in headers['BOUNDARY']:
         for amp in amps_row:
-            data_slice_x = slice(SEG_DATASIZE['x']-1, None, -1) if amp['reverse_slice']['x'] else slice(0, SEG_DATASIZE['x'])
-            data_slice_y = slice(SEG_DATASIZE['y']-1, None, -1) if amp['reverse_slice']['y'] else slice(0, SEG_DATASIZE['y'])
-            slice_x = slice(amp['x'], amp['x']+amp['width'])
-            slice_y = slice(amp['y'], amp['y']+amp['width'])
-            new_data[slice_y, slice_x] = (hdulist[amp['index']].data)[data_slice_y, data_slice_x]
+            hdu = hdulist[amp['index']]
+            data_sec = getCoord((hdu.headers)['DATASEC'])
+            det_sec = getCoord((hdu.headers)['DETSEC'])
+
+            start_X, end_X = data_sec['start_X'], data_sec['end_X']
+            start_Y, end_Y = data_sec['start_Y'], data_sec['end_Y']
+            if amp['reverse_slice']['x']:
+                start_X, end_X = end_X, start_X
+            if amp['reverse_slice']['y']:
+                start_Y, end_Y = end_Y, start_Y
+
+            data_slice_x = convert_slice(start_X, end_X)
+            data_slice_y = convert_slice(start_Y, end_Y)
+            slice_x = convert_slice(det_sec['start_X'], det_sec['end_X'])
+            slice_y = convert_slice(det_sec['start_Y'], det_sec['end_Y'])
+            new_data[slice_y, slice_x] = (hdu.data)[data_slice_y, data_slice_x]
     new_hdu = fits.PrimaryHDU(new_data)
     new_hdulist = fits.HDUList([new_hdu])
-    new_hdulist.writeto(filename_gen, clobber=True)
+    new_hdulist.writeto(filename+"_mosaicked_trimmed"+".fits", clobber=True)
 
-    new_data = np.zeros(shape=(header['DETSIZE']['y'], header['DETSIZE']['x']), dtype=np.float32)
-    for amps_row in header['BOUNDARY_OVERSCAN']:
+    new_data = np.zeros(shape=(headers['DETSIZE']['y'], headers['DETSIZE']['x']), dtype=np.float32)
+    for amps_row in headers['BOUNDARY_OVERSCAN']:
         for amp in amps_row:
             data_slice_x = slice(SEG_SIZE['x']-1, None, -1) if amp['reverse_slice']['x'] else slice(0, SEG_SIZE['x'])
             data_slice_y = slice(SEG_SIZE['y']-1, None, -1) if amp['reverse_slice']['y'] else slice(0, SEG_SIZE['y'])
@@ -148,7 +166,7 @@ def _construct_CCD(hdulist, header):
             new_data[slice_y, slice_x] = (hdulist[amp['index']].data)[data_slice_y, data_slice_x]
     new_hdu = fits.PrimaryHDU(new_data)
     new_hdulist = fits.HDUList([new_hdu])
-    new_hdulist.writeto(filename_gen, clobber=True)
+    new_hdulist.writeto(filename+"_mosaicked_untrimmed"+".fits", clobber=True)
 
 def _generate_json_helper(filename, overscan, header):
     num_X, num_Y = header['NUM_X'], header['NUM_Y']

@@ -144,11 +144,6 @@ def _construct_CCD(hdulist, headers, filename):
             data_slice_y = convert_slice(data_sec['start_Y'], data_sec['end_Y'])
             slice_x = convert_slice(det_sec['start_X'], det_sec['end_X'])
             slice_y = convert_slice(det_sec['start_Y'], det_sec['end_Y'])
-            print(data_slice_x)
-            print(data_slice_y)
-            print(slice_x)
-            print(slice_y)
-            print()
             new_data[slice_y, slice_x] = (hdu.data)[data_slice_y, data_slice_x]
     new_hdu = fits.PrimaryHDU(new_data)
     new_hdulist = fits.HDUList([new_hdu])
@@ -244,7 +239,7 @@ if __name__ == "__main__":
 # for i in range(9):
 #     generate_fits(FITS, get_Header_Info(FITS))
 
-# TODO:
+# NOTE:
 # 1. Display header only
 # 2. generate a a single extention FITS file based on multi-extention version
 # 3. generate json object that describes the boundaries of each amplifier

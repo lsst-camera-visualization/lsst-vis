@@ -61,6 +61,7 @@ def _get_Header_Info(imgHDUs):
             'BOUNDARY'      : boundary,
             'BOUNDARY_OVERSCAN' : boundary_overscan
     }
+    # (json['boundary'])['segment00']
 
 # Get Header information from multiple extension
 # return as a dictionary object
@@ -72,6 +73,54 @@ def get_Header_Info(filename):
     except Exception as e:
         print("Error getting header info!\nException: " + str(e) + "\n")
         return ["Error when getting header info"]
+
+def _generate_json_helper(filename, overscan, header):
+    num_X, num_Y = header['NUM_X'], header['NUM_Y']
+    namps = num_X*num_Y
+    if not overscan:
+        trim = '_trimmed'
+        DIM_SIZE = header['DETSIZE']
+    else:
+        trim = '_untrimmed'
+        DIM_SIZE = header['SIZE']
+
+    SEG_DIM_SIZE = [DIM_SIZE[0]//num_X, DIM_SIZE[1]//num_Y]
+    SEG_DATA_SIZE = header['SEG_DATA_SIZE']
+
+    index = filename.find('.')
+    filename_gen = filename[:index]+trim+filename[index:]
+
+    SEG_DATA_BOUNDARY = [[[[0,0],[0,0]] for x in range(num_X)] for y in range(num_Y)]
+    SEG_BOUNDARY = [[[[0,0],[0,0]] for x in range(num_X)] for y in range(num_Y)]
+
+    hdulist = fits.open(filename)
+    for i in range(1,namps+1):
+        temp_header = hdulist[i].header
+        temp_DETSEC = getCoord(temp_header['DETSEC'])
+        coord_X = (temp_DETSEC[0][0]-1)//SEG_DATA_SIZE[0]
+        coord_Y = (temp_DETSEC[1][0]-1)//SEG_DATA_SIZE[1]
+
+        SEG_BOUNDARY[coord_Y][coord_X] = ([[SEG_DATA_SIZE[0]*coord_X+1, SEG_DATA_SIZE[0]*(coord_X+1)], [SEG_DATA_SIZE[1]*(coord_Y)+1, SEG_DATA_SIZE[1]*(coord_Y+1)]]) if not overscan else ([[SEG_DIM_SIZE[0]*coord_X+1, SEG_DIM_SIZE[0]*(coord_X+1)], [SEG_DIM_SIZE[1]*coord_Y+1, SEG_DIM_SIZE[1]*(coord_Y+1)]])
+
+        temp_BIASSEC = getDim(getCoord(temp_header['BIASSEC']))
+
+        # Calculate offsets in a hacky way
+        (offset_X, BIAS_X) = (getCoord(temp_header['DATASEC'])[0][0]-1, temp_BIASSEC[0]) if (temp_DETSEC[0][0]<temp_DETSEC[0][1]) else (temp_BIASSEC[0], getCoord(temp_header['DATASEC'])[0][0]-1)
+
+        (offset_Y, BIAS_Y) = (getCoord(temp_header['DATASEC'])[1][0]-1, SEG_DIM_SIZE[1]-temp_BIASSEC[1]) if temp_DETSEC[1][0]<temp_DETSEC[1][1] else (SEG_DIM_SIZE[1]-temp_BIASSEC[1], getCoord(temp_header['DATASEC'])[1][0]-1)
+
+        SEG_DATA_BOUNDARY[coord_Y][coord_X] = deepcopy(SEG_BOUNDARY[coord_Y][coord_X]) if not overscan else [[SEG_DIM_SIZE[0]*coord_X+1+offset_X, SEG_DIM_SIZE[0]*(coord_X+1)-BIAS_X], [SEG_DIM_SIZE[1]*coord_Y+1+offset_Y, SEG_DIM_SIZE[1]*(coord_Y+1)-BIAS_Y]]
+
+    hdulist.close()
+    return {'filename':filename_gen, 'DIM_SIZE':DIM_SIZE, 'overscan':overscan, 'SEG_DIM_SIZE':SEG_DIM_SIZE, 'SEG_DATA_SIZE':SEG_DATA_SIZE, 'SEG_BOUNDARY':SEG_BOUNDARY, 'SEG_DATA_BOUNDARY':SEG_DATA_BOUNDARY}
+
+def generate_json(filename, header):
+    ### To generate json object with the overscan area
+    on = _generate_json_helper(filename, True, header)
+    ### To generate json object without the overscan area
+    off = _generate_json_helper(filename, False, header)
+
+    return {'WITHOUT_OSCN':off, 'WITH_OSCN':on}
 
 
 if __name__ == "__main__":

@@ -109,12 +109,14 @@ cmds = {
 		firefly.getJsonFromTask("python", "fetch_latest", null).then(function(data){
 			if (data.timestamp > state.latest_time) { // new image
 				state.latest_time = data.timestamp;
-				d3.select('#notification').text('There is a new image.');
 				if (state.updatelist['ffview']){ //in pause mode, change the notification box without plotting.
 					var url = data.uri; //should be data.uri not data.url
 					state.lsstviewers['ffview'].plot({url: url, Title: id, ZoomType: 'TO_WIDTH'});
-					state.term.echo(data.timestamp, {raw: true});
+					cmds.clear_box(state, ['', state.boxes]); // clear all boxes
+					cmds.hide_boundary(state, '', ['ffview']); // clear the red boundary
+					//state.term.echo(data.timestamp, {raw: true});
 				}
+				d3.select('#notification').text('There is a new image.'); // make sure we can plot the image first
 			}
 			else{
 				d3.select('#notification').text('No new image.');

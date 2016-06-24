@@ -5,10 +5,18 @@ state = {
 	},
 	show_readouts: undefined,
 	term: undefined, // this will be a terminal object
-	updatetime: 5000, 
-	latest_time: 0,
-	updatelist: {ffview: true},
-	timeinterval: 5000
+	
+	fetch_latest: {
+	    updatetime: 5000, 
+	    latest_time: 0,
+	    updatelist: {ffview: true},
+	    timeinterval: 5000,
+	    
+	    // Cached result for when we are paused but there is a new image
+	    new_image: {
+	        url: null,
+	    }
+	}
 };
 
 
@@ -45,7 +53,7 @@ var onFireflyLoaded = function() {
 };
 
 jQuery(function($, undefined) {
-	var tmn = $("#cmd").terminal(function(cmd_str, term) {
+	state.term = $("#cmd").terminal(function(cmd_str, term) {
 		cmd_args = cmd_str.split(" ");
 		state.term = term;
 		var executed = false;
@@ -95,11 +103,11 @@ cmds = {
 			// lower bound for automatic update.
 			time = 5000;
 		}
-		clearInterval(state.timeinterval);
-		state.updatetime = time;
-		state.timeinterval = window.setInterval(function(){
+		clearInterval(state.fetch_latest.timeinterval);
+		state.fetch_latest.updatetime = time;
+		state.fetch_latest.timeinterval = window.setInterval(function(){
 			cmds.update_viewer(state, ['', 'ffview'])
-		}, state.updatetime)
+		}, state.fetch_latest.updatetime)
 		// testing code.
 		//state.term.echo(state.updatetime, {raw: true});  
 	},
@@ -109,22 +117,30 @@ cmds = {
 		
 		var CHECK_IMAGE_PORT = "8099";
         var CHECK_IMAGE_URI = "http://172.17.0.1:" + CHECK_IMAGE_PORT + "/vis/checkImage";
-        var params = { 'since': state.latest_time };
-        jQuery.get(CHECK_IMAGE_URI, function(data) {
+        var params = { 'since': state.fetch_latest.latest_time };
+        jQuery.getJSON(CHECK_IMAGE_URI, params, function(data) {
             
-            if (data.timestamp > state.latest_time) { // new image
-				state.latest_time = data.timestamp;
-				if (state.updatelist['ffview']){ //in pause mode, change the notification box without plotting.
-					var url = data.uri; //should be data.uri not data.url
-					state.lsstviewers['ffview'].plot({url: url, Title: id, ZoomType: 'TO_WIDTH'});
-					cmds.clear_box(state, ['', state.boxes]); // clear all boxes
-					cmds.hide_boundary(state, '', ['ffview']); // clear the red boundary
-					//state.term.echo(data.timestamp, {raw: true});
+            if (data) {
+                // There's a new image.
+                state.fetch_latest.latest_time = data.timestamp;
+				
+				var url = data.uri;
+				var resumed = state.fetch_latest.updatelist['ffview'];
+				if (resumed) {
+					state.fetch_latest.new_image.url = url;
+					cmds.update_viewer_now(state, cmd_args);
 				}
-				d3.select('#notification').text('There is a new image.'); // make sure we can plot the image first
+				else {
+				    // We are paused
+				    d3.select('#notification').text('There is a new image available.');
+				    // Store the new image
+				    state.fetch_latest.new_image.url = url;
+				}
 			}
-			else{
-				d3.select('#notification').text('No new image.');
+			
+			if (state.fetch_latest.new_image.url == null) {			
+			    // Displayed when there is no new image, or the new image is done loading.
+			    d3.select('#notification').text('There are no new images.');
 			}
         });
 	},
@@ -132,17 +148,40 @@ cmds = {
 	resume: function(state, cmd_args){
 		var id = cmd_args[1];
 		var elem = document.getElementById("pause-resume"); 
-		state.updatelist['ffview'] = true;
+		state.fetch_latest.updatelist['ffview'] = true;
 		elem.value = "pause";
+		cmds.update_viewer_now(state, cmd_args);
 		//d3.select('#pause-resume').text('pause');
 	},
 
 	pause: function(state, cmd_args){
 		var id = cmd_args[1];
 		var elem = document.getElementById("pause-resume"); 
-		state.updatelist['ffview'] = false;
+		state.fetch_latest.updatelist['ffview'] = false;
 		elem.value = "resume";
 		//d3.select('#pause-resume').text('resume');
+	},
+	
+	update_viewer_now: function(state, cmd_args) {
+	    var url = state.fetch_latest.new_image.url;
+	    
+	    if (url) {
+	        var id = 'ffview';
+	        
+	        d3.select('#notification').text('Loading new image...');
+	        console.log("Loading image");
+	        
+	        state.lsstviewers['ffview'].plot({url: url, Title: id, ZoomType: 'TO_WIDTH'});		
+		    // Clear all boxes
+            for (var key in state.boxes) {
+                cmds.clear_box(state, [ '', state.boxes[key] ]);
+            }
+		    //cmds.hide_boundary(state, '', ['ffview']); // clear the red boundary
+		
+		    state.fetch_latest.new_image.url = null;
+		
+		    // Change button status
+		} 
 	},
 
 	load_image: function(state, cmd_args) {

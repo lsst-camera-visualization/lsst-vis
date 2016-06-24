@@ -87,7 +87,7 @@ cmds = {
 		raw: true
 		});
 	},
-
+	
   // user can change the frequency of updating images.
 	fetch_freq: function(state, cmd_args){
 		var time = cmd_args[1];
@@ -106,8 +106,13 @@ cmds = {
 
 	update_viewer: function(state, cmd_args){
 		var id = cmd_args[1];
-		firefly.getJsonFromTask("python", "fetch_latest", null).then(function(data){
-			if (data.timestamp > state.latest_time) { // new image
+		
+		var CHECK_IMAGE_PORT = "8099";
+        var CHECK_IMAGE_URI = "http://172.17.0.1:" + CHECK_IMAGE_PORT + "/vis/checkImage";
+        var params = { 'since': state.latest_time };
+        jQuery.get(CHECK_IMAGE_URI, function(data) {
+            
+            if (data.timestamp > state.latest_time) { // new image
 				state.latest_time = data.timestamp;
 				if (state.updatelist['ffview']){ //in pause mode, change the notification box without plotting.
 					var url = data.uri; //should be data.uri not data.url
@@ -121,7 +126,7 @@ cmds = {
 			else{
 				d3.select('#notification').text('No new image.');
 			}
-		});
+        });
 	},
 
 	resume: function(state, cmd_args){

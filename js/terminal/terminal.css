@@ -1,0 +1,91 @@
+
+.cmd_container {
+	
+	background-color: #000;
+	
+	overflow: hidden;
+	padding: 15px 20px 15px 20px;
+	margin: 0px;
+	border-radius: 10px;
+	
+	font-size: 1em;
+	
+	position: relative;
+	
+}
+
+#cmd_help {
+	
+	color: #777;
+	
+	font-size: .9em;
+	height: .9em;
+	line-height: .9em;
+	
+	padding-bottom: 3px;
+	margin-bottom: 5px;
+	border-bottom: 2px solid;
+	
+}
+
+#cmd_input {
+	
+	background-color: #000;
+	color: #fff;
+	
+	width: 95%;
+	
+	position: absolute;
+	bottom: 5px;
+	right: auto;
+	left: auto;
+	
+	font-size:100%;
+	
+}
+
+#cmd_output {
+	
+	font-size: .9em;
+	margin-bottom: 5px;
+	overflow-y: scroll;
+	height: 88%;
+	word-wrap: break-word;
+	
+}
+
+.echo_output_text {
+	color: #aaa;
+	display: inline;
+}
+
+.echo_output_command {
+	color: #fff;
+    display: inline;
+}
+
+#cmd_highlight {	
+	color: #fff;	
+}
+
+a {
+	color:#aaf;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

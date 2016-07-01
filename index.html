@@ -1,95 +1,52 @@
 <!DOCTYPE html>
-<html>
-<head>
-	<title>Demo of Firefly Tools</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.1/nv.d3.min.css" rel="stylesheet">
-    <link rel='stylesheet' href='http://terminal.jcubic.pl/css/jquery.terminal.css'></link>
-</head>
-<body >
-<style>
-#leftside{
-    float: left;
-    width: 40%;
-}
-#rightside{
-    width: 40%;
-    float: left;
-}
-#ffview{
-    margin-top: 40px;
-    resize: both;
-    overflow: auto;
-    height: 400px;
-    width: 100%;
-}
-#header{
-    margin-top: 80px;
-    width: 100%;
-    margin-left: 30px;
-    margin-right: 30px;
 
-}
-.box{
-    border-style: solid;
-    border-width: 5px;
-    margin: 10px 10%;
-    height: 300px;
-    width: 80%;
-    display: inline-block;
-    text-align: center;
-}
-.box-bar{
-    border-style: solid;
-    border-width: 2px;
-    margin: 0;
-    text-align: center;
-    width: 100%;
-    height: 15px;
-}
-.box-hide{
-    height: 20px;
-}
-.box-hide > .box-content{
-    display: none;
-}
-.box-content{
-    width: 100%;
-    height: 95%;
-}
-.alert-box {
-    color:#555;
-    background:#e3f7fc;
-    border-radius:10px;
-    font-family:Tahoma,Geneva,Arial,sans-serif;font-size:11px;
-    padding:10px 10px 10px 10px;
-    margin:10px;
-    text-align:center;
-    width: 50%;
-}
-#cmd{
-    margin: 20px 0px;
-    height: 100px;
-}
-</style>
-<div id="header">
-    <div id="leftside">
-        <div id="ffview"></div>
-		<input onclick="change()" type="button" value="pause" id="pause-resume"></input>
-		<div class="alert-box" id="notification"></div>
-        <div id="cmd">
+<html>
+    <head>
+	    <title>Demo of Firefly Tools</title>
+    
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.1/nv.d3.min.css" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="./js/terminal/terminal.css"></link>
+        <link rel="stylesheet" type="text/css" href="main.css">
+    </head>
+
+    <body >
+        <div id="header">
+            <div id="leftside">
+                <div id="ffview"></div>
+                
+		        <div class="update-viewer">
+		            <p class="update-viewer-header">Update Viewer Settings</p>
+		            <input onclick="onClick(this.id)" type="button"
+		                value="Pause" 
+		                class="update-viewer-button"
+		                id="ffview-pause_resume"
+		            >
+		                
+		            <input onclick="onClick(this.id)" type="button" 
+		                value="There are no new images." 
+		                class="update-viewer-button update-now"
+		                id="ffview-update_now" 
+		                disabled
+		            >	  
+		                          
+		        </div>
+		
+                <div id="cmd"></div>
+            </div>
+            
+            <div id="rightside"></div>
         </div>
-    </div>
-    <div id="rightside"></div>
-</div>
-    <!-- script name is fftools.nocache.js -->
-    <script src='/fftools/fftools.nocache.js'></script>
-    <script src='//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js'></script>
-    <script src='http://terminal.jcubic.pl/js/jquery.terminal-0.8.8.min.js'></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.2/d3.min.js" charset="utf-8"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.1/nv.d3.js"></script>
-    <script src='./js/new.js'></script>
-    <script src='./js/cmd.js'></script>
-    <script src='./js/chart.js'></script>
-    <script src='./js/utility.js'></script>
-</body>
+        
+        <!-- script name is fftools.nocache.js -->
+        <script src='/fftools/fftools.nocache.js'></script>
+        <script src='//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js'></script>
+        <script src='./js/terminal/terminal.js'></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.2/d3.min.js" charset="utf-8"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.1/nv.d3.js"></script>
+        <script src='./js/new.js'></script>
+        <script src='./js/cmd.js'></script>
+        <script src='./js/chart.js'></script>
+        <script src='./js/utility.js'></script>
+        
+    </body>
 </html>

@@ -369,11 +369,12 @@
 			
 			var numInput = splitByWhiteSpace(input).length;
 			var numhelpText = splitByWhiteSpace(helpText.text()).length;
-			if (numInput > numhelpText)
-				return;
 			
 			if (input.match(/\s$/)) // Space should highlight the next parameter
 			    numInput += 1;
+			    
+			if (numInput > numhelpText)
+				return;
 			
 			var newhelpText = highlightString(helpText.text(), numInput - 1);
 			
@@ -434,7 +435,9 @@
 				// Enter
 				case 13:
 					var sh = outputArea[0].scrollHeight;
-					if (outputArea.children().size() == 0)
+					console.log(sh);
+					console.log(outputArea.height());
+					if (sh <= outputArea.height())
 					    sh = 0;
 					    
 					executeCommand(input);
@@ -484,8 +487,15 @@
 			// searching for the correct help string
 			if (input.match(/\s/) == null)
 				findhelpText(input);
-			else if (helpTextFound)
-				highlighthelpText(input);
+			else {
+			    if (splitByWhiteSpace(input)[0] != splitByWhiteSpace(helpText.text())[0]) {
+			        helpTextFound = false;
+			        clearHelpText();
+			    }
+			
+			    if (helpTextFound)
+				    highlighthelpText(input);
+			}
 		});
 		
 		return this;

@@ -9,7 +9,7 @@ state = {
 	update_viewer: {
 	    updatetime: 10000, 
 	    latest_time: 0,
-	    updatelist: {ffview: true},
+	    updatelist: {ffview: false},
 	    timeinterval: 5000,
 	    
 	    // Cached result for when we are paused but there is a new image
@@ -46,11 +46,11 @@ var onFireflyLoaded = function() {
 	var viewer = loadFirefly('ffview');
 	state.lsstviewers['ffview'] = viewer;
 	state.show_readouts = new readouts();
+	
 	// currently will update the image automatically 10 sec
-
 	state.timeinterval = window.setInterval(function(){
 		cmds.update_viewer(['ffview'])
-	}, state.updatetime)
+	}, state.updatetime);
 };
 
 jQuery(function($, undefined) {

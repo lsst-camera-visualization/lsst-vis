@@ -362,7 +362,6 @@
 		};
 		
 		var highlighthelpText = function(input) {
-			
 			if (helpText.text() == '')
 				return;
 			if (input.length == 0)
@@ -372,6 +371,9 @@
 			var numhelpText = splitByWhiteSpace(helpText.text()).length;
 			if (numInput > numhelpText)
 				return;
+			
+			if (input.match(/\s$/)) // Space should highlight the next parameter
+			    numInput += 1;
 			
 			var newhelpText = highlightString(helpText.text(), numInput - 1);
 			
@@ -440,9 +442,6 @@
 					
 					outputArea.scrollTop(sh);
 					
-					//var objDiv = document.getElementById("cmd_output");
-                    //objDiv.scrollTop = objDiv.scrollHeight;
-					
 					break;
 				
 				// Up arrow
@@ -480,13 +479,13 @@
 					break;
 			}
 		
-			input = inputBox.val().trim();
+			input = inputBox.val().replace(/^ /g, '');
 			// If there is no space, it means we are still typing the command name, so we can keep 
 			// searching for the correct help string
 			if (input.match(/\s/) == null)
 				findhelpText(input);
 			else if (helpTextFound)
-				highlighthelpText(input);			
+				highlighthelpText(input);
 		});
 		
 		return this;

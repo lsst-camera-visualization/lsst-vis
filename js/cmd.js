@@ -123,10 +123,6 @@ jQuery(function($, undefined) {
 		}
 	};
 	
-	// TODO
-	// We need docs on the following commands: clear_box, read_mouse, viewer, fetch_freq, update_viewer, update_viewer_now
-	// Does the command viewer work?
-	// How do we clear the hot pixels from the viewer?
 	state.term = jQuery('#cmd').terminal( commands, 
 	                    {
 						helpLink: docLink,

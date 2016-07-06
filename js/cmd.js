@@ -156,6 +156,7 @@ var onClick = function(id) {
 cmds = {
   // user can change the frequency of updating images.
 	update_viewer_freq: function(cmd_args){
+		var id = cmd_args[0];
 		var time = cmd_args[1];
 		if (time < 5000) {
 			// lower bound for automatic update.
@@ -164,7 +165,7 @@ cmds = {
 		clearInterval(state.fetch_latest.timeinterval);
 		state.fetch_latest.updatetime = time;
 		state.fetch_latest.timeinterval = window.setInterval(function(){
-			cmds.update_viewer(['ffview'])
+			cmds.update_viewer([id])
 		}, state.fetch_latest.updatetime)
 		// testing code.
 		//state.term.echo(state.updatetime, {raw: true});  
@@ -212,7 +213,7 @@ cmds = {
 		var id = cmd_args[0];
 		
 		jQuery("#ffview-pause_resume").attr('value', 'Pause'); 
-		state.update_viewer.updatelist['ffview'] = true;
+		state.update_viewer.updatelist[id] = true;
 		cmds.update_viewer_now(cmd_args);
 	},
 
@@ -220,16 +221,16 @@ cmds = {
 		var id = cmd_args[0];
 		
 		jQuery("#ffview-pause_resume").attr('value', 'Resume'); 
-		state.update_viewer.updatelist['ffview'] = false;
+		state.update_viewer.updatelist[id] = false;
 	},
 	
 	update_viewer_now: function(cmd_args) {
 	    var url = state.update_viewer.new_image.url;
 	    
 	    if (url) {
-	        var id = 'ffview';
+	        var id = cmd_args[0];
 	        
-	        state.lsstviewers['ffview'].plot({url: url, Title: id, ZoomType: 'TO_WIDTH'});		
+	        state.lsstviewers[id].plot({url: url, Title: id, ZoomType: 'TO_WIDTH'});		
 		    // Clear all boxes
             for (var key in state.boxes) {
                 if (state.boxes.hasOwnProperty(key)) {

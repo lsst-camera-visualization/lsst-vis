@@ -57,6 +57,21 @@ jQuery(function($, undefined) {
 
     var docLink = 'https://github.com/lsst-camera-visualization/frontend/wiki/New-Home';
 	var commands = {
+		'average_pixel box_id viewer_id region' : { 
+			'callback' : cmds.average_pixel, 
+			'description' : 'Calculates the average pixel value for the region.',
+			'doc_link' : docLink + '#average_pixel'
+		},
+		'clear_box box_id' : { 
+			'callback' : cmds.clear_box, 
+			'description' : 'Clears an information box.',
+			'doc_link' : docLink + '#clear_box'
+		},
+		'clear_viewer viewer_id' : {
+		    'callback' : cmds.clear_viewer,
+		    'description' : 'Clears a viewer.',
+		    'doc_link' : docLink + '#clear_viewer'
+		},
 	    'create_box box_id' : { 
 			'callback' : cmds.create_box, 
 			'description' : 'Creates a new box for displaying information.',
@@ -71,58 +86,45 @@ jQuery(function($, undefined) {
 			'callback' : cmds.hide_box, 
 			'description' : 'Hides an information box.',
 			'doc_link' : docLink + '#hide_box'
-		},
-		'show_box box_id' : { 
-			'callback' : cmds.show_box, 
-			'description' : 'Shows a hidden information box.',
-			'doc_link' : docLink + '#show_box'
-		},		
-		'clear_box box_id' : { 
-			'callback' : cmds.clear_box, 
-			'description' : 'Clears an information box.',
-			'doc_link' : docLink + '#clear_box'
-		},		
-		'read_mouse viewer_id box_id' : { 
-			'callback' : cmds.read_mouse, 
-			'description' : 'Tracks the mouse inside of the view \'viewer_id\' and displays the information in the box \'box_id\'.',
-		},
+		},	
 		'hot_pixel viewer_id threshold region' : { 
 			'callback' : cmds.hot_pixel, 
 			'description' : 'Calculates the hot pixels within the threshold for the region.',
 			'doc_link' : docLink + '#hot_pixel'
-		},
-		'average_pixel box_id viewer_id region' : { 
-			'callback' : cmds.average_pixel, 
-			'description' : 'Calculates the average pixel value for the region.',
-			'doc_link' : docLink + '#average_pixel'
-		},
-		'update_viewer_freq viewer_id time_in_millis' : { 
-			'callback' : cmds.update_viewer_freq, 
-			'description' : 'Changes the frequency for checking for new images from the Rest Server.',
-			'doc_link' : docLink + '#update_viewer_freq'
 		},
 		'pause viewer_id' : { 
 			'callback' : cmds.pause, 
 			'description' : 'Pauses the automatic retrieval of new images from the Rest Server.',
 			'doc_link' : docLink + '#pause'
 		},
+		'read_mouse viewer_id box_id' : { 
+			'callback' : cmds.read_mouse, 
+			'description' : 'Tracks the mouse inside of the view \'viewer_id\' and displays the information in the box \'box_id\'.',
+		},
 		'resume viewer_id' : { 
 			'callback' : cmds.resume, 
 			'description' : 'Pauses the automatic retrieval of new images from the Rest Server.',
 			'doc_link' : docLink + '#resume'
+		},
+		'show_box box_id' : { 
+			'callback' : cmds.show_box, 
+			'description' : 'Shows a hidden information box.',
+			'doc_link' : docLink + '#show_box'
 		},
 		'update_viewer viewer_id' : { 
 			'callback' : cmds.update_viewer, 
 			'description' : 'Updates a viewer immediately, bypassing the update_viewer_freq interval.',
 			'doc_link' : docLink + '#update_viewer'
 		},
+		'update_viewer_freq viewer_id time_in_millis' : { 
+			'callback' : cmds.update_viewer_freq, 
+			'description' : 'Changes the frequency for checking for new images from the Rest Server.',
+			'doc_link' : docLink + '#update_viewer_freq'
+		},
 		'update_viewer_now viewer_id' : { 
 			'callback' : cmds.update_viewer_now, 
 			'description' : 'If in a paused state and there is a new image available, calling this command will load the new image without changing the state.',
 			'doc_link' : docLink + '#update_viewer_now'
-		},
-		'fake region par' : {
-		    'callback' : cmds.fake
 		}
 	};
 	
@@ -160,11 +162,6 @@ var onClick = function(id) {
 //----------CMD---------//
 
 cmds = {
-    fake: function(cmd_args) {
-    
-        
-    
-    },
 	update_viewer_freq: function(cmd_args){
 	
 	    var viewerID = cmd_args['viewer_id'];

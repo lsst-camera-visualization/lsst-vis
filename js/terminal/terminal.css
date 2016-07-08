@@ -1,11 +1,11 @@
 
-.cmd_container {
+#cmd_container {
 	
 	background-color: #000;
 	
 	overflow: hidden;
 	padding: 15px 20px 15px 20px;
-	margin: 0px;
+	margin: 10px 0px 0px 0px;
 	border-radius: 10px;
 	
 	font-size: 1em;
@@ -40,7 +40,9 @@
 	right: auto;
 	left: auto;
 	
-	font-size:100%;
+	padding: 3px 1px 3px 0px;
+	
+	font-size:125%;
 	
 }
 

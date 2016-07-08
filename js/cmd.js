@@ -49,7 +49,7 @@ var onFireflyLoaded = function() {
 	
 	// currently will update the image automatically 10 sec
 	state.timeinterval = window.setInterval(function(){
-		cmds.update_viewer(['ffview'])
+		cmds.update_viewer( { 'viewer_id' : 'ffview' } )
 	}, state.updatetime);
 };
 
@@ -120,6 +120,9 @@ jQuery(function($, undefined) {
 			'callback' : cmds.update_viewer_now, 
 			'description' : 'If in a paused state and there is a new image available, calling this command will load the new image without changing the state.',
 			'doc_link' : docLink + '#update_viewer_now'
+		},
+		'fake region par' : {
+		    'callback' : cmds.fake
 		}
 	};
 	
@@ -127,26 +130,29 @@ jQuery(function($, undefined) {
 	                    {
 						helpLink: docLink,
 						prefix: '~>',
+						width: '100%',
 						height: 300,
-						fontSize: '1.25em'
+						fontSize: '1.5em'
 						});
 });
 
 var onClick = function(id) {
     var elem = jQuery('#' + id);
-
-    switch (id)
+    var viewerID = id.split('---')[0];
+    var whichButton = id.split('---')[1];
+    
+    switch (whichButton)
     {
-        case "ffview-pause_resume":
+        case "pause_resume":
             if (elem.attr('value') == "Pause")
-            	cmds.pause(['ffview']);
+            	cmds.pause( { 'viewer_id' : viewerID } );
             else
-                cmds.resume(['ffview']);
+                cmds.resume( { 'viewer_id' : viewerID } );
                 
             break;
             
-        case "ffview-update_now":
-            cmds.update_viewer_now(['ffview']);
+        case "update_now":
+            cmds.update_viewer_now( { 'viewer_id' : viewerID } );
             break;
     }
 };
@@ -154,24 +160,30 @@ var onClick = function(id) {
 //----------CMD---------//
 
 cmds = {
-  // user can change the frequency of updating images.
+    fake: function(cmd_args) {
+    
+        
+    
+    },
 	update_viewer_freq: function(cmd_args){
-		var time = cmd_args[1];
-		if (time < 5000) {
+	
+	    var viewerID = cmd_args['viewer_id'];
+	    var timeAsMilli = cmd_args['time_in_millis'];
+	    
+		if (timeAsMilli < 5000) {
 			// lower bound for automatic update.
-			time = 5000;
+			timeAsMilli = 5000;
 		}
-		clearInterval(state.fetch_latest.timeinterval);
-		state.fetch_latest.updatetime = time;
-		state.fetch_latest.timeinterval = window.setInterval(function(){
-			cmds.update_viewer(['ffview'])
-		}, state.fetch_latest.updatetime)
-		// testing code.
-		//state.term.echo(state.updatetime, {raw: true});  
+		clearInterval(state.update_viewer.timeinterval);
+		state.update_viewer.updatetime = timeAsMilli;
+		state.update_viewer.timeinterval = 
+		    window.setInterval(
+		        function(){ cmds.update_viewer( { 'viewer_id' : viewerID } ) }, 
+		        state.update_viewer.updatetime);
 	},
 
-	update_viewer: function(cmd_args){
-		var id = cmd_args[0];
+	update_viewer: function(cmd_args) {
+	    var viewerID = cmd_args['viewer_id'];
 		
 		var CHECK_IMAGE_PORT = "8099";
         var CHECK_IMAGE_URL = "http://172.17.0.1:" + CHECK_IMAGE_PORT + "/vis/checkImage";
@@ -183,14 +195,14 @@ cmds = {
                 state.update_viewer.latest_time = data.timestamp;
 				
 				var url = data.uri;
-				var resumed = state.update_viewer.updatelist['ffview'];
+				var resumed = state.update_viewer.updatelist[viewerID];
 				if (resumed) {
 					state.update_viewer.new_image.url = url;
 					cmds.update_viewer_now(cmd_args);
 				}
 				else {
 				    // We are paused
-				    var but = $('#ffview-update_now');
+				    var but = $('#' + viewerID + '---update_now');
 				    but.prop('disabled', false);
 				    but.attr('value', 'There is a new image available. Click to load.');
 				    
@@ -201,35 +213,35 @@ cmds = {
 			
 			if (state.update_viewer.new_image.url == null) {			
 			    // Displayed when there is no new image, or the new image is done loading.
-			    var but = $('#ffview-update_now');
+			    var but = $('#' + viewerID + '---update_now');
 			    but.prop('disabled', true);
 			    but.attr('value', 'There are no new images.');
 			}
         });
 	},
 
-	resume: function(cmd_args){
-		var id = cmd_args[0];
+	resume: function(cmd_args) {
+	    var viewerID = cmd_args['viewer_id'];
 		
-		jQuery("#ffview-pause_resume").attr('value', 'Pause'); 
-		state.update_viewer.updatelist['ffview'] = true;
+		jQuery("#" + viewerID + "---pause_resume").attr('value', 'Pause'); 
+		state.update_viewer.updatelist[viewerID] = true;
 		cmds.update_viewer_now(cmd_args);
 	},
 
-	pause: function(cmd_args){
-		var id = cmd_args[0];
+	pause: function(cmd_args) {
+	    var viewerID = cmd_args['viewer_id'];
 		
-		jQuery("#ffview-pause_resume").attr('value', 'Resume'); 
-		state.update_viewer.updatelist['ffview'] = false;
+		jQuery("#" + viewerID + "---pause_resume").attr('value', 'Resume'); 
+		state.update_viewer.updatelist[viewerID] = false;
 	},
 	
 	update_viewer_now: function(cmd_args) {
 	    var url = state.update_viewer.new_image.url;
 	    
 	    if (url) {
-	        var id = 'ffview';
+	        var viewerID = cmd_args['viewer_id'];
 	        
-	        state.lsstviewers['ffview'].plot({url: url, Title: id, ZoomType: 'TO_WIDTH'});		
+	        state.lsstviewers['ffview'].plot({url: url, Title: viewerID, ZoomType: 'TO_WIDTH'});		
 		    // Clear all boxes
             for (var key in state.boxes) {
                 if (state.boxes.hasOwnProperty(key)) {
@@ -242,7 +254,7 @@ cmds = {
 		    state.update_viewer.new_image.url = null;
 		
 		    // Change button status
-		    var but = $('#ffview-update_now');
+		    var but = $('#' + viewerID + '---update_now');
 		    but.prop('disabled', true);
 		    but.attr('value', 'There are no new images.');
 		} 
@@ -275,15 +287,15 @@ cmds = {
 	},
 
 	hot_pixel: function(cmd_args) {
-		var plotid = 'ffview';
-		var region_id = plotid + '-hotpixel';
-		var threshold = parseInt(cmd_args[1]);
-		var region = parse_region(cmd_args.slice(2)) || "all";
+	    var viewerID = cmd_args['viewer_id'];
+		var region_id = viewerID + '-hotpixel';
+		var threshold = parseInt(cmd_args['threshold']);
+		var region = parse_region(cmd_args['region']) || "all";
 		if (state.lsstviewers[region_id]) {
 			firefly.removeRegionData(state.lsstviewers[region_id], region_id);
 			state.lsstviewers[region_id] = undefined;
 		}
-		console.log(region);
+		
 		read_hotpixels({
 		    filename: "default",
 		    threshold: "max",
@@ -291,7 +303,7 @@ cmds = {
 			},
 			function(regions) {
 		    state.lsstviewers[region_id] = regions;
-		    firefly.overlayRegionData(regions, region_id, 'hotpixel', plotid);
+		    firefly.overlayRegionData(regions, region_id, 'hotpixel', viewerID);
 		});
 	},
 
@@ -321,7 +333,7 @@ cmds = {
 	},
 
 	create_box: function(cmd_args) {
-		var name = cmd_args[0];
+		var name = cmd_args['box_id'];
 		if (state.boxes[name]) {
 			state.term.echo("The box \'" + name + "\' already exists! Please choose another name.\n");
 		} else {
@@ -336,7 +348,7 @@ cmds = {
 	},
 
 	delete_box: function(cmd_args) {
-		var name = cmd_args[0];
+		var name = cmd_args['box_id'];
 		if (!state.boxes[name]) {
 			state.term.echo("The box \'" + name + "\' does not exist!\n");
 		} else {
@@ -348,7 +360,7 @@ cmds = {
 	},
 
 	hide_box: function(cmd_args) {
-		var name = cmd_args[0];
+		var name = cmd_args['box_id'];
 		if (!state.boxes[name]) {
 			state.term.echo("The box \'" + name + "\' does not exist!\n");
 		} else {
@@ -357,7 +369,7 @@ cmds = {
 	},
 
 	show_box: function(cmd_args) {
-		var name = cmd_args[0];
+		var name = cmd_args['box_id'];
 		if (!state.boxes[name]) {
 			state.term.echo("The box \'" + name + "\' does not exist!\n");
 		} else {
@@ -366,7 +378,7 @@ cmds = {
 	},
 
 	clear_box: function(cmd_args) {
-		var name = cmd_args[0];
+		var name = cmd_args['box_id'];
 		if (!state.boxes[name]) {
 			state.term.echo("The box \'" + name + "\' does not exist!\n");
 		} else {
@@ -417,11 +429,11 @@ cmds = {
 	},
 
 	read_mouse: function(cmd_args) {
-		var name = cmd_args[1];
+		var name = cmd_args['box_id'];
 		if (!state.boxes[name]) {
 			state.term.echo("The box \'" + name + "\' does not exist!\n");
 		} else {
-			var viewer = cmd_args[0] || 'ffview';
+			var viewer = cmd_args['viewer_id'] || 'ffview';
 			cmds.clear_box([name]);
 			var content = state.boxes[name].select.select('.box-content').attr('id', 'readout-' + name);
 			var first_line = content.append('p');
@@ -464,17 +476,20 @@ cmds = {
 	},
 
 	average_pixel: function(cmd_args) {
-		var name = cmd_args[0];
+		var name = cmd_args['box_id'];
 		if (!state.boxes[name]) {
+		
 			state.term.echo("The box \'" + name + "\' does not exist!\n");
+		
 		} else {
-			var viewer = cmd_args[1] || 'ffview';
-			cmds.clear_box([name]);
+		
+			var viewer = cmd_args['viewer_id'];
+			cmds.clear_box( { 'box_id' : name } );
 			var content = state.boxes[name].select.select('.box-content').attr('id', 'readout-' + name);
 			var first_line = content.append('p');
 			first_line.append('span').text('average pixel value around region');
 			// var x_point = first_line.append('span').attr('id', 'read_about'+name);
-			var region = parse_region(cmd_args.slice(2)) || {
+			var region = parse_region(cmd_args['region']) || {
 				top: 0,
 				left: 0,
 				bottom: 1,
@@ -489,15 +504,13 @@ cmds = {
 				state.lsstviewers[region_id] = undefined;
 			}
 			var content = ['box', region.left, region.bottom, region.right - region.left, region.bottom - region.top, 0, '#color=red'].join(' ');
-			console.log(content);
+			
 			state.lsstviewers[region_id] = [content];
 			if (firefly.overlayRegionData) {
 				firefly.overlayRegionData([content], region_id, "Boundary", plotid);
 			}
 			firefly.getJsonFromTask("python", "average", {'rect': region}).then(function(data) {
-				console.log(data);
-				console.log(third_line.text('value: ' + data["result"]));
-				third_line.select('p').text('value: ' + data["result"]);
+			    third_line.text('value: ' + data["result"]);
 			});
 		}
 	}

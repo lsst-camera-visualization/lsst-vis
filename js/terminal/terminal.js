@@ -18,6 +18,7 @@
 	// 		fontSize - The base font size of the text.
 	//      multiStart - The starting string for a parameter with multiple data.
 	//      multiEnd - The ending string for a paramater with multiple data.
+	//      maxHistoryEntries - The maximum number of entries allowed in the history.
 	//
 	// Example usage:
 	// var commands = {
@@ -37,6 +38,7 @@
 		checkProperties('fontSize', '');
 		checkProperties('multiStart', '(');
 		checkProperties('multiEnd', ')');
+		checkProperties('maxHistoryEntries', 50);
 
 
 		///////////////////////////////////////////////////////////////
@@ -82,6 +84,7 @@
 		// Will cache the keys to help with auto complete
 		var keys = [];
 		var cmdHistory = [];
+		var cmdHistoryHelp = [];
 		var cmdHistoryIndex;
 		
 		
@@ -113,7 +116,10 @@
 		
 		var setHelpText = function(str) {
 			helpText.html(str);
-		}		
+		}
+		var getHelpText = function() {
+		    return helpText.html();
+		}	
 		var clearHelpText = function() {
 			helpText.html(defaultHelpText);
 		}
@@ -130,7 +136,14 @@
 		}		
 		
 		var arrayToString = function(arr) {
-			return arr.toString().replace(/,/g, ' ');
+		    if (typeof(arr) == 'string')
+		        return arr;
+		    
+		    var s = '';
+		    for (var i = 0; i < arr.length; i++) {
+		        s += arr[i] + ' ';
+		    }
+		    return s;
 		}
 		
 		var sanitizeText = function(text) {
@@ -163,6 +176,42 @@
 			t = '<p class="echo_output_text">' + t + '</p>';
 			
 			outputArea.append(t);					
+		}
+		
+		var addHistory = function(input) {
+		    if (cmdHistory.length - 1 >= 0) {
+		        if (cmdHistory[cmdHistory.length - 1] == input) {
+		            cmdHistoryIndex = cmdHistory.length;
+		            return;
+		        }
+		    }
+		    
+		    cmdHistory.push(input);
+		    cmdHistoryHelp.push(getHelpText());
+		    
+		    if (cmdHistory.length > properties['maxHistoryEntries']) {
+		        cmdHistory.shift();
+		        cmdHistoryHelp.shift();
+		    }
+		    
+		    cmdHistoryIndex = cmdHistory.length;
+		    
+		    localStorage.setItem('cmdHistory', JSON.stringify(cmdHistory));
+		    localStorage.setItem('cmdHistoryHelp', JSON.stringify(cmdHistoryHelp));
+		}
+		var getHistory = function() {
+		
+		    if (cmdHistory.length == 0)
+		        return { 'cmd' : '', 'help' : defaultHelpText };
+		
+		    if (cmdHistoryIndex < 0)
+		        cmdHistoryIndex = 0;
+		    else if (cmdHistoryIndex >= cmdHistory.length) {
+		        cmdHistoryIndex = cmdHistory.length;
+		        return '';
+		    }
+		    
+		    return { 'cmd' : cmdHistory[cmdHistoryIndex], 'help' : cmdHistoryHelp[cmdHistoryIndex] };
 		}
 		
 		///////////////////////////////////////////////////////////////
@@ -239,6 +288,15 @@
 			echoText(str + '\n');
 		}
 		
+		var clearHistory = function(args) {
+		    cmdHistory = [];
+		    cmdHistoryHelp = [];
+		    cmdHistoryIndex = 0;
+		    
+		    localStorage.setItem('cmdHistory', null);
+		    localStorage.setItem('cmdHistoryHelp', null);
+		}
+		
 		
 		///////////////////////////////////////////////////////////////
 		// 4. Initialization //////////////////////////////////////////
@@ -287,8 +345,11 @@
 						
 		createCommand(cmdName = 'echo', parameters = ['echo_string'], callback = echo, 
 						description = 'Echoes a string to the output area.');
+						
+		createCommand(cmdName = 'clear_terminal_history', parameters = [], callback = clearHistory, 
+						description = 'Clears the history of commands.');
 		
-		clearHelpText();		
+		clearHelpText();
 		
 		// Sort keys alphabetically
 		keys.sort(function(a, b) {
@@ -303,6 +364,17 @@
 			
 		});
 		
+		// Get stored history, if exists
+		cmdHistory = JSON.parse(localStorage.getItem('cmdHistory'));
+		if (!cmdHistory)
+		    cmdHistory = [];
+		cmdHistoryHelp = JSON.parse(localStorage.getItem('cmdHistoryHelp'));
+		if (!cmdHistoryHelp)
+		    cmdHistoryHelp = [];
+		cmdHistoryIndex = cmdHistory.length;
+	    
+	    console.log(cmdHistory);
+	    console.log(cmdHistoryHelp);
 		
 		///////////////////////////////////////////////////////////////
 		// 5. keyup helper functions //////////////////////////////////
@@ -315,15 +387,17 @@
 				return;
 			}
 			
-			var hist = { 'cmd' : input, 'help' : helpText.text() };
-			cmdHistory.push(hist);
-			cmdHistoryIndex = cmdHistory.length;
+			addHistory(input);
 			
 			var arguments = splitByWhiteSpace(input);
 			var cmdName = arguments.shift();
 						
 			if (cmdName in cmds) {
-				// Command does exist					
+				// Command does exist
+				
+				// Save it in history
+				// localStorage.setItem('cmdHistory', JSON.stringify(cmdHistory));
+				
 			    var paramsAsDict = {};
 				var parametersFromCmd = cmds[cmdName]['parameters'];
 				var callbackFunction = cmds[cmdName]['callback'];
@@ -431,6 +505,23 @@
 		    return idx;
 		}
 		
+		var findHelpText = function(input) {
+		    var auto = getAutoComplete(input, keys);
+	        if (auto != null) {
+	            var splitter = ' ';
+			    var helpStr = auto + splitter;
+			    var parameters = cmds[auto]['parameters'];
+			    for (var i = 0; i < parameters.length; i++)
+				    helpStr += parameters[i] + splitter;
+			
+			    setHelpText(highlightString(helpStr, 0));
+			    helpTextFound = true;
+	        }
+	        else {
+		        clearHelpText();
+	        }
+		}
+		
 		
 		///////////////////////////////////////////////////////////////
 		// 6. keydown/keyup ///////////////////////////////////////////
@@ -498,31 +589,22 @@
 				
 				// Up arrow
 				case 38:
-					if (cmdHistory.length > 0) {
-						cmdHistoryIndex--;
-						if (cmdHistoryIndex < 0)
-							cmdHistoryIndex = 0;
-						
-						inputBox.val(cmdHistory[cmdHistoryIndex]['cmd']);
-						setHelpText(cmdHistory[cmdHistoryIndex]['help']);
-					}
+				    cmdHistoryIndex--;
+				    var hist = getHistory();
+				    
+				    setInputText(hist['cmd']);
+				    setHelpText(hist['help']);
+				    
 					break;
 				
 				// Down arrow
 				case 40:
-					if (cmdHistory.length > 0) {
-						cmdHistoryIndex++;
-						if (cmdHistoryIndex > cmdHistory.length - 1) {
-							cmdHistoryIndex = cmdHistory.length;
-							inputBox.val('');
-						}
-						else {
-							inputBox.val(cmdHistory[cmdHistoryIndex]['cmd']);
-							setHelpText(cmdHistory[cmdHistoryIndex]['help']);
-						}
-						findhelpText(inputBox.val());
-					}
-					
+				    cmdHistoryIndex++;
+				    var hist = getHistory();
+				    
+				    setInputText(hist['cmd']);
+				    setHelpText(hist['help']);
+				    
 					break;
 				
 				// Ctrl
@@ -552,20 +634,7 @@
 			// searching for the correct help string
 			if (input.match(/\s/) == null) {
 						
-		        var auto = getAutoComplete(input, keys);
-		        if (auto != null) {
-		            var splitter = ' ';
-				    var helpStr = auto + splitter;
-				    var parameters = cmds[auto]['parameters'];
-				    for (var i = 0; i < parameters.length; i++)
-					    helpStr += parameters[i] + splitter;
-				
-				    setHelpText(highlightString(helpStr, 0));
-				    helpTextFound = true;
-		        }
-		        else {
-			        clearHelpText();
-		        }
+		       findHelpText(input);
 			    
 			}
 			else {
@@ -574,17 +643,16 @@
 			        clearHelpText();
 			    }
 			
-			    if (helpTextFound) {
-			
-			        var numHelpText = splitByWhiteSpace(helpText.text()).length;
-			        var paramIndex = calculateParamIndex(input);			            
-			        if (paramIndex >= numHelpText)
-				        return;
-			
-			        var newHelpText = highlightString(helpText.text(), paramIndex);
-			
-			        setHelpText(newHelpText);
-			    }
+		        if (helpTextFound) {
+		            var numHelpText = splitByWhiteSpace(helpText.text()).length;
+		            var paramIndex = calculateParamIndex(input);			            
+		            if (paramIndex >= numHelpText)
+			            return;
+		
+		            var newHelpText = highlightString(helpText.text(), paramIndex);
+		
+		            setHelpText(newHelpText);
+		        }
 			}
 		});
 		

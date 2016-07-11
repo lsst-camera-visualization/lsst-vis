@@ -1,5 +1,7 @@
 from astropy.io import fits
 import json
+import sys
+sys.path.append(".")
 from os.path import splitext
 from commonFunctions import getCoord, getDim, convert_to_Box
 
@@ -75,7 +77,7 @@ def get_Header_Info(filename):
             return _get_Header_Info(hdulist)
     except Exception as e:
         print("Error getting header info!\nException: " + str(e) + "\n")
-        return ["Error when getting header info"]
+        return ["Error when getting header info."]
 
 
 if __name__ == "__main__":

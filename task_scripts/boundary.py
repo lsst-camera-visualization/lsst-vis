@@ -2,18 +2,16 @@
 import taskDef
 
 from astropy.io import fits
-from utility_scripts.combine_fits_ccd import get_boundary
+from FITS_Construct.ccdHeaderInfo import get_Header_Info as get_boundary
 
 def task(task_params):
     ''' Return amplifier boundries of a FITS file based on its header information.
-    @author 
-    @param task_params - 
-    @return 
+    @author Wei Ren
+    @param task_params - task_params should specify the FITS file.
+    @return
     '''
-    
-    # Currently backend only have this particular FITS file "imageE2V" with valid header
-    # Later on we should track which image is displaying based on client request
-    filename = taskDef.IMAGE_DISPLAY
+
+    filename = taskDef.IMAGE_ORIGINAL
+    # TODO: Should change filename to task_params once the front end can specify where the FITS file is.
     json_str = get_boundary(filename)
-    json_str['comment']='Note that We are only showing amplifier boundaries of a particular FITS (imageE2V.fits) on backend.'
     return json_str,None

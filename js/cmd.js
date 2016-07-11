@@ -5,13 +5,13 @@ state = {
 	},
 	show_readouts: undefined,
 	term: undefined, // this will be a terminal object
-	
+
 	update_viewer: {
-	    updatetime: 10000, 
+	    updatetime: 10000,
 	    latest_time: 0,
 	    updatelist: {ffview: false},
 	    timeinterval: 5000,
-	    
+
 	    // Cached result for when we are paused but there is a new image
 	    new_image: {
 	        url: null,
@@ -46,7 +46,7 @@ var onFireflyLoaded = function() {
 	var viewer = loadFirefly('ffview');
 	state.lsstviewers['ffview'] = viewer;
 	state.show_readouts = new readouts();
-	
+
 	// currently will update the image automatically 10 sec
 	state.timeinterval = window.setInterval(function(){
 		cmds.update_viewer( { 'viewer_id' : 'ffview' } )
@@ -57,13 +57,13 @@ jQuery(function($, undefined) {
 
     var docLink = 'https://github.com/lsst-camera-visualization/frontend/wiki/New-Home';
 	var commands = {
-		'average_pixel box_id viewer_id region' : { 
-			'callback' : cmds.average_pixel, 
+		'average_pixel box_id viewer_id region' : {
+			'callback' : cmds.average_pixel,
 			'description' : 'Calculates the average pixel value for the region.',
 			'doc_link' : docLink + '#average_pixel'
 		},
-		'clear_box box_id' : { 
-			'callback' : cmds.clear_box, 
+		'clear_box box_id' : {
+			'callback' : cmds.clear_box,
 			'description' : 'Clears an information box.',
 			'doc_link' : docLink + '#clear_box'
 		},
@@ -72,63 +72,73 @@ jQuery(function($, undefined) {
 		    'description' : 'Clears a viewer.',
 		    'doc_link' : docLink + '#clear_viewer'
 		},
-	    'create_box box_id' : { 
-			'callback' : cmds.create_box, 
+	    'create_box box_id' : {
+			'callback' : cmds.create_box,
 			'description' : 'Creates a new box for displaying information.',
 			'doc_link' : docLink + '#create_box'
 		},
-		'delete_box box_id' : { 
-			'callback' : cmds.delete_box, 
+		'delete_box box_id' : {
+			'callback' : cmds.delete_box,
 			'description' : 'Deletes an existing information box.',
 			'doc_link' : docLink + '#delete_box'
 		},
-		'hide_box box_id' : { 
-			'callback' : cmds.hide_box, 
+		'hide_box box_id' : {
+			'callback' : cmds.hide_box,
 			'description' : 'Hides an information box.',
 			'doc_link' : docLink + '#hide_box'
-		},	
-		'hot_pixel viewer_id threshold region' : { 
-			'callback' : cmds.hot_pixel, 
+		},
+		'hot_pixel viewer_id threshold region' : {
+			'callback' : cmds.hot_pixel,
 			'description' : 'Calculates the hot pixels within the threshold for the region.',
 			'doc_link' : docLink + '#hot_pixel'
 		},
-		'pause viewer_id' : { 
-			'callback' : cmds.pause, 
+		'pause viewer_id' : {
+			'callback' : cmds.pause,
 			'description' : 'Pauses the automatic retrieval of new images from the Rest Server.',
 			'doc_link' : docLink + '#pause'
 		},
-		'read_mouse viewer_id box_id' : { 
-			'callback' : cmds.read_mouse, 
+		'read_mouse viewer_id box_id' : {
+			'callback' : cmds.read_mouse,
 			'description' : 'Tracks the mouse inside of the view \'viewer_id\' and displays the information in the box \'box_id\'.',
 		},
-		'resume viewer_id' : { 
-			'callback' : cmds.resume, 
+		'resume viewer_id' : {
+			'callback' : cmds.resume,
 			'description' : 'Pauses the automatic retrieval of new images from the Rest Server.',
 			'doc_link' : docLink + '#resume'
 		},
-		'show_box box_id' : { 
-			'callback' : cmds.show_box, 
+		'show_box box_id' : {
+			'callback' : cmds.show_box,
 			'description' : 'Shows a hidden information box.',
 			'doc_link' : docLink + '#show_box'
 		},
-		'update_viewer viewer_id' : { 
-			'callback' : cmds.update_viewer, 
+		'update_viewer viewer_id' : {
+			'callback' : cmds.update_viewer,
 			'description' : 'Updates a viewer immediately, bypassing the update_viewer_freq interval.',
 			'doc_link' : docLink + '#update_viewer'
 		},
-		'update_viewer_freq viewer_id time_in_millis' : { 
-			'callback' : cmds.update_viewer_freq, 
+		'update_viewer_freq viewer_id time_in_millis' : {
+			'callback' : cmds.update_viewer_freq,
 			'description' : 'Changes the frequency for checking for new images from the Rest Server.',
 			'doc_link' : docLink + '#update_viewer_freq'
 		},
-		'update_viewer_now viewer_id' : { 
-			'callback' : cmds.update_viewer_now, 
+		'update_viewer_now viewer_id' : {
+			'callback' : cmds.update_viewer_now,
 			'description' : 'If in a paused state and there is a new image available, calling this command will load the new image without changing the state.',
 			'doc_link' : docLink + '#update_viewer_now'
+		},
+		'show_boundary viewer_id' : {
+			'callback' : cmds.show_boundary,
+			'description' : 'Show the boudary of amplifiers in the specified viewer.',
+			'doc_link' : docLink + '#show_boundary'
+		},
+		'hide_boundary viewer_id' : {
+			'callback' : cmds.hide_boundary,
+			'description' : 'Hide the boudary of amplifiers in the specified viewer.',
+			'doc_link' : docLink + '#hide_boundary'
 		}
 	};
-	
-	state.term = jQuery('#cmd').terminal( commands, 
+
+	state.term = jQuery('#cmd').terminal( commands,
 	                    {
 						helpLink: docLink,
 						prefix: '~>',
@@ -142,7 +152,7 @@ var onClick = function(id) {
     var elem = jQuery('#' + id);
     var viewerID = id.split('---')[0];
     var whichButton = id.split('---')[1];
-    
+
     switch (whichButton)
     {
         case "pause_resume":
@@ -150,9 +160,9 @@ var onClick = function(id) {
             	cmds.pause( { 'viewer_id' : viewerID } );
             else
                 cmds.resume( { 'viewer_id' : viewerID } );
-                
+
             break;
-            
+
         case "update_now":
             cmds.update_viewer_now( { 'viewer_id' : viewerID } );
             break;
@@ -163,34 +173,34 @@ var onClick = function(id) {
 
 cmds = {
 	update_viewer_freq: function(cmd_args){
-	
+
 	    var viewerID = cmd_args['viewer_id'];
 	    var timeAsMilli = cmd_args['time_in_millis'];
-	    
+
 		if (timeAsMilli < 5000) {
 			// lower bound for automatic update.
 			timeAsMilli = 5000;
 		}
 		clearInterval(state.update_viewer.timeinterval);
 		state.update_viewer.updatetime = timeAsMilli;
-		state.update_viewer.timeinterval = 
+		state.update_viewer.timeinterval =
 		    window.setInterval(
-		        function(){ cmds.update_viewer( { 'viewer_id' : viewerID } ) }, 
+		        function(){ cmds.update_viewer( { 'viewer_id' : viewerID } ) },
 		        state.update_viewer.updatetime);
 	},
 
 	update_viewer: function(cmd_args) {
 	    var viewerID = cmd_args['viewer_id'];
-		
+
 		var CHECK_IMAGE_PORT = "8099";
         var CHECK_IMAGE_URL = "http://172.17.0.1:" + CHECK_IMAGE_PORT + "/vis/checkImage";
         var params = { 'since': state.update_viewer.latest_time };
         jQuery.getJSON(CHECK_IMAGE_URL, params, function(data) {
-            
+
             if (data) {
                 // There's a new image.
                 state.update_viewer.latest_time = data.timestamp;
-				
+
 				var url = data.uri;
 				var resumed = state.update_viewer.updatelist[viewerID];
 				if (resumed) {
@@ -202,13 +212,13 @@ cmds = {
 				    var but = $('#' + viewerID + '---update_now');
 				    but.prop('disabled', false);
 				    but.attr('value', 'There is a new image available. Click to load.');
-				    
+
 				    // Store the new image
 				    state.update_viewer.new_image.url = url;
 				}
 			}
-			
-			if (state.update_viewer.new_image.url == null) {			
+
+			if (state.update_viewer.new_image.url == null) {
 			    // Displayed when there is no new image, or the new image is done loading.
 			    var but = $('#' + viewerID + '---update_now');
 			    but.prop('disabled', true);
@@ -219,26 +229,26 @@ cmds = {
 
 	resume: function(cmd_args) {
 	    var viewerID = cmd_args['viewer_id'];
-		
-		jQuery("#" + viewerID + "---pause_resume").attr('value', 'Pause'); 
+
+		jQuery("#" + viewerID + "---pause_resume").attr('value', 'Pause');
 		state.update_viewer.updatelist[viewerID] = true;
 		cmds.update_viewer_now(cmd_args);
 	},
 
 	pause: function(cmd_args) {
 	    var viewerID = cmd_args['viewer_id'];
-		
-		jQuery("#" + viewerID + "---pause_resume").attr('value', 'Resume'); 
+
+		jQuery("#" + viewerID + "---pause_resume").attr('value', 'Resume');
 		state.update_viewer.updatelist[viewerID] = false;
 	},
-	
+
 	update_viewer_now: function(cmd_args) {
 	    var url = state.update_viewer.new_image.url;
-	    
+
 	    if (url) {
 	        var viewerID = cmd_args['viewer_id'];
-	        
-	        state.lsstviewers['ffview'].plot({url: url, Title: viewerID, ZoomType: 'TO_WIDTH'});		
+
+	        state.lsstviewers['ffview'].plot({url: url, Title: viewerID, ZoomType: 'TO_WIDTH'});
 		    // Clear all boxes
             for (var key in state.boxes) {
                 if (state.boxes.hasOwnProperty(key)) {
@@ -246,15 +256,15 @@ cmds = {
                 }
             }
 		    //cmds.hide_boundary(state, '', ['ffview']); // clear the red boundary
-		
+
 		    state.current_image_url = url;
 		    state.update_viewer.new_image.url = null;
-		
+
 		    // Change button status
 		    var but = $('#' + viewerID + '---update_now');
 		    but.prop('disabled', true);
 		    but.attr('value', 'There are no new images.');
-		} 
+		}
 	},
 
 	load_image: function(state, cmd_args) {
@@ -292,7 +302,7 @@ cmds = {
 			firefly.removeRegionData(state.lsstviewers[region_id], region_id);
 			state.lsstviewers[region_id] = undefined;
 		}
-		
+
 		read_hotpixels({
 		    filename: "default",
 		    threshold: "max",
@@ -304,8 +314,10 @@ cmds = {
 		});
 	},
 
-	show_boundary: function(state, cmd_args) {
-		var plotid = 'ffview'; // ffview as a default
+	show_boundary: function(cmd_args) {
+		console.log(cmd_args);
+		var viewer = cmd_args['viewer_id'];
+		var plotid = viewer; // ffview as a default
 		var region_id = plotid + '-boundary';
 		if (state.lsstviewers[region_id]) {
 			firefly.removeRegionData(state.lsstviewers[region_id], region_id);
@@ -317,8 +329,9 @@ cmds = {
 		})
 	},
 
-	hide_boundary: function(state, cmd_args) {
-		var plotid = 'ffview';
+	hide_boundary: function(cmd_args) {
+		var viewer = cmd_args['viewer_id'];
+		var plotid = viewer;
 		var region_id = plotid + '-boundary';
 		if (state.lsstviewers[region_id]) {
 			firefly.removeRegionData(state.lsstviewers[region_id], region_id);
@@ -473,13 +486,14 @@ cmds = {
 	},
 
 	average_pixel: function(cmd_args) {
+		console.log(cmd_args);
 		var name = cmd_args['box_id'];
 		if (!state.boxes[name]) {
-		
+
 			state.term.echo("The box \'" + name + "\' does not exist!\n");
-		
+
 		} else {
-		
+
 			var viewer = cmd_args['viewer_id'];
 			cmds.clear_box( { 'box_id' : name } );
 			var content = state.boxes[name].select.select('.box-content').attr('id', 'readout-' + name);
@@ -501,7 +515,7 @@ cmds = {
 				state.lsstviewers[region_id] = undefined;
 			}
 			var content = ['box', region.left, region.bottom, region.right - region.left, region.bottom - region.top, 0, '#color=red'].join(' ');
-			
+
 			state.lsstviewers[region_id] = [content];
 			if (firefly.overlayRegionData) {
 				firefly.overlayRegionData([content], region_id, "Boundary", plotid);

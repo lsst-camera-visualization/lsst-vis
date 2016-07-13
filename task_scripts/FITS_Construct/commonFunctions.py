@@ -27,7 +27,8 @@ def convert_to_Box(coords):
     y = min(coords['start_Y'], coords['end_Y'])
     width = abs(coords['end_X']-coords['start_X'])+1
     height = abs(coords['end_Y']-coords['start_Y'])+1
-    return {'x':x, 'y':y, 'width':width, 'height':height}
+    # ds9 box region starts from top left corner.
+    return {'x':x, 'y':y+height-1, 'width':width, 'height':height}
 
 # Return the correct slice for ndarray
 def convert_slice(start, end):

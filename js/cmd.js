@@ -315,7 +315,6 @@ cmds = {
 	},
 
 	show_boundary: function(cmd_args) {
-		console.log(cmd_args);
 		var viewer = cmd_args['viewer_id'];
 		var plotid = viewer; // ffview as a default
 		var region_id = plotid + '-boundary';

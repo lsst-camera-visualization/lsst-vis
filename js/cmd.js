@@ -128,7 +128,12 @@ jQuery(function($, undefined) {
 		}
 	};
 	
-	state.term = jQuery('#cmd').terminal( commands, 
+	var subCommands = [
+	    'rect top left bottom right',
+	    'circ originX originY radius'
+	];
+	
+	state.term = jQuery('#cmd').terminal( commands, subCommands, 
 	                    {
 						helpLink: docLink,
 						prefix: '~>',
@@ -349,7 +354,7 @@ cmds = {
 		if (!state.boxes[name]) {
 			state.term.echo("The box \'" + name + "\' does not exist!\n");
 		} else {
-			cmds.clear_box([name]);
+			cmds.clear_box( { 'box_id' : name } );
 			state.boxes[name].select.remove();
 			state.boxes[name] = undefined;
 			state.term.echo("Success!");

@@ -98,19 +98,11 @@
 			return false;
 		};
 		
-		var highlightString = function(stringToHighlight, index) {
+		var highlightString = function(stringToHighlight) {
 			
 			var prefix = '<span id=\"cmd_highlight\">';
 			var postfix = '</span>';
-			var split = splitByWhiteSpace(stringToHighlight);
-			split[index] = prefix + split[index] + postfix;
-			
-			var newhelpText = '';
-			for (var i = 0; i < split.length; i++) {
-				newhelpText += split[i] + ' ';
-			}
-			return newhelpText;
-			
+			return prefix + stringToHighlight + postfix;
 		};
 		
 		var createCommand = function(cmdName, parameters, callback, description = '', doc_link = '') {
@@ -126,8 +118,7 @@
 			return value;
 		}
 		
-		var setHelpText = function(str, idxToHighlight) {
-		    str = highlightString(str, idxToHighlight);
+		var setHelpText = function(str) {
 			helpText.html(str);
 		}
 		var getHelpText = function() {
@@ -238,6 +229,39 @@
 				    return 1;
 			    return 0;
 		    });
+		}
+		
+		var splitByParameter = function(input) {
+		    var splitWS = splitByWhiteSpace(input);
+		    
+		    var bMulti = false;
+		    var splitP = [];
+		    for (var i = 0; i < splitWS.length; i++) {
+		        var c = splitWS[i];
+		        
+		        if (c.charAt(0) == properties['multiStart']) {
+		            bMulti = true;
+		            c = c.substr(1, c.length);
+		            splitP.push([]);
+		        }
+		        if (c.charAt(c.length - 1) == properties['multiEnd']) {
+		            bMulti = false;
+		            c = c.substr(0, c.length - 1);
+		            if (c)
+		                splitP[splitP.length - 1].push(c);
+		            continue;
+		        }
+		        
+		        if (bMulti) {
+		            if (c)
+		                splitP[splitP.length - 1].push(c);
+		        }
+		        else {
+		            splitP.push(c);
+		        }
+		    }
+		    
+		    return splitP;
 		}
 		
 		///////////////////////////////////////////////////////////////
@@ -410,54 +434,25 @@
 			
 			addHistory(input);
 			
-			var arguments = splitByWhiteSpace(input);
-			var cmdName = arguments.shift();
+            var userParams = splitByParameter(input);
+			var cmdName = userParams.shift();
 						
 			if (cmdName in cmds) {
 				// Command does exist
 				
-				// Save it in history
-				// localStorage.setItem('cmdHistory', JSON.stringify(cmdHistory));
-				
 			    var paramsAsDict = {};
-				var parametersFromCmd = cmds[cmdName]['parameters'];
-				var callbackFunction = cmds[cmdName]['callback'];
+				var cmdParams = cmds[cmdName]['parameters'];
+				var cb = cmds[cmdName]['callback'];
 				
-				var idx = 0;
-				var multi = [];
-				var bMulti = false;
-				arguments.forEach(function(elem) {
-				
-				    if (elem.charAt(0) == properties['multiStart'].charAt(0)) {
-				        elem = elem.substr(1);
-				        multi.push(elem);
-				        bMulti = true;
-				    }
-				    else if (bMulti) {
-				        if (elem.charAt(elem.length - 1) == properties['multiEnd'].charAt(0)) {
-				            elem = elem.substr(0, elem.length - 1);
-				            
-				            multi.push(elem);
-				            bMulti = false;
-				            
-				            paramsAsDict[parametersFromCmd[idx]] = multi.slice();
-				            idx++;
-				        }
-				        else
-				            multi.push(elem);
-				    }
-				    else {
-				        paramsAsDict[parametersFromCmd[idx]] = elem;
-				        idx++;
-				    }	    
-				
-				});
+				for (var i = 0; i < userParams.length; i++) {
+				    paramsAsDict[cmdParams[i]] = userParams[i];
+				}
 				
 				// Add input to outputArea
 				if (!isBuiltInCommand(cmdName))
 					echoCommand(input + '\n');
 				
-				callbackFunction(paramsAsDict);
+				cb(paramsAsDict);
 			
 			} else {
 				echoCommand('\'' + cmdName + '\' command not valid!\n');
@@ -579,11 +574,6 @@
 					ctrlDown = false;
 					break;
 			}
-			
-			
-			
-		
-		
 		
 			input = inputBox.val().replace(/^ /g, '').toLowerCase();
 			if (!input)
@@ -602,7 +592,7 @@
 			    return;
 			
 			var split, currParam;
-			if (input) { 
+			if (input) {
 			    split = splitByWhiteSpace(input);
 			    currParam = split[split.length - 1];
 			}
@@ -647,82 +637,60 @@
 		}
 		
 		var createHelpText = function(input) {
-		    var userParams = splitByWhiteSpace(input);
-		    if (userParams.length == 0)
-		        return;
-		    var userCmd = userParams.shift();
-		    		    
-		    var autoCmd = getAutoComplete(userCmd, keys);
+		    var split = splitByParameter(input);
+		    var cmdName = split.shift();
+		    var autoCmd = getAutoComplete(cmdName, keys);
+		    
 		    if (!autoCmd) {
 		        clearHelpText();
 		        return;
 		    }
 		    
-	        var cmdParams = cmds[autoCmd]['parameters'];
-		    var caretPos = inputBox[0].selectionStart;
+		    var cmdParams = cmds[autoCmd]['parameters'];
+		    
+		    var hlIdx = split.length;
+		    var bEndMulti = input.trim().charAt(input.trim().length - 1) == properties['multiEnd'];
+		    if (input.match(/\s$/) && (!Array.isArray(split[split.length - 1]) || bEndMulti))
+		        hlIdx++;
+		    hlIdx = Math.min(hlIdx, cmdParams.length);
 		    
 		    var helpString = autoCmd;
-		    var hlIdx = userParams.length;
+		    if (hlIdx == 0)
+		        helpString = highlightString(helpString);
 		    
-		    var i;
-		    var bMulti = false;
-		    var bMultiFirst = false;
-		    for (i = 0; i < userParams.length; i++) {
-		        var p = userParams[i];
-		        if (p.charAt(0) == properties['multiStart']) {
-		            p = p.substr(1, p.length);
-		            bMulti = true;
-		            bMultiFirst = true;
-		        }
-		        if (p.charAt(p.length - 1) == properties['multiEnd']) {
-		            p = p.substr(0, p.length - 1);
-		            bMulti = false;
-		            continue;
+		    var i = 0;
+		    for (; i < split.length && i < cmdParams.length; i++) {
+		        var c = split[i];
+		        
+		        if (Array.isArray(c)) {
+		            var autoSub = getAutoComplete(c[0], subCommands);
+		            
+		            if (autoSub) {
+		                var add = ' ' + properties['multiStart'] + cmdParams[i] + ': ';
+		                add += autoSub;
+		                add += properties['multiEnd'];
+		                if ((i + 1) == hlIdx)
+		                    add = highlightString(add);
+		                
+		                helpString += add;
+		                continue;
+		            }
 		        }
 		        
-		        var autoParam = getAutoComplete(p, subCommands);
-		        if (p == '')
-		            autoParam = null;
-		            
-		        if (bMultiFirst && autoParam) {
-		            helpString += ' ' + properties['multiStart'] + cmdParams[i] + ': ';
-		            helpString += autoParam;
-		            helpString += properties['multiEnd'];
-		            hlIdx++;
-		        }
-		        else if (!bMulti) {
-		            helpString += ' ' + cmdParams[i];
-		        }
-		        
-		        bMultiFirst = false;
+		        var add = ' ' + cmdParams[i];
+		        if ((i + 1) == hlIdx)
+		            add = highlightString(add);
+		        helpString += add;
 		    }
 		    
-		    console.log(helpString);
-		    
-		    var realIdx = 0;
-		    var bMulti = false;
-		    for (var i = 0; i < userParams.length; i++) {
-		        var p = userParams[i];
-		        if (p.charAt(0) == properties['multiStart'])
-		            bMulti = true;
-		        if (p.charAt(p.length - 1) == properties['multiEnd'])
-		            bMulti = false;
-		            
-		        if (!bMulti)
-		            realIdx++;
+		    for (; i < cmdParams.length; i++) {
+		        var add = ' ' + cmdParams[i];
+		        if ((i + 1) == hlIdx)
+		            add = highlightString(add);
+		        helpString += add;
 		    }
 		    
-		    if (bMulti)
-		        realIdx++;
-		    
-		    for (; realIdx < cmdParams.length; realIdx++) {
-		        helpString += ' ' + cmdParams[realIdx];
-		    }
-		    
-		    if (input.match(/\s$/))
-		        hlIdx++;
-		    
-		    setHelpText(helpString, hlIdx);
+		    setHelpText(helpString);
 		}
 		
 		

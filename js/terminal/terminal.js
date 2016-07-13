@@ -3,6 +3,7 @@
 (function ( $ ) {
 
 	// @param commands - A list of all of the commands.
+	// @param subCommands - A list of strings, containing any possible sub commands. Subcommands are multi variable parameters.
 	// @param properties - A dictionary of possible properties for the terminal window.
 	// 
 	// Command Attributes:
@@ -27,7 +28,7 @@
 	// };
 	// $('#cmd_div').terminal(commands);
 		
-    $.fn.terminal = function(commands, properties) {
+    $.fn.terminal = function(commands, subCommands, properties) {
 		var checkProperties = function(name, value) {
 			if (properties[name] == undefined)
 				properties[name] = value;
@@ -74,10 +75,6 @@
 		var outputArea = container.find('#cmd_output');
 		var helpText = container.find('#cmd_help');
 		
-		container.click(function() {
-		    inputBox.focus();
-		});
-		
 		var defaultHelpText = 'Command interface: Type help for more info';
 		// Will hold { cmdName, {'parameters', 'callback', 'help' }} for each command
 		var cmds = {};
@@ -99,6 +96,13 @@
 			if (cmd == 'clear' || cmd == 'help' || cmd == 'echo')
 				return true;
 			return false;
+		};
+		
+		var highlightString = function(stringToHighlight) {
+			
+			var prefix = '<span id=\"cmd_highlight\">';
+			var postfix = '</span>';
+			return prefix + stringToHighlight + postfix;
 		};
 		
 		var createCommand = function(cmdName, parameters, callback, description = '', doc_link = '') {
@@ -214,6 +218,52 @@
 		    return { 'cmd' : cmdHistory[cmdHistoryIndex], 'help' : cmdHistoryHelp[cmdHistoryIndex] };
 		}
 		
+		var sortArrayAlpha = function(arr) {
+		    arr.sort(function(a, b) {
+			    var keyA = a.toLowerCase();
+			    var keyB = b.toLowerCase();
+			
+			    if (keyA < keyB)
+				    return -1;
+			    else if (keyA > keyB)
+				    return 1;
+			    return 0;
+		    });
+		}
+		
+		var splitByParameter = function(input) {
+		    var splitWS = splitByWhiteSpace(input);
+		    
+		    var bMulti = false;
+		    var splitP = [];
+		    for (var i = 0; i < splitWS.length; i++) {
+		        var c = splitWS[i];
+		        
+		        if (c.charAt(0) == properties['multiStart']) {
+		            bMulti = true;
+		            c = c.substr(1, c.length);
+		            splitP.push([]);
+		        }
+		        if (c.charAt(c.length - 1) == properties['multiEnd']) {
+		            bMulti = false;
+		            c = c.substr(0, c.length - 1);
+		            if (c)
+		                splitP[splitP.length - 1].push(c);
+		            continue;
+		        }
+		        
+		        if (bMulti) {
+		            if (c)
+		                splitP[splitP.length - 1].push(c);
+		        }
+		        else {
+		            splitP.push(c);
+		        }
+		    }
+		    
+		    return splitP;
+		}
+		
 		///////////////////////////////////////////////////////////////
 		// 3. Built in commands ///////////////////////////////////////
 		///////////////////////////////////////////////////////////////
@@ -302,24 +352,26 @@
 		// 4. Initialization //////////////////////////////////////////
 		///////////////////////////////////////////////////////////////
 
+        // Set width and height of terminal
 		container.css('width', properties['width']);
 		container.css('height', properties['height']);
 		
+		// Set font size
 		if (properties['fontSize'] == '')
 			container.css('font-size', (properties['height'] / 300.0) + 'em');
 		else
 			container.css('font-size', properties['fontSize']);
 		
+		// Calculate output are height
 		var helpTextHeight = helpText.outerHeight(true);
 		var inputBoxHeight = inputBox.outerHeight(true);
 		var containerHeight = container.outerHeight(true);
 		var leftOver = 100 * ((containerHeight - (helpTextHeight + inputBoxHeight)) / containerHeight);
 		outputArea.height((leftOver - 1) + '%');
 		
-		for (var key in commands) {
-			
+		// Create a user-defined commands
+		for (var key in commands) {			
 			if (commands.hasOwnProperty(key)) {
-			
 				// Split command string by whitespace
 				var parameters = splitByWhiteSpace(key);
 				// Store command name
@@ -332,9 +384,13 @@
 				var doc_link = checkStringDef(commands[key]['doc_link']);
 				
 				createCommand(cmdName, parameters, callback, description, doc_link);			
-			}
-			
+			}			
 		};
+		
+		// Clicking anywhere in the terminal will put focus in the input box
+		container.click(function() {
+		    inputBox.focus();
+		});
 		
 		// Add built in commands
 		createCommand(cmdName = 'clear', parameters = [], callback = clearOutputArea, 
@@ -352,17 +408,9 @@
 		clearHelpText();
 		
 		// Sort keys alphabetically
-		keys.sort(function(a, b) {
-			var keyA = a.toLowerCase();
-			var keyB = b.toLowerCase();
-			
-			if (keyA < keyB)
-				return -1;
-			else if (keyA > keyB)
-				return 1;
-			return 0;
-			
-		});
+		sortArrayAlpha(keys);
+		// Sort sub commands
+		sortArrayAlpha(subCommands);
 		
 		// Get stored history, if exists
 		cmdHistory = JSON.parse(localStorage.getItem('cmdHistory'));
@@ -372,9 +420,6 @@
 		if (!cmdHistoryHelp)
 		    cmdHistoryHelp = [];
 		cmdHistoryIndex = cmdHistory.length;
-	    
-	    console.log(cmdHistory);
-	    console.log(cmdHistoryHelp);
 		
 		///////////////////////////////////////////////////////////////
 		// 5. keyup helper functions //////////////////////////////////
@@ -389,75 +434,31 @@
 			
 			addHistory(input);
 			
-			var arguments = splitByWhiteSpace(input);
-			var cmdName = arguments.shift();
+            var userParams = splitByParameter(input);
+			var cmdName = userParams.shift();
 						
 			if (cmdName in cmds) {
 				// Command does exist
 				
-				// Save it in history
-				// localStorage.setItem('cmdHistory', JSON.stringify(cmdHistory));
-				
 			    var paramsAsDict = {};
-				var parametersFromCmd = cmds[cmdName]['parameters'];
-				var callbackFunction = cmds[cmdName]['callback'];
+				var cmdParams = cmds[cmdName]['parameters'];
+				var cb = cmds[cmdName]['callback'];
 				
-				var idx = 0;
-				var multi = [];
-				var bMulti = false;
-				arguments.forEach(function(elem) {
-				
-				    if (elem.charAt(0) == properties['multiStart'].charAt(0)) {
-				        elem = elem.substr(1);
-				        multi.push(elem);
-				        bMulti = true;
-				    }
-				    else if (bMulti) {
-				        if (elem.charAt(elem.length - 1) == properties['multiEnd'].charAt(0)) {
-				            elem = elem.substr(0, elem.length - 1);
-				            
-				            multi.push(elem);
-				            bMulti = false;
-				            
-				            paramsAsDict[parametersFromCmd[idx]] = multi.slice();
-				            idx++;
-				        }
-				        else
-				            multi.push(elem);
-				    }
-				    else {
-				        paramsAsDict[parametersFromCmd[idx]] = elem;
-				        idx++;
-				    }	    
-				
-				});
+				for (var i = 0; i < userParams.length; i++) {
+				    paramsAsDict[cmdParams[i]] = userParams[i];
+				}
 				
 				// Add input to outputArea
 				if (!isBuiltInCommand(cmdName))
 					echoCommand(input + '\n');
 				
-				callbackFunction(paramsAsDict);
+				cb(paramsAsDict);
 			
 			} else {
 				echoCommand('\'' + cmdName + '\' command not valid!\n');
 			}
 			
 			clearInputText();			
-		};
-		
-		var highlightString = function(stringToHighlight, index) {
-			
-			var prefix = '<span id=\"cmd_highlight\">';
-			var postfix = '</span>';
-			var split = splitByWhiteSpace(stringToHighlight);
-			split[index] = prefix + split[index] + postfix;
-			
-			var newhelpText = '';
-			for (var i = 0; i < split.length; i++) {
-				newhelpText += split[i] + ' ';
-			}
-			return newhelpText;
-			
 		};
 		
 		// input - The input string
@@ -514,12 +515,9 @@
 			    for (var i = 0; i < parameters.length; i++)
 				    helpStr += parameters[i] + splitter;
 			
-			    setHelpText(highlightString(helpStr, 0));
-			    helpTextFound = true;
+			    return helpStr;
 	        }
-	        else {
-		        clearHelpText();
-	        }
+	        return null;
 		}
 		
 		
@@ -533,78 +531,42 @@
 				ctrlDown = true;
 			
 		});
-		
-		var helpTextFound = false;			
+				
 		inputBox.keyup(function(event) {
 				
-			var input = inputBox.val().trim();
-			var split, currParam;
-			if (input) { 
-			    split = splitByWhiteSpace(input);
-			    currParam = split[split.length - 1];
-			}
-			
+			var input = inputBox.val().trim().toLowerCase();
+			if (!input)
+			    clearHelpText();
+						
 			switch (event.keyCode) {
 				
 				// Space
 				case 32:
-					if (!input)
-					    return;
-					
-					if (ctrlDown) {
-					    var list;
-					    if (split[0] == 'help' || split.length == 1) {
-					        list = keys;
-					    }
-					
-					    var auto = getAutoComplete(currParam, list);
-					    if (auto == null)
-					        return;
-					    
-					    appendInputText(auto.substr(currParam.length) + ' ');
-					}
-					
+				    if (ctrlDown)
+					    handleAutoComplete(input);
 					break;
 					
-				case 8: // Backspace
+				/*case 8: // Backspace
 				case 46: // Delete
 					if (!input) {
 					    clearHelpText();
 					    return ;
 					}
-				    break;
+				    break;*/
 				
 				// Enter
 				case 13:
-					var sh = outputArea[0].scrollHeight;
-					if (sh <= outputArea.height())
-					    sh = 0;
-					    
-					executeCommand(input);
-					clearHelpText();
-					
-					outputArea.scrollTop(sh);
-					
+				    handleExecuteCommand(input);					
 					break;
 				
 				// Up arrow
 				case 38:
-				    cmdHistoryIndex--;
-				    var hist = getHistory();
-				    
-				    setInputText(hist['cmd']);
-				    setHelpText(hist['help']);
-				    
+				    handleHistory(true);
 					break;
 				
 				// Down arrow
 				case 40:
-				    cmdHistoryIndex++;
-				    var hist = getHistory();
-				    
-				    setInputText(hist['cmd']);
-				    setHelpText(hist['help']);
-				    
+				    handleHistory(false);
 					break;
 				
 				// Ctrl
@@ -613,48 +575,124 @@
 					break;
 			}
 		
-			input = inputBox.val().replace(/^ /g, '');
-			if (!input) {
-			    clearHelpText();
+			input = inputBox.val().replace(/^ /g, '').toLowerCase();
+			if (!input)
 			    return;
-			}
-			
-			var lastChar = input.charAt(input.length - 1);
-			// Open multi param
-			if (lastChar == properties['multiStart'].charAt(0)) {
-			    bMulti = true;
-			}
-			
-			// Close multi param
-			if (lastChar == properties['multiEnd'].charAt(0)) {
-			    bMulti = false;
-			}
-			
-			// If there is no space, it means we are still typing the command name, so we can keep 
-			// searching for the correct help string
-			if (input.match(/\s/) == null) {
-						
-		       findHelpText(input);
-			    
-			}
-			else {
-			    if (splitByWhiteSpace(input)[0] != splitByWhiteSpace(helpText.text())[0]) {
-			        helpTextFound = false;
-			        clearHelpText();
-			    }
-			
-		        if (helpTextFound) {
-		            var numHelpText = splitByWhiteSpace(helpText.text()).length;
-		            var paramIndex = calculateParamIndex(input);			            
-		            if (paramIndex >= numHelpText)
-			            return;
-		
-		            var newHelpText = highlightString(helpText.text(), paramIndex);
-		
-		            setHelpText(newHelpText);
-		        }
-			}
+			    			
+			createHelpText(input);
 		});
+		
+		
+		
+		///////////////////////////////////////////////////////////////
+		// 6. Handling functions //////////////////////////////////////
+		///////////////////////////////////////////////////////////////
+		var handleAutoComplete = function(input) {
+		    if (!input)
+			    return;
+			
+			var split, currParam;
+			if (input) {
+			    split = splitByWhiteSpace(input);
+			    currParam = split[split.length - 1];
+			}
+		    var list;
+		    if (split[0] == 'help' || split.length == 1) {
+		        list = keys;
+		    }
+		
+		    var auto = getAutoComplete(currParam, list);
+		    if (auto == null)
+		        return;
+		    
+		    appendInputText(auto.substr(currParam.length) + ' ');
+		}		
+		
+		var handleExecuteCommand = function(input) {
+			var sh = outputArea[0].scrollHeight;
+			if (sh <= outputArea.height())
+			    sh = 0;
+			    
+			executeCommand(input);
+			clearHelpText();
+			
+			outputArea.scrollTop(sh);
+		}
+		
+		var handleHistory = function(up) {
+		    if (up)
+		        cmdHistoryIndex--;
+		    else
+		        cmdHistoryIndex++;
+		        
+		    var hist = getHistory();
+		    if (hist) {		    	    
+		        setInputText(hist['cmd']);
+		        setHelpText(hist['help']);
+		    }
+		    else {
+		        clearInputText();
+		        clearHelpText();
+		    }		
+		}
+		
+		var createHelpText = function(input) {
+		    var split = splitByParameter(input);
+		    var cmdName = split.shift();
+		    var autoCmd = getAutoComplete(cmdName, keys);
+		    
+		    if (!autoCmd) {
+		        clearHelpText();
+		        return;
+		    }
+		    
+		    var cmdParams = cmds[autoCmd]['parameters'];
+		    
+		    var hlIdx = split.length;
+		    var bEndMulti = input.trim().charAt(input.trim().length - 1) == properties['multiEnd'];
+		    if (input.match(/\s$/) && (!Array.isArray(split[split.length - 1]) || bEndMulti))
+		        hlIdx++;
+		    hlIdx = Math.min(hlIdx, cmdParams.length);
+		    
+		    var helpString = autoCmd;
+		    if (hlIdx == 0)
+		        helpString = highlightString(helpString);
+		    
+		    var i = 0;
+		    for (; i < split.length && i < cmdParams.length; i++) {
+		        var c = split[i];
+		        
+		        if (Array.isArray(c)) {
+		            var autoSub = getAutoComplete(c[0], subCommands);
+		            
+		            if (autoSub) {
+		                var add = ' ' + properties['multiStart'] + cmdParams[i] + ': ';
+		                add += autoSub;
+		                add += properties['multiEnd'];
+		                if ((i + 1) == hlIdx)
+		                    add = highlightString(add);
+		                
+		                helpString += add;
+		                continue;
+		            }
+		        }
+		        
+		        var add = ' ' + cmdParams[i];
+		        if ((i + 1) == hlIdx)
+		            add = highlightString(add);
+		        helpString += add;
+		    }
+		    
+		    for (; i < cmdParams.length; i++) {
+		        var add = ' ' + cmdParams[i];
+		        if ((i + 1) == hlIdx)
+		            add = highlightString(add);
+		        helpString += add;
+		    }
+		    
+		    setHelpText(helpString);
+		}
+		
 		
 		return this;
     };

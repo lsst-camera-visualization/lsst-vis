@@ -2,7 +2,7 @@ function read_boundary(data, cb) {
   firefly.getJsonFromTask('python', 'boundary', data).then(function(data) {
     var d = data.BOUNDARY;
     var regions = [];
-    var color = 'black';
+    var color = 'red';
     for (var i = 0; i < d.length; i++) {
       var di = d[i];
       for (var j = 0; j < di.length; j++) {

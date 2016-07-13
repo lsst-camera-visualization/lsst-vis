@@ -1,7 +1,10 @@
 from astropy.io import fits
 import json
+import sys
+sys.path.append(".")
 from os.path import splitext
 from commonFunctions import getCoord, getDim, convert_to_Box
+import traceback
 
 # Check if the segment data slicing should be reversed or not.
 def check_Reverse_Slicing(detsec, datasec):
@@ -46,12 +49,15 @@ def _get_Header_Info(imgHDUs):
         # Condition about X & Y slicing in segment data.
         is_Slice_Reverse = check_Reverse_Slicing(seg_detsec, seg_datasec)
         # Add correct offset for each segment.
-        boundary_overscan[seg_Y_converted][seg_X] = { 'x':seg_X*seg_dimension[0],
-                                            'y':seg_Y*seg_dimension[1],
-                                            'width':seg_dimension[0],
-                                            'height':seg_dimension[1]}
+        boundary_overscan[seg_Y_converted][seg_X] ={
+                                                # NOTE: DS9 box region start from top left corner
+                                                'x':seg_X*seg_dimension[0],
+                                                'y':seg_Y*seg_dimension[1]+seg_datadim[1]-1,
+                                                'width':seg_datadim[0],
+                                                'height':seg_datadim[1]
+                                                }
         boundary_overscan[seg_Y_converted][seg_X]['x'] += seg_bias_Size[0] if is_Slice_Reverse['x'] else (min(seg_datasec['start_X'], seg_datasec['end_X']))
-        boundary_overscan[seg_Y_converted][seg_X]['y'] += (seg_dimension[1]-getDim(seg_datasec)[1]) if is_Slice_Reverse['y'] else 0
+        boundary_overscan[seg_Y_converted][seg_X]['y'] += (seg_dimension[1]-seg_datadim[1]) if is_Slice_Reverse['y'] else 0
         boundary[seg_Y_converted][seg_X]['index'] = boundary_overscan[seg_Y_converted][seg_X]['index'] = i
         boundary[seg_Y_converted][seg_X]['reverse_slice'] = boundary_overscan[seg_Y_converted][seg_X]['reverse_slice'] = is_Slice_Reverse
 
@@ -64,7 +70,6 @@ def _get_Header_Info(imgHDUs):
             'BOUNDARY'      : boundary,
             'BOUNDARY_OVERSCAN' : boundary_overscan
     }
-    # (json['boundary'])['segment00']
 
 # Get Header information from multiple extension
 # return as a dictionary object
@@ -74,8 +79,12 @@ def get_Header_Info(filename):
             hdulist = [elem.header for elem in fits_object if elem.__class__.__name__ == 'ImageHDU']
             return _get_Header_Info(hdulist)
     except Exception as e:
+        print("Exception in user code:")
+        print("-"*60)
+        traceback.print_exc(file=sys.stdout)
+        print("-"*60)
         print("Error getting header info!\nException: " + str(e) + "\n")
-        return ["Error when getting header info"]
+        return ["Error when getting header info."]
 
 
 if __name__ == "__main__":

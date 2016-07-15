@@ -12,24 +12,27 @@
     <body >
         <div id="header">
             <div id="leftside">
-                <div id="ffview"></div>
+                <div class="viewer" id="ffview"></div>
                 
-		        <div class="update-viewer">
-		            <p class="update-viewer-header">Update Viewer Settings</p>
-		            <input onclick="onClick(this.id)" type="button"
-		                value="Resume" 
-		                class="update-viewer-button"
-		                id="ffview---pause_resume"
-		            >
-		                
-		            <input onclick="onClick(this.id)" type="button" 
-		                value="There are no new images." 
-		                class="update-viewer-button update-now"
-		                id="ffview---update_now" 
-		                disabled
-		            >	  
-		                          
-		        </div>
+	            <div class="viewer-info">
+	                <p class="viewer-info-header">ffview</p>
+	                
+	                <div class="viewer-data">
+	                    <input onclick="onClick(this.id)" type="button"
+	                        value="Resume" 
+	                        class="update-viewer-button"
+	                        id="ffview---pause_resume"
+	                    >
+	                        
+	                    <input onclick="onClick(this.id)" type="button" 
+	                        value="There are no new images." 
+	                        class="update-viewer-button update-now"
+	                        id="ffview---update_now" 
+	                        disabled
+	                    >
+	               </div>
+	                          
+	            </div>
 		
                 <div id="cmd"></div>
             </div>
@@ -47,6 +50,7 @@
         <script src='./js/cmd.js'></script>
         <script src='./js/chart.js'></script>
         <script src='./js/utility.js'></script>
+        <script src='./js/select_region.js'></script>
         
     </body>
 </html>

@@ -51,6 +51,19 @@ var onFireflyLoaded = function() {
 	state.timeinterval = window.setInterval(function(){
 		cmds.update_viewer( { 'viewer_id' : 'ffview' } )
 	}, state.updatetime);
+	
+	var extension= {  // object literal to create extension definition
+                id : "SelectRegionExt",       // extension id
+                plotId : 'ffview',      // plot to put extension on
+                title : "Select Region",    // title use sees
+                toolTip : "a tool tip",    // tooltip
+                extType: "AREA_SELECT",          // type of extension
+                callback: selectRegion          // function (defined above) for callback
+            };
+
+     // get the actions object and call extension add
+    var actions= firefly.appFlux.getActions('ExternalAccessActions');
+    actions.extensionAdd(extension);
 };
 
 jQuery(function($, undefined) {
@@ -257,7 +270,7 @@ cmds = {
 		    // Clear all boxes
             for (var key in state.boxes) {
                 if (state.boxes.hasOwnProperty(key)) {
-                    cmds.clear_box([ key ]);
+                    cmds.clear_box( { 'box_id' : key } );
                 }
             }
 		    //cmds.hide_boundary(state, '', ['ffview']); // clear the red boundary
@@ -448,7 +461,7 @@ cmds = {
 			state.term.echo("The box \'" + name + "\' does not exist!\n");
 		} else {
 			var viewer = cmd_args['viewer_id'] || 'ffview';
-			cmds.clear_box([name]);
+			cmds.clear_box( { 'box_id' : name } );
 			var content = state.boxes[name].select.select('.box-content').attr('id', 'readout-' + name);
 			var first_line = content.append('p');
 			first_line.append('span').text('point x:');
@@ -490,7 +503,6 @@ cmds = {
 	},
 
 	average_pixel: function(cmd_args) {
-		console.log(cmd_args);
 		var name = cmd_args['box_id'];
 		if (!state.boxes[name]) {
 

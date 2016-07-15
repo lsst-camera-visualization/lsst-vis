@@ -51,6 +51,8 @@
 		// 4. Initialization
 		// 5. keyup helper functions
 		// 6. keydown/keyup function
+		// 7. Handling functions
+		// 8. Public functions
 		///////////////////////////////////////////////////////////////
 	
 		
@@ -83,6 +85,8 @@
 		var cmdHistory = [];
 		var cmdHistoryHelp = [];
 		var cmdHistoryIndex;
+		
+		var terminalVariables = {};
 		
 		
 		///////////////////////////////////////////////////////////////
@@ -264,6 +268,22 @@
 		    return splitP;
 		}
 		
+		var parseParameters = function(params) {
+		    for (var i = 0; i < params.length; i++) {
+		        var p = params[i];
+			    if (p in terminalVariables) {
+			        var curr = terminalVariables[p];
+			        
+			        if (curr.charAt(0) == properties['multiStart']) {
+			            curr = curr.trim().substr(1, curr.length - 1);
+			            curr = splitByWhiteSpace(curr);
+			        }
+			        
+			        params[i] = curr;
+			    }
+		    }
+		}
+		
 		///////////////////////////////////////////////////////////////
 		// 3. Built in commands ///////////////////////////////////////
 		///////////////////////////////////////////////////////////////
@@ -421,6 +441,9 @@
 		    cmdHistoryHelp = [];
 		cmdHistoryIndex = cmdHistory.length;
 		
+		
+		
+		
 		///////////////////////////////////////////////////////////////
 		// 5. keyup helper functions //////////////////////////////////
 		///////////////////////////////////////////////////////////////
@@ -435,6 +458,7 @@
 			addHistory(input);
 			
             var userParams = splitByParameter(input);
+            parseParameters(userParams);
 			var cmdName = userParams.shift();
 						
 			if (cmdName in cmds) {
@@ -445,7 +469,7 @@
 				var cb = cmds[cmdName]['callback'];
 				
 				for (var i = 0; i < userParams.length; i++) {
-				    paramsAsDict[cmdParams[i]] = userParams[i];
+                    paramsAsDict[cmdParams[i]] = userParams[i];
 				}
 				
 				// Add input to outputArea
@@ -585,7 +609,7 @@
 		
 		
 		///////////////////////////////////////////////////////////////
-		// 6. Handling functions //////////////////////////////////////
+		// 7. Handling functions //////////////////////////////////////
 		///////////////////////////////////////////////////////////////
 		var handleAutoComplete = function(input) {
 		    if (!input)
@@ -693,6 +717,13 @@
 		    setHelpText(helpString);
 		}
 		
+		
+		///////////////////////////////////////////////////////////////
+		// 8. Public functions ////////////////////////////////////////
+		///////////////////////////////////////////////////////////////
+		this.setVariable = function(name, value) {
+		    terminalVariables[name] = value;
+		}
 		
 		return this;
     };

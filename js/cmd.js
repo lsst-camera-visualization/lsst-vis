@@ -48,6 +48,9 @@ jQuery(function($, undefined) {
 			'description' : 'Calculates the hot pixels within the threshold for the region.',
 			'doc_link' : docLink + '#hot_pixel'
 		},
+		'load_image viewer_id uri' : {
+			'callback' : cmds.load_image
+		},
 		'read_mouse viewer_id box_id' : {
 			'callback' : cmds.read_mouse,
 			'description' : 'Tracks the mouse inside of the view \'viewer_id\' and displays the information in the box \'box_id\'.',
@@ -65,27 +68,27 @@ jQuery(function($, undefined) {
 		'uv_freq viewer_id time_in_millis' : {
 			'callback' : cmds.uv_freq,
 			'description' : 'Changes the frequency for checking for new images from the Rest Server.',
-			'doc_link' : docLink + '#update_viewer_freq'
+			'doc_link' : docLink + '#uv_freq'
 		},
 		'uv_load_new viewer_id' : {
 			'callback' : cmds.uv_load_new,
 			'description' : 'If in a paused state and there is a new image available, calling this command will load the new image without changing the state.',
-			'doc_link' : docLink + '#update_viewer_now'
+			'doc_link' : docLink + '#uv_load_new'
 		},
 		'uv_pause viewer_id' : {
 			'callback' : cmds.uv_pause,
 			'description' : 'Pauses the automatic retrieval of new images from the Rest Server.',
-			'doc_link' : docLink + '#pause'
+			'doc_link' : docLink + '#uv_pause'
 		},
 		'uv_resume viewer_id' : {
 			'callback' : cmds.uv_resume,
 			'description' : 'Pauses the automatic retrieval of new images from the Rest Server.',
-			'doc_link' : docLink + '#resume'
+			'doc_link' : docLink + '#uv_resume'
 		},
 		'uv_update viewer_id' : {
 			'callback' : cmds.uv_update,
 			'description' : 'Updates a viewer immediately, bypassing the update_viewer_freq interval.',
-			'doc_link' : docLink + '#update_viewer'
+			'doc_link' : docLink + '#uv_update'
 		},
 	};
 	
@@ -200,7 +203,6 @@ cmds = {
 			var box_content = box.append('div').classed('box-content', true);
 			
 			box.attr('id', 'box' + name);
-			$('.box' + name).draggable();
 			
 			state.boxes[name] = {
 				select: box,
@@ -219,7 +221,7 @@ cmds = {
 			viewer.readout.register('SELECT_REGION', selectRegion);
 			
 			// Add draggable
-			viewer.container.draggable( {
+			viewer.container.draggable({
 				'cancel' : '.viewer-view'
 			});
 		}
@@ -283,13 +285,14 @@ cmds = {
 		});
 	},
 
-	load_image: function(state, cmd_args) {
+	load_image: function(cmd_args) {
 		var help_string = 'load an image from a URI';
-		var uri = cmd_args[1];
+		var viewerID = cmd_args['viewer_id'];
+		var uri = cmd_args['uri'];
 		var re = /^https?:/;
 		var result = "";
 		result = "Image: " + uri;
-		var viewer = state.viewers.ffview;
+		var viewer = state.viewers[viewerID].ffHandle;
 		if (re.test(uri)) { // this is a URL
 		    viewer.plot({
 		        "URL" : uri,
@@ -306,6 +309,8 @@ cmds = {
 		    });
 		    state.term.echo(result);
 		}
+		state.viewers[viewerID].image_url = uri;
+		console.log(state.viewers[viewerID]);
 		return null;
 	},
 	
@@ -400,7 +405,7 @@ cmds = {
 		
 		// Reset timer
 		viewer.uv.timer_id =
-		    window.setInterval(
+		    setInterval(
 		        function() { 
 		        	cmds.uv_update( { 'viewer_id' : viewerID } ) 
 		        },
@@ -416,14 +421,16 @@ cmds = {
 		
 		if (newImage) {
 			
-			var newPlot = {
+			cmds.load_image( { 'viewer_id' : viewerID, 'uri' : newImage } );
+			
+			/*var newPlot = {
 				url: newImage,
 				Title: viewerID,
 				ZoomType: 'TO_WIDTH'
 			};
 			viewer.ffHandle.plot(newPlot);
 			
-			viewer.image_url = newImage;
+			viewer.image_url = newImage;*/
 			viewer.uv.newest_image = null;
 			
 		    // Change button status

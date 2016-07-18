@@ -35,8 +35,10 @@ function FFReadout(viewerID) {
 		var ext = extConv[data.type];
 		var cbArray = callbacks[ext];
 		for (var i = 0; i < cbArray.length; i++) {
-			var cb = cbArray[i];
-			cb(data);
+			//if (data.plotId == viewerID) {
+				var cb = cbArray[i];
+				cb(data);
+			//}
 		}
 	};
 	
@@ -79,7 +81,7 @@ function Viewer(id) {
 	
 	// Call uv_update every uv.freq milliseconds
 	this.uv.timer_id = 
-		window.setInterval(
+		setInterval(
 			function() {
 				cmds.uv_update( { 'viewer_id' : id } );
 			},					

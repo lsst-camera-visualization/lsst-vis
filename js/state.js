@@ -6,8 +6,6 @@ state = {
 	// An object containing a list Viewers. Each viewer is referenced by its id.
 	viewers: {},
 	
-	show_readouts: undefined,
-	
 	// A handle to the terminal
 	term: null,
 };

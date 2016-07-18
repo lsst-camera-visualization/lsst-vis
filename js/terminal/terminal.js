@@ -239,33 +239,33 @@
 		    var splitWS = splitByWhiteSpace(input);
 		    
 		    var bMulti = false;
-		    var splitP = [];
+		    var result = [];
 		    for (var i = 0; i < splitWS.length; i++) {
 		        var c = splitWS[i];
 		        
 		        if (c.charAt(0) == properties['multiStart']) {
 		            bMulti = true;
 		            c = c.substr(1, c.length);
-		            splitP.push([]);
+		            result.push('');
 		        }
 		        if (c.charAt(c.length - 1) == properties['multiEnd']) {
 		            bMulti = false;
 		            c = c.substr(0, c.length - 1);
 		            if (c)
-		                splitP[splitP.length - 1].push(c);
+		                result[result.length - 1] += c;
 		            continue;
 		        }
 		        
 		        if (bMulti) {
 		            if (c)
-		                splitP[splitP.length - 1].push(c);
+		                result[result.length - 1] += c + ' ';
 		        }
 		        else {
-		            splitP.push(c);
+		            result.push(c);
 		        }
 		    }
 		    
-		    return splitP;
+		    return result;
 		}
 		
 		var parseParameters = function(params) {
@@ -273,12 +273,6 @@
 		        var p = params[i];
 			    if (p in terminalVariables) {
 			        var curr = terminalVariables[p];
-			        
-			        if (curr.charAt(0) == properties['multiStart']) {
-			            curr = curr.trim().substr(1, curr.length - 1);
-			            curr = splitByWhiteSpace(curr);
-			        }
-			        
 			        params[i] = curr;
 			    }
 		    }
@@ -468,8 +462,12 @@
 				var cmdParams = cmds[cmdName]['parameters'];
 				var cb = cmds[cmdName]['callback'];
 				
-				for (var i = 0; i < userParams.length; i++) {
-                    paramsAsDict[cmdParams[i]] = userParams[i];
+				for (var i = 0; i < userParams.length; i++) {	
+					var p = userParams[i];
+					
+					if (p.match(/\s/g))
+						p = splitByWhiteSpace(p);			
+                    paramsAsDict[cmdParams[i]] = p;
 				}
 				
 				// Add input to outputArea

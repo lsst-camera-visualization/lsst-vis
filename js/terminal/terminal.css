@@ -12,6 +12,8 @@
 	
 	position: relative;
 	
+	box-shadow: 7px 7px 5px grey;
+	
 }
 
 #cmd_help {

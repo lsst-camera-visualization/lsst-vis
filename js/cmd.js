@@ -137,12 +137,12 @@ jQuery(function($, undefined) {
 			'doc_link' : docLink + '#hide_boundary'
 		}
 	};
-	
+
 	var subCommands = [
 	    'rect top left bottom right',
 	    'circ originX originY radius'
 	];
-	
+
 	state.term = jQuery('#cmd').terminal( commands, subCommands,
 	                    {
 						    helpLink: docLink,
@@ -197,8 +197,9 @@ cmds = {
 	update_viewer: function(cmd_args) {
 	    var viewerID = cmd_args['viewer_id'];
 
+        var CHECK_IMAGE_HOST = "http://localhost:" // Host running visualization server.
 		var CHECK_IMAGE_PORT = "8099";
-        var CHECK_IMAGE_URL = "http://172.17.0.1:" + CHECK_IMAGE_PORT + "/vis/checkImage";
+        var CHECK_IMAGE_URL = CHECK_IMAGE_HOST + CHECK_IMAGE_PORT + "/vis/checkImage";
         var params = { 'since': state.update_viewer.latest_time };
         jQuery.getJSON(CHECK_IMAGE_URL, params, function(data) {
 

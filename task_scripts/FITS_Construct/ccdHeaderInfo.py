@@ -1,7 +1,8 @@
 from astropy.io import fits
 import json
 import sys
-sys.path.append(".")
+from os.path import dirname
+sys.path.append(dirname(__file__))
 from os.path import splitext
 from commonFunctions import getCoord, getDim, convert_to_Box
 import traceback
@@ -64,7 +65,7 @@ def _get_Header_Info(imgHDUs):
     return {
             'DETSIZE'       : {'x':DETSIZE[0], 'y':DETSIZE[1]},
             'DATASIZE'      : {'x':num_X*seg_datadim[0], 'y':num_Y*seg_datadim[1]},
-            'NUM_AMPS'      : num_amps,
+            'NUM_AMPS'      : {'num':num_amps, 'x':num_X, 'y':num_Y},
             'SEG_SIZE'      : {'x':seg_dimension[0], 'y':seg_dimension[1]},
             'SEG_DATASIZE'  : {'x':seg_datadim[0], 'y':seg_datadim[1]},
             'BOUNDARY'      : boundary,

@@ -51,6 +51,8 @@
 		// 4. Initialization
 		// 5. keyup helper functions
 		// 6. keydown/keyup function
+		// 7. Handling functions
+		// 8. Public functions
 		///////////////////////////////////////////////////////////////
 	
 		
@@ -83,6 +85,8 @@
 		var cmdHistory = [];
 		var cmdHistoryHelp = [];
 		var cmdHistoryIndex;
+		
+		var terminalVariables = {};
 		
 		
 		///////////////////////////////////////////////////////////////
@@ -235,33 +239,43 @@
 		    var splitWS = splitByWhiteSpace(input);
 		    
 		    var bMulti = false;
-		    var splitP = [];
+		    var result = [];
 		    for (var i = 0; i < splitWS.length; i++) {
 		        var c = splitWS[i];
 		        
 		        if (c.charAt(0) == properties['multiStart']) {
 		            bMulti = true;
 		            c = c.substr(1, c.length);
-		            splitP.push([]);
+		            result.push('');
 		        }
 		        if (c.charAt(c.length - 1) == properties['multiEnd']) {
 		            bMulti = false;
 		            c = c.substr(0, c.length - 1);
 		            if (c)
-		                splitP[splitP.length - 1].push(c);
+		                result[result.length - 1] += c;
 		            continue;
 		        }
 		        
 		        if (bMulti) {
 		            if (c)
-		                splitP[splitP.length - 1].push(c);
+		                result[result.length - 1] += c + ' ';
 		        }
 		        else {
-		            splitP.push(c);
+		            result.push(c);
 		        }
 		    }
 		    
-		    return splitP;
+		    return result;
+		}
+		
+		var parseParameters = function(params) {
+		    for (var i = 0; i < params.length; i++) {
+		        var p = params[i];
+			    if (p in terminalVariables) {
+			        var curr = terminalVariables[p];
+			        params[i] = curr;
+			    }
+		    }
 		}
 		
 		///////////////////////////////////////////////////////////////
@@ -421,6 +435,9 @@
 		    cmdHistoryHelp = [];
 		cmdHistoryIndex = cmdHistory.length;
 		
+		
+		
+		
 		///////////////////////////////////////////////////////////////
 		// 5. keyup helper functions //////////////////////////////////
 		///////////////////////////////////////////////////////////////
@@ -435,6 +452,7 @@
 			addHistory(input);
 			
             var userParams = splitByParameter(input);
+            parseParameters(userParams);
 			var cmdName = userParams.shift();
 						
 			if (cmdName in cmds) {
@@ -444,8 +462,12 @@
 				var cmdParams = cmds[cmdName]['parameters'];
 				var cb = cmds[cmdName]['callback'];
 				
-				for (var i = 0; i < userParams.length; i++) {
-				    paramsAsDict[cmdParams[i]] = userParams[i];
+				for (var i = 0; i < userParams.length; i++) {	
+					var p = userParams[i];
+					
+					if (p.match(/\s/g))
+						p = splitByWhiteSpace(p);			
+                    paramsAsDict[cmdParams[i]] = p;
 				}
 				
 				// Add input to outputArea
@@ -585,7 +607,7 @@
 		
 		
 		///////////////////////////////////////////////////////////////
-		// 6. Handling functions //////////////////////////////////////
+		// 7. Handling functions //////////////////////////////////////
 		///////////////////////////////////////////////////////////////
 		var handleAutoComplete = function(input) {
 		    if (!input)
@@ -693,6 +715,13 @@
 		    setHelpText(helpString);
 		}
 		
+		
+		///////////////////////////////////////////////////////////////
+		// 8. Public functions ////////////////////////////////////////
+		///////////////////////////////////////////////////////////////
+		this.setVariable = function(name, value) {
+		    terminalVariables[name] = value;
+		}
 		
 		return this;
     };

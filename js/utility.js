@@ -7,7 +7,6 @@ function read_boundary(data, cb) {
       var di = d[i];
       for (var j = 0; j < di.length; j++) {
         var dij = di[j];
-        console.log(JSON.stringify(dij));
         var height = dij['height'];
         var width = dij['width'];
         var x = dij['x'];
@@ -21,8 +20,8 @@ function read_boundary(data, cb) {
         regions.push(content);
       }
     }
-    console.log(regions);
-    cb(regions);
+    // console.log(regions);
+    cb({"header":data, "regions_ds9":regions});
   });
 }
 

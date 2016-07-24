@@ -55,7 +55,7 @@
     height: 95%;
 }
 
-.update-viewer {
+.viewer-info {
     background-color: #f00;
     border-radius: 10px;
     font-family: Tahoma, Geneva, Arial, sans-serif;
@@ -64,15 +64,20 @@
     margin-top: 10px;
 }
 
-.update-viewer-header {
+.viewer-info-header {
     font-size: 1.35em;
     text-align: center;
     border-bottom: 1px solid #000;
 }
 
+.viewer-data {
+    
+}
+
 .update-viewer-button {
-    margin-left: 5px;
-    margin-right: 5px;
+    border-right: 1px solid #000;
+    display: block;
+    margin: 2px auto;
 }
 
 .pause-resume {

@@ -52,6 +52,12 @@ function Box(boxName) {
 		}
 	}
 	
+	var getStyleLineDOM = function(data) {
+		var split = data.split('-')[1];
+		var lineStyle = split.substr(0, split.length - 1);
+		return jQuery('<p>').addClass('box-line').css('border-bottom-style', lineStyle);
+	}
+	
 	var createLineDOM = function(data) {
 		var line = jQuery('<p>');
 		
@@ -62,9 +68,8 @@ function Box(boxName) {
 				line.append(dom).append(' ');
 			}
 		}
-		else if (data == ':line:') {
-			var split = jQuery('<p>').addClass('box-line');
-			line.append(split);
+		else if ((typeof data === 'string' || data instanceof String) && data.includes(':line')) {
+			line.append(getStyleLineDOM(data));
 			return line;
 		}
 		else {
@@ -75,18 +80,28 @@ function Box(boxName) {
 	}
 	
 	this.setText = function(textArray) {
-		this.clear();
+		body.empty();
 	
 		for (var i = 0; i < textArray.length; i++) {
 			body.append(createLineDOM(textArray[i]));
 		}
 	}
 	
+	var clearCallbacks = [];
+	this.onClear = function(f) {
+		clearCallbacks.push(f);
+	}
 	this.clear = function() {
+		for (var i = 0; i < clearCallbacks.length; i++) {
+			clearCallbacks[i]();
+		}
+		clearCallbacks = [];
+	
 		body.empty();
 	}
 	
 	this.destroy = function() {
+		this.clear();
 		this.dom.remove();
 	}
 	

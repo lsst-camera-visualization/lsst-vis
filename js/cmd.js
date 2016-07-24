@@ -115,10 +115,9 @@ cmds = {
 
 	average_pixel: function(cmd_args) {
 		var boxID = cmd_args['box_id'];
-		if (state.boxes[boxID]) {
-
-			// The ID of the viewer to use
-			var viewerID = cmd_args['viewer_id'];
+		var viewerID = cmd_args['viewer_id'];
+		if (state.boxes[boxID] && state.viewers[viewerID]) {
+		
 			// The region to do the calculation over
 			var region = cmd_args['region'];
 			
@@ -161,15 +160,19 @@ cmds = {
 					[
 						'Region:'
 					].concat(region_to_boxtext(region)),
-					':line:',
+					':line-dashed:',
 					new BoxText('Average Pixel Value', data['result'])
 				];
 				box.setText(boxText);
 				
 			});
             
-		} else {
+		} 
+		else if (!state.boxes[boxID]) {
 			state.term.echo('A box with that name does not exist!');
+		}
+		else if (!state.viewers[viewerID]) {
+			state.term.echo('A viewer with that name does not exist!');
 		}
 	},
 
@@ -279,24 +282,37 @@ cmds = {
 	},
 
 	hot_pixel: function(cmd_args) {
-	    var viewerID = cmd_args['viewer_id'];
-		var region_id = viewerID + '-hotpixel';
-		var threshold = parseInt(cmd_args['threshold']);
-		var region = parse_region(cmd_args['region']) || "all";
-		if (state.viewers[region_id]) {
-			firefly.removeRegionData(state.viewers[region_id], region_id);
-			state.viewers[region_id] = undefined;
-		}
+		var viewerID = cmd_args['viewer_id'];
+		if (state.viewers[viewerID]) {
+		
+			var threshold = parseInt(cmd_args['threshold']);
+			var region = parse_region(cmd_args['region']);
+			
+			// A handle to the ff image viewer
+			var imageViewer = state.viewers[viewerID].ffHandle;
+			
+			var regionID = viewerID + '-hotpixel';
+			if (state.viewers[regionID]) {
+				firefly.removeRegionData(imageViewer[regionID], regionID);
+				imageViewer[regionID] = undefined;
+			}
 
-		read_hotpixels({
-		    filename: "default",
-		    threshold: "max",
-		    "region": {"rect": region}
-			},
-			function(regions) {
-		    state.viewers[region_id] = regions;
-		    firefly.overlayRegionData(regions, region_id, 'hotpixel', viewerID);
-		});
+			read_hotpixels(
+				{
+					filename: "default",
+					threshold: "max",
+					"region": region
+				},
+				function(regions) {
+					imageViewer[regionID] = regions;
+					firefly.overlayRegionData(regions, regionID, 'hotpixel', viewerID);
+				}
+			);
+            
+		}
+		else {
+			state.term.echo('A viewer with that name does not exist!');
+		}
 	},
 
 	load_image: function(cmd_args) {
@@ -329,29 +345,46 @@ cmds = {
 	},
 
 	read_mouse: function(cmd_args) {
-		var name = cmd_args['box_id'];
-		if (!state.boxes[name]) {
-			state.term.echo("The box \'" + name + "\' does not exist!\n");
-		} else {
-			var viewerID = cmd_args['viewer_id'] || 'ffview';
+		var boxID = cmd_args['box_id'];
+		var viewerID = cmd_args['viewer_id'];
+		
+		if (state.boxes[boxID] && state.viewers[viewerID]) {
+			var box = state.boxes[boxID];
 			var viewer = state.viewers[viewerID];
-
-			cmds.clear_box( { 'box_id' : name } );
-
-			var content = state.boxes[name].select.select('.box-content').attr('id', 'readout-' + name);
-			var first_line = content.append('p');
-			first_line.append('span').text('point x:');
-			var x_point = first_line.append('span').attr('id', 'readout-x-' + name);
-
-			var second_line = content.append('p');
-			second_line.append('span').text('point y:');
-			var y_point = second_line.append('span').attr('id', 'readout-y-' + name);
-
-			var third_line = content.append('p');
-			third_line.append('span').text('region: ');
-			var region_name = third_line.append('span').attr('id', 'readout-region-' + name);
-
-            // get the size of an image
+			
+			// Clear 
+			cmds.clear_box( { 'box_id' : boxID } );
+		
+			var boxText = [
+				'read_mouse',
+				new BoxText('Viewer', viewerID),
+				[
+					'Point: ',
+					new BoxText('X', ''),
+					new BoxText('Y', '')
+				]
+			];
+			box.setText(boxText);
+			
+			var readoutID = viewer.readout.register('READ_MOUSE', function(data) {
+				boxText = [
+					'read_mouse',
+					new BoxText('Viewer', viewerID),
+					[
+						'Point: ',
+						new BoxText('X', Math.trunc(data.ipt.x)),
+						new BoxText('Y', Math.trunc(data.ipt.y))
+					]
+				];
+				box.setText(boxText);
+	  		});
+	  		box.onClear(
+	  			function() {
+	    			viewer.readout.unregister('READ_MOUSE', readoutID);
+	  			}
+	  		);
+	  		
+	  		/*  // get the size of an image
 			var height = 0;
 			var width = 0;
 
@@ -375,7 +408,14 @@ cmds = {
 	  		});
 	  		state.boxes[name].clear = function() {
 	    		viewer.readout.unregister('READ_MOUSE', readoutID);
-	  		};
+	  		};*/
+		
+		}
+		else if (!state.boxes[boxID]) {
+			state.term.echo('A box with that name does not exist!');
+		}
+		else if (!state.viewers[viewerID]) {
+			state.term.echo('A viewer with that name does not exist!');
 		}
 	},
 

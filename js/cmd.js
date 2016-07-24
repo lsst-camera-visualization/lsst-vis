@@ -217,7 +217,9 @@ cmds = {
 		
 		if (!state.boxes[name]) {
 			var box = new Box(name);
-			box.dom.draggable();
+			box.dom.draggable({
+				'handle' : '.box-title'
+			});
 		
 			state.boxes[name] = box; 
 		}

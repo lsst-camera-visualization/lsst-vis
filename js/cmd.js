@@ -244,7 +244,7 @@ cmds = {
 
 	hide_boundary: function(cmd_args) {
 		var viewerID = cmd_args['viewer_id'];
-		var plotid = viewer;
+		var plotid = viewerID;
 		var region_id = plotid + '-boundary';
         var viewer = state.viewers[viewerID];
         if (viewer.show_boundary){
@@ -373,7 +373,7 @@ cmds = {
         var viewer = state.viewers[viewerID];
         if (!(viewer.show_boundary)){
             if (viewer.header){
-                firefly.overlayRegionData(viewers.header["regions_ds9"], region_id, 'Boundary', plotid);
+                firefly.overlayRegionData(viewer.header["regions_ds9"], region_id, 'Boundary', plotid);
                 viewer.show_boundary = true;
             }else{
                 read_boundary(plotid, function(regions) { // Asynchronous

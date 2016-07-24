@@ -195,20 +195,22 @@ cmds = {
 
 	create_box: function(cmd_args) {
 		var name = cmd_args['box_id'];
-		if (state.boxes[name]) {
-			state.term.echo("The box \'" + name + "\' already exists! Please choose another name.\n");
-		} else {
-			var box = d3.select('#rightside').append('div').classed('box', true);
-			var box_title = box.append('div').classed('box-bar', true).text(name);
-			var box_content = box.append('div').classed('box-content', true);
-
-			box.attr('id', 'box' + name);
-
-			state.boxes[name] = {
-				select: box,
-			};
-			state.term.echo("Success!\n");
-		}
+		
+		var box = new Box(name);
+		box.dom.draggable();
+		
+		var boxText = [
+			'hi',
+			new BoxText('label', 'value'),
+			[
+				new BoxText('label1', 'value1'),
+				'text',
+				new BoxText('label2', 'value2')
+			]
+		];
+		box.setText(boxText);
+		
+		state.boxes[name] = box;		
 	},
 
 	create_viewer: function(cmd_args) {

@@ -43,15 +43,72 @@ function shape2points(data, cb){
 
 }
 
-// take the cmd and consume the region
-function parse_region(cmd) {
-  if (cmd.length > 0){
-    if (cmd[0] == 'rect') return parse_rect(cmd);
-  }
-  return null
+function parse_region(region) {
+	
+	if (region[0] == 'rect') {
+		return parse_rect(region);
+	}
+	
+	return null;
 }
 
-function parse_rect(cmd) {
-  cmd.shift();
-  return {'top': parseInt(cmd.shift()), 'left': parseInt(cmd.shift()), 'bottom': parseInt(cmd.shift()), 'right': parseInt(cmd.shift())}
+function parse_rect(region) {
+
+	var rect;
+
+	if (region) {
+		rect = {
+			'top' : Number(region[1]),
+			'left' : Number(region[2]),
+			'bottom' : Number(region[3]),
+			'right' : Number(region[4])
+		};
+	}
+	else {
+		rect = {
+			'top' : 0,
+			'left' : 0,
+			'bottom' : 1,
+			'right' : 1
+		};
+	}
+	
+	return { 'rect' : rect };
 }
+
+function region_to_overlay(region) {
+	var type = region[0];
+	
+	if (type == 'rect') {
+		var rect = parse_rect(region)['rect'];
+		return ['box', rect.left, rect.bottom, rect.right - rect.left, rect.bottom - rect.top, 0, '#color=red'].join(' ');
+	}
+	
+	return null;
+}
+
+
+function region_to_boxtext(region) {
+
+	if (!region)
+		return 'Invalid Region';
+
+	switch (region[0]) {
+		case 'rect':
+			var top = new BoxText('top', region[1]);
+			var left = new BoxText('left', region[2]);
+			var bottom = new BoxText('bottom', region[3]);
+			var right = new BoxText('right', region[4]);
+			return [ top, left, bottom, right ];
+			
+		case 'circ':
+		
+			return '';
+	}
+}
+
+
+
+
+
+

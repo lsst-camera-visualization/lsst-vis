@@ -114,43 +114,65 @@ jQuery(function($, undefined) {
 cmds = {
 
 	average_pixel: function(cmd_args) {
-		var name = cmd_args['box_id'];
-		if (!state.boxes[name]) {
-
-			state.term.echo("The box \'" + name + "\' does not exist!\n");
-            
-		} else {
-
-			var viewer = cmd_args['viewer_id'];
-			cmds.clear_box( { 'box_id' : name } );
-
-			var content = state.boxes[name].select.select('.box-content').attr('id', 'readout-' + name);
-			var first_line = content.append('p');
-			first_line.append('span').text('average pixel value around region');
-			// var x_point = first_line.append('span').attr('id', 'read_about'+name);
-			var region = parse_region(cmd_args['region']) || {
-				top: 0,
-				left: 0,
-				bottom: 1,
-				right: 1
-			};
-			var second_line = content.append('p').text('top: ' + region.top + ' bottom: ' + region.bottom + ' left: ' + region.left + ' right: ' + region.right);
-			var third_line = content.append('p').text('value: 0');
-			var plotid = viewer;
-			var region_id = plotid + '-boundary';
-			if (state.viewers[region_id]) {
-				firefly.removeRegionData(state.viewers[region_id], region_id);
-				state.viewers[region_id] = undefined;
+		var boxID = cmd_args['box_id'];
+		var viewerID = cmd_args['viewer_id'];
+		if (state.boxes[boxID] && state.viewers[viewerID]) {
+		
+			// The region to do the calculation over
+			var region = cmd_args['region'];
+			
+			// A handle to the viewer
+			var viewer = state.viewers[viewerID];
+			// A handle to the ff image viewer
+			var imageViewer = viewer.ffHandle;
+			// A handle to the box to use
+			var box = state.boxes[boxID];
+			
+			// Clear the box of any existing information
+			cmds.clear_box( { 'box_id' : boxID } );
+			
+			// Clear the viewer
+			var plotID = viewerID;
+			var regionID = plotID + '-boundary';
+			if (imageViewer[regionID]) {
+				firefly.removeRegionData(imageViewer[regionID], regionID);
+				imageViewer[regionID] = undefined;
 			}
-			var content = ['box', region.left, region.bottom, region.right - region.left, region.bottom - region.top, 0, '#color=red'].join(' ');
-
-			state.viewers[region_id] = [content];
+			
+			// Show region on image viewer
+			var imageRegion = region_to_overlay(region);
+			imageViewer[regionID] = [ imageRegion ];
 			if (firefly.overlayRegionData) {
-				firefly.overlayRegionData([content], region_id, "Boundary", plotid);
+				firefly.overlayRegionData( [ imageRegion ], regionID, "Boundary", plotID);
 			}
-			firefly.getJsonFromTask("python", "average", {'rect': region}).then(function(data) {
-			    third_line.text('value: ' + data["result"]);
+			
+			var boxText = [
+				'Processing average_pixel...'
+			];
+			box.setText(boxText);
+			
+			// Call average_pixel python task
+			firefly.getJsonFromTask("python", "average", parse_region(region) ).then(function(data) {
+			
+				boxText = [
+					'average_pixel',
+					new BoxText('Viewer', viewerID),
+					[
+						'Region:'
+					].concat(region_to_boxtext(region)),
+					':line-dashed:',
+					new BoxText('Average Pixel Value', data['result'])
+				];
+				box.setText(boxText);
+				
 			});
+            
+		} 
+		else if (!state.boxes[boxID]) {
+			state.term.echo('A box with that name does not exist!');
+		}
+		else if (!state.viewers[viewerID]) {
+			state.term.echo('A viewer with that name does not exist!');
 		}
 	},
 
@@ -181,34 +203,29 @@ cmds = {
 	},
 
 	clear_box: function(cmd_args) {
-		var name = cmd_args['box_id'];
-		if (!state.boxes[name]) {
-			state.term.echo("The box \'" + name + "\' does not exist!\n");
+		var boxID = cmd_args['box_id'];
+		
+		if (state.boxes[boxID]) {
+			state.boxes[boxID].clear();
 		} else {
-			if (state.boxes[name].clear) {
-				state.boxes[name].clear();
-				state.boxes[name].clear = undefined;
-			}
-			state.boxes[name].select.select('.box-content').attr("id", "").html("");
+			state.term.echo('A box with that name does not exist!');
 		}
 	},
 
 	create_box: function(cmd_args) {
 		var name = cmd_args['box_id'];
-		if (state.boxes[name]) {
-			state.term.echo("The box \'" + name + "\' already exists! Please choose another name.\n");
-		} else {
-			var box = d3.select('#rightside').append('div').classed('box', true);
-			var box_title = box.append('div').classed('box-bar', true).text(name);
-			var box_content = box.append('div').classed('box-content', true);
-
-			box.attr('id', 'box' + name);
-
-			state.boxes[name] = {
-				select: box,
-			};
-			state.term.echo("Success!\n");
+		
+		if (!state.boxes[name]) {
+			var box = new Box(name);
+			box.dom.draggable({
+				'handle' : '.box-title'
+			});
+		
+			state.boxes[name] = box; 
 		}
+		else {
+			state.term.echo('A box with that name already exists!');
+		}	
 	},
 
 	create_viewer: function(cmd_args) {
@@ -232,13 +249,14 @@ cmds = {
 
 	delete_box: function(cmd_args) {
 		var name = cmd_args['box_id'];
-		if (!state.boxes[name]) {
-			state.term.echo("The box \'" + name + "\' does not exist!\n");
-		} else {
-			cmds.clear_box( { 'box_id' : name } );
-			state.boxes[name].select.remove();
-			state.boxes[name] = undefined;
-			state.term.echo("Success!");
+		
+		if (state.boxes[name]) {
+			state.boxes[name].destroy();
+			delete state.boxes[name];
+			state.term.echo('The box was successfully deleted.'); 
+		}
+		else {
+			state.term.echo('A box with that name does not exist!');
 		}
 	},
 
@@ -266,24 +284,37 @@ cmds = {
 	},
 
 	hot_pixel: function(cmd_args) {
-	    var viewerID = cmd_args['viewer_id'];
-		var region_id = viewerID + '-hotpixel';
-		var threshold = parseInt(cmd_args['threshold']);
-		var region = parse_region(cmd_args['region']) || "all";
-		if (state.viewers[region_id]) {
-			firefly.removeRegionData(state.viewers[region_id], region_id);
-			state.viewers[region_id] = undefined;
-		}
+		var viewerID = cmd_args['viewer_id'];
+		if (state.viewers[viewerID]) {
+		
+			var threshold = parseInt(cmd_args['threshold']);
+			var region = parse_region(cmd_args['region']);
+			
+			// A handle to the ff image viewer
+			var imageViewer = state.viewers[viewerID].ffHandle;
+			
+			var regionID = viewerID + '-hotpixel';
+			if (state.viewers[regionID]) {
+				firefly.removeRegionData(imageViewer[regionID], regionID);
+				imageViewer[regionID] = undefined;
+			}
 
-		read_hotpixels({
-		    filename: "default",
-		    threshold: "max",
-		    "region": {"rect": region}
-			},
-			function(regions) {
-		    state.viewers[region_id] = regions;
-		    firefly.overlayRegionData(regions, region_id, 'hotpixel', viewerID);
-		});
+			read_hotpixels(
+				{
+					filename: "default",
+					threshold: "max",
+					"region": region
+				},
+				function(regions) {
+					imageViewer[regionID] = regions;
+					firefly.overlayRegionData(regions, regionID, 'hotpixel', viewerID);
+				}
+			);
+            
+		}
+		else {
+			state.term.echo('A viewer with that name does not exist!');
+		}
 	},
 
 	load_image: function(cmd_args) {
@@ -316,29 +347,46 @@ cmds = {
 	},
 
 	read_mouse: function(cmd_args) {
-		var name = cmd_args['box_id'];
-		if (!state.boxes[name]) {
-			state.term.echo("The box \'" + name + "\' does not exist!\n");
-		} else {
-			var viewerID = cmd_args['viewer_id'] || 'ffview';
+		var boxID = cmd_args['box_id'];
+		var viewerID = cmd_args['viewer_id'];
+		
+		if (state.boxes[boxID] && state.viewers[viewerID]) {
+			var box = state.boxes[boxID];
 			var viewer = state.viewers[viewerID];
-
-			cmds.clear_box( { 'box_id' : name } );
-
-			var content = state.boxes[name].select.select('.box-content').attr('id', 'readout-' + name);
-			var first_line = content.append('p');
-			first_line.append('span').text('point x:');
-			var x_point = first_line.append('span').attr('id', 'readout-x-' + name);
-
-			var second_line = content.append('p');
-			second_line.append('span').text('point y:');
-			var y_point = second_line.append('span').attr('id', 'readout-y-' + name);
-
-			var third_line = content.append('p');
-			third_line.append('span').text('region: ');
-			var region_name = third_line.append('span').attr('id', 'readout-region-' + name);
-
-            // get the size of an image
+			
+			// Clear 
+			cmds.clear_box( { 'box_id' : boxID } );
+		
+			var boxText = [
+				'read_mouse',
+				new BoxText('Viewer', viewerID),
+				[
+					'Point: ',
+					new BoxText('X', ''),
+					new BoxText('Y', '')
+				]
+			];
+			box.setText(boxText);
+			
+			var readoutID = viewer.readout.register('READ_MOUSE', function(data) {
+				boxText = [
+					'read_mouse',
+					new BoxText('Viewer', viewerID),
+					[
+						'Point: ',
+						new BoxText('X', Math.trunc(data.ipt.x)),
+						new BoxText('Y', Math.trunc(data.ipt.y))
+					]
+				];
+				box.setText(boxText);
+	  		});
+	  		box.onClear(
+	  			function() {
+	    			viewer.readout.unregister('READ_MOUSE', readoutID);
+	  			}
+	  		);
+	  		
+	  		/*  // get the size of an image
 			var height = 0;
 			var width = 0;
 
@@ -362,7 +410,14 @@ cmds = {
 	  		});
 	  		state.boxes[name].clear = function() {
 	    		viewer.readout.unregister('READ_MOUSE', readoutID);
-	  		};
+	  		};*/
+		
+		}
+		else if (!state.boxes[boxID]) {
+			state.term.echo('A box with that name does not exist!');
+		}
+		else if (!state.viewers[viewerID]) {
+			state.term.echo('A viewer with that name does not exist!');
 		}
 	},
 

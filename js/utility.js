@@ -1,5 +1,4 @@
 function read_boundary(data, cb) {
-    console.log(data);
   firefly.getJsonFromTask('python', 'boundary', data).then(function(data) {
     var d = data.BOUNDARY;
     var regions = [];

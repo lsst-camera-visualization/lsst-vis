@@ -118,7 +118,7 @@ cmds = {
 		if (!state.boxes[name]) {
 
 			state.term.echo("The box \'" + name + "\' does not exist!\n");
-
+            
 		} else {
 
 			var viewer = cmd_args['viewer_id'];

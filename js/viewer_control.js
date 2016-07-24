@@ -21,16 +21,16 @@ function FFReadout(viewerID) {
 		'AREA_SELECT' : 'SELECT_REGION',
 		'PLOT_MOUSE_READ_OUT' : 'READ_MOUSE',
 	};
-	
+
 	this.register = function(ext, callback) {
 		callbacks[ext].push(callback);
 		return callbacks[ext].length - 1;
 	};
-	
+
 	this.unregister = function(ext, idx) {
 		callbacks[ext].splice(idx, 1);
 	};
-	
+
 	var dispatch = function(data) {
 		var ext = extConv[data.type];
 		var cbArray = callbacks[ext];
@@ -41,12 +41,12 @@ function FFReadout(viewerID) {
 			//}
 		}
 	};
-	
+
 	var createExt = function(ext, name) {
 		actions.extensionAdd(ext);
 		callbacks[name] = [];
 	}
-	
+
 	var actions = firefly.appFlux.getActions('ExternalAccessActions');
 	var areaSelectionExt = {
 		id : 'SELECT_REGION',
@@ -72,19 +72,23 @@ function FFReadout(viewerID) {
 // - image_url: The url of the image the viewer is currently displaying
 // - uv: A UV_Data object.
 // - readout: An FFReadout object.
+// - header: Store the header information of the image in the Viewer.
 function Viewer(id) {
 	this.container = createViewerSkeleton(id);
 	this.ffHandle = loadFirefly(id);
 	this.image_url = null;
 	this.uv = new UV_Data();
 	this.readout = new FFReadout(id);
-	
+
+	this.header = null;
+	this.show_boundary = false;
+
 	// Call uv_update every uv.freq milliseconds
-	this.uv.timer_id = 
+	this.uv.timer_id =
 		setInterval(
 			function() {
 				cmds.uv_update( { 'viewer_id' : id } );
-			},					
+			},
 			this.uv.freq
 		);
 }
@@ -101,9 +105,9 @@ var selectRegion = function(data) {
         var bottom = data.ipt1.y;
         var left = data.ipt0.x;
         var right = data.ipt1.x;
-        
+
         state.term.setVariable('selected', 'rect ' + top + ' ' + left + ' ' + bottom + ' ' + right);
-        
+
         jQuery("#ffview-var-selected").css('color', 'white');
     }
 
@@ -138,58 +142,58 @@ var onClickViewer = function(id) {
 var createViewerSkeleton = function(viewerID) {
 
 	var container = jQuery('<div class="viewer" id="' + viewerID + '-container"></div>');
-	var containerID = '#' + viewerID + '-container'; 
-	
+	var containerID = '#' + viewerID + '-container';
+
 	var main = jQuery('<div class="viewer-main"></div>');
 	var infoHeader = jQuery('<p class="viewer-info-header">' + viewerID + '</p>');
 	var expandFunc = jQuery('<img src="./images/func.png" class="viewer-expand-functions">');
 	var viewer = jQuery('<div id="' + viewerID + '" class="viewer-view"></div>');
-	
+
 	var viewerInfo = jQuery('<div class="viewer-info"></div>');
-	
+
 	var updateViewer = jQuery('<div class="viewer-data border-right"></div>');
 	var UVHeader = jQuery('<p class="viewer-data-header viewer-data-text">Update Viewer Settings</p>');
 	var UVPauseResume = jQuery(' <input onclick="onClickViewer(this.id)" type="button" value="Resume" class="button" id="' + viewerID + '---pause_resume">');
 	var UVUpdateNow = jQuery('<input onclick="onClickViewer(this.id)" type="button" value="There are no new images." class="button update-now" id="' + viewerID + '---update_now" disabled>');
-	
+
 	var terminalVariables = jQuery('<div class="viewer-data"></div>');
 	var TVHeader = jQuery('<p class="viewer-data-header viewer-data-text">Terminal Variables</p>');
 	var TVSelected = jQuery('<p class="viewer-data-text viewer-data-text-unselected" id="ffview-var-selected">selected</p>');
-	
+
 	var functionBar = jQuery('<div class="viewer-function-bar"></div>');
 	var task1 = jQuery('<img src="./images/func.png" class="viewer-function-task">');
 	var task2 = jQuery('<img src="./images/func.png" class="viewer-function-task">');
 	var task3 = jQuery('<img src="./images/func.png" class="viewer-function-task">');
 	var task4 = jQuery('<img src="./images/func.png" class="viewer-function-task">');
 	var task5 = jQuery('<img src="./images/func.png" class="viewer-function-task">');
-	
+
 	jQuery('#leftside').append(container);
-	
+
 	container.append(main);
 	main.append(infoHeader);
 	main.append(expandFunc);
 	main.append(viewer);
-	
+
 	main.append(viewerInfo);
-	
+
 	viewerInfo.append(updateViewer);
 	updateViewer.append(UVHeader);
 	updateViewer.append(UVPauseResume);
 	updateViewer.append(UVUpdateNow);
-	
+
 	viewerInfo.append(terminalVariables);
 	terminalVariables.append(TVHeader);
 	terminalVariables.append(TVSelected);
-	
+
 	container.append(functionBar);
 	functionBar.append(task1);
 	functionBar.append(task2);
 	functionBar.append(task3);
 	functionBar.append(task4);
-	functionBar.append(task5);	
-	
-	expandFunc.on('click', toggleFunctionBar);		
-	
+	functionBar.append(task5);
+
+	expandFunc.on('click', toggleFunctionBar);
+
 	return container;
 }
 
@@ -206,5 +210,3 @@ var toggleFunctionBar = function() {
 	functionBar.css('display', newDisp);
 
 }
-
-

@@ -91,12 +91,12 @@ jQuery(function($, undefined) {
 			'doc_link' : docLink + '#uv_update'
 		},
 	};
-	
+
 	var subCommands = [
 	    'rect top left bottom right',
 	    'circ originX originY radius'
 	];
-	
+
 	state.term = jQuery('#cmd').terminal( commands, subCommands,
 	                    {
 						    helpLink: docLink,
@@ -123,7 +123,7 @@ cmds = {
 
 			var viewer = cmd_args['viewer_id'];
 			cmds.clear_box( { 'box_id' : name } );
-			
+
 			var content = state.boxes[name].select.select('.box-content').attr('id', 'readout-' + name);
 			var first_line = content.append('p');
 			first_line.append('span').text('average pixel value around region');
@@ -201,25 +201,25 @@ cmds = {
 			var box = d3.select('#rightside').append('div').classed('box', true);
 			var box_title = box.append('div').classed('box-bar', true).text(name);
 			var box_content = box.append('div').classed('box-content', true);
-			
+
 			box.attr('id', 'box' + name);
-			
+
 			state.boxes[name] = {
 				select: box,
 			};
 			state.term.echo("Success!\n");
 		}
 	},
-	
+
 	create_viewer: function(cmd_args) {
 		var viewerID = cmd_args['viewer_id'];
-		
-		if (!state.viewers[viewerID]) {	
+
+		if (!state.viewers[viewerID]) {
 			var viewer = new Viewer(viewerID);
 			state.viewers[viewerID] = viewer;
-			
+
 			viewer.readout.register('SELECT_REGION', selectRegion);
-			
+
 			// Add draggable
 			viewer.container.draggable({
 				'cancel' : '.viewer-view'
@@ -243,18 +243,19 @@ cmds = {
 	},
 
 	hide_boundary: function(cmd_args) {
-		var viewer = cmd_args['viewer_id'];
-		var plotid = viewer;
+		var viewerID = cmd_args['viewer_id'];
+		var plotid = viewerID;
 		var region_id = plotid + '-boundary';
-		if (state.viewers[region_id]) {
-			firefly.removeRegionData(state.viewers[region_id], region_id);
-			state.viewers[region_id] = undefined;
-			state.term.echo("Boundary Removed");
-		} else {
-			state.term.echo("The boundary has not been drawn yet.");
-		}
+        var viewer = state.viewers[viewerID];
+        if (viewer.show_boundary){
+            viewer.show_boundary = false;
+            firefly.removeRegionData(viewer.header["regions_ds9"], region_id);
+            state.term.echo("Boundary Removed");
+        }else{
+            state.term.echo("The boundary has not been drawn yet.");
+        }
 	},
-	
+
 	hide_box: function(cmd_args) {
 		var name = cmd_args['box_id'];
 		if (!state.boxes[name]) {
@@ -313,7 +314,7 @@ cmds = {
 		console.log(state.viewers[viewerID]);
 		return null;
 	},
-	
+
 	read_mouse: function(cmd_args) {
 		var name = cmd_args['box_id'];
 		if (!state.boxes[name]) {
@@ -321,9 +322,9 @@ cmds = {
 		} else {
 			var viewerID = cmd_args['viewer_id'] || 'ffview';
 			var viewer = state.viewers[viewerID];
-			
+
 			cmds.clear_box( { 'box_id' : name } );
-			
+
 			var content = state.boxes[name].select.select('.box-content').attr('id', 'readout-' + name);
 			var first_line = content.append('p');
 			first_line.append('span').text('point x:');
@@ -353,7 +354,7 @@ cmds = {
 	    		var y = Math.floor(pt.y / height);
 	    		return 'Region <' + x + ',' + y + '>';
 	  		}
-	  		
+
 			var readoutID = viewer.readout.register('READ_MOUSE', function(data) {
 				x_point.text(Math.floor(data.ipt.x));
 				y_point.text(Math.floor(data.ipt.y));
@@ -364,21 +365,28 @@ cmds = {
 	  		};
 		}
 	},
-	
+
 	show_boundary: function(cmd_args) {
-		var viewer = cmd_args['viewer_id'];
-		var plotid = viewer; // ffview as a default
+		var viewerID = cmd_args['viewer_id'];
+		var plotid = viewerID; // ffview as a default
 		var region_id = plotid + '-boundary';
-		if (state.viewers[region_id]) {
-			firefly.removeRegionData(state.viewers[region_id], region_id);
-			state.viewers[region_id] = undefined;
-		}
-		read_boundary(plotid, function(regions) {
-			state.viewers[region_id] = regions;
-			firefly.overlayRegionData(regions, region_id, 'Boundary', plotid);
-		})
+        var viewer = state.viewers[viewerID];
+        if (!(viewer.show_boundary)){
+            if (viewer.header){
+                firefly.overlayRegionData(viewer.header["regions_ds9"], region_id, 'Boundary', plotid);
+                viewer.show_boundary = true;
+            }else{
+                read_boundary(plotid, function(regions) { // Asynchronous
+                    viewer.header = regions;
+                    firefly.overlayRegionData(viewer.header["regions_ds9"], region_id, 'Boundary', plotid);
+                    viewer.show_boundary = true;
+                })
+            }
+        }else{
+            state.term.echo("Boundary of this viewer is already drawn.")
+        }
 	},
-	
+
 	show_box: function(cmd_args) {
 		var name = cmd_args['box_id'];
 		if (!state.boxes[name]) {
@@ -396,18 +404,18 @@ cmds = {
 	    var timeAsMilli = cmd_args['time_in_millis'];
 		// 5000 milliseconds is the lower bound
 		timeAsMilli = Math.min(timeAsMilli, 5000);
-		
+
 		// Stop timer for viewer
 		clearInterval(viewer.uv.timer_id);
-		
+
 		// Set new update frequency
 		viewer.uv.freq = timeAsMilli;
-		
+
 		// Reset timer
 		viewer.uv.timer_id =
 		    setInterval(
-		        function() { 
-		        	cmds.uv_update( { 'viewer_id' : viewerID } ) 
+		        function() {
+		        	cmds.uv_update( { 'viewer_id' : viewerID } )
 		        },
 		        viewer.uv.freq
 		    );
@@ -416,23 +424,29 @@ cmds = {
 	uv_load_new: function(cmd_args) {
 		var viewerID = cmd_args['viewer_id'];
 	    var viewer = state.viewers[viewerID];
-	
+
+        if (viewer.show_boundary){
+            viewer.show_boundary = false;
+            firefly.removeRegionData(viewer.header["regions_ds9"], region_id);
+        }
+        viewer.header = null;
+
 		var newImage = viewer.uv.newest_image;
-		
+
 		if (newImage) {
-			
+
 			cmds.load_image( { 'viewer_id' : viewerID, 'uri' : newImage } );
-			
+
 			/*var newPlot = {
 				url: newImage,
 				Title: viewerID,
 				ZoomType: 'TO_WIDTH'
 			};
 			viewer.ffHandle.plot(newPlot);
-			
+
 			viewer.image_url = newImage;*/
 			viewer.uv.newest_image = null;
-			
+
 		    // Change button status
 		    var but = $('#' + viewerID + '---update_now');
 		    but.prop('disabled', true);
@@ -447,14 +461,14 @@ cmds = {
 		jQuery("#" + viewerID + "---pause_resume").attr('value', 'Resume');
 		viewer.uv.paused = true;
 	},
-	
+
 	uv_resume: function(cmd_args) {
 	    var viewerID = cmd_args['viewer_id'];
 	    var viewer = state.viewers[viewerID];
 
 		jQuery("#" + viewerID + "---pause_resume").attr('value', 'Pause');
 		viewer.uv.paused = false;
-		
+
 		cmds.uv_load_new( { 'viewer_id' : viewerID } );
 	},
 
@@ -464,10 +478,10 @@ cmds = {
 
 		var CHECK_IMAGE_PORT = "8099";
         var CHECK_IMAGE_URL = "http://172.17.0.1:" + CHECK_IMAGE_PORT + "/vis/checkImage";
-        var params = { 
-        	'since': viewer.uv.image_ts 
+        var params = {
+        	'since': viewer.uv.image_ts
        	};
-       	
+
         jQuery.getJSON(CHECK_IMAGE_URL, params, function(data) {
 
             if (data) {

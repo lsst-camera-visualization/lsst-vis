@@ -20,13 +20,13 @@ function Box(boxName) {
 	}
 	
 	this.dom = createDOMSkeleton();
-	
+	var body = this.dom.children('.box-body');
 	
 	
 	
 	var createBoxTextDOM = function(boxText) {
-		var label = jQuery('<span>').addClass('boxtext-label').text(boxText.label + ': ');
-		var value = jQuery('<span>').addClass('boxtext-value').text(boxText.value);
+		var label = jQuery('<span>').addClass('box-text boxtext-label').text(boxText.label + ': ');
+		var value = jQuery('<span>').addClass('box-text boxtext-value').text(boxText.value);
 		return jQuery('<span>').append('(').append(label).append(value).append(')');
 	}
 	
@@ -58,25 +58,33 @@ function Box(boxName) {
 		if (Array.isArray(data)) {
 			for (var i = 0; i < data.length; i++) {
 				var curr = data[i];
-				line.append(getDOMCreationFunc(curr)(curr)).append(' ');
+				var dom = getDOMCreationFunc(curr)(curr);
+				line.append(dom).append(' ');
 			}
+		}
+		else if (data == ':line:') {
+			var split = jQuery('<p>').addClass('box-line');
+			line.append(split);
+			return line;
 		}
 		else {
 			line.append(getDOMCreationFunc(data)(data));
 		}
 		
-		return line;
+		return line.addClass('box-text-container');
 	}
 	
 	this.setText = function(textArray) {
-		var body = this.dom.children('.box-body');
-		body.empty();
+		this.clear();
 	
 		for (var i = 0; i < textArray.length; i++) {
 			body.append(createLineDOM(textArray[i]));
 		}
 	}
 	
+	this.clear = function() {
+		body.empty();
+	}
 	
 	this.destroy = function() {
 		this.dom.remove();

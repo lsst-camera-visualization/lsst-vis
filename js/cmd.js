@@ -114,43 +114,62 @@ jQuery(function($, undefined) {
 cmds = {
 
 	average_pixel: function(cmd_args) {
-		var name = cmd_args['box_id'];
-		if (!state.boxes[name]) {
+		var boxID = cmd_args['box_id'];
+		if (state.boxes[boxID]) {
 
-			state.term.echo("The box \'" + name + "\' does not exist!\n");
+			// The ID of the viewer to use
+			var viewerID = cmd_args['viewer_id'];
+			// The region to do the calculation over
+			var region = cmd_args['region'];
+			
+			// A handle to the viewer
+			var viewer = state.viewers[viewerID];
+			// A handle to the ff image viewer
+			var imageViewer = viewer.ffHandle;
+			// A handle to the box to use
+			var box = state.boxes[boxID];
+			
+			// Clear the box of any existing information
+			cmds.clear_box( { 'box_id' : boxID } );
+			
+			// Clear the viewer
+			var plotID = viewerID;
+			var regionID = plotID + '-boundary';
+			if (imageViewer[regionID]) {
+				firefly.removeRegionData(imageViewer[regionID], regionID);
+				imageViewer[regionID] = undefined;
+			}
+			
+			// Show region on image viewer
+			var imageRegion = region_to_overlay(region);
+			imageViewer[regionID] = [ imageRegion ];
+			if (firefly.overlayRegionData) {
+				firefly.overlayRegionData( [ imageRegion ], regionID, "Boundary", plotID);
+			}
+			
+			var boxText = [
+				'Processing average_pixel...'
+			];
+			box.setText(boxText);
+			
+			// Call average_pixel python task
+			firefly.getJsonFromTask("python", "average", parse_region(region) ).then(function(data) {
+			
+				boxText = [
+					'average_pixel',
+					new BoxText('Viewer', viewerID),
+					[
+						'Region:'
+					].concat(region_to_boxtext(region)),
+					':line:',
+					new BoxText('Average Pixel Value', data['result'])
+				];
+				box.setText(boxText);
+				
+			});
             
 		} else {
-
-			var viewer = cmd_args['viewer_id'];
-			cmds.clear_box( { 'box_id' : name } );
-
-			var content = state.boxes[name].select.select('.box-content').attr('id', 'readout-' + name);
-			var first_line = content.append('p');
-			first_line.append('span').text('average pixel value around region');
-			// var x_point = first_line.append('span').attr('id', 'read_about'+name);
-			var region = parse_region(cmd_args['region']) || {
-				top: 0,
-				left: 0,
-				bottom: 1,
-				right: 1
-			};
-			var second_line = content.append('p').text('top: ' + region.top + ' bottom: ' + region.bottom + ' left: ' + region.left + ' right: ' + region.right);
-			var third_line = content.append('p').text('value: 0');
-			var plotid = viewer;
-			var region_id = plotid + '-boundary';
-			if (state.viewers[region_id]) {
-				firefly.removeRegionData(state.viewers[region_id], region_id);
-				state.viewers[region_id] = undefined;
-			}
-			var content = ['box', region.left, region.bottom, region.right - region.left, region.bottom - region.top, 0, '#color=red'].join(' ');
-
-			state.viewers[region_id] = [content];
-			if (firefly.overlayRegionData) {
-				firefly.overlayRegionData([content], region_id, "Boundary", plotid);
-			}
-			firefly.getJsonFromTask("python", "average", {'rect': region}).then(function(data) {
-			    third_line.text('value: ' + data["result"]);
-			});
+			state.term.echo('A box with that name does not exist!');
 		}
 	},
 
@@ -181,36 +200,27 @@ cmds = {
 	},
 
 	clear_box: function(cmd_args) {
-		var name = cmd_args['box_id'];
-		if (!state.boxes[name]) {
-			state.term.echo("The box \'" + name + "\' does not exist!\n");
+		var boxID = cmd_args['box_id'];
+		
+		if (state.boxes[boxID]) {
+			state.boxes[boxID].clear();
 		} else {
-			if (state.boxes[name].clear) {
-				state.boxes[name].clear();
-				state.boxes[name].clear = undefined;
-			}
-			state.boxes[name].select.select('.box-content').attr("id", "").html("");
+			state.term.echo('A box with that name does not exist!');
 		}
 	},
 
 	create_box: function(cmd_args) {
 		var name = cmd_args['box_id'];
 		
-		var box = new Box(name);
-		box.dom.draggable();
+		if (!state.boxes[name]) {
+			var box = new Box(name);
+			box.dom.draggable();
 		
-		var boxText = [
-			'hi',
-			new BoxText('label', 'value'),
-			[
-				new BoxText('label1', 'value1'),
-				'text',
-				new BoxText('label2', 'value2')
-			]
-		];
-		box.setText(boxText);
-		
-		state.boxes[name] = box;		
+			state.boxes[name] = box; 
+		}
+		else {
+			state.term.echo('A box with that name already exists!');
+		}	
 	},
 
 	create_viewer: function(cmd_args) {
@@ -234,13 +244,14 @@ cmds = {
 
 	delete_box: function(cmd_args) {
 		var name = cmd_args['box_id'];
-		if (!state.boxes[name]) {
-			state.term.echo("The box \'" + name + "\' does not exist!\n");
-		} else {
-			cmds.clear_box( { 'box_id' : name } );
-			state.boxes[name].select.remove();
-			state.boxes[name] = undefined;
-			state.term.echo("Success!");
+		
+		if (state.boxes[name]) {
+			state.boxes[name].destroy();
+			delete state.boxes[name];
+			state.term.echo('The box was successfully deleted.'); 
+		}
+		else {
+			state.term.echo('A box with that name does not exist!');
 		}
 	},
 

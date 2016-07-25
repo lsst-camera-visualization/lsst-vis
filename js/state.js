@@ -15,4 +15,5 @@ var onFireflyLoaded = function() {
 	// Create default viewer called 'ffview'
 	cmds.create_viewer( { 'viewer_id' : 'ffview' } );
 	
+	
 };

@@ -221,7 +221,7 @@ cmds = {
 				'handle' : '.box-title'
 			});
 		
-			state.boxes[name] = box; 
+			state.boxes[name] = box;
 		}
 		else {
 			state.term.echo('A box with that name already exists!');
@@ -253,7 +253,6 @@ cmds = {
 		if (state.boxes[name]) {
 			state.boxes[name].destroy();
 			delete state.boxes[name];
-			state.term.echo('The box was successfully deleted.'); 
 		}
 		else {
 			state.term.echo('A box with that name does not exist!');
@@ -275,12 +274,18 @@ cmds = {
 	},
 
 	hide_box: function(cmd_args) {
-		var name = cmd_args['box_id'];
-		if (!state.boxes[name]) {
-			state.term.echo("The box \'" + name + "\' does not exist!\n");
-		} else {
-			state.boxes[name].select.classed('box-hide', true);
+		var boxID = cmd_args['box_id'];
+		
+		if (state.boxes[boxID]) {
+			// A handle to the box
+			var box = state.boxes[boxID];
+			box.minimize();
+			box.dom.draggable('disable');
+			jQuery('.box-minimized-bar').append(box.dom);
 		}
+		else {
+			state.term.echo('A box with that name does not exist!');
+		}		
 	},
 
 	hot_pixel: function(cmd_args) {
@@ -443,12 +448,21 @@ cmds = {
 	},
 
 	show_box: function(cmd_args) {
-		var name = cmd_args['box_id'];
-		if (!state.boxes[name]) {
-			state.term.echo("The box \'" + name + "\' does not exist!\n");
-		} else {
-			state.boxes[name].select.classed('box-hide', false);
+		var boxID = cmd_args['box_id'];
+		
+		if (state.boxes[boxID]) {
+			// A handle to the box
+			var box = state.boxes[boxID];
+			
+			box.dom.detach();
+			jQuery('body').append(box.dom);
+			
+			box.maximize();
+			box.dom.draggable('enable');
 		}
+		else {
+			state.term.echo('A box with that name does not exist!');
+		}	
 	},
 
 	uv_freq: function(cmd_args){

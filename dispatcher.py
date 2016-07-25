@@ -2,7 +2,6 @@ import json
 import os
 import sys
 sys.path.append(os.path.dirname(os.path.abspath(__file__))+"/task_scripts")
-print(os.path.dirname(os.path.abspath(__file__)))
 import tempfile
 from tasks import execute_task
 

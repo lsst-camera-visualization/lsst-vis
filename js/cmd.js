@@ -109,7 +109,7 @@ jQuery(function($, undefined) {
 						    width: '100%',
 						    height: 300,
 						    fontSize: '1.5em'
-						}).draggable( { drag : onChangeFocus } );
+						});
 });
 
 

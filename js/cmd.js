@@ -234,7 +234,7 @@ cmds = {
 		}
 		else {
 			state.term.echo('A box with that name already exists!');
-		}	
+		}
 	},
 
 	create_viewer: function(cmd_args) {
@@ -290,11 +290,15 @@ cmds = {
 		var boxID = cmd_args['box_id'];
 		
 		if (state.boxes[boxID]) {
+			// Do we have to move terminal?
+			if (jQuery('#box-minimized-bar').children('.box').length == 0)
+				jQuery('#cmd').css('bottom', '60px');
+		
 			// A handle to the box
 			var box = state.boxes[boxID];
 			box.minimize();
 			box.dom.draggable('disable');
-			jQuery('.box-minimized-bar').append(box.dom);
+			jQuery('#box-minimized-bar').append(box.dom);
 		}
 		else {
 			state.term.echo('A box with that name does not exist!');
@@ -476,6 +480,10 @@ cmds = {
 			
 			box.maximize();
 			box.dom.draggable('enable');
+			
+			// Do we have to move the terminal?
+			if (jQuery('#box-minimized-bar').children('.box-mini').length == 0)
+				jQuery('#cmd').css('bottom', '5px');
 		}
 		else {
 			state.term.echo('A box with that name does not exist!');

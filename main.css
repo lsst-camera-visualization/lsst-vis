@@ -269,7 +269,7 @@ img:hover {
 }
 
 
-.box-minimized-bar {
+#box-minimized-bar {
 	position: fixed;
 	right: 5px;
 	bottom: 1px;
@@ -279,7 +279,11 @@ img:hover {
 
 
 #cmd{
-    margin: 20px 0px;
+	width: 40%;
+
+    position: fixed;
+    bottom: 5px;
+    right: 50px;
 }
 
 

@@ -60,23 +60,19 @@
 		// 0. Create terminal /////////////////////////////////////////
 		///////////////////////////////////////////////////////////////
 		var container = $(this);
-		//container.addClass('cmd_container');
-		container.attr('id', 'cmd_container');
-		// Add help line
-		container.append('<p id="cmd_help"></p>');
-		// Add output area
-		container.append('<p id="cmd_output"></p>');
-		// Add input box
-		container.append('<input id="cmd_input" placeholder="Enter command here">');
-				
+		var terminal = jQuery('<div>').addClass('cmd_container');
+		var helpText = jQuery('<p>').addClass('cmd_help');
+		var outputArea = jQuery('<p>').addClass('cmd_output');
+		var inputBox = jQuery('<input>').addClass('cmd_input').attr('placeholder', 'Enter command here');
+		
+		container.append(terminal);
+		terminal.append(helpText);
+		terminal.append(outputArea);
+		terminal.append(inputBox);
 	
 		///////////////////////////////////////////////////////////////
 		// 1. Common variable definitions /////////////////////////////
 		///////////////////////////////////////////////////////////////
-		var inputBox = container.find('#cmd_input');
-		var outputArea = container.find('#cmd_output');
-		var helpText = container.find('#cmd_help');
-		
 		var defaultHelpText = 'Command interface: Type help for more info';
 		// Will hold { cmdName, {'parameters', 'callback', 'help' }} for each command
 		var cmds = {};
@@ -367,20 +363,20 @@
 		///////////////////////////////////////////////////////////////
 
         // Set width and height of terminal
-		container.css('width', properties['width']);
-		container.css('height', properties['height']);
+		terminal.css('width', properties['width']);
+		terminal.css('height', properties['height']);
 		
 		// Set font size
 		if (properties['fontSize'] == '')
-			container.css('font-size', (properties['height'] / 300.0) + 'em');
+			terminal.css('font-size', (properties['height'] / 300.0) + 'em');
 		else
-			container.css('font-size', properties['fontSize']);
+			terminal.css('font-size', properties['fontSize']);
 		
 		// Calculate output are height
 		var helpTextHeight = helpText.outerHeight(true);
 		var inputBoxHeight = inputBox.outerHeight(true);
-		var containerHeight = container.outerHeight(true);
-		var leftOver = 100 * ((containerHeight - (helpTextHeight + inputBoxHeight)) / containerHeight);
+		var terminalHeight = terminal.outerHeight(true);
+		var leftOver = 100 * ((terminalHeight - (helpTextHeight + inputBoxHeight)) / terminalHeight);
 		outputArea.height((leftOver - 1) + '%');
 		
 		// Create a user-defined commands
@@ -402,7 +398,7 @@
 		};
 		
 		// Clicking anywhere in the terminal will put focus in the input box
-		container.click(function() {
+		terminal.click(function() {
 		    inputBox.focus();
 		});
 		
@@ -733,7 +729,7 @@
 		
     $.fn.echo = function(str) {	
 
-		var output = $(this).find('#cmd_output');
+		var output = $(this).find('.cmd_output');
 		
 		var outStr = '<p class=\'echo_output_text\'>' + str + '</p><br/>';
 		output.append(outStr);		

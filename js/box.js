@@ -7,12 +7,6 @@ function BoxText(label, value) {
 
 function Box(boxName) {
 
-	var ETextType = {
-		STRING : 0,
-		BOXTEXT : 1,
-		ARRAY : 2
-	}
-
 	var isMini = false;
 
 	var createDOMSkeleton = function() {

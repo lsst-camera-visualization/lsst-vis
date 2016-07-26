@@ -112,6 +112,9 @@ function Box(boxName) {
 		text = textArray; // For serialization
 		
 		body.empty();
+		
+		if (!textArray)
+			return;
 	
 		for (var i = 0; i < textArray.length; i++) {
 			body.append(createLineDOM(textArray[i]));
@@ -128,6 +131,7 @@ function Box(boxName) {
 		}
 		clearCallbacks = [];
 	
+		text = null;
 		body.empty();
 	}
 	
@@ -173,6 +177,26 @@ function Box(boxName) {
 		this.dom.children('.box-body').css('display', 'block');
 		
 		isMini = false;
+	}
+	
+	
+	this.serialize = function() {
+		var stream = {
+			name : boxName,
+			bMini : isMini,
+			textArray : text
+		};
+		
+		return JSON.stringify(stream);
+	}
+	
+	this.deserialize = function(s) {
+		var data = JSON.parse(s);
+		
+		boxName = data.name;
+		isMini = data.bMini;
+		
+		this.setText(data.textArray);
 	}
 	
 	// Initialize

@@ -176,7 +176,7 @@ img:hover {
     
     background-color: #e3e3e3;
     border: solid 5px #292929;
-	border-radius: 10px 10px 0px 0px;
+	border-radius: 10px 0px 0px 0px;
     box-shadow: 5px 5px 15px grey;
     
     text-align: center;
@@ -194,7 +194,7 @@ img:hover {
     font-size: 1.5em;
 	
     border: solid 5px #292929;
-	border-radius: 10px 10px 0px 0px;
+	border-radius: 10px 0px 0px 0px;
 	
 	float: right;
 }

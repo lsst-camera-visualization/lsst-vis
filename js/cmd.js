@@ -104,7 +104,7 @@ jQuery(function($, undefined) {
 						    width: '100%',
 						    height: 300,
 						    fontSize: '1.5em'
-						}).draggable();
+						}).draggable( { drag : onChangeFocus } );
 });
 
 
@@ -218,8 +218,10 @@ cmds = {
 		if (!state.boxes[name]) {
 			var box = new Box(name);
 			box.dom.draggable({
-				'handle' : '.box-title'
+				'handle' : '.box-title',
+				drag : onChangeFocus
 			});
+			box.dom.on('click', onChangeFocus);
 		
 			state.boxes[name] = box;
 		}
@@ -239,8 +241,10 @@ cmds = {
 
 			// Add draggable
 			viewer.container.draggable({
-				'cancel' : '.viewer-view'
+				'cancel' : '.viewer-view',
+				drag : onChangeFocus
 			});
+			viewer.container.on('click', onChangeFocus);
 		}
 		else {
 			state.term.echo('The viewer \'' + viewerID + '\' already exists!');
@@ -456,6 +460,10 @@ cmds = {
 			
 			box.dom.detach();
 			jQuery('body').append(box.dom);
+			
+			var focusFunc = onChangeFocus;
+			focusFunc.bind(box.dom);
+			focusFunc();
 			
 			box.maximize();
 			box.dom.draggable('enable');

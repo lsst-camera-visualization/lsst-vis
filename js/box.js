@@ -7,14 +7,42 @@ function BoxText(label, value) {
 
 function Box(boxName) {
 
+	var ETextType = {
+		STRING : 0,
+		BOXTEXT : 1,
+		ARRAY : 2
+	}
+
+	var isMini = false;
+
 	var createDOMSkeleton = function() {
 		var container = jQuery('<div>').addClass('box');
 		
 		var title = jQuery('<p>').addClass('box-title').text(boxName);
 		var body = jQuery('<div>').addClass('box-body');
 		
+		var close = jQuery('<img>').addClass('box-image-close').attr('src', 'images/close_40x40.png');
+		var mini = jQuery('<img>').addClass('box-image-minimax').attr('src', 'images/minimize_40x40.png');
+		
 		container.append(title);
+		title.append(close);
+		title.append(mini);
+		
 		container.append(body);
+		
+		close.on('click', 
+			function() {
+				cmds.delete_box( { 'box_id' : boxName } );
+			}
+		);
+		mini.on('click', 
+			function() {
+				if (!isMini)
+					cmds.hide_box( { 'box_id' : boxName } );
+				else
+					cmds.show_box( { 'box_id' : boxName } );
+			}
+		);
 		
 		return container;
 	}
@@ -79,8 +107,14 @@ function Box(boxName) {
 		return line.addClass('box-text-container');
 	}
 	
+	var text = null;
 	this.setText = function(textArray) {
+		text = textArray; // For serialization
+		
 		body.empty();
+		
+		if (!textArray)
+			return;
 	
 		for (var i = 0; i < textArray.length; i++) {
 			body.append(createLineDOM(textArray[i]));
@@ -97,6 +131,7 @@ function Box(boxName) {
 		}
 		clearCallbacks = [];
 	
+		text = null;
 		body.empty();
 	}
 	
@@ -106,7 +141,85 @@ function Box(boxName) {
 	}
 	
 	
+	this.minimize = function() {
+		// Box container
+		this.dom.removeClass('box');
+		this.dom.addClass('box-mini');
+		
+		// Title bar
+		var titleBar = this.dom.children('.box-title');
+		titleBar.removeClass('box-title');
+		titleBar.addClass('box-title-mini');
+		
+		// Mini -> Max
+		var miniMax = titleBar.children('.box-image-minimax');
+		miniMax.attr('src', 'images/maximize_40x40.png');
+		
+		this.dom.children('.box-body').css('display', 'none');
+		
+		isMini = true;
+	}
+	
+	this.maximize = function() {
+		// Box container
+		this.dom.removeClass('box-mini');
+		this.dom.addClass('box');
+		
+		// Title bar
+		var titleBar = this.dom.children('.box-title-mini');
+		titleBar.removeClass('box-title-mini');
+		titleBar.addClass('box-title');
+		
+		// Max -> Mini
+		var miniMax = titleBar.children('.box-image-minimax');
+		miniMax.attr('src', 'images/minimize_40x40.png');
+		
+		this.dom.children('.box-body').css('display', 'block');
+		
+		isMini = false;
+	}
+	
+	
+	this.serialize = function() {
+		var stream = {
+			name : boxName,
+			bMini : isMini,
+			textArray : text
+		};
+		
+		return JSON.stringify(stream);
+	}
+	
+	this.deserialize = function(s) {
+		var data = JSON.parse(s);
+		
+		boxName = data.name;
+		isMini = data.bMini;
+		
+		this.setText(data.textArray);
+	}
 	
 	// Initialize
-	jQuery('#rightside').append(this.dom);
+	jQuery('body').append(this.dom);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

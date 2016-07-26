@@ -42,7 +42,9 @@ img:hover {
 
 
 .viewer {
-
+	position: absolute;
+	left: 25px;
+	top: 75px;
 }
 
 .viewer-main {

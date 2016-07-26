@@ -65,6 +65,11 @@ jQuery(function($, undefined) {
 			'description' : 'Shows a hidden information box.',
 			'doc_link' : docLink + '#show_box'
 		},
+		'show_viewer viewer_id' : {
+			'callback' : cmds.show_viewer,
+			'description' : 'Maximizes a viewer and brings it to the front of the window.',
+			'doc_link' : docLink + '#show_viewer'
+		},
 		'uv_freq viewer_id time_in_millis' : {
 			'callback' : cmds.uv_freq,
 			'description' : 'Changes the frequency for checking for new images from the Rest Server.',
@@ -224,6 +229,8 @@ cmds = {
 			box.dom.on('click', onChangeFocus);
 		
 			state.boxes[name] = box;
+			
+			cmds.show_box( { 'box_id' : name } );
 		}
 		else {
 			state.term.echo('A box with that name already exists!');
@@ -245,6 +252,8 @@ cmds = {
 				drag : onChangeFocus
 			});
 			viewer.container.on('click', onChangeFocus);
+			
+			cmds.show_viewer( { 'viewer_id' : viewerID } );
 		}
 		else {
 			state.term.echo('The viewer \'' + viewerID + '\' already exists!');
@@ -470,7 +479,22 @@ cmds = {
 		}
 		else {
 			state.term.echo('A box with that name does not exist!');
-		}	
+		}
+	},
+	
+	show_viewer : function(cmd_args) {
+		var viewerID = cmd_args['viewer_id'];
+		
+		if (state.viewers[viewerID]) {
+			var dom = state.viewers[viewerID].container;
+			
+			var focusFunc = onChangeFocus;
+			focusFunc.bind(dom);
+			focusFunc();
+		}
+		else {
+			state.term.echo('A viewer with that name does not exist!');
+		}
 	},
 
 	uv_freq: function(cmd_args){

@@ -7,6 +7,12 @@ function BoxText(label, value) {
 
 function Box(boxName) {
 
+	var ETextType = {
+		STRING : 0,
+		BOXTEXT : 1,
+		ARRAY : 2
+	}
+
 	var isMini = false;
 
 	var createDOMSkeleton = function() {
@@ -101,7 +107,10 @@ function Box(boxName) {
 		return line.addClass('box-text-container');
 	}
 	
+	var text = null;
 	this.setText = function(textArray) {
+		text = textArray; // For serialization
+		
 		body.empty();
 	
 		for (var i = 0; i < textArray.length; i++) {
@@ -165,8 +174,6 @@ function Box(boxName) {
 		
 		isMini = false;
 	}
-	
-	
 	
 	// Initialize
 	jQuery('body').append(this.dom);

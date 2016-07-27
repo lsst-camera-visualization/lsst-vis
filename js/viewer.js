@@ -106,7 +106,7 @@ var selectRegion = function(data) {
         var left = Math.trunc(data.ipt0.x);
         var right = Math.trunc(data.ipt1.x);
 
-        state.term.setVariable('selected', 'rect ' + top + ' ' + left + ' ' + bottom + ' ' + right);
+        state.term.setVariable('selected', '(rect ' + top + ' ' + left + ' ' + bottom + ' ' + right + ')');
 
         jQuery("#ffview-var-selected").css('color', 'white');
     }

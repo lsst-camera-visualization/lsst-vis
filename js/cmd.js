@@ -101,15 +101,21 @@ jQuery(function($, undefined) {
 	    'rect top left bottom right',
 	    'circ originX originY radius'
 	];
+	
+	var autoCompleteParams = [
+		'box_id',
+		'viewer_id'
+	];
+	
+	var terminalProperties = {
+		helpLink: docLink,
+	    prefix: '~>',
+	    width: '100%',
+	    height: 300,
+	    fontSize: '1.5em'
+	};
 
-	state.term = jQuery('#cmd').terminal( commands, subCommands,
-	                    {
-						    helpLink: docLink,
-						    prefix: '~>',
-						    width: '100%',
-						    height: 300,
-						    fontSize: '2em'
-						});
+	state.term = jQuery('#cmd').terminal( commands, subCommands, autoCompleteParams, terminalProperties );
 });
 
 

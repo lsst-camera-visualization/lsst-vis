@@ -1,23 +1,28 @@
-
-import taskDef
-
 import numpy as np
 from astropy.io import fits
-from utility_scripts.helper_functions import rect2slice
+from utility_scripts.helper_functions import parseRegion_rect, circle_mask
+from scipy.ndimage.filters import generic_filter as gf
 
-def task(task_params):
+def task(filename, task_params):
     ''' Simple task calculating average value in a region. Boundary assumes the expected format being sent in.
-    @author 
-    @param task_params - 
-    @return 
+    @author Wei Ren
+    @param filename - file name of the FITS image
+    @param task_params - Region to calculate mean value on. Currently support `rect` and `circle` regions.
+    @return Mean value of the results or Error info.
     '''
 
-    filename = taskDef.IMAGE_DISPLAY
-    # x_start, x_end, y_start, y_end = valid_boundary(boundary.get('rect'))
-    region_slice = rect2slice(task_params)
     hdulist = fits.open(filename)
-    region = hdulist[0].data[region_slice]
-    avg = str(np.mean(region))
+    region = hdulist[0].data
+
+    if (task_params.get('rect')):
+        region_slice = parseRegion_rect(task_params)
+        ROI = region[region_slice]
+        avg = str(np.mean(ROI))
+    elif (task_params.get('circle')):
+        mask = circle_mask(region, task_params['center_x'], task_params['center_y'], task_params['radius'])
+        avg = str(gf(region, np.mean, footprint=mask))
+    else:
+        avg = "Region type is not recognized."
+
     hdulist.close()
     return {"result":avg},None
-	

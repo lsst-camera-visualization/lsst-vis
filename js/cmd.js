@@ -65,6 +65,11 @@ jQuery(function($, undefined) {
 			'description' : 'Shows a hidden information box.',
 			'doc_link' : docLink + '#show_box'
 		},
+		'show_viewer viewer_id' : {
+			'callback' : cmds.show_viewer,
+			'description' : 'Maximizes a viewer and brings it to the front of the window.',
+			'doc_link' : docLink + '#show_viewer'
+		},
 		'uv_freq viewer_id time_in_millis' : {
 			'callback' : cmds.uv_freq,
 			'description' : 'Changes the frequency for checking for new images from the Rest Server.',
@@ -97,14 +102,20 @@ jQuery(function($, undefined) {
 	    'circ originX originY radius'
 	];
 
-	state.term = jQuery('#cmd').terminal( commands, subCommands,
-	                    {
-						    helpLink: docLink,
-						    prefix: '~>',
-						    width: '100%',
-						    height: 300,
-						    fontSize: '1.5em'
-						}).draggable();
+	var autoCompleteParams = [
+		'box_id',
+		'viewer_id'
+	];
+
+	var terminalProperties = {
+		helpLink: docLink,
+	    prefix: '~>',
+	    width: '100%',
+	    height: 300,
+	    fontSize: '1.5em'
+	};
+
+	state.term = jQuery('#cmd').terminal( commands, subCommands, autoCompleteParams, terminalProperties );
 });
 
 
@@ -218,13 +229,18 @@ cmds = {
 		if (!state.boxes[boxID]) {
 			var box = new Box(boxID);
 			box.dom.draggable({
-				'handle' : '.box-title'
+				'handle' : '.box-title',
+				drag : onChangeFocus
 			});
 
+			box.dom.on('click', onChangeFocus);
+
 			state.boxes[boxID] = box;
+
+			cmds.show_box( { 'box_id' : boxID } );
 		}
 		else {
-			state.term.echo('A box with the name \'' + boxID + '\' already exists!');
+            state.term.echo('A box with the name \'' + boxID + '\' already exists!');
 		}
 	},
 
@@ -239,8 +255,12 @@ cmds = {
 
 			// Add draggable
 			viewer.container.draggable({
-				'cancel' : '.viewer-view'
+				'cancel' : '.viewer-view',
+				drag : onChangeFocus
 			});
+			viewer.container.on('click', onChangeFocus);
+
+			cmds.show_viewer( { 'viewer_id' : viewerID } );
 		}
 		else {
 			state.term.echo('A viewer with the name \'' + viewerID + '\' already exist!');
@@ -281,11 +301,15 @@ cmds = {
 		var boxID = cmd_args['box_id'];
 
 		if (state.boxes[boxID]) {
+			// Do we have to move terminal?
+			if (jQuery('#box-minimized-bar').children('.box').length == 0)
+				jQuery('#cmd').css('bottom', '60px');
+
 			// A handle to the box
 			var box = state.boxes[boxID];
 			box.minimize();
 			box.dom.draggable('disable');
-			jQuery('.box-minimized-bar').append(box.dom);
+			jQuery('#box-minimized-bar').append(box.dom);
 		}
 		else {
 			state.term.echo('A box with the name \'' + boxID + '\' does not exist!');
@@ -394,7 +418,7 @@ cmds = {
                 }
             }
 
-            state.term.echo('Show boundary of amplifiers by default. Use `hide_boundary` to hide it.');
+            state.term.echo('Boundary of amplifiers shown by default. Use `hide_boundary` to hide it.');
 
             boxText = [
                 'read_mouse',
@@ -409,7 +433,6 @@ cmds = {
             box.setText(boxText);
 
 			var readoutID = viewer.readout.register('READ_MOUSE', function(data) {
-
                 var mouse_x = Math.trunc(data.ipt.x);
                 var mouse_y = Math.trunc(data.ipt.y);
 
@@ -493,11 +516,34 @@ cmds = {
 			box.dom.detach();
 			jQuery('body').append(box.dom);
 
+			var focusFunc = onChangeFocus;
+			focusFunc.bind(box.dom);
+			focusFunc();
+
 			box.maximize();
 			box.dom.draggable('enable');
+
+			// Do we have to move the terminal?
+			if (jQuery('#box-minimized-bar').children('.box-mini').length == 0)
+				jQuery('#cmd').css('bottom', '5px');
 		}
 		else {
 			state.term.echo('A box with the name \'' + boxID + '\' does not exist!');
+		}
+	},
+
+	show_viewer : function(cmd_args) {
+		var viewerID = cmd_args['viewer_id'];
+
+		if (state.viewers[viewerID]) {
+			var dom = state.viewers[viewerID].container;
+
+			var focusFunc = onChangeFocus;
+			focusFunc.bind(dom);
+			focusFunc();
+		}
+		else {
+            state.term.echo('A viewer with the name \'' + viewerID + '\' does not exist!');
 		}
 	},
 

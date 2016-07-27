@@ -1,5 +1,592 @@
 
+// terminal namespace
+var LSST_TERMINAL = {
 
+	// An auto completable array.
+	// if allowEmptyMatch is true, an empty string will match the first alphabetized string. 
+	AutoCompleteArray : function(strings, allowEmptyMatch = false) {
+		
+		var arr = LSST_TERMINAL.Utility.Alphabetize(strings);
+		
+		// Returns the array
+		this.getArray = function() {
+			return arr;
+		};
+		
+		// Gets the first string that matches the input. Returns null if not found.
+		this.autoComplete = function(input) {
+			if (!allowEmptyMatch && input === '')
+				return null;
+				
+			var regex = new RegExp('^' + input);
+			
+			for (var i = 0; i < arr.length; i++) {
+				var curr = arr[i];
+				if (curr.match(regex))
+					return curr;
+			}
+		};
+	},
+	
+	Command : function(cmd, callback, description = null, helpLink = null) {
+		
+		var splitByWS = LSST_TERMINAL.Utility.SplitStringByWS(cmd);
+		
+		this.cmdName = splitByWS.shift();
+		this.parameters = splitByWS.slice();
+		this.description = description;
+		this.helpLink = helpLink;
+		
+		this.execute = function(input, multiStart, multiEnd) {
+			
+			var splitByParam = LSST_TERMINAL.Utility.SplitStringByParameter(input, multiStart, multiEnd);
+			splitByParam.shift();
+			
+			var cmd_args = {};
+			for (var i = 0; i < this.parameters.length; i++) {
+				var curr = this.parameters[i];
+				cmd_args[curr] = splitByParam[i];
+			}
+			
+			callback(cmd_args);
+			
+		}
+	},
+	
+	// Keep tracks of the command history.
+	// ATM does not work with multiple terminals (JSON).
+	CommandHistory : function(maxEntries) {
+	
+		// The actual commands
+		var cmds = LSST_TERMINAL.Utility.GetValue(JSON.parse(localStorage.getItem('cmdHistory')), []);
+		// The help string
+		var help = LSST_TERMINAL.Utility.GetValue(JSON.parse(localStorage.getItem('cmdHistoryHelp')), []);
+	
+		// The current index
+		var index = cmds.length - 1;
+		
+		var saveHistory = function() {
+		    localStorage.setItem('cmdHistory', JSON.stringify(cmds));
+		    localStorage.setItem('cmdHistoryHelp', JSON.stringify(help));
+		}
+	
+		this.addCommand = function(cmd, helpText) {
+			cmds.push(cmd);
+			help.push(helpText);
+			
+			saveHistory();
+		    
+		    index = cmds.length;
+		};
+		
+		// Gets the command at the current index.
+		// return { cmd, help }
+		this.get = function() {
+			if (index >= 0 && index < cmds.length) {
+				return {
+					cmd : cmds[index],
+					help : help[index]
+				};
+			}
+			else {
+				return {
+					cmd : null,
+					help : null
+				};
+			}
+		};
+		
+		// Moves the index up (toward the first command)
+		this.up = function() {
+			index--;
+			index = Math.max(0, index);
+		};
+		// Moves the index down (toward the last command)
+		this.down = function() {
+			index++;
+			index = Math.min(index, cmds.length);
+		};
+	
+		this.clear = function() {
+			cmds = [];
+			help = [];
+			
+			saveHistory();
+		}
+	},
+	
+	InputElem : function(dom, clearString = '') {
+		
+		this.clear = function() {
+			dom.val(clearString);
+		}
+		
+		this.set = function(text) {
+			if (text != null)
+				dom.val(text);
+			else
+				this.clear();
+		}
+		
+		this.append = function(app) {
+		    var val = dom.val();
+		    dom.val(val + app);
+		}
+		
+		this.text = function() {
+			return dom.val();
+		}
+		
+		this.clear();
+		
+	},
+	
+	TextContainer : function(dom) {
+	
+		this.clear = function() {
+			dom.empty();
+		}
+		
+		this.append = function(app, htmlClass = 'echo_output_text') {
+			var text = app.replace('\n', '<br/>');
+			
+		    var elem = jQuery('<p>').html(text).addClass(htmlClass);
+		    dom.append(elem);
+		}
+		
+		this.clear();
+		
+	},
+	
+	TextElem : function(dom, clearString = '') {
+	
+		this.clear = function() {
+			dom.html(clearString);
+		}
+		
+		this.set = function(text) {
+			if (text != null)
+				dom.html(text);
+			else
+				this.clear();
+		}
+		
+		this.append = function(app) {
+		    var val = dom.html();
+		    dom.html(val + app);
+		}
+		
+		this.text = function() {
+			return dom.html();
+		}
+		
+		this.clear();
+		
+	},
+
+	Utility : {
+	
+		// Returns an alphabetized version of the array. Does not change the original array.
+		Alphabetize : function(array) {
+			var alpha = array.slice();		
+			var alphaSort = function(a, b) {
+				var keyA = a.toLowerCase();
+				var keyB = b.toLowerCase();
+		
+				if (keyA < keyB)
+					return -1;
+				else if (keyA > keyB)
+					return 1;
+				return 0;
+			};
+		
+			alpha.sort(alphaSort);
+			return alpha;
+		},
+	
+		ArrayToString : function(arr) {
+		    if (typeof(arr) == 'string')
+		        return arr;
+		    
+		    var s = '';
+		    for (var i = 0; i < arr.length; i++) {
+		        s += arr[i] + ' ';
+		    }
+		    return s;
+		},
+		
+		GetValue : function(value, def) {
+			if (value == null || value == undefined)
+				return def;
+			return value;
+		},
+		
+		SplitStringByWS : function(str) {
+			return str.match(/\S+/g);
+		},
+		
+		SplitStringByParameter : function(str, multiStart, multiEnd) {
+			var splitWS = LSST_TERMINAL.Utility.SplitStringByWS(str);
+		    
+		    var bMulti = false;
+		    var result = [];
+		    for (var i = 0; i < splitWS.length; i++) {
+		        var c = splitWS[i];
+		        
+		        if (c.charAt(0) == multiStart) {
+		            bMulti = true;
+		            c = c.substr(1, c.length);
+		            result.push([]);
+		        }
+		        if (c.charAt(c.length - 1) == multiEnd) {
+		            bMulti = false;
+		            c = c.substr(0, c.length - 1);
+		            if (c)
+		                result[result.length - 1].push(c);
+		            continue;
+		        }
+		        
+		        if (bMulti) {
+		            if (c)
+		                result[result.length - 1].push(c);
+		        }
+		        else {
+		            result.push(c);
+		        }
+		    }
+		    
+		    return result;
+		}
+		
+	},
+
+};
+
+
+
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////// TERMINAL IMPLEMENTATION /////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////
+
+
+(function ( $ ) {
+	
+    jQuery.fn.terminal = function(commands, subCommands, properties) {
+    
+    	var parent = jQuery(this);
+    
+    	// Create terminal
+		var terminal = jQuery('<div>').addClass('cmd_container');
+		var terminalHelpDOM = jQuery('<p>').addClass('cmd_help');
+		var terminalOutputDOM = jQuery('<div>').addClass('cmd_output');
+		var terminalInputDOM = jQuery('<input>').addClass('cmd_input').attr('placeholder', 'Enter command here');
+	
+		parent.append(terminal);
+		terminal.append(terminalHelpDOM);
+		terminal.append(terminalOutputDOM);
+		terminal.append(terminalInputDOM);
+    	
+    	// Make sure all properties have values
+		properties.width = LSST_TERMINAL.Utility.GetValue(properties.width, 650);
+		properties.height = LSST_TERMINAL.Utility.GetValue(properties.height, 300);
+		properties.fontSize = LSST_TERMINAL.Utility.GetValue(properties.fontSize, null);
+		properties.multiStart = LSST_TERMINAL.Utility.GetValue(properties.multiStart, '(');
+		properties.multiEnd = LSST_TERMINAL.Utility.GetValue(properties.multiEnd, ')');
+		properties.maxHistoryEntries = LSST_TERMINAL.Utility.GetValue(properties.maxHistoryEntries, 50);
+		
+    	// Maps command names to LSST_TERMINAL.Command objects.
+    	var cmds = {};
+    	// The command history.
+    	var history = new LSST_TERMINAL.CommandHistory(properties.maxHistoryEntries);
+    	// An LSST_TERMINAL.AutoCompleteArray object for all of the command names.
+    	var commandNames = null;
+    	
+    	var terminalInput = new LSST_TERMINAL.InputElem(terminalInputDOM);
+    	var terminalOutput = new LSST_TERMINAL.TextContainer(terminalOutputDOM);
+    	var terminalHelp = new LSST_TERMINAL.TextElem(terminalHelpDOM, 'Command interface: Type help for more info');
+    	
+    	
+    	
+    	
+    	
+    	
+    	/////////////////////////////////////////////////////////////////////////////
+    	//////////////////////////// BUILT-IN CMDS //////////////////////////////////
+    	/////////////////////////////////////////////////////////////////////////////
+    	var cmd_clear = function(cmd_args) {
+    		
+    	}
+    	
+    	var cmd_help = function(cmd_args) {
+    		
+    	}
+    	
+    	var cmd_echo = function(cmd_args) {
+    		var str = cmd_args['string'];
+    		terminalOutput.append(str);
+    	}
+    	
+    	var cmd_clearTerminalHistory = function(cmd_args) {
+    		history.clear();
+    	}
+    
+    
+    
+    
+    	
+    	
+    	/////////////////////////////////////////////////////////////////////////////
+    	//////////////////////////// INITIALIZATION /////////////////////////////////
+    	/////////////////////////////////////////////////////////////////////////////
+        // Set width and height of terminal
+		terminal.css('width', properties.width);
+		terminal.css('height', properties.height);
+    	
+    	// Set font size
+		if (properties['fontSize'] == null)
+			terminal.css('font-size', (properties['height'] / 300.0) + 'em');
+		else
+			terminal.css('font-size', properties['fontSize']);
+    
+    
+    	// Clicking anywhere in the terminal will put focus in the input box
+		terminal.click(function() {
+		    terminalInputDOM.focus();
+		});
+		
+		
+		// Format user commands
+		var keys = [];
+		var createCommand = function(name, command) {
+			var cmd = new LSST_TERMINAL.Command(name, command.callback, command.description, command.helpLink);
+			var cmdName = LSST_TERMINAL.Utility.SplitStringByWS(name)[0];			
+			
+			cmds[cmdName] = cmd;
+			keys.push(cmdName);
+		};
+		for (var key in commands) {			
+			if (commands.hasOwnProperty(key)) {
+				createCommand(key, commands[key]);
+			}			
+		};
+		
+		// Add built in commands
+		createCommand('clear', { callback : cmd_clear, description : 'Clears the output log of the terminal.' } );
+		createCommand('help [command]', { callback : cmd_help, description : 'Displays all the commands, or the help string for a single command.' } );
+		createCommand('echo string', { callback : cmd_echo, description : 'Echoes a string to the output area.' } );
+		createCommand('clear_terminal_history', { callback : cmd_clearTerminalHistory, description : 'Clears the history of commands.' } );
+		
+		// Create the auto complete array for command names
+		commandNames = new LSST_TERMINAL.AutoCompleteArray(keys);
+    
+    
+    
+    
+    
+    
+    
+    	/////////////////////////////////////////////////////////////////////////////
+    	//////////////////////////// KEY DOWN/UP ////////////////////////////////////
+    	/////////////////////////////////////////////////////////////////////////////
+				
+		terminalInputDOM.keydown(function(event) {
+			var keyCode = event.keyCode || event.which;
+			var input = terminalInput.text().trim().toLowerCase();
+			
+			// Tab
+			if (keyCode == 9) {
+				event.preventDefault();
+				if (!LSST_TERMINAL.Utility.SplitStringByWS(input).includes(' ')) {
+					var auto = commandNames.autoComplete(input);
+					if (auto)
+						terminalInput.set(auto + ' ');
+				}
+			}
+		});
+				
+		terminalInputDOM.keyup(function(event) {
+				
+			var input = terminalInput.text().trim().toLowerCase();
+			if (!input)
+			    terminalHelp.clear();
+						
+			switch (event.keyCode) {
+				
+				// Enter
+				case 13:
+					var sh = terminalOutputDOM[0].scrollHeight;
+					if (sh <= terminalOutputDOM.height())
+						sh = 0;
+						
+				    executeCommand(input);		
+				    
+					terminalInput.clear();
+					terminalHelp.clear();
+					
+					terminalOutputDOM.scrollTop(sh);
+					
+					break;
+				
+				// Up arrow
+				case 38:
+					history.up();
+					var hist = history.get();
+					terminalInput.set(hist.cmd);
+					terminalHelp.set(hist.help);
+					break;
+				
+				// Down arrow
+				case 40:
+				    history.down();
+					var hist = history.get();
+					terminalInput.set(hist.cmd);
+					terminalHelp.set(hist.help);
+					break;
+			}
+		
+			input = terminalInput.text().replace(/^ /g, '').toLowerCase();
+			if (!input)
+			    return;
+			    			
+			createHelpText(input);
+		});
+    
+    
+    	
+    	
+    	
+    	
+    	
+    	/////////////////////////////////////////////////////////////////////////////
+    	//////////////////////////// HELPER FUNCTIONS ///////////////////////////////
+    	/////////////////////////////////////////////////////////////////////////////
+    	var echoCommand = function(text) {
+    		terminalOutput.append(text + '\n', 'echo_output_command');
+    	}
+    	
+    	var echoText = function(text) {
+    		cmd_echo( { 'string' : text } );
+    	}
+    	
+    	var getCommand = function(input) {
+    		var split = LSST_TERMINAL.Utility.SplitStringByWS(input);
+    		var cmdName = split[0];
+    		
+    		if (cmdName in cmds) {
+    			return cmds[cmdName];
+    		}
+    		else
+    			return null;
+    	}
+    	
+    	var executeCommand = function(input) {
+    		history.addCommand(input, terminalHelp.text());
+    		
+    		echoCommand(properties.prefix + ' ' + input);
+    		
+    		var command = getCommand(input);    		
+    		if (command) {
+    			command.execute(input, properties.multiStart, properties.multiEnd);
+    		}
+    		else {
+    			cmd_echo( { 'string' : 'Please enter a valid command!\n' } );
+			}
+    	}
+    	
+    	var highlightString = function(stringToHighlight) {
+			
+			var prefix = '<span class=\"cmd_highlight\">';
+			var postfix = '</span>';
+			return prefix + stringToHighlight + postfix;
+		}		
+    
+    	var createHelpText = function(input) {
+		    var split = LSST_TERMINAL.Utility.SplitStringByParameter(input);
+		    
+		    var cmdName = split.shift();
+		    var autoCmd = commandNames.autoComplete(cmdName);
+		    
+		    if (!autoCmd) {
+		        terminalHelp.clear();
+		        return;
+		    }
+		    
+		    var cmdParams = cmds[autoCmd].parameters;
+		    
+		    var hlIdx = split.length;
+		    var bEndMulti = input.trim().charAt(input.trim().length - 1) == properties.multiEnd;
+		    if (input.match(/\s$/) && (!Array.isArray(split[split.length - 1]) || bEndMulti))
+		        hlIdx++;
+		    hlIdx = Math.min(hlIdx, cmdParams.length);
+		    
+		    var helpString = autoCmd;
+		    if (hlIdx == 0)
+		        helpString = highlightString(helpString);
+		    
+		    var i = 0;
+		    for (; i < split.length && i < cmdParams.length; i++) {
+		        var c = split[i];
+		        
+		        /*if (Array.isArray(c)) {
+		            var autoSub = getAutoComplete(c[0], subCommands);
+		            
+		            if (autoSub) {
+		                var add = ' ' + properties['multiStart'] + cmdParams[i] + ': ';
+		                add += autoSub;
+		                add += properties['multiEnd'];
+		                if ((i + 1) == hlIdx)
+		                    add = highlightString(add);
+		                
+		                helpString += add;
+		                continue;
+		            }
+		        }*/
+		        
+		        var add = ' ' + cmdParams[i];
+		        if ((i + 1) == hlIdx)
+		            add = highlightString(add);
+		        helpString += add;
+		    }
+		    
+		    for (; i < cmdParams.length; i++) {
+		        var add = ' ' + cmdParams[i];
+		        if ((i + 1) == hlIdx)
+		            add = highlightString(add);
+		        helpString += add;
+		    }
+
+			terminalHelp.set(helpString);
+		}
+    
+    
+    
+    
+    	return this;
+    
+    };
+	
+
+}( jQuery ));
+
+
+
+
+
+
+
+
+
+
+
+
+/*
 (function ( $ ) {
 
 	// @param commands - A list of all of the commands.
@@ -78,20 +665,13 @@
 		var cmds = {};
 		// Will cache the keys to help with auto complete
 		var keys = [];
-		var cmdHistory = [];
-		var cmdHistoryHelp = [];
-		var cmdHistoryIndex;
 		
 		var terminalVariables = {};
 		
 		
 		///////////////////////////////////////////////////////////////
 		// 2. Common helper functions /////////////////////////////////
-		///////////////////////////////////////////////////////////////
-		var splitByWhiteSpace = function(string) {
-			return string.match(/\S+/g);
-		};
-		
+		///////////////////////////////////////////////////////////////		
 		var isBuiltInCommand = function(cmd) {
 			if (cmd == 'clear' || cmd == 'help' || cmd == 'echo')
 				return true;
@@ -104,13 +684,6 @@
 			var postfix = '</span>';
 			return prefix + stringToHighlight + postfix;
 		};
-		
-		var createCommand = function(cmdName, parameters, callback, description = '', doc_link = '') {
-			cmds[cmdName] = { 'parameters' : parameters, 'callback' : callback, 
-								'description' : description , 'doc_link' : doc_link};
-								
-			keys.push(cmdName);
-		}
 		
 		var checkStringDef = function(value) {
 			if (value == undefined)
@@ -138,17 +711,6 @@
 		    var val = inputBox.val();
 		    inputBox.val(val + app);
 		}		
-		
-		var arrayToString = function(arr) {
-		    if (typeof(arr) == 'string')
-		        return arr;
-		    
-		    var s = '';
-		    for (var i = 0; i < arr.length; i++) {
-		        s += arr[i] + ' ';
-		    }
-		    return s;
-		}
 		
 		var sanitizeText = function(text) {
 			var t = text;
@@ -570,7 +1132,7 @@
 					    clearHelpText();
 					    return ;
 					}
-				    break;*/
+				    break;
 				
 				// Enter
 				case 13:
@@ -656,6 +1218,7 @@
 		
 		var createHelpText = function(input) {
 		    var split = splitByParameter(input);
+		    console.log(split);
 		    var cmdName = split.shift();
 		    var autoCmd = getAutoComplete(cmdName, keys);
 		    
@@ -708,6 +1271,7 @@
 		        helpString += add;
 		    }
 		    
+		    helpString += ' --- ';
 		    setHelpText(helpString);
 		}
 		
@@ -737,7 +1301,7 @@
 		return this;	
 	};
 
-}( jQuery ));
+}( jQuery ));*/
 
 
 

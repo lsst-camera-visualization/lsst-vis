@@ -108,7 +108,7 @@ jQuery(function($, undefined) {
 						    prefix: '~>',
 						    width: '100%',
 						    height: 300,
-						    fontSize: '1.5em'
+						    fontSize: '2em'
 						});
 });
 

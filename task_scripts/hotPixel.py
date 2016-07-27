@@ -1,7 +1,7 @@
 import numpy as np
 import six
 from astropy.io import fits
-from utility_scripts.helper_functions import rect2slice
+from utility_scripts.helper_functions import parseRegion_rect
 
 def task(filename, task_params):
     ''' Return a hot pixel in the defined region.
@@ -27,7 +27,7 @@ def task(filename, task_params):
     region = hdulist[0].data
 
     if (isinstance(roi, dict) and ('rect' in roi)):
-        region_slice = rect2slice(roi)
+        region_slice = parseRegion_rect(roi)
     elif (isinstance(roi, six.string_types) and roi=="all"):
         region_slice = slice(None)
     else:

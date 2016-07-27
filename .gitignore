@@ -1,5 +1,6 @@
 *.swp
 *.pyc
 images/s00_r99_fe55/
+debug_file
 __pycache__/
 */__pycache__/

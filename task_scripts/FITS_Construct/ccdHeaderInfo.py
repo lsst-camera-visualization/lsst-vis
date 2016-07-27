@@ -50,12 +50,14 @@ def _get_Header_Info(imgHDUs):
         # Condition about X & Y slicing in segment data.
         is_Slice_Reverse = check_Reverse_Slicing(seg_detsec, seg_datasec)
         # Add correct offset for each segment.
+        boundary[seg_Y_converted][seg_X]['EXTNAME'] = header['EXTNAME']
         boundary_overscan[seg_Y_converted][seg_X] ={
                                                 # NOTE: DS9 box region start from top left corner
                                                 'x':seg_X*seg_dimension[0],
                                                 'y':seg_Y*seg_dimension[1]+seg_datadim[1]-1,
                                                 'width':seg_datadim[0],
-                                                'height':seg_datadim[1]
+                                                'height':seg_datadim[1],
+                                                'EXTNAME':header['EXTNAME']
                                                 }
         boundary_overscan[seg_Y_converted][seg_X]['x'] += seg_bias_Size[0] if is_Slice_Reverse['x'] else (min(seg_datasec['start_X'], seg_datasec['end_X']))
         boundary_overscan[seg_Y_converted][seg_X]['y'] += (seg_dimension[1]-seg_datadim[1]) if is_Slice_Reverse['y'] else 0

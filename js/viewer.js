@@ -82,6 +82,7 @@ function Viewer(id) {
 
 	this.header = null;
 	this.show_boundary = false;
+	this.overscan = false;
 
 	// Call uv_update every uv.freq milliseconds
 	this.uv.timer_id =

@@ -117,20 +117,20 @@ cmds = {
 		var boxID = cmd_args['box_id'];
 		var viewerID = cmd_args['viewer_id'];
 		if (state.boxes[boxID] && state.viewers[viewerID]) {
-		
+
 			// The region to do the calculation over
 			var region = cmd_args['region'];
-			
+
 			// A handle to the viewer
 			var viewer = state.viewers[viewerID];
 			// A handle to the ff image viewer
 			var imageViewer = viewer.ffHandle;
 			// A handle to the box to use
 			var box = state.boxes[boxID];
-			
+
 			// Clear the box of any existing information
 			cmds.clear_box( { 'box_id' : boxID } );
-			
+
 			// Clear the viewer
 			var plotID = viewerID;
 			var regionID = plotID + '-boundary';
@@ -138,22 +138,22 @@ cmds = {
 				firefly.removeRegionData(imageViewer[regionID], regionID);
 				imageViewer[regionID] = undefined;
 			}
-			
+
 			// Show region on image viewer
 			var imageRegion = region_to_overlay(region);
 			imageViewer[regionID] = [ imageRegion ];
 			if (firefly.overlayRegionData) {
 				firefly.overlayRegionData( [ imageRegion ], regionID, "Boundary", plotID);
 			}
-			
+
 			var boxText = [
 				'Processing average_pixel...'
 			];
 			box.setText(boxText);
-			
+
 			// Call average_pixel python task
 			firefly.getJsonFromTask("python", "average", parse_region(region) ).then(function(data) {
-			
+
 				boxText = [
 					'average_pixel',
 					new BoxText('Viewer', viewerID),
@@ -164,15 +164,15 @@ cmds = {
 					new BoxText('Average Pixel Value', data['result'])
 				];
 				box.setText(boxText);
-				
+
 			});
-            
-		} 
+
+		}
 		else if (!state.boxes[boxID]) {
-			state.term.echo('A box with that name does not exist!');
+			state.term.echo('A box with the name \'' + boxID + '\' does not exist!');
 		}
 		else if (!state.viewers[viewerID]) {
-			state.term.echo('A viewer with that name does not exist!');
+			state.term.echo('A viewer with the name \'' + viewerID + '\' does not exist!');
 		}
 	},
 
@@ -204,28 +204,28 @@ cmds = {
 
 	clear_box: function(cmd_args) {
 		var boxID = cmd_args['box_id'];
-		
+
 		if (state.boxes[boxID]) {
 			state.boxes[boxID].clear();
 		} else {
-			state.term.echo('A box with that name does not exist!');
+			state.term.echo('A box with the name \'' + boxID + '\' does not exist!');
 		}
 	},
 
 	create_box: function(cmd_args) {
-		var name = cmd_args['box_id'];
-		
-		if (!state.boxes[name]) {
-			var box = new Box(name);
+		var boxID = cmd_args['box_id'];
+
+		if (!state.boxes[boxID]) {
+			var box = new Box(boxID);
 			box.dom.draggable({
 				'handle' : '.box-title'
 			});
-		
-			state.boxes[name] = box;
+
+			state.boxes[boxID] = box;
 		}
 		else {
-			state.term.echo('A box with that name already exists!');
-		}	
+			state.term.echo('A box with the name \'' + boxID + '\' already exists!');
+		}
 	},
 
 	create_viewer: function(cmd_args) {
@@ -243,19 +243,19 @@ cmds = {
 			});
 		}
 		else {
-			state.term.echo('The viewer \'' + viewerID + '\' already exists!');
+			state.term.echo('A viewer with the name \'' + viewerID + '\' already exist!');
 		}
 	},
 
 	delete_box: function(cmd_args) {
-		var name = cmd_args['box_id'];
-		
-		if (state.boxes[name]) {
-			state.boxes[name].destroy();
-			delete state.boxes[name];
+		var boxID = cmd_args['box_id'];
+
+		if (state.boxes[boxID]) {
+			state.boxes[boxID].destroy();
+			delete state.boxes[boxID];
 		}
 		else {
-			state.term.echo('A box with that name does not exist!');
+			state.term.echo('A box with the name \'' + boxID + '\' does not exist!');
 		}
 	},
 
@@ -264,18 +264,22 @@ cmds = {
 		var plotid = viewerID;
 		var region_id = plotid + '-boundary';
         var viewer = state.viewers[viewerID];
-        if (viewer.show_boundary){
-            viewer.show_boundary = false;
-            firefly.removeRegionData(viewer.header["regions_ds9"], region_id);
-            state.term.echo("Boundary Removed");
+        if (viewer){
+            if (viewer.show_boundary){
+                viewer.show_boundary = false;
+                firefly.removeRegionData(viewer.header["regions_ds9"], region_id);
+                state.term.echo("Boundary Removed");
+            }else{
+                state.term.echo("The boundary has not been drawn yet.");
+            }
         }else{
-            state.term.echo("The boundary has not been drawn yet.");
+            state.term.echo('A viewer with the name \'' + viewerID + '\' does not exist!');
         }
 	},
 
 	hide_box: function(cmd_args) {
 		var boxID = cmd_args['box_id'];
-		
+
 		if (state.boxes[boxID]) {
 			// A handle to the box
 			var box = state.boxes[boxID];
@@ -284,20 +288,20 @@ cmds = {
 			jQuery('.box-minimized-bar').append(box.dom);
 		}
 		else {
-			state.term.echo('A box with that name does not exist!');
-		}		
+			state.term.echo('A box with the name \'' + boxID + '\' does not exist!');
+		}
 	},
 
 	hot_pixel: function(cmd_args) {
 		var viewerID = cmd_args['viewer_id'];
 		if (state.viewers[viewerID]) {
-		
+
 			var threshold = parseInt(cmd_args['threshold']);
 			var region = parse_region(cmd_args['region']);
-			
+
 			// A handle to the ff image viewer
 			var imageViewer = state.viewers[viewerID].ffHandle;
-			
+
 			var regionID = viewerID + '-hotpixel';
 			if (state.viewers[regionID]) {
 				firefly.removeRegionData(imageViewer[regionID], regionID);
@@ -315,10 +319,10 @@ cmds = {
 					firefly.overlayRegionData(regions, regionID, 'hotpixel', viewerID);
 				}
 			);
-            
+
 		}
 		else {
-			state.term.echo('A viewer with that name does not exist!');
+            state.term.echo('A viewer with the name \'' + viewerID + '\' does not exist!');
 		}
 	},
 
@@ -354,34 +358,89 @@ cmds = {
 	read_mouse: function(cmd_args) {
 		var boxID = cmd_args['box_id'];
 		var viewerID = cmd_args['viewer_id'];
-		
+
 		if (state.boxes[boxID] && state.viewers[viewerID]) {
 			var box = state.boxes[boxID];
 			var viewer = state.viewers[viewerID];
-			
-			// Clear 
+
+            var plotid = viewerID;
+    		var region_id = plotid + '-boundary';
+
+			// Clear
 			cmds.clear_box( { 'box_id' : boxID } );
-		
+
 			var boxText = [
 				'read_mouse',
 				new BoxText('Viewer', viewerID),
 				[
 					'Point: ',
 					new BoxText('X', ''),
-					new BoxText('Y', '')
-				]
+					new BoxText('Y', ''),
+				],
+                'Processing boundary from back end...'
 			];
 			box.setText(boxText);
-			
+
+            if (!(viewer.show_boundary)){
+                if (viewer.header){
+                    firefly.overlayRegionData(viewer.header["regions_ds9"], region_id, 'Boundary', plotid);
+                    viewer.show_boundary = true;
+                }else{
+                    read_boundary(plotid, function(regions) { // Asynchronous
+                        viewer.header = regions;
+                        firefly.overlayRegionData(viewer.header["regions_ds9"], region_id, 'Boundary', plotid);
+                        viewer.show_boundary = true;
+                    })
+                }
+            }
+
+            state.term.echo('Show boundary of amplifiers by default. Use `hide_boundary` to hide it.');
+
+            boxText = [
+                'read_mouse',
+                new BoxText('Viewer', viewerID),
+                [
+                    'Point: ',
+                    new BoxText('X', ''),
+                    new BoxText('Y', ''),
+                ],
+                'Move the cursor in the viewer to get mouse readout...'
+            ];
+            box.setText(boxText);
+
 			var readoutID = viewer.readout.register('READ_MOUSE', function(data) {
+
+                var mouse_x = Math.trunc(data.ipt.x);
+                var mouse_y = Math.trunc(data.ipt.y);
+
+                var header_info = viewer.header['header'];
+                var width = header_info['SEG_DATASIZE']['x'];
+                var height = header_info['SEG_DATASIZE']['y'];
+                var boundary = header_info['BOUNDARY'];
+                var num_y = header_info['NUM_AMPS']['y']; // Segments origin at top left. Need to flip the Y coordinate for segment coordinate.
+
+                if (viewer.overscan){
+                    width = header_info['SEG_SIZE']['x'];
+                    height = header_info['SEG_SIZE']['y'];
+                    boundary = header_info['BOUNDARY_OVERSCAN'];
+                }
+                var seg_x = Math.floor(mouse_x/width);
+                var seg_y = num_y - 1 - Math.floor(mouse_y/height);
+
 				boxText = [
 					'read_mouse',
 					new BoxText('Viewer', viewerID),
 					[
 						'Point: ',
-						new BoxText('X', Math.trunc(data.ipt.x)),
-						new BoxText('Y', Math.trunc(data.ipt.y))
-					]
+						new BoxText('X', mouse_x),
+						new BoxText('Y', mouse_y)
+					],
+                    [
+                        'Region/segment: ',
+                        new BoxText('X', seg_x),
+                        new BoxText('Y', seg_y)
+                    ],
+                    new BoxText('EXTNAME', (boundary[seg_y][seg_x])['EXTNAME'])
 				];
 				box.setText(boxText);
 	  		});
@@ -390,39 +449,12 @@ cmds = {
 	    			viewer.readout.unregister('READ_MOUSE', readoutID);
 	  			}
 	  		);
-	  		
-	  		/*  // get the size of an image
-			var height = 0;
-			var width = 0;
-
-			var img = new Image();
-			img.onload = function(){
-				var height = img.height;
-				var width = img.width;
-			}
-			img.src = viewer.image_url;
-
-			var getRegion = function(pt) {
-	    		var x = Math.floor(pt.x / width);
-	    		var y = Math.floor(pt.y / height);
-	    		return 'Region <' + x + ',' + y + '>';
-	  		}
-
-			var readoutID = viewer.readout.register('READ_MOUSE', function(data) {
-				x_point.text(Math.floor(data.ipt.x));
-				y_point.text(Math.floor(data.ipt.y));
-	    		region_name.text(getRegion(data.ipt));
-	  		});
-	  		state.boxes[name].clear = function() {
-	    		viewer.readout.unregister('READ_MOUSE', readoutID);
-	  		};*/
-		
 		}
 		else if (!state.boxes[boxID]) {
-			state.term.echo('A box with that name does not exist!');
+			state.term.echo('A box with the name \'' + boxID + '\' does not exist!');
 		}
 		else if (!state.viewers[viewerID]) {
-			state.term.echo('A viewer with that name does not exist!');
+            state.term.echo('A viewer with the name \'' + viewerID + '\' does not exist!');
 		}
 	},
 
@@ -431,38 +463,42 @@ cmds = {
 		var plotid = viewerID; // ffview as a default
 		var region_id = plotid + '-boundary';
         var viewer = state.viewers[viewerID];
-        if (!(viewer.show_boundary)){
-            if (viewer.header){
-                firefly.overlayRegionData(viewer.header["regions_ds9"], region_id, 'Boundary', plotid);
-                viewer.show_boundary = true;
-            }else{
-                read_boundary(plotid, function(regions) { // Asynchronous
-                    viewer.header = regions;
+        if (viewer){
+            if (!(viewer.show_boundary)){
+                if (viewer.header){
                     firefly.overlayRegionData(viewer.header["regions_ds9"], region_id, 'Boundary', plotid);
                     viewer.show_boundary = true;
-                })
+                }else{
+                    read_boundary(plotid, function(regions) { // Asynchronous
+                        viewer.header = regions;
+                        firefly.overlayRegionData(viewer.header["regions_ds9"], region_id, 'Boundary', plotid);
+                        viewer.show_boundary = true;
+                    })
+                }
+            }else{
+                state.term.echo("Boundary of this viewer is already drawn.")
             }
         }else{
-            state.term.echo("Boundary of this viewer is already drawn.")
+			state.term.echo('A viewer with the name \'' + viewerID + '\' does not exist!');
         }
 	},
 
 	show_box: function(cmd_args) {
 		var boxID = cmd_args['box_id'];
-		
+
 		if (state.boxes[boxID]) {
 			// A handle to the box
 			var box = state.boxes[boxID];
-			
+
 			box.dom.detach();
 			jQuery('body').append(box.dom);
-			
+
 			box.maximize();
 			box.dom.draggable('enable');
 		}
 		else {
-			state.term.echo('A box with that name does not exist!');
-		}	
+			state.term.echo('A box with the name \'' + boxID + '\' does not exist!');
+		}
 	},
 
 	uv_freq: function(cmd_args){

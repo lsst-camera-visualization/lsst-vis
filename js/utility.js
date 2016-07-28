@@ -55,32 +55,40 @@ function parse_rect(region) {
 
 	var rect;
 
-	if (region) {
+	if (region && region.length == 5) {
 		rect = {
-			'top' : Number(region[1]),
-			'left' : Number(region[2]),
-			'bottom' : Number(region[3]),
-			'right' : Number(region[4])
+			x1 : Number(region[1]),
+			y1 : Number(region[2]),
+			x2 : Number(region[3]),
+			y2 : Number(region[4])
 		};
+		
+		rect.x1 = Math.min(rect.x1, rect.x2);
+		rect.x2 = Math.max(rect.x1, rect.x2);
+		rect.y1 = Math.min(rect.y1, rect.y2);
+		rect.y2 = Math.max(rect.y1, rect.y2);
 	}
 	else {
 		rect = {
-			'top' : 0,
-			'left' : 0,
-			'bottom' : 1,
-			'right' : 1
+			x1 : 0,
+			y1 : 0,
+			x2 : 1,
+			y2 : 1
 		};
 	}
 
-	return { 'rect' : rect };
+	return {
+		type : 'rect',
+		value : rect
+	}
 }
 
 function region_to_overlay(region) {
-	var type = region[0];
+	var parsed = parse_region(region);
 
-	if (type == 'rect') {
-		var rect = parse_rect(region)['rect'];
-		return ['box', rect.left, rect.bottom, rect.right - rect.left, rect.bottom - rect.top, 0, '#color=blue'].join(' ');
+	if (parsed.type == 'rect') {
+		var rect = parsed.value;
+		return ['box', rect.x1, rect.y1, rect.x2 - rect.x1, rect.y2 - rect.y1, 0, '#color=blue'].join(' ');
 	}
 
 	return null;
@@ -91,14 +99,14 @@ function region_to_boxtext(region) {
 
 	if (!region)
 		return 'Invalid Region';
+		
+	var parsed = parse_region(region);
 
-	switch (region[0]) {
+	switch (parsed.type) {
 		case 'rect':
-			var top = new BoxText('top', region[1]);
-			var left = new BoxText('left', region[2]);
-			var bottom = new BoxText('bottom', region[3]);
-			var right = new BoxText('right', region[4]);
-			return [ top, left, bottom, right ];
+			var first = new BoxText('(x1, y1)', '(' + parsed.value.x1 + ',' + parsed.value.y1 + ')');
+			var second = new BoxText('(x2, y2)', '(' + parsed.value.x2 + ',' + parsed.value.y2 + ')');
+			return [ first, second ];
 
 		case 'circ':
 

@@ -121,9 +121,9 @@ jQuery(function($, undefined) {
 
 
 var executeBackendFunction = function(nameOfTask, params, onFulfilled, onRejected) {
-	
+
 	firefly.getJsonFromTask( 'python', nameOfTask, params ).then(onFulfilled, onRejected);
-	
+
 }
 
 
@@ -134,20 +134,20 @@ cmds = {
 		var boxID = cmd_args['box_id'];
 		var viewerID = cmd_args['viewer_id'];
 		if (state.boxes[boxID] && state.viewers[viewerID]) {
-		
+
 			// The region to do the calculation over
 			var region = cmd_args['region'];
-			
+
 			// A handle to the viewer
 			var viewer = state.viewers[viewerID];
 			// A handle to the ff image viewer
 			var imageViewer = viewer.ffHandle;
 			// A handle to the box to use
 			var box = state.boxes[boxID];
-			
+
 			// Clear the box of any existing information
 			cmds.clear_box( { 'box_id' : boxID } );
-			
+
 			// Clear the viewer
 			var plotID = viewerID;
 			var regionID = plotID + '-boundary';
@@ -155,19 +155,19 @@ cmds = {
 				firefly.removeRegionData(imageViewer[regionID], regionID);
 				imageViewer[regionID] = undefined;
 			}
-			
+
 			// Show region on image viewer
 			var imageRegion = region_to_overlay(region);
 			imageViewer[regionID] = [ imageRegion ];
 			if (firefly.overlayRegionData) {
 				firefly.overlayRegionData( [ imageRegion ], regionID, "Boundary", plotID);
 			}
-			
+
 			var boxText = [
 				'Processing average_pixel...'
 			];
 			box.setText(boxText);
-			
+
 			// Call average_pixel python task
 			var params = parse_region(region);
 			executeBackendFunction('average', params,
@@ -184,7 +184,7 @@ cmds = {
 					];
 					box.setText(boxText);
 				},
-				
+
 				function(data) {
 					// Called when there was a problem with the promise function
 					console.log('rejected');

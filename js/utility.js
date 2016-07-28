@@ -57,16 +57,11 @@ function parse_rect(region) {
 
 	if (region && region.length == 5) {
 		rect = {
-			x1 : Number(region[1]),
-			y1 : Number(region[2]),
-			x2 : Number(region[3]),
-			y2 : Number(region[4])
+			x1 : Math.min(Number(region[1]), Number(region[3])),
+			y1 : Math.min(Number(region[2]), Number(region[4])),
+			x2 : Math.max(Number(region[1]), Number(region[3])),
+			y2 : Math.max(Number(region[2]), Number(region[4]))
 		};
-		
-		rect.x1 = Math.min(rect.x1, rect.x2);
-		rect.x2 = Math.max(rect.x1, rect.x2);
-		rect.y1 = Math.min(rect.y1, rect.y2);
-		rect.y2 = Math.max(rect.y1, rect.y2);
 	}
 	else {
 		rect = {
@@ -88,7 +83,7 @@ function region_to_overlay(region) {
 
 	if (parsed.type == 'rect') {
 		var rect = parsed.value;
-		return ['box', rect.x1, rect.y1, rect.x2 - rect.x1, rect.y2 - rect.y1, 0, '#color=blue'].join(' ');
+		return ['box', rect.x1, rect.y2, rect.x2 - rect.x1, rect.y2 - rect.y1, 0, '#color=blue'].join(' ');
 	}
 
 	return null;
@@ -99,7 +94,7 @@ function region_to_boxtext(region) {
 
 	if (!region)
 		return 'Invalid Region';
-		
+
 	var parsed = parse_region(region);
 
 	switch (parsed.type) {

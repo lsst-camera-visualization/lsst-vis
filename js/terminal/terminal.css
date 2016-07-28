@@ -1,22 +1,21 @@
 
-#cmd_container {
+.cmd_container {
 	
 	background-color: #000;
 	
 	overflow: hidden;
 	padding: 15px 20px 15px 20px;
-	margin: 10px 0px 0px 0px;
 	border-radius: 10px;
 	
 	font-size: 1em;
 	
 	position: relative;
 	
-	box-shadow: 7px 7px 5px grey;
+	box-shadow: 7px 7px 15px grey;
 	
 }
 
-#cmd_help {
+.cmd_help {
 	
 	color: #777;
 	
@@ -30,7 +29,7 @@
 	
 }
 
-#cmd_input {
+.cmd_input {
 	
 	background-color: #000;
 	color: #fff;
@@ -48,12 +47,11 @@
 	
 }
 
-#cmd_output {
+.cmd_output {
 	
 	font-size: .9em;
 	margin-bottom: 5px;
 	overflow-y: scroll;
-	height: 88%;
 	word-wrap: break-word;
 	
 }
@@ -68,13 +66,15 @@
     display: inline;
 }
 
-#cmd_highlight {	
+.cmd_highlight {	
 	color: #fff;	
 }
 
 a {
 	color:#aaf;
 }
+
+
 
 
 

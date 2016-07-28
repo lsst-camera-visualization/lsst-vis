@@ -20,7 +20,6 @@ function read_boundary(data, cb) {
         regions.push(content);
       }
     }
-    // console.log(regions);
     cb({"header":data, "regions_ds9":regions});
   });
 }
@@ -44,11 +43,11 @@ function shape2points(data, cb){
 }
 
 function parse_region(region) {
-	
+
 	if (region[0] == 'rect') {
 		return parse_rect(region);
 	}
-	
+
 	return null;
 }
 
@@ -72,18 +71,18 @@ function parse_rect(region) {
 			'right' : 1
 		};
 	}
-	
+
 	return { 'rect' : rect };
 }
 
 function region_to_overlay(region) {
 	var type = region[0];
-	
+
 	if (type == 'rect') {
 		var rect = parse_rect(region)['rect'];
-		return ['box', rect.left, rect.bottom, rect.right - rect.left, rect.bottom - rect.top, 0, '#color=red'].join(' ');
+		return ['box', rect.left, rect.bottom, rect.right - rect.left, rect.bottom - rect.top, 0, '#color=blue'].join(' ');
 	}
-	
+
 	return null;
 }
 
@@ -100,15 +99,9 @@ function region_to_boxtext(region) {
 			var bottom = new BoxText('bottom', region[3]);
 			var right = new BoxText('right', region[4]);
 			return [ top, left, bottom, right ];
-			
+
 		case 'circ':
-		
+
 			return '';
 	}
 }
-
-
-
-
-
-

@@ -82,6 +82,7 @@ function Viewer(id) {
 
 	this.header = null;
 	this.show_boundary = false;
+	this.overscan = false;
 
 	// Call uv_update every uv.freq milliseconds
 	this.uv.timer_id =
@@ -106,7 +107,7 @@ var selectRegion = function(data) {
         var left = Math.trunc(data.ipt0.x);
         var right = Math.trunc(data.ipt1.x);
 
-        state.term.setVariable('selected', 'rect ' + top + ' ' + left + ' ' + bottom + ' ' + right);
+        state.term.setVariable('selected', '(rect ' + top + ' ' + left + ' ' + bottom + ' ' + right + ')');
 
         jQuery("#ffview-var-selected").css('color', 'white');
     }
@@ -160,18 +161,16 @@ var createViewerSkeleton = function(viewerID) {
 	var TVHeader = jQuery('<p class="viewer-data-header viewer-data-text">Terminal Variables</p>');
 	var TVSelected = jQuery('<p class="viewer-data-text viewer-data-text-unselected" id="ffview-var-selected">selected</p>');
 
-	var functionBar = jQuery('<div class="viewer-function-bar"></div>');
+	/*var functionBar = jQuery('<div class="viewer-function-bar"></div>');
 	var task1 = jQuery('<img src="./images/func.png" class="viewer-function-task">');
 	var task2 = jQuery('<img src="./images/func.png" class="viewer-function-task">');
 	var task3 = jQuery('<img src="./images/func.png" class="viewer-function-task">');
 	var task4 = jQuery('<img src="./images/func.png" class="viewer-function-task">');
-	var task5 = jQuery('<img src="./images/func.png" class="viewer-function-task">');
-
-	jQuery('#leftside').append(container);
+	var task5 = jQuery('<img src="./images/func.png" class="viewer-function-task">');*/
 
 	container.append(main);
 	main.append(infoHeader);
-	main.append(expandFunc);
+	//main.append(expandFunc);
 	main.append(viewer);
 
 	main.append(viewerInfo);
@@ -185,6 +184,7 @@ var createViewerSkeleton = function(viewerID) {
 	terminalVariables.append(TVHeader);
 	terminalVariables.append(TVSelected);
 
+	/*
 	container.append(functionBar);
 	functionBar.append(task1);
 	functionBar.append(task2);
@@ -192,7 +192,9 @@ var createViewerSkeleton = function(viewerID) {
 	functionBar.append(task4);
 	functionBar.append(task5);
 
-	expandFunc.on('click', toggleFunctionBar);
+	expandFunc.on('click', toggleFunctionBar);*/
+	
+	$('body').append(container);
 
 	return container;
 }

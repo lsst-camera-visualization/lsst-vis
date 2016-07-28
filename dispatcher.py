@@ -21,6 +21,10 @@ taskParams = None
 with open(options.infile) as paramfile:
     taskParams = json.load(paramfile)
 
+
+# echo_debug = "echo "+ json.dumps(taskParams) + " > /www/algorithm/debug_file"
+# os.system(echo_debug)
+
 task_name = options.task
 
 try:
@@ -28,8 +32,6 @@ try:
 except Exception as e:
     result = {"error": str(e)}
 
-echo_debug = "echo "+ json.dumps(result) + " > /www/algorithm/debug_file"
-os.system(echo_debug)
 
 # result,error = average_value(taskParams)
 # os.system(echo_debug)

@@ -102,10 +102,10 @@ jQuery(function($, undefined) {
 	    'circ originX originY radius'
 	];
 
-	var autoCompleteParams = [
-		'box_id',
-		'viewer_id'
-	];
+	var autoCompleteParams = {
+		'box_id' : [],
+		'viewer_id' : [ 'ffview' ]
+	};
 
 	var terminalProperties = {
 		helpLink: docLink,

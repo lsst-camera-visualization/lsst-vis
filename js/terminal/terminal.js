@@ -479,9 +479,9 @@ var LSST_TERMINAL = {
 		commandNames = new LSST_TERMINAL.AutoCompleteArray(keys);
     
     	// Create auto complete arrays for parameter names
-    	for (var i = 0; i < autoCompleteParams.length; i++) {
-    		var curr = autoCompleteParams[i];
-    		paramAutoCompletes[curr] = new LSST_TERMINAL.AutoCompleteArray();
+    	for (var key in autoCompleteParams) {
+    		var curr = autoCompleteParams[key];
+    		paramAutoCompletes[key] = new LSST_TERMINAL.AutoCompleteArray(curr);
     	}
     
     

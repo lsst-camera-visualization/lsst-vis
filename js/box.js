@@ -1,8 +1,9 @@
 
 
-function BoxText(label, value) {
+function BoxText(label, value, bWrap = true) {
 	this.label = label;
 	this.value = value;
+	this.bWrap = bWrap;
 }
 
 function Box(boxName) {
@@ -49,7 +50,11 @@ function Box(boxName) {
 	var createBoxTextDOM = function(boxText) {
 		var label = jQuery('<span>').addClass('box-text boxtext-label').text(boxText.label + ': ');
 		var value = jQuery('<span>').addClass('box-text boxtext-value').text(boxText.value);
-		return jQuery('<span>').append('(').append(label).append(value).append(')');
+		
+		if (boxText.bWrap)
+			return jQuery('<span>').append('(').append(label).append(value).append(')');
+		else
+			return jQuery('<span>').append(label).append(value);
 	}
 	
 	var createTextDOM = function(data) {

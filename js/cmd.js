@@ -172,10 +172,9 @@ cmds = {
 			var params = parse_region(region);
 			executeBackendFunction('average', params,
 				function(data) {
-					console.log(data);
 					boxText = [
 						'average_pixel',
-						new BoxText('Viewer', viewerID),
+						'Viewer: ' + viewerID,
 						[
 							'Region:'
 						].concat(region_to_boxtext(region)),

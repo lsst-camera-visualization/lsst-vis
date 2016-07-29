@@ -17,7 +17,7 @@ var LSST_TERMINAL = {
 		
 		// Gets the first string that matches the input. Returns null if not found.
 		this.autoComplete = function(input) {
-			if (!allowEmptyMatch && input === '')
+			if (!allowEmptyMatch && !input)
 				return null;
 				
 			var regex = new RegExp('^' + input);
@@ -240,6 +240,24 @@ var LSST_TERMINAL = {
 			return '<span class="cmd_highlight">' + string + '</span>';
 		},
 		
+		HighlightStringAtIndex : function(string, index) {
+			var result = '';
+			var split = LSST_TERMINAL.Utility.SplitStringByWS(string);
+			
+			for (var i = 0; i < split.length; i++) {
+				var curr = split[i];
+				if (i != index)
+					result += curr;
+				else
+					result += LSST_TERMINAL.Utility.HighlightString(curr);
+					
+				if (i != split.length - 1)
+					result += ' ';
+			}
+			
+			return result;
+		},
+		
 		ReplaceStringWithVariables : function(string, variables) {
 			var split = LSST_TERMINAL.Utility.SplitStringByWS(string);
 			
@@ -313,18 +331,22 @@ var LSST_TERMINAL = {
 
 (function ( $ ) {
 	
-    jQuery.fn.terminal = function(commands, subCommands, autoCompleteParams, properties) {
+    jQuery.fn.terminal = function(commands, subCommands, autoCompleteParams, paramsWithHint, properties) {
     
     	var parent = jQuery(this);
     
     	// Create terminal
 		var terminal = jQuery('<div>').addClass('cmd_container');
-		var terminalHelpDOM = jQuery('<p>').addClass('cmd_help');
+		var terminalHelpContainerDOM = jQuery('<p>').addClass('cmd_help_container');
+		var terminalHelpDOM = jQuery('<span>').addClass('cmd_help');
+		var terminalHelpSubDOM = jQuery('<span>').addClass('cmd_help_sub');
 		var terminalOutputDOM = jQuery('<div>').addClass('cmd_output');
 		var terminalInputDOM = jQuery('<input>').addClass('cmd_input').attr('placeholder', 'Enter command here');
 	
 		parent.append(terminal);
-		terminal.append(terminalHelpDOM);
+		terminal.append(terminalHelpContainerDOM);
+		terminalHelpContainerDOM.append(terminalHelpDOM);
+		terminalHelpContainerDOM.append(terminalHelpSubDOM);
 		terminal.append(terminalOutputDOM);
 		terminal.append(terminalInputDOM);
     	
@@ -346,10 +368,13 @@ var LSST_TERMINAL = {
     	var terminalInput = new LSST_TERMINAL.InputElem(terminalInputDOM);
     	var terminalOutput = new LSST_TERMINAL.TextContainer(terminalOutputDOM);
     	var terminalHelp = new LSST_TERMINAL.TextElem(terminalHelpDOM, 'Command interface: Type help for more info');
+    	var terminalHelpSub = new LSST_TERMINAL.TextElem(terminalHelpSubDOM);
     	
     	var terminalVariables = {};
     	// Maps parameter names to LSST_TERMINAL.AutoCompleteArray objects.
     	var paramAutoCompletes = {};
+    	// An LSST_TERMINAL.AutoCompleteArray object for the sub commands
+    	var subCommandAutoCompletes = new LSST_TERMINAL.AutoCompleteArray(subCommands);
     	
     	
     	
@@ -442,7 +467,7 @@ var LSST_TERMINAL = {
 			terminal.css('font-size', properties['fontSize']);
     
     	// Calculate output are height
-		var helpTextHeight = terminalHelpDOM.outerHeight(true);
+		var helpTextHeight = terminalHelpContainerDOM.outerHeight(true);
 		var inputBoxHeight = terminalInputDOM.outerHeight(true);
 		var terminalHeight = terminal.outerHeight(true);
 		var leftOver = terminalHeight - (helpTextHeight + inputBoxHeight)
@@ -520,7 +545,8 @@ var LSST_TERMINAL = {
 		    			var ac = paramAutoCompletes[currParam];
 		    			var lastUserParam = splitByParams[length - 1];
 		    			var autoParam = ac.autoComplete(lastUserParam);
-		    			terminalInput.append(autoParam.substr(lastUserParam.length) + ' ');
+		    			if (autoParam)
+			    			terminalInput.append(autoParam.substr(lastUserParam.length) + ' ');
 		    		}
 		    	}
 			}
@@ -544,6 +570,7 @@ var LSST_TERMINAL = {
 				    
 					terminalInput.clear();
 					terminalHelp.clear();
+					terminalHelpSub.clear();
 					
 					terminalOutputDOM.scrollTop(sh);
 					
@@ -666,6 +693,30 @@ var LSST_TERMINAL = {
 					helpString += cmdParams[i];
 				}
 			}
+			
+			var validSubCommand = false;
+			// If the parameter has a sub command
+			if (bInMulti) {
+				var multi = lastParam;
+				var subType = multi[0];
+				var auto = subCommandAutoCompletes.autoComplete(subType);
+				if (auto) {
+					var index = (multi.length - 1) + ((bLastSpace) ? 1 : 0);
+					var autoHighlighted = LSST_TERMINAL.Utility.HighlightStringAtIndex(auto, index);
+					var subHelpText = properties.multiStart + autoHighlighted + properties.multiEnd;
+					terminalHelpSub.set(subHelpText);
+					validSubCommand = true;
+				}
+			}
+			
+			// If the parameter we are on has a hint
+			var currParam = cmdParams[highlightIndex];
+			if (!validSubCommand && paramsWithHint[currParam] != undefined) {
+				var hint = paramsWithHint[currParam];
+				terminalHelpSub.set(hint);
+			}
+			else if (!validSubCommand)
+				terminalHelpSub.clear();
 			
 			return helpString;
 		}

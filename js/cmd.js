@@ -98,7 +98,7 @@ jQuery(function($, undefined) {
 	};
 
 	var subCommands = [
-	    'rect top left bottom right',
+	    'rect x1 y1 x2 y2',
 	    'circ originX originY radius'
 	];
 
@@ -106,6 +106,10 @@ jQuery(function($, undefined) {
 		'box_id' : [],
 		'viewer_id' : [ 'ffview' ]
 	};
+	
+	var paramsWithHint = {
+		'region' : 'Hint: (rect), (circ), or selected'
+	}
 
 	var terminalProperties = {
 		helpLink: docLink,
@@ -115,7 +119,7 @@ jQuery(function($, undefined) {
 	    fontSize: '1.5em'
 	};
 
-	state.term = jQuery('#cmd').terminal( commands, subCommands, autoCompleteParams, terminalProperties );
+	state.term = jQuery('#cmd').terminal( commands, subCommands, autoCompleteParams, paramsWithHint, terminalProperties );
 });
 
 

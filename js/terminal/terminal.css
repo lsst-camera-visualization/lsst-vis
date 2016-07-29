@@ -15,18 +15,27 @@
 	
 }
 
-.cmd_help {
-	
-	color: #777;
+.cmd_help_container {
+	width: 100%;
+	padding-bottom: 3px;
+	margin-bottom: 5px;
+	border-bottom: 2px solid #777;
 	
 	font-size: .9em;
 	height: .9em;
 	line-height: .9em;
+}
+
+.cmd_help {
 	
-	padding-bottom: 3px;
-	margin-bottom: 5px;
-	border-bottom: 2px solid;
+	color: #777;
+	float: left;
 	
+}
+
+.cmd_help_sub {
+	color: #aaa;
+	float: right;
 }
 
 .cmd_input {

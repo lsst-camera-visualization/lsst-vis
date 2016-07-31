@@ -116,15 +116,15 @@ var selectRegion = function(data) {
 
 
 // Handles button clicks for viewers
-var onClickViewer = function(id) {
-    var elem = jQuery('#' + id);
+var onClickViewer = function() {
+	var id = jQuery(this).attr('data-buttonID');
     var viewerID = id.split('---')[0];
     var whichButton = id.split('---')[1];
 
     switch (whichButton)
     {
         case "pause_resume":
-            if (elem.attr('value') == "Pause")
+            if (jQuery(this).attr('value') == "Pause")
             	cmds.uv_pause( { 'viewer_id' : viewerID } );
             else
                 cmds.uv_resume( { 'viewer_id' : viewerID } );
@@ -139,41 +139,27 @@ var onClickViewer = function(id) {
 
 
 // Creates an HTML skeleton of a viewer. The parent container is called viewerID-container (ie ffview-container).
-// NOTE: Does not function properly, this function only creates the html.
 var createViewerSkeleton = function(viewerID) {
 
-	var container = jQuery('<div class="viewer" id="' + viewerID + '-container"></div>');
-	var containerID = '#' + viewerID + '-container';
+	var container = jQuery('<div>').addClass('viewer');
+	var infoHeader = jQuery('<p>').addClass('viewer-title').text(viewerID);
+	var viewer = jQuery('<div>').addClass('viewer-view').attr('id', viewerID);
 
-	var main = jQuery('<div class="viewer-main"></div>');
-	var infoHeader = jQuery('<p class="viewer-info-header">' + viewerID + '</p>');
-	var expandFunc = jQuery('<img src="./images/func.png" class="viewer-expand-functions">');
-	var viewer = jQuery('<div id="' + viewerID + '" class="viewer-view"></div>');
+	var viewerInfo = jQuery('<div>').addClass('viewer-info');
 
-	var viewerInfo = jQuery('<div class="viewer-info"></div>');
+	var updateViewer = jQuery('<div>').addClass('viewer-data border-right');
+	var UVHeader = jQuery('<p>').addClass('viewer-data-header').text('Update Viewer Settings');
+	var UVPauseResume = jQuery('<input>').addClass('button').on('click', onClickViewer).attr('type', 'button').attr('value', 'Resume').attr('data-buttonID', viewerID + '---pause_resume');
+	var UVUpdateNow = jQuery('<input>').addClass('button').on('click', onClickViewer).attr('type', 'button').attr('value', 'There are no new images.').attr('data-buttonID', viewerID + '---update_now').prop('disabled', true);
 
-	var updateViewer = jQuery('<div class="viewer-data border-right"></div>');
-	var UVHeader = jQuery('<p class="viewer-data-header viewer-data-text">Update Viewer Settings</p>');
-	var UVPauseResume = jQuery(' <input onclick="onClickViewer(this.id)" type="button" value="Resume" class="button" id="' + viewerID + '---pause_resume">');
-	var UVUpdateNow = jQuery('<input onclick="onClickViewer(this.id)" type="button" value="There are no new images." class="button update-now" id="' + viewerID + '---update_now" disabled>');
+	var terminalVariables = jQuery('<div>').addClass('viewer-data');
+	var TVHeader = jQuery('<p>').addClass('viewer-data-header').text('Terminal Variables');
+	var TVSelected = jQuery('<p>').addClass('viewer-data-text viewer-data-text-unselected').attr('id', viewerID + '-var-selected').text('selected');
 
-	var terminalVariables = jQuery('<div class="viewer-data"></div>');
-	var TVHeader = jQuery('<p class="viewer-data-header viewer-data-text">Terminal Variables</p>');
-	var TVSelected = jQuery('<p class="viewer-data-text viewer-data-text-unselected" id="ffview-var-selected">selected</p>');
+	container.append(infoHeader);
+	container.append(viewer);
 
-	/*var functionBar = jQuery('<div class="viewer-function-bar"></div>');
-	var task1 = jQuery('<img src="./images/func.png" class="viewer-function-task">');
-	var task2 = jQuery('<img src="./images/func.png" class="viewer-function-task">');
-	var task3 = jQuery('<img src="./images/func.png" class="viewer-function-task">');
-	var task4 = jQuery('<img src="./images/func.png" class="viewer-function-task">');
-	var task5 = jQuery('<img src="./images/func.png" class="viewer-function-task">');*/
-
-	container.append(main);
-	main.append(infoHeader);
-	//main.append(expandFunc);
-	main.append(viewer);
-
-	main.append(viewerInfo);
+	container.append(viewerInfo);
 
 	viewerInfo.append(updateViewer);
 	updateViewer.append(UVHeader);
@@ -183,32 +169,17 @@ var createViewerSkeleton = function(viewerID) {
 	viewerInfo.append(terminalVariables);
 	terminalVariables.append(TVHeader);
 	terminalVariables.append(TVSelected);
-
-	/*
-	container.append(functionBar);
-	functionBar.append(task1);
-	functionBar.append(task2);
-	functionBar.append(task3);
-	functionBar.append(task4);
-	functionBar.append(task5);
-
-	expandFunc.on('click', toggleFunctionBar);*/
 	
 	$('body').append(container);
 
 	return container;
 }
 
-// Hides or displays the function task toolbar in a viewer.
-var toggleFunctionBar = function() {
 
-	console.log('click');
 
-	var viewer = jQuery(this).parent().parent();
-	var functionBar = viewer.children('.viewer-function-bar');
 
-	var currDisp = functionBar.css('display');
-	var newDisp = (currDisp == 'none') ? 'block' : 'none';
-	functionBar.css('display', newDisp);
 
-}
+
+
+
+

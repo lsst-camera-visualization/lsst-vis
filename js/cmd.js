@@ -614,9 +614,10 @@ cmds = {
 			viewer.uv.newest_image = null;
 
 		    // Change button status
-		    var but = $('#' + viewerID + '---update_now');
-		    but.prop('disabled', true);
-		    but.attr('value', 'There are no new images.');
+		    var id = viewerID + '---update_now';
+			var button = jQuery('input[data-buttonID="' + id + '"]');
+		    button.prop('disabled', true);
+		    button.attr('value', 'There are no new images.');
 		}
 	},
 
@@ -624,7 +625,10 @@ cmds = {
 	    var viewerID = cmd_args['viewer_id'];
 	    var viewer = state.viewers[viewerID];
 
-		jQuery("#" + viewerID + "---pause_resume").attr('value', 'Resume');
+		var id = viewerID + '---pause_resume';
+		var button = jQuery('input[data-buttonID="' + id + '"]');
+		button.attr('value', 'Resume');
+		
 		viewer.uv.paused = true;
 	},
 
@@ -632,9 +636,11 @@ cmds = {
 	    var viewerID = cmd_args['viewer_id'];
 	    var viewer = state.viewers[viewerID];
 
-		jQuery("#" + viewerID + "---pause_resume").attr('value', 'Pause');
+		var id = viewerID + '---pause_resume';
+		var button = jQuery('input[data-buttonID="' + id + '"]');
+		button.attr('value', 'Pause');
+		
 		viewer.uv.paused = false;
-
 		cmds.uv_load_new( { 'viewer_id' : viewerID } );
 	},
 
@@ -659,17 +665,19 @@ cmds = {
 					cmds.uv_load_new( { 'viewer_id' : viewerID } );
 				}
 				else {
-				    var but = $('#' + viewerID + '---update_now');
-				    but.prop('disabled', false);
-				    but.attr('value', 'There is a new image available. Click to load.');
+					var id = viewerID + '---update_now';
+					var button = jQuery('input[data-buttonID="' + id + '"]');
+				    button.prop('disabled', false);
+				    button.attr('value', 'There is a new image available. Click to load.');
 				}
 			}
 
 			if (viewer.uv.newest_image == null) {
 			    // Displayed when there is no new image, or the new image is done loading.
-			    var but = $('#' + viewerID + '---update_now');
-			    but.prop('disabled', true);
-			    but.attr('value', 'There are no new images.');
+				var id = viewerID + '---update_now';
+				var button = jQuery('input[data-buttonID="' + id + '"]');
+			    button.prop('disabled', true);
+			    button.attr('value', 'There are no new images.');
 			}
         });
 	}

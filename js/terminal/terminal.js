@@ -73,7 +73,7 @@ var LSST_TERMINAL = {
 		var help = LSST_TERMINAL.Utility.GetValue(JSON.parse(localStorage.getItem('cmdHistoryHelp')), []);
 	
 		// The current index
-		var index = cmds.length - 1;
+		var index = cmds.length;
 		
 		var saveHistory = function() {
 		    localStorage.setItem('cmdHistory', JSON.stringify(cmds));

@@ -554,7 +554,7 @@ var LSST_TERMINAL = {
 				
 		terminalInputDOM.keyup(function(event) {
 				
-			var input = terminalInput.text().trim().toLowerCase();
+			var input = terminalInput.text().trim();
 			if (!input)
 			    terminalHelp.clear();
 						
@@ -639,7 +639,7 @@ var LSST_TERMINAL = {
     		echoCommand(properties.prefix + ' ' + input);
     		input = LSST_TERMINAL.Utility.ReplaceStringWithVariables(input, terminalVariables);
     		
-    		var command = getCommand(input);    		
+    		var command = getCommand(input.toLowerCase());    		
     		if (command) {
     			command.execute(input, properties.multiStart, properties.multiEnd);
     		}
@@ -663,8 +663,14 @@ var LSST_TERMINAL = {
 		    
 		    var cmdName = split.shift();
 		    var autoCmd = commandNames.autoComplete(cmdName);
+			var bLastSpace = input.match(/\s$/);
 		    
-		    if (!autoCmd) {
+		    // If the auto complete doesn't find a match,
+		    // or
+		    // the user is past the command name but the auto complete isn't the full command name
+		    // ---- ie the user has entered "uv_fre ffv", uv_fre isn't a command even though it autocompletes to uv_freq
+		    var bInvalidCmdName = (commandNames.getArray().indexOf(cmdName) == -1);
+		    if (!autoCmd || (bInvalidCmdName && (split.length > 0 || bLastSpace))) {
 		        terminalHelp.clear();
 		        return;
 		    }
@@ -672,7 +678,6 @@ var LSST_TERMINAL = {
 		    var command = cmds[autoCmd];
 		    var cmdParams = command.parameters;
 			
-			var bLastSpace = input.match(/\s$/);
 			var trimmedInput = input.trim();
 			var lastParam = split[split.length - 1];
 			var bInMulti = Array.isArray(lastParam) && (trimmedInput.charAt(trimmedInput.length - 1) != properties.multiEnd);

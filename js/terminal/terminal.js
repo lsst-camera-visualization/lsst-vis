@@ -336,14 +336,13 @@ var LSST_TERMINAL = {
     	var parent = jQuery(this);
     
     	// Create terminal
-		var terminal = jQuery('<div>').addClass('cmd_container');
+		var terminal = parent.addClass('cmd_container');
 		var terminalHelpContainerDOM = jQuery('<p>').addClass('cmd_help_container');
 		var terminalHelpDOM = jQuery('<span>').addClass('cmd_help');
 		var terminalHelpSubDOM = jQuery('<span>').addClass('cmd_help_sub');
 		var terminalOutputDOM = jQuery('<div>').addClass('cmd_output');
 		var terminalInputDOM = jQuery('<input>').addClass('cmd_input').attr('placeholder', 'Enter command here');
 	
-		parent.append(terminal);
 		terminal.append(terminalHelpContainerDOM);
 		terminalHelpContainerDOM.append(terminalHelpDOM);
 		terminalHelpContainerDOM.append(terminalHelpSubDOM);
@@ -351,7 +350,7 @@ var LSST_TERMINAL = {
 		terminal.append(terminalInputDOM);
     	
     	// Make sure all properties have values
-		properties.width = LSST_TERMINAL.Utility.GetValue(properties.width, 650);
+		// properties.width = LSST_TERMINAL.Utility.GetValue(properties.width, 650);
 		properties.height = LSST_TERMINAL.Utility.GetValue(properties.height, 300);
 		properties.fontSize = LSST_TERMINAL.Utility.GetValue(properties.fontSize, null);
 		properties.multiStart = LSST_TERMINAL.Utility.GetValue(properties.multiStart, '(');
@@ -457,7 +456,8 @@ var LSST_TERMINAL = {
     	//////////////////////////// INITIALIZATION /////////////////////////////////
     	/////////////////////////////////////////////////////////////////////////////
         // Set width and height of terminal
-		terminal.css('width', properties.width);
+        if (properties.width)
+			terminal.css('width', properties.width);
 		terminal.css('height', properties.height);
     	
     	// Set font size
@@ -466,7 +466,7 @@ var LSST_TERMINAL = {
 		else
 			terminal.css('font-size', properties['fontSize']);
     
-    	// Calculate output are height
+    	// Calculate output area height
 		var helpTextHeight = terminalHelpContainerDOM.outerHeight(true);
 		var inputBoxHeight = terminalInputDOM.outerHeight(true);
 		var terminalHeight = terminal.outerHeight(true);

@@ -118,7 +118,6 @@ jQuery(function($, undefined) {
 	var terminalProperties = {
 		helpLink: docLink,
 	    prefix: '~>',
-	    width: '100%',
 	    height: 300,
 	    fontSize: '1.5em'
 	};

@@ -12,8 +12,17 @@
         <link rel="stylesheet" type="text/css" href="main.css">
     </head>
 
-    <body>        
-        <div id="cmd"></div>
+    <body>
+    
+    	<div id="cmd_container"  onmouseenter="settings_bar_enter(this)" onmouseleave="settings_bar_leave(this)">
+    		<div class="settings_bar" onclick="settings_bar_click(this)">
+    			<img src="images/cog_40x40.png">
+    		</div>
+        	
+        	<div id="cmd"></div>
+        </div>
+        
+        
         <div id="box-minimized-bar"></div>
         
         <!-- script name is fftools.nocache.js -->
@@ -31,6 +40,7 @@
         <script src='./js/utility.js'></script>
         <script src='./js/viewer.js'></script>
         <script src='./js/box.js'></script>
+        <script src='./js/settings_bar.js'></script>
         
     </body>
 </html>

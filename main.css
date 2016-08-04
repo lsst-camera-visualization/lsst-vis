@@ -230,14 +230,28 @@ img:hover {
 
 
 
-#cmd{
+#cmd_container {
 	width: 50%;
 
     position: fixed;
     bottom: 5px;
-    right: 50px;
+    right: 5px;
     
     z-index: 100;
+}
+
+#cmd_container:hover {
+	
+}
+
+.settings_bar {
+	display: none;
+	overflow: hidden;
+	margin: 3px;
+}
+
+.settings_bar > * {
+	float: right;
 }
 
 

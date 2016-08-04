@@ -1,13 +1,41 @@
-state = {
-	// 
-	boxes: {}, // this stores necessary command the box could do.
-	// operations {select, clear}
+
+var LSST = {
+
+	UIElementList : function() {
 	
-	// An object containing a list Viewers. Each viewer is referenced by its id.
-	viewers: {},
+		var elements = {};
 	
-	// A handle to the terminal
-	term: null,
+		this.add = function(id, obj) {
+			elements[id.toLowerCase()] = obj;
+		}
+		
+		this.remove = function(id) {
+			delete elements[id.toLowerCase()];
+		}
+	
+		this.get = function(id) {
+			return elements[id.toLowerCase()];
+		}
+		
+		this.exists = function(id) {
+			return (id.toLowerCase() in elements);
+		}
+		
+	},
+	
+	state : {
+	
+		// A list of boxes
+		boxes : null,
+	
+		// A list of viewers
+		viewers : null,
+	
+		// A handle to the terminal
+		term : null,
+	
+	},
+
 };
 
 var onFireflyLoaded = function() {

@@ -554,7 +554,7 @@ var LSST_TERMINAL = {
 				
 		terminalInputDOM.keyup(function(event) {
 				
-			var input = terminalInput.text().trim().toLowerCase();
+			var input = terminalInput.text().trim();
 			if (!input)
 			    terminalHelp.clear();
 						
@@ -639,7 +639,7 @@ var LSST_TERMINAL = {
     		echoCommand(properties.prefix + ' ' + input);
     		input = LSST_TERMINAL.Utility.ReplaceStringWithVariables(input, terminalVariables);
     		
-    		var command = getCommand(input);    		
+    		var command = getCommand(input.toLowerCase());    		
     		if (command) {
     			command.execute(input, properties.multiStart, properties.multiEnd);
     		}

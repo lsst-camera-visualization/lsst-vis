@@ -13,13 +13,14 @@ def task(filename, task_params):
 
     hdulist = fits.open(filename)
     region = hdulist[0].data
+    region_type, value = task_params['type'], task_params['value']
 
-    if (task_params.get('rect')):
-        region_slice = parseRegion_rect(task_params)
+    if (region_type=='rect'):
+        region_slice = parseRegion_rect(value)
         ROI = region[region_slice]
         avg = str(np.mean(ROI))
-    elif (task_params.get('circle')):
-        mask = circle_mask(region, task_params['center_x'], task_params['center_y'], task_params['radius'])
+    elif (region_type=='circle'):
+        mask = circle_mask(region, value)
         avg = str(gf(region, np.mean, footprint=mask))
     else:
         avg = "Region type is not recognized."

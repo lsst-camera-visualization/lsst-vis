@@ -18,17 +18,14 @@ def valid_boundary(boundary):
     return x_start, x_end, y_start, y_end
 
 def parseRegion_rect(region):
-    shape = region['rect']
-    if (shape['top']>shape['bottom']):
-        shape['top'], shape['bottom'] = shape['bottom'], shape['top']
-    if (shape['left']>shape['right']):
-        shape['left'], shape['right'] = shape['right'], shape['left']
-    return (slice(shape['top'],shape['bottom']), slice(shape['left'],shape['right']))
+    slicing = (slice(region['x1'],region['x2']), slice(region['y1'],region['y2']))
+    return slicing
 
 # a,b is the coordinate (X, Y) of the circle origin.
-def circle_mask(region, a, b, radius):
+def circle_mask(region_orig, region_circ):
     # TODO: double check the order of row and column.
-    ny, nx = region.shape
+    a, b, radius = region_circ['center_x'], region_circ['center_y'], region_circ['radius']
+    ny, nx = region_orig.shape
     y, x = np.ogrid[-b:ny-b, -a:nx-a]
     mask = y*y + x*x <= radius*radius
     circle = np.zeros((ny,nx))

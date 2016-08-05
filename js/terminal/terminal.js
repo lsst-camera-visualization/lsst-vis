@@ -24,8 +24,27 @@ var LSST_TERMINAL = {
 			
 			for (var i = 0; i < arr.length; i++) {
 				var curr = arr[i];
-				if (curr.match(regex))
-					return curr;
+				if (curr.match(regex)) {
+					var next = arr[i + 1];
+					if (next.match(regex)) {
+						return {
+							auto : LSST_TERMINAL.Utility.StringSimilarity(curr, next),
+							match : curr,
+							bWhole : false
+						}
+					}
+					else {
+						return {
+							auto : curr,
+							match : curr,
+							bWhole : true
+						}
+					}
+				}
+			}
+			return {
+				auto : '',
+				bWhole : false
 			}
 		};
 		
@@ -73,7 +92,7 @@ var LSST_TERMINAL = {
 		var help = LSST_TERMINAL.Utility.GetValue(JSON.parse(localStorage.getItem('cmdHistoryHelp')), []);
 	
 		// The current index
-		var index = cmds.length - 1;
+		var index = cmds.length;
 		
 		var saveHistory = function() {
 		    localStorage.setItem('cmdHistory', JSON.stringify(cmds));
@@ -309,6 +328,18 @@ var LSST_TERMINAL = {
 		    }
 		    
 		    return result;
+		},
+		
+		StringSimilarity : function(str1, str2) {
+			for (var i = 0; i < str1.length; i++) {
+				var start = str1.substr(0, i + 1);
+				var regex = new RegExp('^' + start);
+				
+				if (!str2.match(regex)) {
+					return str1.substr(0, i);
+				}
+			}
+			return null;
 		}
 		
 	},
@@ -533,20 +564,23 @@ var LSST_TERMINAL = {
 		    	var autoCmd = commandNames.autoComplete(splitByParams[0]);
 		    	if (!autoCmd)
 		    		return;
-		    		
+		    	
 		    	if (length == 1) {
-		    		terminalInput.set(autoCmd + ' ');
+		    		var after = (autoCmd.bWhole) ? ' ' : '';
+		    		terminalInput.set(autoCmd.auto + after);
 		    	}
 		    	else {
-		    		var command = getCommand(autoCmd);
+		    		var command = getCommand(autoCmd.match);
 		    		var currParam = command.parameters[length - 2];
 		    		
 		    		if (currParam in paramAutoCompletes) {
 		    			var ac = paramAutoCompletes[currParam];
 		    			var lastUserParam = splitByParams[length - 1];
 		    			var autoParam = ac.autoComplete(lastUserParam);
-		    			if (autoParam)
-			    			terminalInput.append(autoParam.substr(lastUserParam.length) + ' ');
+		    			if (autoParam.auto) {
+		    				var after = (autoParam.bWhole) ? ' ' : '';
+			    			terminalInput.append(autoParam.auto.substr(lastUserParam.length) + after);
+			    		}
 		    		}
 		    	}
 			}
@@ -554,7 +588,7 @@ var LSST_TERMINAL = {
 				
 		terminalInputDOM.keyup(function(event) {
 				
-			var input = terminalInput.text().trim().toLowerCase();
+			var input = terminalInput.text().trim();
 			if (!input)
 			    terminalHelp.clear();
 						
@@ -639,7 +673,7 @@ var LSST_TERMINAL = {
     		echoCommand(properties.prefix + ' ' + input);
     		input = LSST_TERMINAL.Utility.ReplaceStringWithVariables(input, terminalVariables);
     		
-    		var command = getCommand(input);    		
+    		var command = getCommand(input.toLowerCase());    		
     		if (command) {
     			command.execute(input, properties.multiStart, properties.multiEnd);
     		}
@@ -662,9 +696,15 @@ var LSST_TERMINAL = {
 		    var split = LSST_TERMINAL.Utility.SplitStringByParameter(input, properties.multiStart, properties.multiEnd);
 		    
 		    var cmdName = split.shift();
-		    var autoCmd = commandNames.autoComplete(cmdName);
+		    var autoCmd = commandNames.autoComplete(cmdName).match;
+			var bLastSpace = input.match(/\s$/);
 		    
-		    if (!autoCmd) {
+		    // If the auto complete doesn't find a match,
+		    // or
+		    // the user is past the command name but the auto complete isn't the full command name
+		    // ---- ie the user has entered "uv_fre ffv", uv_fre isn't a command even though it autocompletes to uv_freq
+		    var bInvalidCmdName = (commandNames.getArray().indexOf(cmdName) == -1);
+		    if (!autoCmd || (bInvalidCmdName && (split.length > 0 || bLastSpace))) {
 		        terminalHelp.clear();
 		        return;
 		    }
@@ -672,7 +712,6 @@ var LSST_TERMINAL = {
 		    var command = cmds[autoCmd];
 		    var cmdParams = command.parameters;
 			
-			var bLastSpace = input.match(/\s$/);
 			var trimmedInput = input.trim();
 			var lastParam = split[split.length - 1];
 			var bInMulti = Array.isArray(lastParam) && (trimmedInput.charAt(trimmedInput.length - 1) != properties.multiEnd);

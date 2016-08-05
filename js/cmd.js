@@ -1,6 +1,10 @@
 
 jQuery(function($, undefined) {
 
+	// Init state
+	LSST.state.boxes = new LSST.UIElementList();
+	LSST.state.viewers = new LSST.UIElementList();
+
     var docLink = 'https://github.com/lsst-camera-visualization/frontend/wiki/New-Home';
 	var commands = {
 		'average_pixel box_id viewer_id region' : {
@@ -77,7 +81,7 @@ jQuery(function($, undefined) {
 		},
 		'uv_load_new viewer_id' : {
 			'callback' : cmds.uv_load_new,
-			'description' : 'If in a paused state and there is a new image available, calling this command will load the new image without changing the state.',
+			'description' : 'If in a paused LSST.state and there is a new image available, calling this command will load the new image without changing the LSST.state.',
 			'doc_link' : docLink + '#uv_load_new'
 		},
 		'uv_pause viewer_id' : {
@@ -119,7 +123,7 @@ jQuery(function($, undefined) {
 	    fontSize: '1.5em'
 	};
 
-	state.term = jQuery('#cmd').terminal( commands, subCommands, autoCompleteParams, paramsWithHint, terminalProperties );
+	LSST.state.term = jQuery('#cmd').terminal( commands, subCommands, autoCompleteParams, paramsWithHint, terminalProperties );
 });
 
 
@@ -137,17 +141,20 @@ cmds = {
 	average_pixel: function(cmd_args) {
 		var boxID = cmd_args['box_id'];
 		var viewerID = cmd_args['viewer_id'];
-		if (state.boxes[boxID] && state.viewers[viewerID]) {
+		
+		var boxExists = LSST.state.boxes.exists(boxID);
+		var viewerExists = LSST.state.viewers.exists(viewerID);
+		if (boxExists && viewerExists) {
 
 			// The region to do the calculation over
 			var region = cmd_args['region'];
 
 			// A handle to the viewer
-			var viewer = state.viewers[viewerID];
+			var viewer = LSST.state.viewers.get(viewerID);
 			// A handle to the ff image viewer
 			var imageViewer = viewer.ffHandle;
 			// A handle to the box to use
-			var box = state.boxes[boxID];
+			var box = LSST.state.boxes.get(boxID);
 
 			// Clear the box of any existing information
 			cmds.clear_box( { 'box_id' : boxID } );
@@ -194,54 +201,56 @@ cmds = {
 				}
 			);
 		}
-		else if (!state.boxes[boxID]) {
-			state.term.echo('A box with the name \'' + boxID + '\' does not exist!');
+		else if (!boxExists) {
+			LSST.state.term.echo('A box with the name \'' + boxID + '\' does not exist!');
 		}
-		else if (!state.viewers[viewerID]) {
-			state.term.echo('A viewer with the name \'' + viewerID + '\' does not exist!');
+		else if (!viewerExists) {
+			LSST.state.term.echo('A viewer with the name \'' + viewerID + '\' does not exist!');
 		}
 	},
 
-	chart: function(state, cmd_args) {
+	/*chart: function(LSST.state, cmd_args) {
 		var name = cmd_args[1];
-		if (!state.boxes[name]) {
-			state.term.echo("The box \'" + name + "\' does not exist!\n");
+		if (!LSST.state.boxes[name]) {
+			LSST.state.term.echo("The box \'" + name + "\' does not exist!\n");
 		} else {
-			cmds.clear_box(state, [name]);
-			var content = state.boxes[name].select.select('.box-content').attr('id', 'chart-' + name);
+			cmds.clear_box(LSST.state, [name]);
+			var content = LSST.state.boxes[name].select.select('.box-content').attr('id', 'chart-' + name);
 			nv.addGraph(function() {
 				return draw_graph(content)
 			});
 		}
 	},
 
-	chart2: function(state, cmd_args) {
+	chart2: function(LSST.state, cmd_args) {
 		var name = cmd_args[1];
-		if (!state.boxes[name]) {
-			state.term.echo("The box \'" + name + "\' does not exist!\n");
+		if (!LSST.state.boxes[name]) {
+			LSST.state.term.echo("The box \'" + name + "\' does not exist!\n");
 		} else {
-			cmds.clear_box(state, ['', name]);
-			var content = state.boxes[name].select.select('.box-content').attr('id', 'chart2-' + name);
+			cmds.clear_box(LSST.state, ['', name]);
+			var content = LSST.state.boxes[name].select.select('.box-content').attr('id', 'chart2-' + name);
 			nv.addGraph(function() {
 				return draw_graph2(content)
 			})
 		}
-	},
+	},*/
 
 	clear_box: function(cmd_args) {
 		var boxID = cmd_args['box_id'];
 
-		if (state.boxes[boxID]) {
-			state.boxes[boxID].clear();
+		if (LSST.state.boxes.exists(boxID)) {
+			var box = LSST.state.boxes.get(boxID);
+			
+			box.clear();
 		} else {
-			state.term.echo('A box with the name \'' + boxID + '\' does not exist!');
+			LSST.state.term.echo('A box with the name \'' + boxID + '\' does not exist!');
 		}
 	},
 
 	create_box: function(cmd_args) {
 		var boxID = cmd_args['box_id'];
 
-		if (!state.boxes[boxID]) {
+		if (!LSST.state.boxes.exists(boxID)) {
 			var box = new Box(boxID);
 			box.dom.draggable({
 				'handle' : '.box-title',
@@ -250,21 +259,20 @@ cmds = {
 
 			box.dom.on('click', onChangeFocus);
 
-			state.boxes[boxID] = box;
+			LSST.state.boxes.add(boxID, box);
 
 			cmds.show_box( { 'box_id' : boxID } );
 		}
 		else {
-            state.term.echo('A box with the name \'' + boxID + '\' already exists!');
+            LSST.state.term.echo('A box with the name \'' + boxID + '\' already exists!');
 		}
 	},
 
 	create_viewer: function(cmd_args) {
 		var viewerID = cmd_args['viewer_id'];
-
-		if (!state.viewers[viewerID]) {
+		
+		if (!LSST.state.viewers.exists(viewerID)) {
 			var viewer = new Viewer(viewerID);
-			state.viewers[viewerID] = viewer;
 
 			viewer.readout.register('SELECT_REGION', selectRegion);
 
@@ -274,23 +282,26 @@ cmds = {
 				drag : onChangeFocus
 			});
 			viewer.container.on('click', onChangeFocus);
+			
+			LSST.state.viewers.add(viewerID, viewer);
 
 			cmds.show_viewer( { 'viewer_id' : viewerID } );
 		}
 		else {
-			state.term.echo('A viewer with the name \'' + viewerID + '\' already exist!');
+			LSST.state.term.echo('A viewer with the name \'' + viewerID + '\' already exist!');
 		}
 	},
 
 	delete_box: function(cmd_args) {
 		var boxID = cmd_args['box_id'];
 
-		if (state.boxes[boxID]) {
-			state.boxes[boxID].destroy();
-			delete state.boxes[boxID];
+		if (LSST.state.boxes.exists(boxID)) {
+			LSST.state.boxes.get(boxID).destroy();
+			
+			LSST.state.boxes.remove(boxID);
 		}
 		else {
-			state.term.echo('A box with the name \'' + boxID + '\' does not exist!');
+			LSST.state.term.echo('A box with the name \'' + boxID + '\' does not exist!');
 		}
 	},
 
@@ -298,51 +309,51 @@ cmds = {
 		var viewerID = cmd_args['viewer_id'];
 		var plotid = viewerID;
 		var region_id = plotid + '-boundary';
-        var viewer = state.viewers[viewerID];
+        var viewer = LSST.state.viewers.get(viewerID);
         if (viewer){
             if (viewer.show_boundary){
                 viewer.show_boundary = false;
                 firefly.removeRegionData(viewer.header["regions_ds9"], region_id);
-                state.term.echo("Boundary Removed");
+                LSST.state.term.echo("Boundary Removed");
             }else{
-                state.term.echo("The boundary has not been drawn yet.");
+                LSST.state.term.echo("The boundary has not been drawn yet.");
             }
         }else{
-            state.term.echo('A viewer with the name \'' + viewerID + '\' does not exist!');
+            LSST.state.term.echo('A viewer with the name \'' + viewerID + '\' does not exist!');
         }
 	},
 
 	hide_box: function(cmd_args) {
 		var boxID = cmd_args['box_id'];
 
-		if (state.boxes[boxID]) {
+		if (LSST.state.boxes.exists(boxID)) {
 			// Do we have to move terminal?
 			if (jQuery('#box-minimized-bar').children('.box').length == 0)
 				jQuery('#cmd').css('bottom', '60px');
 
 			// A handle to the box
-			var box = state.boxes[boxID];
+			var box = LSST.state.boxes.get(boxID);
 			box.minimize();
 			box.dom.draggable('disable');
 			jQuery('#box-minimized-bar').append(box.dom);
 		}
 		else {
-			state.term.echo('A box with the name \'' + boxID + '\' does not exist!');
+			LSST.state.term.echo('A box with the name \'' + boxID + '\' does not exist!');
 		}
 	},
 
 	hot_pixel: function(cmd_args) {
 		var viewerID = cmd_args['viewer_id'];
-		if (state.viewers[viewerID]) {
+		if (LSST.state.viewers.exists(viewerID)) {
 
 			var threshold = parseInt(cmd_args['threshold']);
 			var region = parse_region(cmd_args['region']);
 
 			// A handle to the ff image viewer
-			var imageViewer = state.viewers[viewerID].ffHandle;
+			var imageViewer = LSST.state.viewers.get(viewerID).ffHandle;
 
 			var regionID = viewerID + '-hotpixel';
-			if (state.viewers[regionID]) {
+			if (LSST.state.viewers[regionID]) {
 				firefly.removeRegionData(imageViewer[regionID], regionID);
 				imageViewer[regionID] = undefined;
 			}
@@ -361,7 +372,7 @@ cmds = {
 
 		}
 		else {
-            state.term.echo('A viewer with the name \'' + viewerID + '\' does not exist!');
+            LSST.state.term.echo('A viewer with the name \'' + viewerID + '\' does not exist!');
 		}
 	},
 
@@ -372,14 +383,14 @@ cmds = {
 		var re = /^https?:/;
 		var result = "";
 		result = "Image: " + uri;
-		var viewer = state.viewers[viewerID].ffHandle;
+		var viewer = LSST.state.viewers.get(viewerID).ffHandle;
 		if (re.test(uri)) { // this is a URL
 		    viewer.plot({
 		        "URL" : uri,
 		        "Title" : result,
 		        "ZoomType" : "TO_WIDTH"
 		    });
-		    state.term.echo(result);
+		    LSST.state.term.echo(result);
 		} else {
 		    result = uri + " !matched " + re;
 		    viewer.plot({
@@ -387,10 +398,10 @@ cmds = {
 		        "Title" : result,
 		        "ZoomType" : "TO_WIDTH"
 		    });
-		    state.term.echo(result);
+		    LSST.state.term.echo(result);
 		}
-		state.viewers[viewerID].image_url = uri;
-		console.log(state.viewers[viewerID]);
+		LSST.state.viewers.get(viewerID).image_url = uri;
+		console.log(LSST.state.viewers.get(viewerID));
 		return null;
 	},
 
@@ -398,9 +409,11 @@ cmds = {
 		var boxID = cmd_args['box_id'];
 		var viewerID = cmd_args['viewer_id'];
 
-		if (state.boxes[boxID] && state.viewers[viewerID]) {
-			var box = state.boxes[boxID];
-			var viewer = state.viewers[viewerID];
+		var boxExists = LSST.state.boxes.exists(boxID);
+		var viewerExists = LSST.state.viewer.exists(viewerID);
+		if (boxExists && viewerExists) {
+			var box = LSST.state.boxes.get(boxID);
+			var viewer = LSST.state.viewers.get(viewerID);
 
             var plotid = viewerID;
     		var region_id = plotid + '-boundary';
@@ -433,7 +446,7 @@ cmds = {
                 }
             }
 
-            state.term.echo('Boundary of amplifiers shown by default. Use `hide_boundary` to hide it.');
+            LSST.state.term.echo('Boundary of amplifiers shown by default. Use `hide_boundary` to hide it.');
 
             boxText = [
                 'read_mouse',
@@ -488,11 +501,11 @@ cmds = {
 	  			}
 	  		);
 		}
-		else if (!state.boxes[boxID]) {
-			state.term.echo('A box with the name \'' + boxID + '\' does not exist!');
+		else if (!boxExists) {
+			LSST.state.term.echo('A box with the name \'' + boxID + '\' does not exist!');
 		}
-		else if (!state.viewers[viewerID]) {
-            state.term.echo('A viewer with the name \'' + viewerID + '\' does not exist!');
+		else if (!viewerExists) {
+            LSST.state.term.echo('A viewer with the name \'' + viewerID + '\' does not exist!');
 		}
 	},
 
@@ -500,7 +513,7 @@ cmds = {
 		var viewerID = cmd_args['viewer_id'];
 		var plotid = viewerID; // ffview as a default
 		var region_id = plotid + '-boundary';
-        var viewer = state.viewers[viewerID];
+        var viewer = LSST.state.viewers.get(viewerID);
         if (viewer){
             if (!(viewer.show_boundary)){
                 if (viewer.header){
@@ -514,19 +527,19 @@ cmds = {
                     })
                 }
             }else{
-                state.term.echo("Boundary of this viewer is already drawn.")
+                LSST.state.term.echo("Boundary of this viewer is already drawn.")
             }
         }else{
-			state.term.echo('A viewer with the name \'' + viewerID + '\' does not exist!');
+			LSST.state.term.echo('A viewer with the name \'' + viewerID + '\' does not exist!');
         }
 	},
 
 	show_box: function(cmd_args) {
 		var boxID = cmd_args['box_id'];
 
-		if (state.boxes[boxID]) {
+		if (LSST.state.boxes.exists(boxID)) {
 			// A handle to the box
-			var box = state.boxes[boxID];
+			var box = LSST.state.boxes.get(boxID);
 
 			box.dom.detach();
 			jQuery('body').append(box.dom);
@@ -543,134 +556,172 @@ cmds = {
 				jQuery('#cmd').css('bottom', '5px');
 		}
 		else {
-			state.term.echo('A box with the name \'' + boxID + '\' does not exist!');
+			LSST.state.term.echo('A box with the name \'' + boxID + '\' does not exist!');
 		}
 	},
 
 	show_viewer : function(cmd_args) {
 		var viewerID = cmd_args['viewer_id'];
 
-		if (state.viewers[viewerID]) {
-			var dom = state.viewers[viewerID].container;
+		if (LSST.state.viewers.exists(viewerID)) {
+			var dom = LSST.state.viewers.get(viewerID).container;
 
 			var focusFunc = onChangeFocus;
 			focusFunc.bind(dom);
 			focusFunc();
 		}
 		else {
-            state.term.echo('A viewer with the name \'' + viewerID + '\' does not exist!');
+            LSST.state.term.echo('A viewer with the name \'' + viewerID + '\' does not exist!');
 		}
 	},
 
 	uv_freq: function(cmd_args){
 
 	    var viewerID = cmd_args['viewer_id'];
-	    var viewer = state.viewers[viewerID];
+	    
+	    if (LSST.state.viewers.exists(viewerID)) {
+			var viewer = LSST.state.viewers.get(viewerID);
 
-	    var timeAsMilli = cmd_args['time_in_millis'];
-		// 5000 milliseconds is the lower bound
-		timeAsMilli = Math.min(timeAsMilli, 5000);
+			var timeAsMilli = cmd_args['time_in_millis'];
+			// 5000 milliseconds is the lower bound
+			timeAsMilli = Math.min(timeAsMilli, 5000);
 
-		// Stop timer for viewer
-		clearInterval(viewer.uv.timer_id);
+			// Stop timer for viewer
+			clearInterval(viewer.uv.timer_id);
 
-		// Set new update frequency
-		viewer.uv.freq = timeAsMilli;
+			// Set new update frequency
+			viewer.uv.freq = timeAsMilli;
 
-		// Reset timer
-		viewer.uv.timer_id =
-		    setInterval(
-		        function() {
-		        	cmds.uv_update( { 'viewer_id' : viewerID } )
-		        },
-		        viewer.uv.freq
-		    );
+			// Reset timer
+			viewer.uv.timer_id =
+				setInterval(
+				    function() {
+				    	cmds.uv_update( { 'viewer_id' : viewerID } )
+				    },
+				    viewer.uv.freq
+				);
+		}
+		else {
+            LSST.state.term.echo('A viewer with the name \'' + viewerID + '\' does not exist!');
+		}
 	},
 
 	uv_load_new: function(cmd_args) {
 		var viewerID = cmd_args['viewer_id'];
-	    var viewer = state.viewers[viewerID];
+		
+		if (LSST.state.viewers.exists(viewerID)) {
+			var viewer = LSST.state.viewers.get(viewerID);
 
-        if (viewer.show_boundary){
-            viewer.show_boundary = false;
-            firefly.removeRegionData(viewer.header["regions_ds9"], region_id);
-        }
-        viewer.header = null;
+		    if (viewer.show_boundary){
+		        viewer.show_boundary = false;
+		        firefly.removeRegionData(viewer.header["regions_ds9"], region_id);
+		    }
+		    viewer.header = null;
 
-		var newImage = viewer.uv.newest_image;
+			var newImage = viewer.uv.newest_image;
 
-		if (newImage) {
+			if (newImage) {
 
-			cmds.load_image( { 'viewer_id' : viewerID, 'uri' : newImage } );
+				cmds.load_image( { 'viewer_id' : viewerID, 'uri' : newImage } );
 
-			/*var newPlot = {
-				url: newImage,
-				Title: viewerID,
-				ZoomType: 'TO_WIDTH'
-			};
-			viewer.ffHandle.plot(newPlot);
+				/*var newPlot = {
+					url: newImage,
+					Title: viewerID,
+					ZoomType: 'TO_WIDTH'
+				};
+				viewer.ffHandle.plot(newPlot);
 
-			viewer.image_url = newImage;*/
-			viewer.uv.newest_image = null;
+				viewer.image_url = newImage;*/
+				viewer.uv.newest_image = null;
 
-		    // Change button status
-		    var but = $('#' + viewerID + '---update_now');
-		    but.prop('disabled', true);
-		    but.attr('value', 'There are no new images.');
+				// Change button status
+				var id = viewerID + '---update_now';
+				var button = jQuery('input[data-buttonID="' + id + '"]');
+				button.prop('disabled', true);
+				button.attr('value', 'There are no new images.');
+			}
+		}
+		else {
+            LSST.state.term.echo('A viewer with the name \'' + viewerID + '\' does not exist!');
 		}
 	},
 
 	uv_pause: function(cmd_args) {
 	    var viewerID = cmd_args['viewer_id'];
-	    var viewer = state.viewers[viewerID];
+	    
+	    if (LSST.state.viewers.exists(viewerID)) {
+			var viewer = LSST.state.viewers.get(viewerID);
 
-		jQuery("#" + viewerID + "---pause_resume").attr('value', 'Resume');
-		viewer.uv.paused = true;
+			var id = viewerID + '---pause_resume';
+			var button = jQuery('input[data-buttonID="' + id + '"]');
+			button.attr('value', 'Resume');
+		
+			viewer.uv.paused = true;
+		}
+		else {
+            LSST.state.term.echo('A viewer with the name \'' + viewerID + '\' does not exist!');
+		}
 	},
 
 	uv_resume: function(cmd_args) {
 	    var viewerID = cmd_args['viewer_id'];
-	    var viewer = state.viewers[viewerID];
+	    
+	    if (LSST.state.viewers.exists(viewerID)) {
+			var viewer = LSST.state.viewers.get(viewerID);
 
-		jQuery("#" + viewerID + "---pause_resume").attr('value', 'Pause');
-		viewer.uv.paused = false;
-
-		cmds.uv_load_new( { 'viewer_id' : viewerID } );
+			var id = viewerID + '---pause_resume';
+			var button = jQuery('input[data-buttonID="' + id + '"]');
+			button.attr('value', 'Pause');
+		
+			viewer.uv.paused = false;
+			cmds.uv_load_new( { 'viewer_id' : viewerID } );
+		}
+		else {
+            LSST.state.term.echo('A viewer with the name \'' + viewerID + '\' does not exist!');
+		}
 	},
 
 	uv_update: function(cmd_args) {
 	    var viewerID = cmd_args['viewer_id'];
-	    var viewer = state.viewers[viewerID];
+	    
+	    if (LSST.state.viewers.exists(viewerID)) {
+			var viewer = LSST.state.viewers.get(viewerID);
 
-		var CHECK_IMAGE_PORT = "8099";
-        var CHECK_IMAGE_URL = "http://172.17.0.1:" + CHECK_IMAGE_PORT + "/vis/checkImage";
-        var params = {
-        	'since': viewer.uv.image_ts
-       	};
+			var CHECK_IMAGE_PORT = "8099";
+		    var CHECK_IMAGE_URL = "http://172.17.0.1:" + CHECK_IMAGE_PORT + "/vis/checkImage";
+		    var params = {
+		    	'since': viewer.uv.image_ts
+		   	};
 
-        jQuery.getJSON(CHECK_IMAGE_URL, params, function(data) {
+		    jQuery.getJSON(CHECK_IMAGE_URL, params, function(data) {
 
-            if (data) {
-                // There's a new image.
-                viewer.uv.image_ts = data.timestamp;
-				viewer.uv.newest_image = data.uri;
+		        if (data) {
+		            // There's a new image.
+		            viewer.uv.image_ts = data.timestamp;
+					viewer.uv.newest_image = data.uri;
 
-				if (!viewer.uv.paused) {
-					cmds.uv_load_new( { 'viewer_id' : viewerID } );
+					if (!viewer.uv.paused) {
+						cmds.uv_load_new( { 'viewer_id' : viewerID } );
+					}
+					else {
+						var id = viewerID + '---update_now';
+						var button = jQuery('input[data-buttonID="' + id + '"]');
+						button.prop('disabled', false);
+						button.attr('value', 'There is a new image available. Click to load.');
+					}
 				}
-				else {
-				    var but = $('#' + viewerID + '---update_now');
-				    but.prop('disabled', false);
-				    but.attr('value', 'There is a new image available. Click to load.');
-				}
-			}
 
-			if (viewer.uv.newest_image == null) {
-			    // Displayed when there is no new image, or the new image is done loading.
-			    var but = $('#' + viewerID + '---update_now');
-			    but.prop('disabled', true);
-			    but.attr('value', 'There are no new images.');
-			}
-        });
+				if (viewer.uv.newest_image == null) {
+					// Displayed when there is no new image, or the new image is done loading.
+					var id = viewerID + '---update_now';
+					var button = jQuery('input[data-buttonID="' + id + '"]');
+					button.prop('disabled', true);
+					button.attr('value', 'There are no new images.');
+				}
+		    });
+        }
+		else {
+            LSST.state.term.echo('A viewer with the name \'' + viewerID + '\' does not exist!');
+		}
 	}
 }

@@ -26,7 +26,7 @@ var LSST_TERMINAL = {
 				var curr = arr[i];
 				if (curr.match(regex)) {
 					var next = arr[i + 1];
-					if (next.match(regex)) {
+					if (next && next.match(regex)) {
 						return {
 							auto : LSST_TERMINAL.Utility.StringSimilarity(curr, next),
 							match : curr,
@@ -256,7 +256,7 @@ var LSST_TERMINAL = {
 		},
 		
 		HighlightString : function(string) {
-			return '<span class="cmd_highlight">' + string + '</span>';
+			return '<span class="cmd_highlight cmd_help_element">' + string + '</span>';
 		},
 		
 		HighlightStringAtIndex : function(string, index) {
@@ -339,7 +339,7 @@ var LSST_TERMINAL = {
 					return str1.substr(0, i);
 				}
 			}
-			return null;
+			return str1;
 		}
 		
 	},
@@ -729,7 +729,7 @@ var LSST_TERMINAL = {
 					helpString += LSST_TERMINAL.Utility.HighlightString(cmdParams[i]);
 				}
 				else {
-					helpString += cmdParams[i];
+					helpString += '<span class="cmd_help_element">' + cmdParams[i] + '</span>';
 				}
 			}
 			
@@ -775,10 +775,44 @@ var LSST_TERMINAL = {
     	}
     
     
+    	
+    	/////////////////////////////////////////////////////////////////////////////
+    	//////////////////////////// jQuery FUNCTIONS ///////////////////////////////
+    	/////////////////////////////////////////////////////////////////////////////
+    	    
+    
     	return this;
     
     };
 	
 
 }( jQuery ));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

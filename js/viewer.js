@@ -32,7 +32,7 @@ function FFReadout(viewerID) {
 	};
 
 	var dispatch = function(data) {
-		console.log(data);
+
 		var ext = extConv[data.type];
 		var cbArray = callbacks[ext];
 		for (var i = 0; i < cbArray.length; i++) {
@@ -101,7 +101,7 @@ function Viewer(id) {
 // Called when the user selects a region in a viewer.
 // This function formats the data and sets it in the terminal variable called 'selected'.
 var selectRegion = function(data) {
-	console.log(data);
+
     if (data.type == 'AREA_SELECT') {
         var y1 = Math.trunc(data.ipt0.y);
         var y2 = Math.trunc(data.ipt1.y);

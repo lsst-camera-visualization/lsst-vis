@@ -793,6 +793,8 @@ var LSST_TERMINAL = {
     			
     			if (param in paramAutoCompletes) {	
     				var list = paramAutoCompletes[param].getArray();
+    				if (list.length == 0)
+    					return;
     				
     				var popup_container = jQuery('<div>').attr('id', 'cmd_popup_container');
     				var popup_listcontainer = jQuery('<ul>').attr('id', 'cmd_popup_listcontainer');

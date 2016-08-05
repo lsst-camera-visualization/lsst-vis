@@ -105,12 +105,12 @@ var LSST_TERMINAL = {
 			
 			saveHistory();
 		    
-		    index = cmds.length;
-		    
 		    if (cmds.length > maxEntries) {
 		        cmds.shift();
 		        help.shift();
 		    }
+		    
+		    index = cmds.length;
 		};
 		
 		// Gets the command at the current index.
@@ -632,6 +632,8 @@ var LSST_TERMINAL = {
 			    return;
 			
 			terminalHelp.set(createHelpText(input));
+			
+			handleHelpPopup();
 		});
     
     
@@ -779,7 +781,51 @@ var LSST_TERMINAL = {
     	/////////////////////////////////////////////////////////////////////////////
     	//////////////////////////// jQuery FUNCTIONS ///////////////////////////////
     	/////////////////////////////////////////////////////////////////////////////
-    	    
+    	var handleHelpPopup = function() {
+    	
+    		jQuery('.cmd_help_element').mouseenter(function() {
+    		
+    			// Destroy if there already is one
+				jQuery('#cmd_popup_container').remove();
+						
+    			var elem = jQuery(this);
+    			var param = elem.text();
+    			
+    			if (param in paramAutoCompletes) {	
+    				var list = paramAutoCompletes[param].getArray();
+    				
+    				var popup_container = jQuery('<div>').attr('id', 'cmd_popup_container');
+    				var popup_listcontainer = jQuery('<ul>').attr('id', 'cmd_popup_listcontainer');
+    				for (var i = 0; i < list.length; i++) {
+    					var li = jQuery('<li>').addClass('cmd_popup_element').text(list[i]);
+    					popup_listcontainer.append(li);
+    					
+    					li.on('click', function() {
+    						terminalInput.append(jQuery(this).text() + ' ');
+							jQuery('#cmd_popup_container').remove();
+    					});
+    				}
+    				
+    				popup_container.append(popup_listcontainer);
+    				
+    				terminal.append(popup_container);
+    				var elemOffset = elem.offset();
+    				var elemHeight = elem.height();
+    				
+    				popup_container.offset(elemOffset);
+    				popup_listcontainer.offset({
+    					top : elemOffset.top + elemHeight,
+    					left : elemOffset.left
+    				});
+    				
+    				
+					jQuery('#cmd_popup_container').mouseleave(function() {
+						jQuery('#cmd_popup_container').remove();
+					});
+    			}
+    		});
+    	
+    	}
     
     	return this;
     

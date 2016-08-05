@@ -24,8 +24,27 @@ var LSST_TERMINAL = {
 			
 			for (var i = 0; i < arr.length; i++) {
 				var curr = arr[i];
-				if (curr.match(regex))
-					return curr;
+				if (curr.match(regex)) {
+					var next = arr[i + 1];
+					if (next.match(regex)) {
+						return {
+							auto : LSST_TERMINAL.Utility.StringSimilarity(curr, next),
+							match : curr,
+							bWhole : false
+						}
+					}
+					else {
+						return {
+							auto : curr,
+							match : curr,
+							bWhole : true
+						}
+					}
+				}
+			}
+			return {
+				auto : '',
+				bWhole : false
 			}
 		};
 		
@@ -309,6 +328,18 @@ var LSST_TERMINAL = {
 		    }
 		    
 		    return result;
+		},
+		
+		StringSimilarity : function(str1, str2) {
+			for (var i = 0; i < str1.length; i++) {
+				var start = str1.substr(0, i + 1);
+				var regex = new RegExp('^' + start);
+				
+				if (!str2.match(regex)) {
+					return str1.substr(0, i);
+				}
+			}
+			return null;
 		}
 		
 	},
@@ -533,20 +564,23 @@ var LSST_TERMINAL = {
 		    	var autoCmd = commandNames.autoComplete(splitByParams[0]);
 		    	if (!autoCmd)
 		    		return;
-		    		
+		    	
 		    	if (length == 1) {
-		    		terminalInput.set(autoCmd + ' ');
+		    		var after = (autoCmd.bWhole) ? ' ' : '';
+		    		terminalInput.set(autoCmd.auto + after);
 		    	}
 		    	else {
-		    		var command = getCommand(autoCmd);
+		    		var command = getCommand(autoCmd.match);
 		    		var currParam = command.parameters[length - 2];
 		    		
 		    		if (currParam in paramAutoCompletes) {
 		    			var ac = paramAutoCompletes[currParam];
 		    			var lastUserParam = splitByParams[length - 1];
 		    			var autoParam = ac.autoComplete(lastUserParam);
-		    			if (autoParam)
-			    			terminalInput.append(autoParam.substr(lastUserParam.length) + ' ');
+		    			if (autoParam.auto) {
+		    				var after = (autoParam.bWhole) ? ' ' : '';
+			    			terminalInput.append(autoParam.auto.substr(lastUserParam.length) + after);
+			    		}
 		    		}
 		    	}
 			}
@@ -662,7 +696,7 @@ var LSST_TERMINAL = {
 		    var split = LSST_TERMINAL.Utility.SplitStringByParameter(input, properties.multiStart, properties.multiEnd);
 		    
 		    var cmdName = split.shift();
-		    var autoCmd = commandNames.autoComplete(cmdName);
+		    var autoCmd = commandNames.autoComplete(cmdName).match;
 			var bLastSpace = input.match(/\s$/);
 		    
 		    // If the auto complete doesn't find a match,

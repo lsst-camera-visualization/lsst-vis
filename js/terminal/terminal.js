@@ -332,11 +332,9 @@ var LSST_TERMINAL = {
 (function ( $ ) {
 	
     jQuery.fn.terminal = function(commands, subCommands, autoCompleteParams, paramsWithHint, properties) {
-    
-    	var parent = jQuery(this);
-    
+        
     	// Create terminal
-		var terminal = parent.addClass('cmd_container');
+		var terminal = jQuery(this).addClass('cmd_container');
 		var terminalHelpContainerDOM = jQuery('<p>').addClass('cmd_help_container');
 		var terminalHelpDOM = jQuery('<span>').addClass('cmd_help');
 		var terminalHelpSubDOM = jQuery('<span>').addClass('cmd_help_sub');
@@ -352,7 +350,7 @@ var LSST_TERMINAL = {
     	// Make sure all properties have values
 		// properties.width = LSST_TERMINAL.Utility.GetValue(properties.width, 650);
 		properties.height = LSST_TERMINAL.Utility.GetValue(properties.height, 300);
-		properties.fontSize = LSST_TERMINAL.Utility.GetValue(properties.fontSize, null);
+		properties.fontSize = LSST_TERMINAL.Utility.GetValue(properties.fontSize, '150%');
 		properties.multiStart = LSST_TERMINAL.Utility.GetValue(properties.multiStart, '(');
 		properties.multiEnd = LSST_TERMINAL.Utility.GetValue(properties.multiEnd, ')');
 		properties.maxHistoryEntries = LSST_TERMINAL.Utility.GetValue(properties.maxHistoryEntries, 50);
@@ -446,161 +444,6 @@ var LSST_TERMINAL = {
     		history.clear();
     		cmd_clear();
     	}
-    
-    
-    
-    
-    	
-    	
-    	/////////////////////////////////////////////////////////////////////////////
-    	//////////////////////////// INITIALIZATION /////////////////////////////////
-    	/////////////////////////////////////////////////////////////////////////////
-        // Set width and height of terminal
-        if (properties.width)
-			terminal.css('width', properties.width);
-		terminal.css('height', properties.height);
-    	
-    	// Set font size
-		if (properties['fontSize'] == null)
-			terminal.css('font-size', (properties['height'] / 300.0) + 'em');
-		else
-			terminal.css('font-size', properties['fontSize']);
-    
-    	// Calculate output area height
-		var helpTextHeight = terminalHelpContainerDOM.outerHeight(true);
-		var inputBoxHeight = terminalInputDOM.outerHeight(true);
-		var terminalHeight = terminal.outerHeight(true);
-		var leftOver = terminalHeight - (helpTextHeight + inputBoxHeight)
-		terminalOutputDOM.height((leftOver - 10) + 'px');
-    
-    	// Clicking anywhere in the terminal will put focus in the input box
-		terminal.click(function() {
-		    terminalInputDOM.focus();
-		});
-		
-		
-		// Format user commands
-		var keys = [];
-		var createCommand = function(name, command) {
-			var cmd = new LSST_TERMINAL.Command(name, command.callback, command.description, command.helpLink);
-			var cmdName = LSST_TERMINAL.Utility.SplitStringByWS(name)[0];			
-			
-			cmds[cmdName] = cmd;
-			keys.push(cmdName);
-		};
-		for (var key in commands) {			
-			if (commands.hasOwnProperty(key)) {
-				createCommand(key, commands[key]);
-			}			
-		};
-		
-		// Add built in commands
-		createCommand('clear', { callback : cmd_clear, description : 'Clears the output log of the terminal.' } );
-		createCommand('help [command]', { callback : cmd_help, description : 'Displays all the commands, or the help string for a single command.' } );
-		createCommand('echo string', { callback : cmd_echo, description : 'Echoes a string to the output area.' } );
-		createCommand('clear_terminal_history', { callback : cmd_clearTerminalHistory, description : 'Clears the history of commands.' } );
-		
-		// Create the auto complete array for command names
-		commandNames = new LSST_TERMINAL.AutoCompleteArray(keys);
-    
-    	// Create auto complete arrays for parameter names
-    	for (var key in autoCompleteParams) {
-    		var curr = autoCompleteParams[key];
-    		paramAutoCompletes[key] = new LSST_TERMINAL.AutoCompleteArray(curr);
-    	}
-    
-    
-    
-    
-    
-    	/////////////////////////////////////////////////////////////////////////////
-    	//////////////////////////// KEY DOWN/UP ////////////////////////////////////
-    	/////////////////////////////////////////////////////////////////////////////
-				
-		terminalInputDOM.keydown(function(event) {
-			var keyCode = event.keyCode || event.which;
-			var input = terminalInput.text().trim().toLowerCase();
-			
-			// Tab
-			if (keyCode == 9) {
-				event.preventDefault();
-				
-		    	var splitByParams = LSST_TERMINAL.Utility.SplitStringByParameter(input, properties.multiStart, properties.multiEnd);
-				if (!splitByParams)
-					return;
-					
-		    	var length = splitByParams.length;
-		    	var autoCmd = commandNames.autoComplete(splitByParams[0]);
-		    	if (!autoCmd)
-		    		return;
-		    		
-		    	if (length == 1) {
-		    		terminalInput.set(autoCmd + ' ');
-		    	}
-		    	else {
-		    		var command = getCommand(autoCmd);
-		    		var currParam = command.parameters[length - 2];
-		    		
-		    		if (currParam in paramAutoCompletes) {
-		    			var ac = paramAutoCompletes[currParam];
-		    			var lastUserParam = splitByParams[length - 1];
-		    			var autoParam = ac.autoComplete(lastUserParam);
-		    			if (autoParam)
-			    			terminalInput.append(autoParam.substr(lastUserParam.length) + ' ');
-		    		}
-		    	}
-			}
-		});
-				
-		terminalInputDOM.keyup(function(event) {
-				
-			var input = terminalInput.text().trim();
-			if (!input)
-			    terminalHelp.clear();
-						
-			switch (event.keyCode) {
-				
-				// Enter
-				case 13:
-					var sh = terminalOutputDOM[0].scrollHeight;
-					if (sh <= terminalOutputDOM.height())
-						sh = 0;
-						
-				    executeCommand(input);		
-				    
-					terminalInput.clear();
-					terminalHelp.clear();
-					terminalHelpSub.clear();
-					
-					terminalOutputDOM.scrollTop(sh);
-					
-					break;
-				
-				// Up arrow
-				case 38:
-					history.up();
-					var hist = history.get();
-					terminalInput.set(hist.cmd);
-					terminalHelp.set(hist.help);
-					break;
-				
-				// Down arrow
-				case 40:
-				    history.down();
-					var hist = history.get();
-					terminalInput.set(hist.cmd);
-					terminalHelp.set(hist.help);
-					break;
-			}
-		
-			input = terminalInput.text().replace(/^ /g, '').toLowerCase();
-			if (!input)
-			    return;
-			
-			terminalHelp.set(createHelpText(input));
-		});
-    
-    
     	
     	
     	
@@ -609,6 +452,21 @@ var LSST_TERMINAL = {
     	/////////////////////////////////////////////////////////////////////////////
     	//////////////////////////// HELPER FUNCTIONS ///////////////////////////////
     	/////////////////////////////////////////////////////////////////////////////
+    	var calculateOutputAreaHeight = function() {
+    		var helpTextHeight = terminalHelpContainerDOM.outerHeight(true);
+			var inputBoxHeight = terminalInputDOM.outerHeight(true);
+			var terminalHeight = terminal.outerHeight(false);
+			var leftOver = terminalHeight - (helpTextHeight + inputBoxHeight);
+			
+			var margin = terminalOutputDOM.outerHeight(true) - terminalOutputDOM.outerHeight(false);
+			console.log(margin);
+			console.log(leftOver);
+			console.log(helpTextHeight);
+			console.log(inputBoxHeight);
+			console.log(terminalHeight);
+			terminalOutputDOM.outerHeight(leftOver - margin);
+    	}
+    	
     	var echoCommand = function(text) {
     		terminalOutput.append(text + '\n', 'echo_output_command');
     	}
@@ -739,6 +597,155 @@ var LSST_TERMINAL = {
     	this.setVariable = function(name, value) {
     		terminalVariables[name] = value;
     	}
+    	
+    	this.setFontSize = function(value) {
+    		terminal.css('font-size', value);
+    		calculateOutputAreaHeight();
+    		console.log('hello');
+    	}
+    
+    
+    
+    
+    	
+    	
+    	/////////////////////////////////////////////////////////////////////////////
+    	//////////////////////////// INITIALIZATION /////////////////////////////////
+    	/////////////////////////////////////////////////////////////////////////////
+        // Set width and height of terminal
+        if (properties.width)
+			terminal.css('width', properties.width);
+		terminal.css('height', properties.height);
+    	
+    	// Set font size
+		this.setFontSize(properties['fontSize']);
+    
+    	// Clicking anywhere in the terminal will put focus in the input box
+		terminal.click(function() {
+		    terminalInputDOM.focus();
+		});
+		
+		
+		// Format user commands
+		var keys = [];
+		var createCommand = function(name, command) {
+			var cmd = new LSST_TERMINAL.Command(name, command.callback, command.description, command.helpLink);
+			var cmdName = LSST_TERMINAL.Utility.SplitStringByWS(name)[0];			
+			
+			cmds[cmdName] = cmd;
+			keys.push(cmdName);
+		};
+		for (var key in commands) {			
+			if (commands.hasOwnProperty(key)) {
+				createCommand(key, commands[key]);
+			}			
+		};
+		
+		// Add built in commands
+		createCommand('clear', { callback : cmd_clear, description : 'Clears the output log of the terminal.' } );
+		createCommand('help [command]', { callback : cmd_help, description : 'Displays all the commands, or the help string for a single command.' } );
+		createCommand('echo string', { callback : cmd_echo, description : 'Echoes a string to the output area.' } );
+		createCommand('clear_terminal_history', { callback : cmd_clearTerminalHistory, description : 'Clears the history of commands.' } );
+		
+		// Create the auto complete array for command names
+		commandNames = new LSST_TERMINAL.AutoCompleteArray(keys);
+    
+    	// Create auto complete arrays for parameter names
+    	for (var key in autoCompleteParams) {
+    		var curr = autoCompleteParams[key];
+    		paramAutoCompletes[key] = new LSST_TERMINAL.AutoCompleteArray(curr);
+    	}
+    
+    
+    
+    
+    
+    	/////////////////////////////////////////////////////////////////////////////
+    	//////////////////////////// KEY DOWN/UP ////////////////////////////////////
+    	/////////////////////////////////////////////////////////////////////////////
+				
+		terminalInputDOM.keydown(function(event) {
+			var keyCode = event.keyCode || event.which;
+			var input = terminalInput.text().trim().toLowerCase();
+			
+			// Tab
+			if (keyCode == 9) {
+				event.preventDefault();
+				
+		    	var splitByParams = LSST_TERMINAL.Utility.SplitStringByParameter(input, properties.multiStart, properties.multiEnd);
+				if (!splitByParams)
+					return;
+					
+		    	var length = splitByParams.length;
+		    	var autoCmd = commandNames.autoComplete(splitByParams[0]);
+		    	if (!autoCmd)
+		    		return;
+		    		
+		    	if (length == 1) {
+		    		terminalInput.set(autoCmd + ' ');
+		    	}
+		    	else {
+		    		var command = getCommand(autoCmd);
+		    		var currParam = command.parameters[length - 2];
+		    		
+		    		if (currParam in paramAutoCompletes) {
+		    			var ac = paramAutoCompletes[currParam];
+		    			var lastUserParam = splitByParams[length - 1];
+		    			var autoParam = ac.autoComplete(lastUserParam);
+		    			if (autoParam)
+			    			terminalInput.append(autoParam.substr(lastUserParam.length) + ' ');
+		    		}
+		    	}
+			}
+		});
+				
+		terminalInputDOM.keyup(function(event) {
+				
+			var input = terminalInput.text().trim();
+			if (!input)
+			    terminalHelp.clear();
+						
+			switch (event.keyCode) {
+				
+				// Enter
+				case 13:
+					var sh = terminalOutputDOM[0].scrollHeight;
+					if (sh <= terminalOutputDOM.height())
+						sh = 0;
+						
+				    executeCommand(input);		
+				    
+					terminalInput.clear();
+					terminalHelp.clear();
+					terminalHelpSub.clear();
+					
+					terminalOutputDOM.scrollTop(sh);
+					
+					break;
+				
+				// Up arrow
+				case 38:
+					history.up();
+					var hist = history.get();
+					terminalInput.set(hist.cmd);
+					terminalHelp.set(hist.help);
+					break;
+				
+				// Down arrow
+				case 40:
+				    history.down();
+					var hist = history.get();
+					terminalInput.set(hist.cmd);
+					terminalHelp.set(hist.help);
+					break;
+			}
+		
+			input = terminalInput.text().replace(/^ /g, '').toLowerCase();
+			if (!input)
+			    return;
+			
+			terminalHelp.set(createHelpText(input));
+		});
     
     
     	return this;

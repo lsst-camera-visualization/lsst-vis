@@ -244,15 +244,73 @@ img:hover {
 	
 }
 
-.settings_bar {
+
+
+
+
+.toolbar {
 	display: none;
 	overflow: hidden;
 	margin: 3px;
 }
 
-.settings_bar > * {
+.toolbar > * {
 	float: right;
 }
+
+.settings_form {
+	display: none;
+	
+	font-size: 150%;
+}
+
+.form {
+	display: inline-block;
+	max-width: 300px;
+	z-index: 999;
+	
+	background-color: #fff;
+	border: 1px solid #000;
+	padding: 10px 10px 0px 10px;
+}
+
+
+
+#csf_head {
+	font-size: 175%;
+	border-bottom: 1px solid #000;
+	text-align: center;
+	
+	margin-bottom: 10px;
+}
+
+.csf_group {
+	border: 1px solid #444;
+	margin-bottom: 10px;
+}
+
+.csf_element {
+	margin-bottom: 10px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

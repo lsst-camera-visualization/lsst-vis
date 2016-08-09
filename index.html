@@ -14,9 +14,21 @@
 
     <body>
     
-    	<div id="cmd_container"  onmouseenter="settings_bar_enter(this)" onmouseleave="settings_bar_leave(this)">
-    		<div class="settings_bar" onclick="settings_bar_click(this)">
-    			<img src="images/cog_40x40.png">
+    	<div id="cmd_container">
+    		<div class="toolbar">
+    			<div class="settings">
+					<img id="csf" class="settings_button" src="images/cog_40x40.png">
+					<div class="settings_form">
+						<p id="csf_head">Terminal Settings</p>
+						
+						<div class="csf_group">
+							<span>Anchor To Bottom Right</span> <input id="csf_anchor" class="csf_element" type="checkbox" checked> <br>
+							<span>Draggable</span> <input id="csf_draggable" class="csf_element" type="checkbox" unchecked disabled> <br>
+						</div>
+						
+						<span>Font Size: </span> <input id="csf_fontsize" class="csf_element" type="text"> <span>px</span> <br>
+					</div>
+    			</div>
     		</div>
         	
         	<div id="cmd"></div>
@@ -40,7 +52,7 @@
         <script src='./js/utility.js'></script>
         <script src='./js/viewer.js'></script>
         <script src='./js/box.js'></script>
-        <script src='./js/settings_bar.js'></script>
+        <script src='./js/toolbar.js'></script>
         
     </body>
 </html>

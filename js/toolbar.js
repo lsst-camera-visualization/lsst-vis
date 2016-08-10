@@ -60,9 +60,13 @@ var removeOnClickOutside = function(e) {
 
 var onNewForm = function() {
 	if (LSST.CurrentForm.Form.attr('id') == 'csf_form') {
-		var fontSize = jQuery('#cmd').css('font-size');
-		fontSize = fontSize.substr(0, fontSize.length - 2);
-		jQuery('#csf_fontsize').val(fontSize);
+		var fontSizeInput = jQuery('#csf_fontsize');
+		var baseFontSize = parseFloat(jQuery('body').css('font-size'));
+		var cmdFontSize = parseFloat(jQuery('#cmd').css('font-size'));
+		var fontSize = cmdFontSize / baseFontSize * 100;
+		
+		fontSizeInput.val(fontSize);		
+		fontSizeInput.attr('size', fontSizeInput.val().length);
 	}
 }
 
@@ -126,6 +130,22 @@ jQuery('#csf_anchor').click(function() {
 jQuery('#csf_fontsize').keyup(function(event) {
 	var e = jQuery(this);
 	LSST.state.term.setFontSize(e.val());
+	e.attr('size', e.val().length);
+});
+
+var csfChangeFontSize = function(val) {
+	var fontSizeInput = jQuery('#csf_fontsize');
+	var fontSize = parseInt(fontSizeInput.val());
+	fontSize += val;
+	fontSizeInput.val(fontSize);
+	LSST.state.term.setFontSize(fontSize);
+}
+
+jQuery('#csf_fontsize_minus').click(function() {
+	csfChangeFontSize(-10);
+});
+jQuery('#csf_fontsize_plus').click(function() {
+	csfChangeFontSize(10);
 });
 
 

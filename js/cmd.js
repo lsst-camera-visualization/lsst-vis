@@ -1,5 +1,5 @@
 
-jQuery(function($, undefined) {
+jQuery(document).ready(function() {
 
 	// Init state
 	LSST.state.boxes = new LSST.UIElementList();
@@ -119,10 +119,11 @@ jQuery(function($, undefined) {
 		helpLink: docLink,
 	    prefix: '~>',
 	    height: 300,
-	    fontSize: '1.5em'
+	    fontSize: '150%'
 	};
 
 	LSST.state.term = jQuery('#cmd').terminal( commands, subCommands, autoCompleteParams, paramsWithHint, terminalProperties );
+	
 });
 
 

@@ -452,19 +452,9 @@ var LSST_TERMINAL = {
     	/////////////////////////////////////////////////////////////////////////////
     	//////////////////////////// HELPER FUNCTIONS ///////////////////////////////
     	/////////////////////////////////////////////////////////////////////////////
-    	var calculateOutputAreaHeight = function() {
-    		var helpTextHeight = terminalHelpContainerDOM.outerHeight(true);
-			var inputBoxHeight = terminalInputDOM.outerHeight(true);
-			var terminalHeight = terminal.outerHeight(false);
-			var leftOver = terminalHeight - (helpTextHeight + inputBoxHeight);
-			
-			var margin = terminalOutputDOM.outerHeight(true) - terminalOutputDOM.outerHeight(false);
-			console.log(margin);
-			console.log(leftOver);
-			console.log(helpTextHeight);
-			console.log(inputBoxHeight);
-			console.log(terminalHeight);
-			terminalOutputDOM.outerHeight(leftOver - margin);
+    	var setOutputAreaHeight = function() {
+    		// Fuck this shit
+			terminalOutputDOM.innerHeight('70%');
     	}
     	
     	var echoCommand = function(text) {
@@ -599,9 +589,13 @@ var LSST_TERMINAL = {
     	}
     	
     	this.setFontSize = function(value) {
+    		if (Number.isInteger(value))
+    			value = value.toString();
+    		if (value.charAt(value.length - 1) != '%')
+    			value += '%';
     		terminal.css('font-size', value);
-    		calculateOutputAreaHeight();
-    		console.log('hello');
+    		
+    		setOutputAreaHeight();
     	}
     
     
@@ -655,9 +649,8 @@ var LSST_TERMINAL = {
     		var curr = autoCompleteParams[key];
     		paramAutoCompletes[key] = new LSST_TERMINAL.AutoCompleteArray(curr);
     	}
-    
-    
-    
+    	
+    	setTimeout(this.setFontSize, 3000, properties['fontSize'] );
     
     
     	/////////////////////////////////////////////////////////////////////////////

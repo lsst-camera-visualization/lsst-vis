@@ -2,10 +2,10 @@
 
 <html>
     <head>
-	    <title>Demo of Firefly Tools</title>
-    	
     	<!-- Reset Sheet -->
         <link href="reset.css" rel="stylesheet">
+        
+	    <title>Demo of Firefly Tools</title>
 
         <link href="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.1/nv.d3.min.css" rel="stylesheet">
         <link rel="stylesheet" type="text/css" href="./js/terminal/terminal.css"></link>
@@ -26,7 +26,9 @@
 							<span>Draggable</span> <input id="csf_draggable" class="csf_element" type="checkbox" unchecked disabled> <br>
 						</div>
 						
-						<span>Font Size: </span> <input id="csf_fontsize" class="csf_element" type="text"> <span>px</span> <br>
+						<span>Font Size: </span> <input id="csf_fontsize" class="csf_element" type="text"> <span>%</span>
+						<button id="csf_fontsize_minus" type="button">-</button>
+						<button id="csf_fontsize_plus" type="button">+</button>
 					</div>
     			</div>
     		</div>

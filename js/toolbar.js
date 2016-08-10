@@ -116,16 +116,36 @@ jQuery('.settings_button').each(function(idx) {
 // ####################################################################### //
 // ## CSF ################################################################ //
 // ####################################################################### //
-jQuery('#csf_anchor').click(function() {
-	var e = jQuery(this);
+var csfDraggable = function() {
+	var anchor = jQuery('#csf_anchor');
 	var draggable = jQuery('#csf_draggable');
 	
-	var disabled = false;
-	if (e.prop('checked'))
-		disabled = true;
+	var bAnchor = anchor.prop('checked');
+	var bDraggable = draggable.prop('checked');
 	
+	var disabled = false;
+	if (bAnchor)
+		disabled = true;	
 	draggable.prop('disabled', disabled);
-});
+	
+	var cmd = jQuery('#cmd_container');
+	if (bAnchor) {
+		cmd.draggable('disable');
+		cmd.css('top', '');
+		cmd.css('left', '');
+		cmd.css('bottom', '5px');
+		cmd.css('right', '5px');
+	}
+	else if (bDraggable) {
+		cmd.draggable('enable');
+	}
+	else {
+		cmd.draggable('disable');
+	}
+}
+
+jQuery('#csf_anchor').click(csfDraggable);
+jQuery('#csf_draggable').click(csfDraggable);
 
 jQuery('#csf_fontsize').keyup(function(event) {
 	var e = jQuery(this);

@@ -124,6 +124,9 @@ jQuery(document).ready(function() {
 
 	LSST.state.term = jQuery('#cmd').terminal( commands, subCommands, autoCompleteParams, paramsWithHint, terminalProperties );
 	
+	jQuery('#cmd_container').draggable();
+	jQuery('#cmd_container').draggable('disable');
+	
 });
 
 

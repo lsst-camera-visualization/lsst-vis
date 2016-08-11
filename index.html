@@ -9,43 +9,25 @@
 
         <link href="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.1/nv.d3.min.css" rel="stylesheet">
         <link rel="stylesheet" type="text/css" href="./js/terminal/terminal.css"></link>
+        <link rel="stylesheet" type="text/css" href="./js/toolbar/toolbar.css"></link>
         <link rel="stylesheet" type="text/css" href="main.css">
     </head>
 
     <body>
     
-    	<div id="cmd_container">
-    		<div class="toolbar">
-    			<div class="settings">
-					<img id="csf" class="settings_button" src="images/cog_40x40.png">
-					<div class="settings_form">
-						<p id="csf_head">Terminal Settings</p>
-						
-						<div class="csf_group">
-							<span>Anchor To Bottom Right</span> <input id="csf_anchor" class="csf_element" type="checkbox" checked> <br>
-							<span>Draggable</span> <input id="csf_draggable" class="csf_element" type="checkbox" unchecked disabled> <br>
-						</div>
-						
-						<span>Font Size: </span> <input id="csf_fontsize" class="csf_element" type="text"> <span>%</span>
-						<button id="csf_fontsize_minus" type="button">-</button>
-						<button id="csf_fontsize_plus" type="button">+</button>
-					</div>
-    			</div>
-    		</div>
-        	
-        	<div id="cmd"></div>
-        </div>
-        
+    	<div id="cmd"></div>        
         
         <div id="box-minimized-bar"></div>
         
         <!-- script name is fftools.nocache.js -->
         <script src='/fftools/fftools.nocache.js'></script>
         <script src='//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js'></script>
-        <script src='./js/terminal/terminal.js'></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.2/d3.min.js" charset="utf-8"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.1/nv.d3.js"></script>
         <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.js"></script>
+        
+        <script src='./js/terminal/terminal.js'></script>
+        <script src='./js/toolbar/toolbar.js'></script>
         
         <script src='./js/state.js'></script>
         <script src='./js/new.js'></script>
@@ -54,7 +36,6 @@
         <script src='./js/utility.js'></script>
         <script src='./js/viewer.js'></script>
         <script src='./js/box.js'></script>
-        <script src='./js/toolbar.js'></script>
         
     </body>
 </html>

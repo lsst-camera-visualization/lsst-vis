@@ -121,11 +121,9 @@ jQuery(document).ready(function() {
 	    height: 300,
 	    fontSize: '150%'
 	};
-
+	
 	LSST.state.term = jQuery('#cmd').terminal( commands, subCommands, autoCompleteParams, paramsWithHint, terminalProperties );
 	
-	jQuery('#cmd_container').draggable();
-	jQuery('#cmd_container').draggable('disable');
 	
 });
 
@@ -285,6 +283,35 @@ cmds = {
 				drag : onChangeFocus
 			});
 			viewer.container.on('click', onChangeFocus);
+			
+			var settingsData = {
+				title : 'Viewer Settings',
+				form : [
+					jQuery('<span>').text('Anchor to bottom right'),
+					jQuery('<input>').attr('id', 'csf_anchor').attr('type', 'checkbox').prop('checked', true),
+					jQuery('<br>'),
+					jQuery('<span>').text('Draggable'),
+					jQuery('<input>').attr('id', 'csf_draggable').attr('type', 'checkbox').prop('checked', false).prop('disabled', true),
+					jQuery('<br>'),
+					
+					jQuery('<span>').text('Font Size: '),
+					jQuery('<input>').attr('id', 'csf_fontsize').attr('type', 'text'),
+					jQuery('<span>').text('%'),
+					jQuery('<button>').attr('id', 'csf_fontsize_minus').attr('type', 'button').text('-'),
+					jQuery('<button>').attr('id', 'csf_fontsize_plus').attr('type', 'button').text('+'),
+				],
+				onCreate : function() { console.log('onCreate'); }
+			}			
+			var toolbarInfo = [
+				new LSST_TB.ToolbarElement('settings', settingsData)
+			];
+			var options = {
+				bShowOnHover : false,
+				placement : 'top',
+				float : 'left',
+				bDraggable : true
+			}
+			viewer.container.lsst_toolbar(toolbarInfo, options);
 			
 			LSST.state.viewers.add(viewerID, viewer);
 

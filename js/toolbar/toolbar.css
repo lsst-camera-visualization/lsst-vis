@@ -1,0 +1,44 @@
+
+.LSST_TB-toolbar {
+	display: none;
+	overflow: hidden;
+	
+	position: absolute;
+}
+.LSST_TB-toolbar:after {
+	clear: both;
+}
+
+.LSST_TB-float-left > * {
+	float: left;
+}
+.LSST_TB-float-right > * {
+	float: right;
+}
+
+.LSST_TB-settings-form {
+	display: inline-block;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+
+	padding: 15px;
+
+	background-color: #fff;
+	border: 2px solid #000;
+	border-radius: 10px;
+	z-index: 999;
+}
+
+.LSST_TB-settings-form-title {
+	font-size: 200%;
+	border-bottom: 1px solid #000;
+	margin-bottom: 10px;
+	text-align: center;
+}
+
+.LSST_TB-settings-element {
+	font-size: 150%;
+	margin-top: 2px;
+	margin-bottom: 3px;
+}

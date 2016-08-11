@@ -230,15 +230,30 @@ img:hover {
 
 
 
-#cmd{
+#cmd_container {
 	width: 50%;
 
-    position: fixed;
+    position: absolute;
     bottom: 5px;
-    right: 50px;
+    right: 5px;
     
     z-index: 100;
 }
+
+#csf_fontsize {
+	margin-left: 5px;
+	margin-right: 5px;
+}
+#csf_fontsize_minus {
+	margin-left: 5px;
+	margin-right: 5px;
+}
+
+
+
+
+
+
 
 
 

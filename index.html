@@ -2,27 +2,33 @@
 
 <html>
     <head>
-	    <title>Demo of Firefly Tools</title>
-    	
     	<!-- Reset Sheet -->
         <link href="reset.css" rel="stylesheet">
+        
+	    <title>Demo of Firefly Tools</title>
 
         <link href="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.1/nv.d3.min.css" rel="stylesheet">
         <link rel="stylesheet" type="text/css" href="./js/terminal/terminal.css"></link>
+        <link rel="stylesheet" type="text/css" href="./js/toolbar/toolbar.css"></link>
         <link rel="stylesheet" type="text/css" href="main.css">
     </head>
 
-    <body>        
-        <div id="cmd"></div>
+    <body>
+    	<div id="cmd_container">
+    		<div id="cmd"></div>
+    	</div>
+        
         <div id="box-minimized-bar"></div>
         
         <!-- script name is fftools.nocache.js -->
         <script src='/fftools/fftools.nocache.js'></script>
         <script src='//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js'></script>
-        <script src='./js/terminal/terminal.js'></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.2/d3.min.js" charset="utf-8"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.1/nv.d3.js"></script>
         <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.js"></script>
+        
+        <script src='./js/terminal/terminal.js'></script>
+        <script src='./js/toolbar/toolbar.js'></script>
         
         <script src='./js/state.js'></script>
         <script src='./js/new.js'></script>
@@ -31,6 +37,7 @@
         <script src='./js/utility.js'></script>
         <script src='./js/viewer.js'></script>
         <script src='./js/box.js'></script>
+        <script src='./js/settings.js'></script>
         
     </body>
 </html>

@@ -32,6 +32,7 @@ function FFReadout(viewerID) {
 	};
 
 	var dispatch = function(data) {
+
 		var ext = extConv[data.type];
 		var cbArray = callbacks[ext];
 		for (var i = 0; i < cbArray.length; i++) {
@@ -102,12 +103,12 @@ function Viewer(id) {
 var selectRegion = function(data) {
 
     if (data.type == 'AREA_SELECT') {
-        var top = Math.trunc(data.ipt0.y);
-        var bottom = Math.trunc(data.ipt1.y);
-        var left = Math.trunc(data.ipt0.x);
-        var right = Math.trunc(data.ipt1.x);
+        var y1 = Math.trunc(data.ipt0.y);
+        var y2 = Math.trunc(data.ipt1.y);
+        var x1 = Math.trunc(data.ipt0.x);
+        var x2 = Math.trunc(data.ipt1.x);
 
-        state.term.setVariable('selected', '(rect ' + top + ' ' + left + ' ' + bottom + ' ' + right + ')');
+        LSST.state.term.setVariable('selected', '(rect ' + x1 + ' ' + y1 + ' ' + x2 + ' ' + y2 + ')');
 
         jQuery("#ffview-var-selected").css('color', 'white');
     }
@@ -169,17 +170,8 @@ var createViewerSkeleton = function(viewerID) {
 	viewerInfo.append(terminalVariables);
 	terminalVariables.append(TVHeader);
 	terminalVariables.append(TVSelected);
-	
+
 	$('body').append(container);
 
 	return container;
 }
-
-
-
-
-
-
-
-
-

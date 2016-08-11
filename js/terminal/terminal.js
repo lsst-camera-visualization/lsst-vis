@@ -24,8 +24,27 @@ var LSST_TERMINAL = {
 			
 			for (var i = 0; i < arr.length; i++) {
 				var curr = arr[i];
-				if (curr.match(regex))
-					return curr;
+				if (curr.match(regex)) {
+					var next = arr[i + 1];
+					if (next && next.match(regex)) {
+						return {
+							auto : LSST_TERMINAL.Utility.StringSimilarity(curr, next),
+							match : curr,
+							bWhole : false
+						}
+					}
+					else {
+						return {
+							auto : curr,
+							match : curr,
+							bWhole : true
+						}
+					}
+				}
+			}
+			return {
+				auto : '',
+				bWhole : false
 			}
 		};
 		
@@ -237,7 +256,7 @@ var LSST_TERMINAL = {
 		},
 		
 		HighlightString : function(string) {
-			return '<span class="cmd_highlight">' + string + '</span>';
+			return '<span class="cmd_highlight cmd_help_element">' + string + '</span>';
 		},
 		
 		HighlightStringAtIndex : function(string, index) {
@@ -309,6 +328,18 @@ var LSST_TERMINAL = {
 		    }
 		    
 		    return result;
+		},
+		
+		StringSimilarity : function(str1, str2) {
+			for (var i = 0; i < str1.length; i++) {
+				var start = str1.substr(0, i + 1);
+				var regex = new RegExp('^' + start);
+				
+				if (!str2.match(regex)) {
+					return str1.substr(0, i);
+				}
+			}
+			return str1;
 		}
 		
 	},
@@ -443,10 +474,7 @@ var LSST_TERMINAL = {
     	var cmd_clearTerminalHistory = function(cmd_args) {
     		history.clear();
     		cmd_clear();
-    	}
-    	
-    	
-    	
+    	}   	
     	
     	
     	/////////////////////////////////////////////////////////////////////////////
@@ -510,7 +538,7 @@ var LSST_TERMINAL = {
 		    var split = LSST_TERMINAL.Utility.SplitStringByParameter(input, properties.multiStart, properties.multiEnd);
 		    
 		    var cmdName = split.shift();
-		    var autoCmd = commandNames.autoComplete(cmdName);
+		    var autoCmd = commandNames.autoComplete(cmdName).match;
 			var bLastSpace = input.match(/\s$/);
 		    
 		    // If the auto complete doesn't find a match,
@@ -543,7 +571,7 @@ var LSST_TERMINAL = {
 					helpString += LSST_TERMINAL.Utility.HighlightString(cmdParams[i]);
 				}
 				else {
-					helpString += cmdParams[i];
+					helpString += '<span class="cmd_help_element">' + cmdParams[i] + '</span>';
 				}
 			}
 			
@@ -741,10 +769,44 @@ var LSST_TERMINAL = {
 		});
     
     
+    	
+    	/////////////////////////////////////////////////////////////////////////////
+    	//////////////////////////// jQuery FUNCTIONS ///////////////////////////////
+    	/////////////////////////////////////////////////////////////////////////////
+    	    
+    
     	return this;
     
     };
 	
 
 }( jQuery ));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

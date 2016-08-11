@@ -35,7 +35,7 @@ var LSST_TB = {
 					popup.append(html);
 				}
 				
-				if (settings.bDraggable)
+				if (settings.settings.bDraggable)
 					popup.draggable();
 					
 				// If there was an onCreate function
@@ -64,6 +64,7 @@ var LSST_TB = {
 //								- formClass: The class for the settings form
 //								- formTitleClass: The class for the settings form title
 //								- elementClass: The class for the settings form elements
+//								- bDraggable: Is the popup draggable?
 jQuery.fn.lsst_toolbar = function(toolbarDesc, options) {
 	
 	var settings = jQuery.extend( {
@@ -72,14 +73,15 @@ jQuery.fn.lsst_toolbar = function(toolbarDesc, options) {
 		placement : 'top',
 		float : 'right',
 		margin : 5,
-		settings : {
+	}, options );
+	
+	settings.settings = jQuery.extend( {
 			image : 'js/toolbar/images/cog_40x40.png',
 			formClass : 'LSST_TB-settings-form',
 			formTitleClass : 'LSST_TB-settings-form-title',
 			elementClass : 'LSST_TB-settings-element',
 			bDraggable : false
-		}
-	}, options );
+		}, options.settings);
 	
 	var toolbar = jQuery('<div>').addClass('LSST_TB-toolbar LSST_TB-float-' + settings.float);
 	if (!settings.bShowOnHover)
@@ -126,7 +128,7 @@ jQuery.fn.lsst_toolbar = function(toolbarDesc, options) {
 	}
 	
 	var showSettingsPopup = function(elem) {
-		var popup = elem.data('popup');		
+		var popup = elem.data('popup');
 		jQuery('body').append(popup);
 		
 		var onCreate = popup.data('onCreate');
@@ -155,6 +157,7 @@ jQuery.fn.lsst_toolbar = function(toolbarDesc, options) {
 	// INIT /////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////////
 	// Create the html from each toolbar element
+	var height = 0;
 	for (var i = 0; i < toolbarDesc.length; i++) {
 		// A LSST_TB.ToolbarElement
 		var elem = toolbarDesc[i];
@@ -167,17 +170,19 @@ jQuery.fn.lsst_toolbar = function(toolbarDesc, options) {
 	// Append the toolbar to the container
 	this.append(toolbar);
 	
-	// When we enter the container, we should unhide the toolbar
-	if (settings.bShowOnHover)
-		this.hover(onEnter, onLeave);
-	
 	// Adding the margin height will remove bug where you miss going into the toolbar, thus hiding it.
-	//toolbar.outerHeight(toolbar.outerHeight(true) + settings.margin);
-	var h = toolbar.outerHeight(true);
-	toolbar.outerHeight(h + settings.margin);
+	setTimeout( function(elem) {
+			var h = toolbar.outerHeight(true);
+			toolbar.outerHeight(h + settings.margin);
+			
+			// When we enter the container, we should unhide the toolbar
+			if (settings.bShowOnHover)
+				elem.hover(onEnter, onLeave);
+			else
+				placeToolbar();
+		},
+		1000, this);
 	
-	if (!settings.bShowOnHover)
-		placeToolbar();
 	
 	return this;
 }

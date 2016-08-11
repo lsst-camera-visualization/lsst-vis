@@ -5,6 +5,9 @@
 	
 	position: absolute;
 }
+.LSST_TB-toolbar:after {
+	clear: both;
+}
 
 .LSST_TB-float-left > * {
 	float: left;
@@ -31,6 +34,7 @@
 	font-size: 200%;
 	border-bottom: 1px solid #000;
 	margin-bottom: 10px;
+	text-align: center;
 }
 
 .LSST_TB-settings-element {

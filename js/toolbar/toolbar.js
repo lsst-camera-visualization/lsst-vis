@@ -73,6 +73,7 @@ jQuery.fn.lsst_toolbar = function(toolbarDesc, options) {
 		placement : 'top',
 		float : 'right',
 		margin : 5,
+		marginSide : 0,
 	}, options );
 	
 	settings.settings = jQuery.extend( {
@@ -99,11 +100,13 @@ jQuery.fn.lsst_toolbar = function(toolbarDesc, options) {
 		var offset = elem.offset();
 		toolbar.css('display', 'block');
 		var toolbarHeight = toolbar.outerHeight(true);
+		var horiz = (settings.float === 'left') ? 'left' : 'right';
 		
 		var p = settings.placement;
 		if (p === 'top') {						
 			toolbar.css('top', -toolbarHeight);
-			toolbar.css('left', 0);
+			toolbar.css('left', settings.marginSide);
+			toolbar.css('right', settings.marginSide);
 		}
 	}
 	
@@ -130,6 +133,11 @@ jQuery.fn.lsst_toolbar = function(toolbarDesc, options) {
 	var showSettingsPopup = function(elem) {
 		var popup = elem.data('popup');
 		jQuery('body').append(popup);
+		
+		var o = elem.offset();
+		o.top -= popup.outerHeight(true);
+		o.left -= popup.outerWidth(true);
+		popup.offset(o);
 		
 		var onCreate = popup.data('onCreate');
 		if (onCreate)

@@ -240,8 +240,14 @@ img:hover {
     z-index: 100;
 }
 
-
-
+#csf_fontsize {
+	margin-left: 5px;
+	margin-right: 5px;
+}
+#csf_fontsize_minus {
+	margin-left: 5px;
+	margin-right: 5px;
+}
 
 
 

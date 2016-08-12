@@ -42,7 +42,7 @@ var LSST_TB = {
 				if (data.onCreate)
 					popup.data('onCreate', data.onCreate);
 				
-				toolbarIcon.data('popup', html.popup);
+				toolbarIcon.data('popup', popup);
 				
 				return toolbarIcon;
 			}

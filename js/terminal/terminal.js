@@ -701,20 +701,23 @@ var LSST_TERMINAL = {
 		    	var autoCmd = commandNames.autoComplete(splitByParams[0]);
 		    	if (!autoCmd)
 		    		return;
-		    		
+		    	
 		    	if (length == 1) {
-		    		terminalInput.set(autoCmd + ' ');
+		    		var after = (autoCmd.bWhole) ? ' ' : '';
+		    		terminalInput.set(autoCmd.auto + after);
 		    	}
 		    	else {
-		    		var command = getCommand(autoCmd);
+		    		var command = getCommand(autoCmd.match);
 		    		var currParam = command.parameters[length - 2];
 		    		
 		    		if (currParam in paramAutoCompletes) {
 		    			var ac = paramAutoCompletes[currParam];
 		    			var lastUserParam = splitByParams[length - 1];
 		    			var autoParam = ac.autoComplete(lastUserParam);
-		    			if (autoParam)
-			    			terminalInput.append(autoParam.substr(lastUserParam.length) + ' ');
+		    			if (autoParam.auto) {
+		    				var after = (autoParam.bWhole) ? ' ' : '';
+			    			terminalInput.append(autoParam.auto.substr(lastUserParam.length) + after);
+			    		}
 		    		}
 		    	}
 			}
@@ -766,6 +769,8 @@ var LSST_TERMINAL = {
 			    return;
 			
 			terminalHelp.set(createHelpText(input));
+			
+			handleHelpPopup();
 		});
     
     

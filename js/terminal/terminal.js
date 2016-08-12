@@ -625,6 +625,16 @@ var LSST_TERMINAL = {
     		
     		setOutputAreaHeight();
     	}
+    	
+    	this.deleteParameterAuto = function(param, value) {
+    		if (param in paramAutoCompletes) {
+    			var array = paramAutoCompletes[param].getArray();
+    			var idx = array.indexOf(value);
+    			if (idx != -1) {
+    				array.splice(idx, 1);
+    			}
+    		}
+    	}
     
     
     

@@ -315,6 +315,8 @@ cmds = {
 			LSST.state.boxes.get(boxID).destroy();
 			
 			LSST.state.boxes.remove(boxID);
+			
+			LSST.state.term.deleteParameterAuto('box_id', boxID);
 		}
 		else {
 			LSST.state.term.echo('A box with the name \'' + boxID + '\' does not exist!');

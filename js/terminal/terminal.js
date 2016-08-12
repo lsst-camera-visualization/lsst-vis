@@ -780,7 +780,7 @@ var LSST_TERMINAL = {
 			
 			terminalHelp.set(createHelpText(input));
 			
-			handleHelpPopup();
+			handleHelpPopup(input);
 		});
     
     
@@ -788,7 +788,7 @@ var LSST_TERMINAL = {
     	/////////////////////////////////////////////////////////////////////////////
     	//////////////////////////// jQuery FUNCTIONS ///////////////////////////////
     	/////////////////////////////////////////////////////////////////////////////
-    	var handleHelpPopup = function() {
+    	var handleHelpPopup = function(input) {
     	
     		jQuery('.cmd_help_element').mouseenter(function() {
     		
@@ -802,10 +802,18 @@ var LSST_TERMINAL = {
     				var list = paramAutoCompletes[param].getArray();
     				if (list.length == 0)
     					return;
+    					
+		    		var split = LSST_TERMINAL.Utility.SplitStringByWS(input);
+    				var currTyping = split[split.length - 1];
+    				var bLastSpace = input.match(/\s$/) ? true : false;
+    				var r = new RegExp('^' + currTyping);
     				
     				var popup_container = jQuery('<div>').attr('id', 'cmd_popup_container');
     				var popup_listcontainer = jQuery('<ul>').attr('id', 'cmd_popup_listcontainer');
     				for (var i = 0; i < list.length; i++) {
+    					if (!list[i].match(r) && !bLastSpace)
+    						continue;
+    						
     					var li = jQuery('<li>').addClass('cmd_popup_element').text(list[i]);
     					popup_listcontainer.append(li);
     					
@@ -814,6 +822,9 @@ var LSST_TERMINAL = {
 							jQuery('#cmd_popup_container').remove();
     					});
     				}
+    				
+    				if (popup_listcontainer.children().length == 0)
+    					return;
     				
     				popup_container.append(popup_listcontainer);
     				

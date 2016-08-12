@@ -257,6 +257,23 @@ cmds = {
 			});
 
 			box.dom.on('click', onChangeFocus);
+			
+			var closeData = {
+				onClick : cmds.delete_box,
+				parameters : { box_id : boxID },
+			}
+			var miniData = {
+				onClick : cmds.hide_box,
+				parameters : { box_id : boxID },
+			}
+			var toolbarDesc = [
+				new LSST_TB.ToolbarElement('close', closeData),
+				new LSST_TB.ToolbarElement('mini', miniData),
+			];
+			var options = {
+				bShowOnHover : true,
+			};
+			box.dom.lsst_toolbar(toolbarDesc, options);
 
 			LSST.state.boxes.add(boxID, box);
 
@@ -280,7 +297,7 @@ cmds = {
 				'cancel' : '.viewer-view',
 				drag : onChangeFocus
 			});
-			viewer.container.on('click', onChangeFocus);
+			viewer.container.on('click', onChangeFocus);		
 			
 			LSST.state.viewers.add(viewerID, viewer);
 
@@ -326,15 +343,15 @@ cmds = {
 		var boxID = cmd_args['box_id'];
 
 		if (LSST.state.boxes.exists(boxID)) {
-			// Do we have to move terminal?
-			if (jQuery('#box-minimized-bar').children('.box').length == 0)
-				jQuery('#cmd').css('bottom', '60px');
-
 			// A handle to the box
 			var box = LSST.state.boxes.get(boxID);
 			box.minimize();
-			box.dom.draggable('disable');
-			jQuery('#box-minimized-bar').append(box.dom);
+			box.dom.draggable('option', 'handle', '.box-title-mini');
+			
+			var toolbar = box.dom.children('.LSST_TB-toolbar');
+			var mini = jQuery(toolbar.children()[1]);
+			mini.attr('src', 'js/toolbar/images/maximize_40x40.png');
+			mini.data('onClick', cmds.show_box);
 		}
 		else {
 			LSST.state.term.echo('A box with the name \'' + boxID + '\' does not exist!');
@@ -539,20 +556,17 @@ cmds = {
 		if (LSST.state.boxes.exists(boxID)) {
 			// A handle to the box
 			var box = LSST.state.boxes.get(boxID);
-
-			box.dom.detach();
-			jQuery('body').append(box.dom);
+			box.maximize();
+			box.dom.draggable('option', 'handle', '.box-title');
 
 			var focusFunc = onChangeFocus;
 			focusFunc.bind(box.dom);
 			focusFunc();
-
-			box.maximize();
-			box.dom.draggable('enable');
-
-			// Do we have to move the terminal?
-			if (jQuery('#box-minimized-bar').children('.box-mini').length == 0)
-				jQuery('#cmd').css('bottom', '5px');
+		
+			var toolbar = box.dom.children('.LSST_TB-toolbar');
+			var max = jQuery(toolbar.children()[1]);
+			max.attr('src', 'js/toolbar/images/minimize_40x40.png');
+			max.data('onClick', cmds.hide_box);
 		}
 		else {
 			LSST.state.term.echo('A box with the name \'' + boxID + '\' does not exist!');

@@ -85,7 +85,35 @@ a {
 }
 
 
+#cmd_popup_container {
+	display: inline-block;
+	background-color: transparent;
+}
 
+#cmd_popup_listcontainer {
+	display: inline-block;
+	
+	padding: 1px 5px;
+	
+	border: 1px solid #fff;
+	border-radius: 5px;
+	background-color: #00CED1;
+	
+	cursor: pointer;
+}
+
+.cmd_popup_element {
+	margin: 2px 0px;
+	
+	font-size: 125%;
+	
+	opacity: 1.0;
+	filter: alpha(opacity=100); /* For IE8 and earlier */
+}
+.cmd_popup_element:hover {
+	opacity: 0.5;
+	filter: alpha(opacity=50); /* For IE8 and earlier */
+}
 
 
 

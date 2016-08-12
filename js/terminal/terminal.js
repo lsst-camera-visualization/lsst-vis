@@ -580,7 +580,7 @@ var LSST_TERMINAL = {
 			if (bInMulti) {
 				var multi = lastParam;
 				var subType = multi[0];
-				var auto = subCommandAutoCompletes.autoComplete(subType);
+				var auto = subCommandAutoCompletes.autoComplete(subType).match;
 				if (auto) {
 					var index = (multi.length - 1) + ((bLastSpace) ? 1 : 0);
 					var autoHighlighted = LSST_TERMINAL.Utility.HighlightStringAtIndex(auto, index);

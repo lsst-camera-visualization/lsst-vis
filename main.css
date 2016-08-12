@@ -124,8 +124,7 @@ img:hover {
     position: absolute;
 	left: 25px;
 	top: 25px;
-	
-    margin: 10px 5px 5px 5px;
+
     padding: 0px;
     
     background-color: #e3e3e3;
@@ -135,22 +134,6 @@ img:hover {
     
     text-align: center;
     font-size: 1.5em;
-}
-
-.box-mini {
-	display: inline-block;
-	min-width: 250px;
-	
-	margin-top: 5px;
-	margin-left: 5px;
-	
-	text-align: center;
-    font-size: 1.5em;
-	
-    border: solid 5px #292929;
-	border-radius: 10px 0px 0px 0px;
-	
-	float: right;
 }
 
 .box-title {
@@ -180,18 +163,6 @@ img:hover {
 	color: #fff;
 	font-size: 2em;
 	text-align: left;
-}
-
-.box-image-close {
-	position: absolute;
-	top: 0px;
-	right: 1px;
-}
-
-.box-image-minimax {
-	position: absolute;
-	top: 4px;
-	right: 42px;
 }
 
 .box-body {

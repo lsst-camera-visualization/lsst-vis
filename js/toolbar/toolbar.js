@@ -2,7 +2,7 @@
 // https://learn.jquery.com/plugins/basic-plugin-creation/
 
 var LSST_TB = {
-	// @param type - Can be any one of the following: 'settings'
+	// @param type - Can be any one of the following: 'settings', 'close'
 	// @param data - Any necessary data for the ToolbarElement type
 	ToolbarElement : function(type, data = null) {
 		this.type = type;
@@ -42,10 +42,45 @@ var LSST_TB = {
 				if (data.onCreate)
 					popup.data('onCreate', data.onCreate);
 				
-				return {
-					toolbarIcon : toolbarIcon,
-					popup : popup
-				};
+				toolbarIcon.data('popup', html.popup);
+				
+				return toolbarIcon;
+			}
+			else if (elem.type === 'close') {
+				var image = settings.basic.closeImage;
+				var onClick = elem.data.onClick;
+				var parameters = elem.data.parameters;
+				
+				var toolbarIcon = jQuery('<img>').attr('src', image);
+				toolbarIcon.data('type', 'click');
+				toolbarIcon.data('onClick', onClick);
+				toolbarIcon.data('parameters', parameters);
+				
+				return toolbarIcon;
+			}
+			else if (elem.type === 'mini') {
+				var image = settings.basic.miniImage;
+				var onClick = elem.data.onClick;
+				var parameters = elem.data.parameters;
+				
+				var toolbarIcon = jQuery('<img>').attr('src', image);
+				toolbarIcon.data('type', 'click');
+				toolbarIcon.data('onClick', onClick);
+				toolbarIcon.data('parameters', parameters);
+				
+				return toolbarIcon;
+			}
+			else if (elem.type === 'max') {
+				var image = settings.basic.maxImage;
+				var onClick = elem.data.onClick;
+				var parameters = elem.data.parameters;
+				
+				var toolbarIcon = jQuery('<img>').attr('src', image);
+				toolbarIcon.data('type', 'click');
+				toolbarIcon.data('onClick', onClick);
+				toolbarIcon.data('parameters', parameters);
+				
+				return toolbarIcon;
 			}
 		}
 	},
@@ -59,30 +94,39 @@ var LSST_TB = {
 // 					placement: Describes where the toolbar is in relation to the calling object. Can be 'top'.
 //					float: Float the icons to the left or to the right. Can be 'left' or 'right'.
 //					margin: The margin between the container and the toolbar.
+//					marginSide: The padding on the sides of the toolbar.
 //					settings: The options for settings type toolbar elements.
 //								- image: The image icon for the toolbar
 //								- formClass: The class for the settings form
 //								- formTitleClass: The class for the settings form title
 //								- elementClass: The class for the settings form elements
 //								- bDraggable: Is the popup draggable?
+//					basic: The options for the preset type toolbar elements (close, mini, max)
+//								- closeImage: The image for the close type
 jQuery.fn.lsst_toolbar = function(toolbarDesc, options) {
 	
-	var settings = jQuery.extend( {
-		// Default options
+	// Default options
+	var settings = {
 		bShowOnHover : true,
 		placement : 'top',
 		float : 'right',
 		margin : 5,
 		marginSide : 0,
-	}, options );
-	
-	settings.settings = jQuery.extend( {
+		settings: {
 			image : 'js/toolbar/images/cog_40x40.png',
 			formClass : 'LSST_TB-settings-form',
 			formTitleClass : 'LSST_TB-settings-form-title',
 			elementClass : 'LSST_TB-settings-element',
 			bDraggable : false
-		}, options.settings);
+		},
+		basic : {
+			closeImage : 'js/toolbar/images/close_40x40.png',
+			miniImage : 'js/toolbar/images/minimize_40x40.png',
+			maxImage : 'js/toolbar/images/maximize_40x40.png'
+		},
+	};
+	
+	jQuery.extend(true, settings, options);
 	
 	var toolbar = jQuery('<div>').addClass('LSST_TB-toolbar LSST_TB-float-' + settings.float);
 	if (!settings.bShowOnHover)
@@ -128,6 +172,8 @@ jQuery.fn.lsst_toolbar = function(toolbarDesc, options) {
 		
 		if (type === 'settings')
 			showSettingsPopup(elem);
+		else (type === 'click')
+			click(elem);
 	}
 	
 	var showSettingsPopup = function(elem) {
@@ -142,6 +188,13 @@ jQuery.fn.lsst_toolbar = function(toolbarDesc, options) {
 		var onCreate = popup.data('onCreate');
 		if (onCreate)
 			onCreate();
+	}
+	
+	var click = function(elem) {
+		var onClick = elem.data('onClick');
+		var parameters = elem.data('parameters');
+		
+		onClick(parameters);
 	}
 	
 	
@@ -169,10 +222,9 @@ jQuery.fn.lsst_toolbar = function(toolbarDesc, options) {
 	for (var i = 0; i < toolbarDesc.length; i++) {
 		// A LSST_TB.ToolbarElement
 		var elem = toolbarDesc[i];
-		var html = LSST_TB.Utility.CreateHTMLFromToolbarElement(elem, settings);
-		toolbar.append(html.toolbarIcon);
-		html.toolbarIcon.data('popup', html.popup);
-		html.toolbarIcon.click(onIconClick);
+		var toolbarIcon = LSST_TB.Utility.CreateHTMLFromToolbarElement(elem, settings);
+		toolbarIcon.click(onIconClick);
+		toolbar.append(toolbarIcon);
 	}
 	
 	// Append the toolbar to the container

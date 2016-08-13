@@ -17,7 +17,7 @@ img:hover {
 
 
 
-.viewer {	
+.viewer {
 	position: absolute;
 	left: 25px;
 	top: 75px;
@@ -25,17 +25,17 @@ img:hover {
     font-family: Tahoma, Geneva, Arial, sans-serif;
     font-size: 1em;
     color: #000;
-    
+
     float: left;
     display: inline-block;
     min-width: 700px;
     overflow: none;
-    
+
     padding: 5px 10px;
     border: solid 4px #000;
     border-radius: 10px;
     box-shadow: -5px 5px 15px grey;
-    
+
     background: #696E6A; /* For browsers that do not support gradients */
     background: -webkit-linear-gradient(#696E6A, #292929); /* For Safari 5.1 to 6.0 */
     background: -o-linear-gradient(#696E6A, #292929); /* For Opera 11.1 to 12.0 */
@@ -46,17 +46,17 @@ img:hover {
 .viewer-title {
     font-size: 2.5em;
     text-align: center;
-    
+
     margin-bottom: 15px;
     padding: 15px 0px 0px 0px;
-    
+
     border-bottom: 1px solid #000;
 }
 
 .viewer-view {
     resize: both;
     overflow: auto;
-    height: 400px;
+    height: 640px;
     width: 100%;
 }
 
@@ -68,14 +68,14 @@ img:hover {
 
 .viewer-data {
 	display: block;
-	
+
     float: left;
     width: 45%;
     height: 100%;
-    
+
     padding-left: 2%;
     padding-right: 2%;
-    
+
     font-size: 125%;
 }
 
@@ -84,7 +84,7 @@ img:hover {
 	padding-bottom: 2px;
 	border-bottom: solid 2px #fff;
 	margin-bottom: 15px;
-	
+
     font-size: 150%;
 	text-align: center;
 	color: #fff;
@@ -120,18 +120,18 @@ img:hover {
     display: inline-block;
     min-width: 300px;
     min-height: 200px;
-    
+
     position: absolute;
 	left: 25px;
 	top: 25px;
 
     padding: 0px;
-    
+
     background-color: #e3e3e3;
     border: solid 5px #292929;
 	border-radius: 10px 0px 0px 0px;
     box-shadow: 5px 5px 15px grey;
-    
+
     text-align: center;
     font-size: 1.5em;
 }
@@ -140,12 +140,12 @@ img:hover {
 	margin: 0px;
 	padding-top: 5px;
 	padding-left: 5px;
-	
+
 	position: relative;
 
 	background-color: #292929;
 	border-bottom: solid 2px #000;
-	
+
 	color: #fff;
 	font-size: 2em;
 	text-align: left;
@@ -155,18 +155,18 @@ img:hover {
 	margin: 0px;
 	padding-top: 5px;
 	padding-left: 5px;
-	
+
 	position: relative;
 
 	background-color: #292929;
-	
+
 	color: #fff;
 	font-size: 2em;
 	text-align: left;
 }
 
 .box-body {
-	
+
 }
 
 .box-text {
@@ -207,7 +207,7 @@ img:hover {
     position: absolute;
     bottom: 5px;
     right: 5px;
-    
+
     z-index: 100;
 }
 
@@ -219,17 +219,3 @@ img:hover {
 	margin-left: 5px;
 	margin-right: 5px;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

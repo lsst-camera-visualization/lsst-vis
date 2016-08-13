@@ -14,7 +14,7 @@ function loadFirefly(viewId){
     primaryViewer.plot({
         "URL" : document.location.origin+"/static/images/imageE2V_trimmed.fits",
         "Title" : "Some WISE image",
-        "ZoomType" : "TO_WIDTH"
+        "ZoomType" : "FULL_SCREEN"
     });
     return primaryViewer;
 }

@@ -118,7 +118,6 @@ jQuery(document).ready(function() {
 	var terminalProperties = {
 		helpLink: docLink,
 	    prefix: '~>',
-	    height: 300,
 	    fontSize: '150%'
 	};	
 	LSST.state.term = jQuery('#cmd').terminal( commands, subCommands, autoCompleteParams, paramsWithHint, terminalProperties );
@@ -251,8 +250,9 @@ cmds = {
 
 		if (!LSST.state.boxes.exists(boxID)) {
 			var box = new Box(boxID);
-			box.dom.draggable({
-				'handle' : '.box-title',
+			box.dom.draggable( {
+				distance : 10,
+				handle : '.box-title',
 				drag : onChangeFocus
 			});
 
@@ -274,6 +274,11 @@ cmds = {
 				bShowOnHover : true,
 			};
 			box.dom.lsst_toolbar(toolbarDesc, options);
+			
+			// Resizable
+			box.dom.resizable( {
+				handles : 'se',
+			} );
 
 			LSST.state.boxes.add(boxID, box);
 
@@ -292,12 +297,26 @@ cmds = {
 
 			viewer.readout.register('SELECT_REGION', selectRegion);
 
+			var c = jQuery(viewer.container);
 			// Add draggable
-			viewer.container.draggable({
-				'cancel' : '.viewer-view',
+			c.draggable( {
+				distance : 10,
+				cancel : '.viewer-view',
 				drag : onChangeFocus
-			});
-			viewer.container.on('click', onChangeFocus);		
+			} );
+			
+			// Add resizable
+			var w = c.css('width');
+			var h = c.css('height');
+			c.css('min-height', h);
+			c.resizable( {
+				handles : 'se',
+				alsoResize : c.children('viewer-view'),
+				minWidth : w,
+				minHeight : h,			
+			} );
+			
+			viewer.container.on('click', onChangeFocus);	
 			
 			LSST.state.viewers.add(viewerID, viewer);
 

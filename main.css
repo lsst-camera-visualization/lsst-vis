@@ -29,7 +29,7 @@ img:hover {
     float: left;
     display: inline-block;
     min-width: 700px;
-    overflow: none;
+    overflow: hidden;
 
     padding: 5px 10px;
     border: solid 4px #000;
@@ -166,11 +166,15 @@ img:hover {
 }
 
 .box-body {
+	padding: 10px 10px 5px 10px;
+}
 
+.box-body > * {	
+	margin-bottom: 10px;
 }
 
 .box-text {
-
+	
 }
 
 .box-text-container {
@@ -203,12 +207,21 @@ img:hover {
 
 #cmd_container {
 	width: 50%;
+	height: 300px;
 
     position: absolute;
     bottom: 5px;
     right: 5px;
 
-    z-index: 100;
+    z-index: 999;
+}
+
+#cmd {
+	height: 100%;
+	
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
 }
 
 #csf_fontsize {

@@ -7,17 +7,20 @@ jQuery(document).ready(function() {
 		title : 'Viewer Settings',
 		form : [
 			jQuery('<span>').text('Anchor to bottom right'),
-			jQuery('<input>').attr('id', 'csf_anchor').attr('type', 'checkbox').prop('checked', true).css('margin-right', '5px'),
+			jQuery('<input>').attr('id', 'csf_anchor').attr('type', 'checkbox').prop('checked', true).css('margin-right', '5px').click(onCSFADClick),
 			jQuery('<br>'),
 			jQuery('<span>').attr('id', 'csf_draggable_text').text('Draggable').css('text-decoration', 'line-through').css('margin-right', '5px'),
-			jQuery('<input>').attr('id', 'csf_draggable').attr('type', 'checkbox').prop('checked', false).prop('disabled', true),
+			jQuery('<input>').attr('id', 'csf_draggable').attr('type', 'checkbox').prop('checked', false).prop('disabled', true).click(onCSFADClick),
+			jQuery('<br>'),
+			jQuery('<span>').text('Always on top'),
+			jQuery('<input>').attr('id', 'csf_top').attr('type', 'checkbox').prop('checked', true).click(onCSFTopClick),
 			jQuery('<br>'),
 			
 			jQuery('<span>').text('Font Size: '),
 			jQuery('<input>').attr('id', 'csf_fontsize').attr('type', 'text').attr('size', 3),
 			jQuery('<span>').text('%'),
-			jQuery('<button>').attr('id', 'csf_fontsize_minus').attr('type', 'button').text('-'),
-			jQuery('<button>').attr('id', 'csf_fontsize_plus').attr('type', 'button').text('+'),
+			jQuery('<button>').attr('id', 'csf_fontsize_minus').attr('type', 'button').text('-').click( {val:-10} , csfChangeFontSize),
+			jQuery('<button>').attr('id', 'csf_fontsize_plus').attr('type', 'button').text('+').click( {val:10} , csfChangeFontSize),
 		],
 		onCreate : onCSFCreate
 	}			
@@ -33,7 +36,16 @@ jQuery(document).ready(function() {
 			bDraggable : true,
 		},
 	}
-	jQuery('#cmd_container').lsst_toolbar(toolbarInfo, options).draggable( { disabled : true } );
+	
+	var draggableProp = {
+		disabled : true,
+		distance : 10
+	}
+	var resizableProp = {
+		handles : 'n, w, nw'
+	};
+	
+	jQuery('#cmd_container').lsst_toolbar(toolbarInfo, options).draggable(draggableProp).resizable(resizableProp);
 
 });
 
@@ -45,12 +57,6 @@ var onCSFCreate = function() {
 	var cmdFontSize = parseFloat(jQuery('#cmd').css('font-size'));
 	var fontSize = cmdFontSize / baseFontSize * 100;
 	fontSizeInput.val(fontSize);
-	
-	jQuery('#csf_fontsize_minus').click( {val:-10} , csfChangeFontSize);
-	jQuery('#csf_fontsize_plus').click( {val:10}, csfChangeFontSize);
-	
-	jQuery('#csf_anchor').click(onCSFADClick);
-	jQuery('#csf_draggable').click(onCSFADClick);
 }
 
 var csfChangeFontSize = function(obj) {
@@ -84,20 +90,41 @@ var onCSFADClick = function() {
 	var cmd = jQuery('#cmd_container');
 	if (bAnchor) {
 		cmd.draggable('disable');
+		
+		cmd.css('position', 'fixed');
 		cmd.css('top', '');
 		cmd.css('left', '');
 		cmd.css('bottom', '5px');
 		cmd.css('right', '5px');
+		
+		cmd.resizable( "option", "handles", "n, w, nw" );
 	}
 	else if (bDraggable) {
 		cmd.draggable('enable');
 	}
 	else {
 		cmd.draggable('disable');
-}
+	}
+	
+	if (!bAnchor) {
+		cmd.resizable( "option", "handles", "all" );
+	}
 }
 
-
+var onCSFTopClick = function() {
+	var elem = jQuery('#csf_top');
+	var bChecked = elem.prop('checked');
+	
+	var t = jQuery('#cmd_container');
+	if (bChecked) {
+		t.css('z-index', 999);
+		t.off('click', onChangeFocus);
+	}
+	else {
+		t.css('z-index', 1);
+		t.click(onChangeFocus);
+	}
+}
 
 
 

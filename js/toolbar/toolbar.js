@@ -172,8 +172,8 @@ jQuery.fn.lsst_toolbar = function(toolbarDesc, options) {
 		
 		if (type === 'settings')
 			showSettingsPopup(elem);
-		else (type === 'click')
-			click(elem);
+		else if (type === 'click')
+			onTypeClick(elem);
 	}
 	
 	var showSettingsPopup = function(elem) {
@@ -190,7 +190,7 @@ jQuery.fn.lsst_toolbar = function(toolbarDesc, options) {
 			onCreate();
 	}
 	
-	var click = function(elem) {
+	var onTypeClick = function(elem) {
 		var onClick = elem.data('onClick');
 		var parameters = elem.data('parameters');
 		

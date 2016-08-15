@@ -380,7 +380,7 @@ var LSST_TERMINAL = {
     	
     	// Make sure all properties have values
 		// properties.width = LSST_TERMINAL.Utility.GetValue(properties.width, 650);
-		properties.height = LSST_TERMINAL.Utility.GetValue(properties.height, 300);
+		// properties.height = LSST_TERMINAL.Utility.GetValue(properties.height, 300);
 		properties.fontSize = LSST_TERMINAL.Utility.GetValue(properties.fontSize, '150%');
 		properties.multiStart = LSST_TERMINAL.Utility.GetValue(properties.multiStart, '(');
 		properties.multiEnd = LSST_TERMINAL.Utility.GetValue(properties.multiEnd, ')');
@@ -647,7 +647,8 @@ var LSST_TERMINAL = {
         // Set width and height of terminal
         if (properties.width)
 			terminal.css('width', properties.width);
-		terminal.css('height', properties.height);
+		if (properties.height)
+			terminal.css('height', properties.height);
     	
     	// Set font size
 		this.setFontSize(properties['fontSize']);

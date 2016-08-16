@@ -18,21 +18,21 @@ def task(filename, task_params):
     # CMD: hot_pixel ffview max rect 200 200 400 400
     # Example JSON:
     # {"filename":"default", "threshold":"max", "region":{"rect":[0,0,100,100]}}
-    filename = task_params['filename']
-    if (filename == 'default'):
-        filename = taskDef.IMAGE_DISPLAY
     hdulist = fits.open(filename)
     threshold, roi = task_params['threshold'], task_params['region']
+    region_type, value = roi['type'], roi['value']
     # Region
     region = hdulist[0].data
 
-    if (isinstance(roi, dict) and ('rect' in roi)):
-        region_slice = parseRegion_rect(roi)
-    elif (isinstance(roi, six.string_types) and roi=="all"):
-        region_slice = slice(None)
-    else:
-        # TODO: error handling
-        region_slice = slice(None)
+    try:
+        if (region_type=='rect'):
+            region_slice = parseRegion_rect(value)
+        elif (region_type=='all'):
+            region_slice = slice(None)
+        else:
+            return ['Input region type not supported.']
+    except Exception as e:
+        return ["Error reading the input region."]
 
     # print(region_slice)
     region = region[region_slice]
@@ -41,7 +41,10 @@ def task(filename, task_params):
     if (threshold == 'max'):
         threshold = float(np.max(region))
     else:
-        threshold = float(threshold)
+        try:
+            threshold = float(threshold)
+        except Exception as e:
+            return ["Error reading the input threshold."]
 
     cols, rows = np.where(region>=threshold)
 

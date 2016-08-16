@@ -4,7 +4,7 @@ jQuery(document).ready(function() {
 	// Init state
 	LSST.state.boxes = new LSST.UIElementList();
 	LSST.state.viewers = new LSST.UIElementList();
-	
+
 	cmds.create_box({'box_id' : 'ffbox'});
 
     var docLink = 'https://github.com/lsst-camera-visualization/frontend/wiki/New-Home';
@@ -112,7 +112,7 @@ jQuery(document).ready(function() {
 		'box_id' : [],
 		'viewer_id' : [ 'ffview' ]
 	};
-	
+
 	var paramsWithHint = {
 		'region' : 'Hint: (rect), (circ), or selected'
 	}
@@ -121,9 +121,9 @@ jQuery(document).ready(function() {
 		helpLink: docLink,
 	    prefix: '~>',
 	    fontSize: '150%'
-	};	
+	};
 	LSST.state.term = jQuery('#cmd').terminal( commands, subCommands, autoCompleteParams, paramsWithHint, terminalProperties );
-	
+
 });
 
 
@@ -141,7 +141,7 @@ cmds = {
 	average_pixel: function(cmd_args) {
 		var boxID = cmd_args['box_id'];
 		var viewerID = cmd_args['viewer_id'];
-		
+
 		var boxExists = LSST.state.boxes.exists(boxID);
 		var viewerExists = LSST.state.viewers.exists(viewerID);
 		if (boxExists && viewerExists) {
@@ -152,7 +152,7 @@ cmds = {
 			// A handle to the viewer
 			var viewer = LSST.state.viewers.get(viewerID);
 			// A handle to the ff image viewer
-			var imageViewer = viewer.ffHandle;
+			var imageViewer = viewer;
 			// A handle to the box to use
 			var box = LSST.state.boxes.get(boxID);
 
@@ -240,7 +240,7 @@ cmds = {
 
 		if (LSST.state.boxes.exists(boxID)) {
 			var box = LSST.state.boxes.get(boxID);
-			
+
 			box.clear();
 		} else {
 			LSST.state.term.echo('A box with the name \'' + boxID + '\' does not exist!');
@@ -259,7 +259,7 @@ cmds = {
 			});
 
 			box.dom.on('click', onChangeFocus);
-			
+
 			var closeData = {
 				onClick : cmds.delete_box,
 				parameters : { box_id : boxID },
@@ -276,7 +276,7 @@ cmds = {
 				bShowOnHover : true,
 			};
 			box.dom.lsst_toolbar(toolbarDesc, options);
-			
+
 			// Resizable
 			box.dom.resizable( {
 				handles : 'se',
@@ -293,7 +293,7 @@ cmds = {
 
 	create_viewer: function(cmd_args) {
 		var viewerID = cmd_args['viewer_id'];
-		
+
 		if (!LSST.state.viewers.exists(viewerID)) {
 			var viewer = new Viewer(viewerID);
 
@@ -306,7 +306,7 @@ cmds = {
 				cancel : '.viewer-view',
 				drag : onChangeFocus
 			} );
-			
+
 			// Add resizable
 			var w = c.css('width');
 			var h = c.css('height');
@@ -315,11 +315,11 @@ cmds = {
 				handles : 'se',
 				alsoResize : c.children('viewer-view'),
 				minWidth : w,
-				minHeight : h,			
+				minHeight : h,
 			} );
-			
-			viewer.container.on('click', onChangeFocus);	
-			
+
+			viewer.container.on('click', onChangeFocus);
+
 			LSST.state.viewers.add(viewerID, viewer);
 
 			cmds.show_viewer( { 'viewer_id' : viewerID } );
@@ -334,9 +334,9 @@ cmds = {
 
 		if (LSST.state.boxes.exists(boxID)) {
 			LSST.state.boxes.get(boxID).destroy();
-			
+
 			LSST.state.boxes.remove(boxID);
-			
+
 			LSST.state.term.deleteParameterAuto('box_id', boxID);
 		}
 		else {
@@ -370,7 +370,7 @@ cmds = {
 			var box = LSST.state.boxes.get(boxID);
 			box.minimize();
 			box.dom.draggable('option', 'handle', '.box-title-mini');
-			
+
 			var toolbar = box.dom.children('.LSST_TB-toolbar');
 			var mini = jQuery(toolbar.children()[1]);
 			mini.attr('src', 'js/toolbar/images/maximize_40x40.png');
@@ -385,14 +385,17 @@ cmds = {
 		var viewerID = cmd_args['viewer_id'];
 		if (LSST.state.viewers.exists(viewerID)) {
 
-			var threshold = parseInt(cmd_args['threshold']);
+			var threshold = 'max';
+			if (cmd_args['threshold']!=='max'){
+					threshold = parseInt(cmd_args['threshold']);
+			}
 			var region = parse_region(cmd_args['region']);
 
 			// A handle to the ff image viewer
-			var imageViewer = LSST.state.viewers.get(viewerID).ffHandle;
+			var imageViewer = LSST.state.viewers.get(viewerID);
 
 			var regionID = viewerID + '-hotpixel';
-			if (LSST.state.viewers[regionID]) {
+			if (imageViewer[regionID]) {
 				firefly.removeRegionData(imageViewer[regionID], regionID);
 				imageViewer[regionID] = undefined;
 			}
@@ -400,7 +403,7 @@ cmds = {
 			read_hotpixels(
 				{
 					filename: "default",
-					threshold: "max",
+					threshold: threshold,
 					"region": region
 				},
 				function(regions) {
@@ -585,7 +588,7 @@ cmds = {
 			var focusFunc = onChangeFocus;
 			focusFunc.bind(box.dom);
 			focusFunc();
-		
+
 			var toolbar = box.dom.children('.LSST_TB-toolbar');
 			var max = jQuery(toolbar.children()[1]);
 			max.attr('src', 'js/toolbar/images/minimize_40x40.png');
@@ -614,7 +617,7 @@ cmds = {
 	uv_freq: function(cmd_args){
 
 	    var viewerID = cmd_args['viewer_id'];
-	    
+
 	    if (LSST.state.viewers.exists(viewerID)) {
 			var viewer = LSST.state.viewers.get(viewerID);
 
@@ -644,7 +647,7 @@ cmds = {
 
 	uv_load_new: function(cmd_args) {
 		var viewerID = cmd_args['viewer_id'];
-		
+
 		if (LSST.state.viewers.exists(viewerID)) {
 			var viewer = LSST.state.viewers.get(viewerID);
 
@@ -684,14 +687,14 @@ cmds = {
 
 	uv_pause: function(cmd_args) {
 	    var viewerID = cmd_args['viewer_id'];
-	    
+
 	    if (LSST.state.viewers.exists(viewerID)) {
 			var viewer = LSST.state.viewers.get(viewerID);
 
 			var id = viewerID + '---pause_resume';
 			var button = jQuery('input[data-buttonID="' + id + '"]');
 			button.attr('value', 'Resume');
-		
+
 			viewer.uv.paused = true;
 		}
 		else {
@@ -701,14 +704,14 @@ cmds = {
 
 	uv_resume: function(cmd_args) {
 	    var viewerID = cmd_args['viewer_id'];
-	    
+
 	    if (LSST.state.viewers.exists(viewerID)) {
 			var viewer = LSST.state.viewers.get(viewerID);
 
 			var id = viewerID + '---pause_resume';
 			var button = jQuery('input[data-buttonID="' + id + '"]');
 			button.attr('value', 'Pause');
-		
+
 			viewer.uv.paused = false;
 			cmds.uv_load_new( { 'viewer_id' : viewerID } );
 		}
@@ -719,7 +722,7 @@ cmds = {
 
 	uv_update: function(cmd_args) {
 	    var viewerID = cmd_args['viewer_id'];
-	    
+
 	    if (LSST.state.viewers.exists(viewerID)) {
 			var viewer = LSST.state.viewers.get(viewerID);
 

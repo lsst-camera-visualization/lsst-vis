@@ -32,9 +32,9 @@ try:
 except Exception as e:
     result = {"error": str(e)}
 
+echo_debug = "echo " + str(result) + " > /www/algorithm/debug_file"
+os.system(echo_debug)
 
-# result,error = average_value(taskParams)
-# os.system(echo_debug)
 
 (fd, outfile) = tempfile.mkstemp(suffix=".json", prefix=options.task, dir=options.outdir)
 f = os.fdopen(fd, "w")

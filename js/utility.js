@@ -25,8 +25,8 @@ function read_boundary(data, cb) {
 }
 
 function read_hotpixels(data, cb) {
-  console.log(data);
   firefly.getJsonFromTask('python', 'hot_pixel', data).then(function(data) {
+    console.log(data);
     var regions = [];
     var color = 'red';
     for (var i = 0; i < data.length; i++) {

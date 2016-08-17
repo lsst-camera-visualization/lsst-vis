@@ -109,7 +109,7 @@ jQuery(document).ready(function() {
 	];
 
 	var autoCompleteParams = {
-		'box_id' : [],
+		'box_id' : [ 'ffbox' ],
 		'viewer_id' : [ 'ffview' ]
 	};
 
@@ -197,7 +197,13 @@ cmds = {
 
 				function(data) {
 					// Called when there was a problem with the promise function
-					console.log('rejected');
+					boxText = [
+						'There was a problem with executing the average_pixel function',
+						'\n',
+						'Please make sure all parameters were typed in correctly'
+					];
+					
+					box.setText(boxText);
 				}
 			);
 		}

@@ -48,7 +48,10 @@ function parse_region(region) {
 		return parse_rect(region);
 	}
 
-	return null;
+	return {
+		type : 'unknown',
+		value : null
+	};
 }
 
 function parse_rect(region) {

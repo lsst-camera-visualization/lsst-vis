@@ -5,8 +5,6 @@ jQuery(document).ready(function() {
 	LSST.state.boxes = new LSST.UIElementList();
 	LSST.state.viewers = new LSST.UIElementList();
 
-	cmds.create_box({'box_id' : 'ffbox'});
-
     var docLink = 'https://github.com/lsst-camera-visualization/frontend/wiki/New-Home';
 	var commands = {
 		'average_pixel box_id viewer_id region' : {

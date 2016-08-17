@@ -200,7 +200,8 @@ cmds = {
 					boxText = [
 						'There was a problem with executing the average_pixel function',
 						'\n',
-						'Please make sure all parameters were typed in correctly'
+						'Please make sure all parameters were typed in correctly',
+						new BoxText('Data', data, false);
 					];
 					
 					box.setText(boxText);

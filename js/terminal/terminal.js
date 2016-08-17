@@ -44,6 +44,7 @@ var LSST_TERMINAL = {
 			}
 			return {
 				auto : '',
+				match : '',
 				bWhole : false
 			}
 		};
@@ -294,7 +295,7 @@ var LSST_TERMINAL = {
 		},
 		
 		SplitStringByWS : function(str) {
-			return str.match(/\S+/g);
+			return str.match(/\S+/g) || '';
 		},
 		
 		SplitStringByParameter : function(str, multiStart, multiEnd) {
@@ -580,8 +581,10 @@ var LSST_TERMINAL = {
 			if (bInMulti) {
 				var multi = lastParam;
 				var subType = multi[0];
-				var auto = subCommandAutoCompletes.autoComplete(subType).match;
+				var auto = subCommandAutoCompletes.autoComplete(subType);
+				
 				if (auto) {
+					auto = auto.match;
 					var index = (multi.length - 1) + ((bLastSpace) ? 1 : 0);
 					var autoHighlighted = LSST_TERMINAL.Utility.HighlightStringAtIndex(auto, index);
 					var subHelpText = properties.multiStart + autoHighlighted + properties.multiEnd;

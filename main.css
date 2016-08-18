@@ -122,8 +122,8 @@ img:hover {
     min-height: 200px;
 
     position: absolute;
-	left: 25px;
-	top: 25px;
+	left: 800px;
+	top: 75px;
 
     padding: 0px;
 
@@ -169,12 +169,12 @@ img:hover {
 	padding: 10px 10px 5px 10px;
 }
 
-.box-body > * {	
+.box-body > * {
 	margin-bottom: 10px;
 }
 
 .box-text {
-	
+
 }
 
 .box-text-container {
@@ -218,7 +218,7 @@ img:hover {
 
 #cmd {
 	height: 100%;
-	
+
 	box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	-webkit-box-sizing: border-box;

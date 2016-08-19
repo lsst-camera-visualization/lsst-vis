@@ -457,7 +457,7 @@ cmds = {
 		var viewerID = cmd_args['viewer_id'];
 
 		var boxExists = LSST.state.boxes.exists(boxID);
-		var viewerExists = LSST.state.viewer.exists(viewerID);
+		var viewerExists = LSST.state.viewers.exists(viewerID);
 		if (boxExists && viewerExists) {
 			var box = LSST.state.boxes.get(boxID);
 			var viewer = LSST.state.viewers.get(viewerID);

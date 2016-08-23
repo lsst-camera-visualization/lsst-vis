@@ -19,25 +19,12 @@ function Box(boxName) {
 		container.append(title);		
 		container.append(body);
 		
-		/*close.on('click', 
-			function() {
-				cmds.delete_box( { 'box_id' : boxName } );
-			}
-		);
-		mini.on('click', 
-			function() {
-				if (!isMini)
-					cmds.hide_box( { 'box_id' : boxName } );
-				else
-					cmds.show_box( { 'box_id' : boxName } );
-			}
-		);*/
-		
 		return container;
 	}
 	
 	this.dom = createDOMSkeleton();
 	var body = this.dom.children('.box-body');
+	this.dom.draggable();
 	
 	
 	

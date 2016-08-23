@@ -69,6 +69,17 @@ function FFReadout(viewerID) {
 		callback : dispatch
 	};
 	createExt(averagePixelExt, 'AVERAGE_PIXEL');
+	
+	// Find the hot pixels over a region
+	var averagePixelExt = {
+		id : 'HOT_PIXEL',
+		plotId : viewerID,
+		title : 'Hot Pixel',
+		toolTip : 'Finds the hot pixels over the region and displays them',
+		extType : 'AREA_SELECT',
+		callback : dispatch
+	};
+	createExt(averagePixelExt, 'HOT_PIXEL');
 
 	// Read mouse extension
 	var readMouseExt = {
@@ -127,8 +138,12 @@ var selectRegion = function(data) {
         jQuery("#ffview-var-selected").css('color', 'white');
     }
     else if (data.id == 'AVERAGE_PIXEL') {
-    	console.log(region);
     	cmds.average_pixel( { 'box_id' : 'ffbox', 'viewer_id' : data.PlotId, 'region' : region } );
+    }
+    else if (data.id == 'HOT_PIXEL') {
+    	// Once we actually use the threshold value, we will need a way for the user to set it
+    	var threshold = 1.0;
+    	cmds.hot_pixel( { 'viewer_id' : data.PlotId, 'threshold' : threshold, 'region' : region } );
     }
 }
 

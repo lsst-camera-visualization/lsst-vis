@@ -522,6 +522,7 @@ var LSST_TERMINAL = {
     		}
     		else {
     			cmd_echo( { 'string' : 'Please enter a valid command!\n' } );
+    			return;
 			}
 			
 		    var splitByParams = LSST_TERMINAL.Utility.SplitStringByParameter(input, properties.multiStart, properties.multiEnd);
@@ -638,6 +639,19 @@ var LSST_TERMINAL = {
     			}
     		}
     	}
+    	
+    	this.minimize = function() {
+    		terminalOutputDOM.css('display', 'none');
+    		
+    		var newHeight = terminalInputDOM.outerHeight(true) + terminalHelpContainerDOM.outerHeight(true);
+    		terminal.height(newHeight);
+    	}
+    	
+    	this.maximize = function() {
+    		terminalOutputDOM.css('display', '');
+    		
+    		terminal.height(properties.height);
+    	}
     
     
     
@@ -652,6 +666,8 @@ var LSST_TERMINAL = {
 			terminal.css('width', properties.width);
 		if (properties.height)
 			terminal.css('height', properties.height);
+		else
+			properties.height = terminal.height();
     	
     	// Set font size
 		this.setFontSize(properties['fontSize']);

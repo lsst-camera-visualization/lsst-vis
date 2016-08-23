@@ -4,7 +4,7 @@ jQuery(document).ready(function() {
 
 	// Terminal settings
 	var settingsData = {
-		title : 'Viewer Settings',
+		title : 'Terminal Settings',
 		form : [
 			jQuery('<span>').text('Anchor to bottom right'),
 			jQuery('<input>').attr('id', 'csf_anchor').attr('type', 'checkbox').prop('checked', true).css('margin-right', '5px').click(onCSFADClick),

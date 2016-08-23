@@ -23,10 +23,18 @@ jQuery(document).ready(function() {
 			jQuery('<button>').attr('id', 'csf_fontsize_plus').attr('type', 'button').text('+').click( {val:10} , csfChangeFontSize),
 		],
 		onCreate : onCSFCreate
-	}			
+	}
+	
+	// Minimize data
+	var miniData = {
+		onClick : cmds.minimize_terminal,
+	}
+	
 	var toolbarInfo = [
-		new LSST_TB.ToolbarElement('settings', settingsData)
+		new LSST_TB.ToolbarElement('settings', settingsData),
+		new LSST_TB.ToolbarElement('mini', miniData),
 	];
+	
 	var options = {
 		bShowOnHover : true,
 		placement : 'top',

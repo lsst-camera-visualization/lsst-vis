@@ -451,6 +451,26 @@ cmds = {
 		console.log(LSST.state.viewers.get(viewerID));
 		return null;
 	},
+	
+	maximize_terminal : function(cmd_args) {
+		LSST.state.term.maximize();
+		jQuery('#cmd_container').outerHeight(LSST.state.term.outerHeight(true));
+		
+		var toolbar = jQuery('#cmd_container').children('.LSST_TB-toolbar');
+		var max = jQuery(toolbar.children()[1]);
+		max.attr('src', 'js/toolbar/images/minimize_40x40.png');
+		max.data('onClick', cmds.minimize_terminal);
+	},
+	
+	minimize_terminal : function(cmd_args) {
+		LSST.state.term.minimize();
+		jQuery('#cmd_container').outerHeight(LSST.state.term.outerHeight(true));
+		
+		var toolbar = jQuery('#cmd_container').children('.LSST_TB-toolbar');
+		var mini = jQuery(toolbar.children()[1]);
+		mini.attr('src', 'js/toolbar/images/maximize_40x40.png');
+		mini.data('onClick', cmds.maximize_terminal);
+	},
 
 	read_mouse: function(cmd_args) {
 		var boxID = cmd_args['box_id'];

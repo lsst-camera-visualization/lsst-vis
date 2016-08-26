@@ -199,7 +199,7 @@ cmds = {
 						'There was a problem with executing the average_pixel function',
 						'\n',
 						'Please make sure all parameters were typed in correctly',
-						new BoxText('Data', data, false)
+						new BoxText('Error', data, false)
 					];
 
 					box.setText(boxText);
@@ -257,18 +257,14 @@ cmds = {
 
 		if (!LSST.state.boxes.exists(boxID)) {
 			var box = new Box(boxID);
-			box.dom.draggable( {
-				distance : 10,
-				handle : '.box-title',
-				drag : onChangeFocus
-			});
-
-			box.dom.on('click', onChangeFocus);
-
+		
+			// Toolbar settings
+			// Close button
 			var closeData = {
 				onClick : cmds.delete_box,
 				parameters : { box_id : boxID },
 			}
+			// Minimize/Maximize button
 			var miniData = {
 				onClick : cmds.hide_box,
 				parameters : { box_id : boxID },
@@ -278,15 +274,11 @@ cmds = {
 				new LSST_TB.ToolbarElement('mini', miniData),
 			];
 			var options = {
+				// Only show toolbar when the user hovers over the box.
 				bShowOnHover : true,
 			};
 			box.dom.lsst_toolbar(toolbarDesc, options);
-
-			// Resizable
-			box.dom.resizable( {
-				handles : 'se',
-			} );
-
+			
 			LSST.state.boxes.add(boxID, box);
 
 			cmds.show_box( { 'box_id' : boxID } );

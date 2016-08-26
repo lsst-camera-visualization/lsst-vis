@@ -175,3 +175,14 @@ var createViewerSkeleton = function(viewerID) {
 
 	return container;
 }
+
+// A function that loads Firefly viewer.
+function loadFirefly(viewId){
+    var primaryViewer = firefly.makeImageViewer(viewId);
+    primaryViewer.plot({
+        "URL" : document.location.origin+"/static/images/imageE2V_trimmed.fits",
+        "Title" : "Some WISE image",
+        "ZoomType" : "FULL_SCREEN"
+    });
+    return primaryViewer;
+}

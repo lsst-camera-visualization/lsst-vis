@@ -129,8 +129,10 @@ var selectRegion = function(data) {
         var y1 = Math.trunc(data.ipt0.y);
         var x2 = Math.trunc(data.ipt1.x);
         var y2 = Math.trunc(data.ipt1.y);
-        region = parse_rect([ 'rect', x1, y1, x2, y2 ]);
+        region = [ 'rect', x1, y1, x2, y2 ];
     }
+    
+    console.log(region);
     
     if (data.id == 'SELECT_REGION') {
    		var regionAsString = region_to_string(region);

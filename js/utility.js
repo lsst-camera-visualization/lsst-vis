@@ -54,6 +54,7 @@ function parse_region(region) {
 	};
 }
 
+// [ 'rect', x1, y1, x2, y2 ]
 function parse_rect(region) {
 
 	var rect;
@@ -110,4 +111,12 @@ function region_to_boxtext(region) {
 
 			return '';
 	}
+}
+
+// Expects the result of a parse_region call to be passed in
+function region_to_string(region) {
+	if (region.type == 'rect')
+		return 'rect ' + region.value.x1 + ' ' + region.value.y1 + ' ' + region.value.x2 + ' ' + region.value.y2;
+		
+	return '';
 }

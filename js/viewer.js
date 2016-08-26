@@ -32,7 +32,6 @@ function FFReadout(viewerID) {
 	};
 
 	var dispatch = function(data) {
-
 		var ext = extConv[data.type];
 		var cbArray = callbacks[ext];
 		for (var i = 0; i < cbArray.length; i++) {
@@ -44,11 +43,12 @@ function FFReadout(viewerID) {
 	};
 
 	var createExt = function(ext, name) {
+		var actions = firefly.appFlux.getActions('ExternalAccessActions');
 		actions.extensionAdd(ext);
 		callbacks[name] = [];
 	}
 
-	var actions = firefly.appFlux.getActions('ExternalAccessActions');
+	// General button for selecting an area
 	var areaSelectionExt = {
 		id : 'SELECT_REGION',
 		plotId : viewerID,
@@ -58,6 +58,28 @@ function FFReadout(viewerID) {
 		callback : dispatch
 	};
 	createExt(areaSelectionExt, 'SELECT_REGION');
+	
+	// Calculate average_pixel over a region
+	var averagePixelExt = {
+		id : 'AVERAGE_PIXEL',
+		plotId : viewerID,
+		title : 'Average Pixel',
+		toolTip : 'Calculate the average pixel value over the region',
+		extType : 'AREA_SELECT',
+		callback : dispatch
+	};
+	createExt(averagePixelExt, 'AVERAGE_PIXEL');
+	
+	// Find the hot pixels over a region
+	var averagePixelExt = {
+		id : 'HOT_PIXEL',
+		plotId : viewerID,
+		title : 'Hot Pixel',
+		toolTip : 'Finds the hot pixels over the region and displays them',
+		extType : 'AREA_SELECT',
+		callback : dispatch
+	};
+	createExt(averagePixelExt, 'HOT_PIXEL');
 
 	// Read mouse extension
 	var readMouseExt = {
@@ -99,20 +121,32 @@ function Viewer(id) {
 
 
 // Called when the user selects a region in a viewer.
-// This function formats the data and sets it in the terminal variable called 'selected'.
 var selectRegion = function(data) {
-
+	
+	var region;
     if (data.type == 'AREA_SELECT') {
-        var y1 = Math.trunc(data.ipt0.y);
-        var y2 = Math.trunc(data.ipt1.y);
         var x1 = Math.trunc(data.ipt0.x);
+        var y1 = Math.trunc(data.ipt0.y);
         var x2 = Math.trunc(data.ipt1.x);
-
-        LSST.state.term.setVariable('selected', '(rect ' + x1 + ' ' + y1 + ' ' + x2 + ' ' + y2 + ')');
-
+        var y2 = Math.trunc(data.ipt1.y);
+        region = [ 'rect', x1, y1, x2, y2 ];
+    }
+    
+    console.log(region);
+    
+    if (data.id == 'SELECT_REGION') {
+   		var regionAsString = region_to_string(region);
+   		LSST.state.term.setVariable('selected', '(' + regionAsString + ')');
         jQuery("#ffview-var-selected").css('color', 'white');
     }
-
+    else if (data.id == 'AVERAGE_PIXEL') {
+    	cmds.average_pixel( { 'box_id' : 'ffbox', 'viewer_id' : data.PlotId, 'region' : region } );
+    }
+    else if (data.id == 'HOT_PIXEL') {
+    	// Once we actually use the threshold value, we will need a way for the user to set it
+    	var threshold = 1.0;
+    	cmds.hot_pixel( { 'viewer_id' : data.PlotId, 'threshold' : threshold, 'region' : region } );
+    }
 }
 
 

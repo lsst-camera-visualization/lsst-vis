@@ -132,8 +132,6 @@ var selectRegion = function(data) {
         region = [ 'rect', x1, y1, x2, y2 ];
     }
     
-    console.log(region);
-    
     if (data.id == 'SELECT_REGION') {
    		var regionAsString = region_to_string(region);
    		LSST.state.term.setVariable('selected', '(' + regionAsString + ')');

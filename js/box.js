@@ -74,7 +74,7 @@ function BoxUI(boxName) {
 	// Creates a line for display
 	// @param data - The type of line to display, following the guideline of :line-_style_:
 	//		Ex. :line-dashed: or :line-solid:
-	var createLineDOM = function(data) {
+	var createLineStyleDOM = function(data) {
 		var split = data.split('-')[1];
 		var lineStyle = split.substr(0, split.length - 1);
 		return jQuery('<p>').addClass('box-line').css('border-bottom-style', lineStyle);
@@ -94,7 +94,7 @@ function BoxUI(boxName) {
 			}
 		}
 		else if ((typeof data === 'string' || data instanceof String) && data.includes(':line')) {
-			line.append(getStyleLineDOM(data));
+			line.append(createLineStyleDOM(data));
 			return line;
 		}
 		else {

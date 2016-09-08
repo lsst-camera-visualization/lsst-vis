@@ -198,6 +198,73 @@ img:hover {
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+.graph {
+	position: absolute;
+	right: 5px;
+	top: 5px;
+
+	width: 500px;
+	height: 300px;
+	
+	border: solid 2px #aaf;
+	padding: 10px;
+	background-color: #fff;	
+}
+
+.graph-title {
+	color: #000;
+	font-size: 250%;
+	text-align: center;
+	border-bottom: solid 1px #000;
+}
+
+.graph-body {
+	margin: auto;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #box-minimized-bar {
 	position: fixed;
 	right: 5px;

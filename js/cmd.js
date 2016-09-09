@@ -218,7 +218,7 @@ cmds = {
 	},
 
 	chart: function(cmd_args) {
-		draw_histogram(cmd_args.json_file);
+		var chart = new Chart(cmd_args.json_file);
 	},
 
 	/*chart2: function(LSST.state, cmd_args) {

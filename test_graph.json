@@ -1,6 +1,7 @@
 
 {
 	"title" : "Test Histogram Data",
+	"type" : "Discrete Bar",
 	"data" : {
 		"values" : [
 			{ 

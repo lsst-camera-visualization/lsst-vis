@@ -127,12 +127,13 @@ jQuery(document).ready(function() {
 
 
 var executeBackendFunction = function(nameOfTask, viewer, params, onFulfilled, onRejected) {
-	params.image_url = viewer.image_url;
-	
+	if (nameOfTask=='boundary'){
+		params.image_url = viewer.original_image_url;
+	}else{
+		params.image_url = viewer.image_url;
+	}
 	console.log(params);
-
 	firefly.getJsonFromTask( 'python', nameOfTask, params ).then(onFulfilled, onRejected);
-
 }
 
 
@@ -410,14 +411,14 @@ cmds = {
 
 			read_hotpixels(
 				{
-					filename: "default",
 					threshold: threshold,
 					"region": region
 				},
 				function(regions) {
 					imageViewer[regionID] = regions;
 					firefly.overlayRegionData(regions, regionID, 'hotpixel', viewerID);
-				}
+				},
+				imageViewer
 			);
 
 		}
@@ -508,11 +509,14 @@ cmds = {
                     firefly.overlayRegionData(viewer.header["regions_ds9"], region_id, 'Boundary', plotid);
                     viewer.show_boundary = true;
                 }else{
-                    read_boundary(plotid, function(regions) { // Asynchronous
-                        viewer.header = regions;
-                        firefly.overlayRegionData(viewer.header["regions_ds9"], region_id, 'Boundary', plotid);
-                        viewer.show_boundary = true;
-                    })
+                    read_boundary(plotid,
+						function(regions) { // Asynchronous
+	                        viewer.header = regions;
+	                        firefly.overlayRegionData(viewer.header["regions_ds9"], region_id, 'Boundary', plotid);
+	                        viewer.show_boundary = true;
+						},
+						viewer
+					);
                 }
             }
 
@@ -590,11 +594,13 @@ cmds = {
                     firefly.overlayRegionData(viewer.header["regions_ds9"], region_id, 'Boundary', plotid);
                     viewer.show_boundary = true;
                 }else{
-                    read_boundary(plotid, function(regions) { // Asynchronous
-                        viewer.header = regions;
-                        firefly.overlayRegionData(viewer.header["regions_ds9"], region_id, 'Boundary', plotid);
-                        viewer.show_boundary = true;
-                    })
+                    read_boundary({},
+						function(regions) { // Asynchronous
+	                        viewer.header = regions;
+	                        firefly.overlayRegionData(viewer.header["regions_ds9"], region_id, 'Boundary', plotid);
+	                        viewer.show_boundary = true;
+						},
+						viewer);
                 }
             }else{
                 LSST.state.term.echo("Boundary of this viewer is already drawn.")

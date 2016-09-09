@@ -77,6 +77,7 @@ function FFReadout(viewerID) {
 function Viewer(id) {
 	this.container = createViewerSkeleton(id);
 	this.image_url = getNewImageURL();
+	this.original_image_url = getNewOriginalImageURL();
 	this.ffHandle = loadFirefly(id, this.image_url);
 	this.uv = new UV_Data();
 	this.readout = new FFReadout(id);
@@ -189,5 +190,9 @@ function loadFirefly(viewId, url){
 
 // A function that gets the url of the image to be loaded.
 function getNewImageURL(){
-	return document.location.origin+"/static/images/imageE2V_trimmed.fits"
+	return document.location.origin+"/static/images/imageE2V_trimmed.fits";
+}
+
+function getNewOriginalImageURL(){
+	return document.location.origin+"/static/images/imageE2V.fits";
 }

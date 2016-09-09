@@ -8,3 +8,9 @@ def task(filename, task_params):
             return np.histogram(hdulist.data, bins='auto')
     except Exception as e:
         return ['Error when computing histogram.']
+
+
+# Testing
+if __name__ == "__main__":
+    filename = '~/lsst/lsst_firefly/frontend/images/imageE2V_trimmed.fits'
+    task(filename, {})

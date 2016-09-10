@@ -1,12 +1,7 @@
 from astropy.io import fits
-import json
 import sys
 import numpy as np
 import scipy.stats as sp
-from os.path import dirname
-sys.path.append(dirname(__file__))
-from os.path import splitext
-import traceback
 
 # Convert the boundary coordincates from string(as in the header) to values.
 # Assume to be a rectangular region (2-dimensional)

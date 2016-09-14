@@ -47,7 +47,7 @@ def get_average(filename):
 			upper_region = fitsdata[DATASEC[3]:seg_width, DATASEC[0]:DATASEC[1]].flatten()
 			pre_post = np.append(fitsdata[0:seg_width, 0:DATASEC[0]].flatten(), fitsdata[0:seg_length, DATASEC[1]:seg_length].flatten())
 			overscan = np.append(pre_post, upper_region)
-			noise[r-1] = sp.moment(overscan, 2)
+			noise[r-1] = np.sqrt(sp.moment(overscan, 2))
 			#for i in range(0, 10):
 			#	for j in range(0, 2047):
 			#		pixel_sum += fitsdata[j, i]

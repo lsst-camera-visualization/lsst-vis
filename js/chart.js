@@ -1,8 +1,12 @@
 
 
 // Represents a visual chart.
-// @param json_file - A JSON file describing the chart
-function Chart(json_file) {
+// 
+// In order to create a new chart, one should use one of the following functions (declared at the bottom of the page):
+//		- Chart.fromJSONFile
+//		- Chart.fromJSONString
+//		- Chart.fromObject
+function Chart() {
 	
 	// Creates the html of the chart
 	var createHTML = function() {
@@ -18,12 +22,9 @@ function Chart(json_file) {
 		return container;
 	}
 	
-	// The html container representing this chart
-	this.html = createHTML();
-	
 	// Creates a discrete bar chart.
 	// @param data - The data describing the bar chart
-	var setDiscreteBar = function(data) {
+	var asDiscreteBar = function(data) {
 		var chart = nv.models.discreteBarChart();
 	
 		chart.x(function(d) {
@@ -54,66 +55,134 @@ function Chart(json_file) {
 		this.html.remove();
 	}
 	
-	//////////
-	// Init //
-	//////////
-	jQuery('body').append(this.html);
+	// Creates the nvd3 chart
+	// @param chartDesc - The data describing the chart
+	var createChart = function(chartDesc) {	
+		// Set the title
+		var titleHTML = this.html.children('.chart-title').text(chartDesc.title);
 	
-	var createChart = 
-		function(data) {
-			// Set the title
-			var titleHTML = this.html.children('.chart-title').text(data.title);
-			
-			// Create the chart based off of the type
-			var type = data.type;
-			var chartFunc;
-			if (type === 'Discrete Bar') {
-				chartFunc = setDiscreteBar;
-			}
-			else {
-				console.log('Unrecognized chart type recieved in file "' + json_file + '".');
-				return false;
-			}
-			
-			var c = chartFunc.bind(this, data.data);
-			nv.addGraph(c);
-			
-			return true;
-			
-		}.bind(this);
+		// Create the chart based off of the type
+		var type = chartDesc.type;
+		var chartFunc;
+		if (type === 'Discrete Bar') {
+			chartFunc = asDiscreteBar;
+		}
+		else {
+			console.log('Unrecognized chart type! Chart was not created.');
+			return false;
+		}
+	
+		var c = chartFunc.bind(this, chartDesc.data);
+		nv.addGraph(c);
 		
-	jQuery.getJSON(json_file, createChart);
-	
-	// Bring focus when we are clicked
-	this.html.on('click', onChangeFocus);
-	onChangeFocus.call(this.html);
-	
-	// Draggable settings
-	this.html.draggable( {
-		distance : 10,
-		// When the user starts dragging the box, bring it into focus
-		drag : onChangeFocus
-	});
-	
-	// Resizable settings
-	this.html.resizable( {
-		handles : 'se'
-	} );
-	
-	// Toolbar settings
-	// Close button
-	var closeData = {
-		onClick : this.destroy.bind(this)
+		return true;
 	}
-	var toolbarDesc = [
-		new LSST_TB.ToolbarElement('close', closeData),
-	];
-	var options = {
-		// Only show toolbar when the user hovers over the box.
-		bShowOnHover : true,
-	};
-	this.html.lsst_toolbar(toolbarDesc, options);
+	
+	// Initializes this chart,. Use the static Chart functions to create a chart, do not use this function directly.
+	// @param chartDesc - An object describing the chart.
+	//					  It will contain the following properties (* properties are required):
+	//						title - The title of the chart, which is displayed to the user
+	//						type* - The type of chart used, must be one of the following:
+	//							- "Discrete Bar"
+	//						data* - The data that the chart will display. Since we use nvd3 to display the charts, it follows their guidelines
+	// 					  See frontend/test_graph.json for example
+	this._init = function(chartDesc) {
+		// The html container representing this chart
+		this.html = createHTML();
+		// Attach the html skeleton to the body
+		jQuery('body').append(this.html);
+	
+		// Bring focus when we are clicked
+		this.html.on('click', onChangeFocus);
+		onChangeFocus.call(this.html);
+	
+		// Draggable settings
+		this.html.draggable( {
+			distance : 10,
+			// When the user starts dragging the box, bring it into focus
+			drag : onChangeFocus
+		});
+	
+		// Resizable settings
+		this.html.resizable( {
+			handles : 'se'
+		} );
+	
+		// Toolbar settings
+		// Close button
+		var closeData = {
+			onClick : this.destroy.bind(this)
+		}
+		var toolbarDesc = [
+			new LSST_TB.ToolbarElement('close', closeData),
+		];
+		var options = {
+			// Only show toolbar when the user hovers over the box.
+			bShowOnHover : true,
+		};
+		this.html.lsst_toolbar(toolbarDesc, options);
+		
+		return createChart.call(this, chartDesc);
+	}
 }
+
+// Checks if the init function of a chart succeeds, and prints a messsage if it doesn't.
+// @param c - The chart to check (and initialize)
+// @param desc - The description of the chart (to pass into _init)
+var checkChart = function(c, desc) {
+	if (!c._init(desc)) {
+		console.error('Failed to properly initialize the chart! Please provide a correct description. Current chart description: ', desc);
+		c.destroy();
+	}
+}
+
+// Creates a chart from a JSON file.
+// @param file - The JSON file representing this chart
+// @return The newly created chart
+Chart.fromJSONFile = function(file) {
+	var chart = new Chart();
+	var createChart = function(data) {
+		checkChart(this, data);
+	}
+	jQuery.getJSON(file, createChart.bind(chart));
+	
+	return chart;
+}
+
+// Creates a chart from a JSON formatted string.
+// @param str - The JSON formatted string
+// @return The newly created chart
+Chart.fromJSONString = function(str) {
+	var chart = new Chart();
+	checkChart(chart, JSON.parse(str));
+	return chart;
+}
+
+// Creates a chart from an object, following the chart guidelines.
+// @param chartDesc - An object describing the chart.
+	//					  It will contain the following properties (* properties are required):
+	//						title - The title of the chart, which is displayed to the user
+	//						type* - The type of chart used, must be one of the following:
+	//							- "Discrete Bar"
+	//						data* - The data that the chart will display. Since we use nvd3 to display the charts, it follows their guidelines
+	// 					  See frontend/test_graph.json for example
+Chart.fromObject = function(chartDesc) {
+	var chart = new Chart();
+	checkChart(chart, chartDesc);
+	return chart;
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

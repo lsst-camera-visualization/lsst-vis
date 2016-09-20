@@ -12,6 +12,9 @@ jQuery(document).ready(function() {
 			'description' : 'Calculates the average pixel value for the region.',
 			'doc_link' : docLink + '#average_pixel'
 		},
+		'chart json_file' : {
+			callback : cmds.chart,
+		},
 		'clear_box box_id' : {
 			'callback' : cmds.clear_box,
 			'description' : 'Clears an information box.',
@@ -214,31 +217,9 @@ cmds = {
 		}
 	},
 
-	/*chart: function(LSST.state, cmd_args) {
-		var name = cmd_args[1];
-		if (!LSST.state.boxes[name]) {
-			LSST.state.term.echo("The box \'" + name + "\' does not exist!\n");
-		} else {
-			cmds.clear_box(LSST.state, [name]);
-			var content = LSST.state.boxes[name].select.select('.box-content').attr('id', 'chart-' + name);
-			nv.addGraph(function() {
-				return draw_graph(content)
-			});
-		}
+	chart: function(cmd_args) {
+		var chart = Chart.fromJSONFile(cmd_args.json_file);
 	},
-
-	chart2: function(LSST.state, cmd_args) {
-		var name = cmd_args[1];
-		if (!LSST.state.boxes[name]) {
-			LSST.state.term.echo("The box \'" + name + "\' does not exist!\n");
-		} else {
-			cmds.clear_box(LSST.state, ['', name]);
-			var content = LSST.state.boxes[name].select.select('.box-content').attr('id', 'chart2-' + name);
-			nv.addGraph(function() {
-				return draw_graph2(content)
-			})
-		}
-	},*/
 
 	clear_box: function(cmd_args) {
 		var boxID = cmd_args['box_id'];

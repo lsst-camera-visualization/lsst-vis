@@ -98,8 +98,9 @@ function FFReadout(viewerID) {
 // - header: Store the header information of the image in the Viewer.
 function Viewer(id) {
 	this.container = createViewerSkeleton(id);
-	this.ffHandle = loadFirefly(id);
-	this.image_url = null;
+	this.image_url = getNewImageURL();
+	this.original_image_url = getNewOriginalImageURL();
+	this.ffHandle = loadFirefly(id, this.image_url);
 	this.uv = new UV_Data();
 	this.readout = new FFReadout(id);
 
@@ -206,4 +207,24 @@ var createViewerSkeleton = function(viewerID) {
 	$('body').append(container);
 
 	return container;
+}
+
+// A function that loads Firefly viewer.
+function loadFirefly(viewId, url){
+    var primaryViewer = firefly.makeImageViewer(viewId);
+    primaryViewer.plot({
+        "URL" : url,
+        "Title" : "Some WISE image",
+        "ZoomType" : "FULL_SCREEN"
+    });
+    return primaryViewer;
+}
+
+// A function that gets the url of the image to be loaded.
+function getNewImageURL(){
+	return document.location.origin+"/static/images/imageE2V_trimmed.fits";
+}
+
+function getNewOriginalImageURL(){
+	return document.location.origin+"/static/images/imageE2V.fits";
 }

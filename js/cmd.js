@@ -1,11 +1,7 @@
 
 jQuery(document).ready(function() {
 
-	// Init state
-	LSST.state.boxes = new LSST.UIElementList();
-	LSST.state.viewers = new LSST.UIElementList();
-
-    var docLink = 'https://github.com/lsst-camera-visualization/frontend/wiki/New-Home';
+    var docLink = 'https://github.com/lsst-camera-visualization/frontend/wiki';
 	var commands = {
 		'average_pixel box_id viewer_id region' : {
 			'callback' : cmds.average_pixel,
@@ -191,7 +187,7 @@ cmds = {
 							'Region:'
 						].concat(region_to_boxtext(region)),
 						':line-dashed:',
-						new BoxText('Average Pixel Value', data['result'])
+						new LSST.UI.BoxText('Average Pixel Value', data['result'])
 					];
 					box.setText(boxText);
 				},
@@ -202,7 +198,7 @@ cmds = {
 						'There was a problem with executing the average_pixel function',
 						'\n',
 						'Please make sure all parameters were typed in correctly',
-						new BoxText('Error', data, false)
+						new LSST.UI.BoxText('Error', data, false)
 					];
 
 					box.setText(boxText);
@@ -226,10 +222,21 @@ cmds = {
 
 		if (LSST.state.boxes.exists(boxID)) {
 			var box = LSST.state.boxes.get(boxID);
-
 			box.clear();
 		} else {
 			LSST.state.term.echo('A box with the name \'' + boxID + '\' does not exist!');
+		}
+	},
+	
+	clear_viewer : function(cmd_args) {
+		var viewerID = cmd_args['viewer_id'];
+
+		if (LSST.state.viewers.exists(viewerID)) {
+			var viewer = LSST.state.viewers.get(viewerID);
+			viewer.clear();
+		}
+		else {
+			LSST.state.term.echo('A viewer with the name \'' + viewerID + '\' does not exist!');
 		}
 	},
 
@@ -237,29 +244,7 @@ cmds = {
 		var boxID = cmd_args['box_id'];
 
 		if (!LSST.state.boxes.exists(boxID)) {
-			var box = new Box(boxID);
-		
-			// Toolbar settings
-			// Close button
-			var closeData = {
-				onClick : cmds.delete_box,
-				parameters : { box_id : boxID },
-			}
-			// Minimize/Maximize button
-			var miniData = {
-				onClick : cmds.hide_box,
-				parameters : { box_id : boxID },
-			}
-			var toolbarDesc = [
-				new LSST_TB.ToolbarElement('close', closeData),
-				new LSST_TB.ToolbarElement('mini', miniData),
-			];
-			var options = {
-				// Only show toolbar when the user hovers over the box.
-				bShowOnHover : true,
-			};
-			box.dom.lsst_toolbar(toolbarDesc, options);
-			
+			var box = new LSST.UI.Box( { name : boxID } );			
 			LSST.state.boxes.add(boxID, box);
 
 			cmds.show_box( { 'box_id' : boxID } );
@@ -273,30 +258,9 @@ cmds = {
 		var viewerID = cmd_args['viewer_id'];
 
 		if (!LSST.state.viewers.exists(viewerID)) {
-			var viewer = new Viewer(viewerID);
+			var viewer = new LSST.UI.Viewer( { name : viewerID } );
 
 			viewer.readout.register('SELECT_REGION', selectRegion);
-
-			var c = jQuery(viewer.container);
-			// Add draggable
-			c.draggable( {
-				distance : 10,
-				cancel : '.viewer-view',
-				drag : onChangeFocus
-			} );
-
-			// Add resizable
-			var w = c.css('width');
-			var h = c.css('height');
-			c.css('min-height', h);
-			c.resizable( {
-				handles : 'se',
-				alsoResize : c.children('viewer-view'),
-				minWidth : w,
-				minHeight : h,
-			} );
-
-			viewer.container.on('click', onChangeFocus);
 
 			LSST.state.viewers.add(viewerID, viewer);
 
@@ -312,7 +276,6 @@ cmds = {
 
 		if (LSST.state.boxes.exists(boxID)) {
 			LSST.state.boxes.get(boxID).destroy();
-
 			LSST.state.boxes.remove(boxID);
 
 			LSST.state.term.deleteParameterAuto('box_id', boxID);
@@ -347,9 +310,9 @@ cmds = {
 			// A handle to the box
 			var box = LSST.state.boxes.get(boxID);
 			box.minimize();
-			box.dom.draggable('option', 'handle', '.box-title-mini');
+			box.html.draggable('option', 'handle', '.box-title-mini');
 
-			var toolbar = box.dom.children('.LSST_TB-toolbar');
+			var toolbar = box.html.children('.LSST_TB-toolbar');
 			var mini = jQuery(toolbar.children()[1]);
 			mini.attr('src', 'js/toolbar/images/maximize_40x40.png');
 			mini.data('onClick', cmds.show_box);
@@ -520,18 +483,18 @@ cmds = {
 
 				boxText = [
 					'read_mouse',
-					new BoxText('Viewer', viewerID),
+					new LSST.UI.BoxText('Viewer', viewerID),
 					[
 						'Point: ',
-						new BoxText('X', mouse_x),
-						new BoxText('Y', mouse_y)
+						new LSST.UI.BoxText('X', mouse_x),
+						new LSST.UI.BoxText('Y', mouse_y)
 					],
                     [
                         'Region/segment: ',
-                        new BoxText('X', seg_x),
-                        new BoxText('Y', seg_y)
+                        new LSST.UI.BoxText('X', seg_x),
+                        new LSST.UI.BoxText('Y', seg_y)
                     ],
-                    new BoxText('EXTNAME', (boundary[seg_y][seg_x])['EXTNAME'])
+                    new LSST.UI.BoxText('EXTNAME', (boundary[seg_y][seg_x])['EXTNAME'])
 				];
 				box.setText(boxText);
 	  		});
@@ -581,13 +544,11 @@ cmds = {
 			// A handle to the box
 			var box = LSST.state.boxes.get(boxID);
 			box.maximize();
-			box.dom.draggable('option', 'handle', '.box-title');
+			box.html.draggable('option', 'handle', '.box-title');
 
-			var focusFunc = onChangeFocus;
-			focusFunc.bind(box.dom);
-			focusFunc();
+			box.setFocus(true);
 
-			var toolbar = box.dom.children('.LSST_TB-toolbar');
+			var toolbar = box.html.children('.LSST_TB-toolbar');
 			var max = jQuery(toolbar.children()[1]);
 			max.attr('src', 'js/toolbar/images/minimize_40x40.png');
 			max.data('onClick', cmds.hide_box);
@@ -601,11 +562,7 @@ cmds = {
 		var viewerID = cmd_args['viewer_id'];
 
 		if (LSST.state.viewers.exists(viewerID)) {
-			var dom = LSST.state.viewers.get(viewerID).container;
-
-			var focusFunc = onChangeFocus;
-			focusFunc.bind(dom);
-			focusFunc();
+			LSST.state.viewers.get(viewerID).setFocus(true);
 		}
 		else {
             LSST.state.term.echo('A viewer with the name \'' + viewerID + '\' does not exist!');

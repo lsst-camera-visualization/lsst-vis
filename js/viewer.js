@@ -1,4 +1,5 @@
 
+LSST.extend('LSST.UI');
 
 // A struct containing data related to the update viewer commands.
 // - freq: The update viewer frequency
@@ -6,7 +7,7 @@
 // - newest_image: The url of the newest image returned by the rest server
 // - paused: true if the update_viewer timer is disabled, false otherwise
 // - timer_id: The id used by setinterval and clearinterval
-UV_Data = function() {
+LSST.UI.UV_Data = function() {
 	this.freq = 10000;
 	this.image_ts = 0;
 	this.newest_image = null;
@@ -15,7 +16,7 @@ UV_Data = function() {
 }
 
 // An object used for dispatching readouts from Firefly (such as read_mouse or area_select)
-function FFReadout(viewerID) {
+LSST.UI.FFReadout = function(viewerID) {
 	var callbacks = {};
 	var extConv = {
 		'AREA_SELECT' : 'SELECT_REGION',
@@ -96,12 +97,12 @@ function FFReadout(viewerID) {
 // - uv: A UV_Data object.
 // - readout: An FFReadout object.
 // - header: Store the header information of the image in the Viewer.
-function Viewer(id) {
-	this.container = createViewerSkeleton(id);
-	this.ffHandle = loadFirefly(id);
+LSST.UI.Viewer = function(options) {
+	this.html = jQuery(createViewerSkeleton(options.name));
+	this.ffHandle = loadFirefly(options.name);
 	this.image_url = null;
-	this.uv = new UV_Data();
-	this.readout = new FFReadout(id);
+	this.uv = new LSST.UI.UV_Data();
+	this.readout = new LSST.UI.FFReadout(options.name);
 
 	this.header = null;
 	this.show_boundary = false;
@@ -111,13 +112,43 @@ function Viewer(id) {
 	this.uv.timer_id =
 		setInterval(
 			function() {
-				cmds.uv_update( { 'viewer_id' : id } );
+				cmds.uv_update( { 'viewer_id' : options.name } );
 			},
 			this.uv.freq
 		);
+		
+	
+	options.draggable = {
+		cancel : '.viewer-view',
+	};
+	
+	var w = this.html.css('width'); var h = this.html.css('height');
+	this.html.css('min-height', h);
+	options.resizable = {
+		handles : 'se',
+		alsoResize : this.html.children('viewer-view'),
+		minWidth : w,
+		minHeight : h
+	}
+	
+	// Init from UIElement
+	LSST.UI.UIElement.prototype._init.call(this, options);
 }
 
+// Inherit from LSST.UI.UIElement
+LSST.inherits(LSST.UI.Viewer, LSST.UI.UIElement);
 
+
+// Draws regions on the viewer.
+// @param regions - An array containing the ds9 regions to draw
+LSST.UI.Viewer.prototype.drawRegions = function(regions) {
+	
+}
+
+// Clears the image the viewer from any markings
+LSST.UI.Viewer.prototype.clear = function() {
+	
+}
 
 
 // Called when the user selects a region in a viewer.

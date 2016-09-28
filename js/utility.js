@@ -103,8 +103,8 @@ function region_to_boxtext(region) {
 
 	switch (parsed.type) {
 		case 'rect':
-			var first = new BoxText('(x1, y1)', '(' + parsed.value.x1 + ',' + parsed.value.y1 + ')', false);
-			var second = new BoxText('(x2, y2)', '(' + parsed.value.x2 + ',' + parsed.value.y2 + ')', false);
+			var first = new LSST.UI.BoxText('(x1, y1)', '(' + parsed.value.x1 + ',' + parsed.value.y1 + ')', false);
+			var second = new LSST.UI.BoxText('(x2, y2)', '(' + parsed.value.x2 + ',' + parsed.value.y2 + ')', false);
 			return [ first, ',',  second ];
 
 		case 'circ':

@@ -1,4 +1,5 @@
 
+LSST.extend('LSST.UI');
 
 // Represents a way to display text in a box.
 // In the box, it will be shown as (label: value) or label: value,
@@ -7,7 +8,7 @@
 // @param label - The significance of the value parameter
 // @param value - The datum
 // @param bWrap - Should the text be wrapped in parenthesis?
-function BoxText(label, value, bWrap = true) {
+LSST.UI.BoxText = function(label, value, bWrap = true) {
 	this.label = label;
 	this.value = value;
 	this.bWrap = bWrap;
@@ -30,7 +31,7 @@ function BoxText(label, value, bWrap = true) {
 
 // Represents the UI of a box (html, text).
 // @param boxName - The id of the box
-function BoxUI(boxName) {
+LSST.UI.BoxUI = function(boxName) {
 
 	// Creates the html of the box.
 	var createDOMSkeleton = function() {
@@ -129,33 +130,33 @@ function BoxUI(boxName) {
 	
 	// Destroys the html
 	this.destroy = function() {
-		this.dom.remove();
+		this.html.remove();
 	}
 	
 	// Minimizes the box. Shows only the title bar.
 	this.minimize = function() {		
 		// Title bar
-		var titleBar = this.dom.children('.box-title');
+		var titleBar = this.html.children('.box-title');
 		titleBar.removeClass('box-title');
 		titleBar.addClass('box-title-mini');
 		
-		this.dom.css('min-width', '200px');
-		this.dom.css('min-height', '0px');
+		this.html.css('min-width', '200px');
+		this.html.css('min-height', '0px');
 		
-		this.dom.children('.box-body').css('display', 'none');
+		this.html.children('.box-body').css('display', 'none');
 	}
 	
 	// Restores the box.
 	this.maximize = function() {		
 		// Title bar
-		var titleBar = this.dom.children('.box-title-mini');
+		var titleBar = this.html.children('.box-title-mini');
 		titleBar.removeClass('box-title-mini');
 		titleBar.addClass('box-title');
 		
-		this.dom.css('min-width', '');
-		this.dom.css('min-height', '');
+		this.html.css('min-width', '');
+		this.html.css('min-height', '');
 		
-		this.dom.children('.box-body').css('display', 'block');
+		this.html.children('.box-body').css('display', 'block');
 	}
 	
 	
@@ -168,25 +169,10 @@ function BoxUI(boxName) {
 	/////////////////////////////////////////////////////////
 	
 	// A handle to the html of the box
-	this.dom = createDOMSkeleton();
+	this.html = createDOMSkeleton();
 	// A handle to the body of the box
-	var body = this.dom.children('.box-body');
-
-	// Draggable settings
-	this.dom.draggable( {
-		distance : 10,
-		handle : '.box-title',
-		// When the user starts dragging the box, bring it into focus
-		drag : onChangeFocus
-	});
-	this.dom.on('click', onChangeFocus);
-	
-	// Resizable settings
-	this.dom.resizable( {
-		handles : 'se'
-	} );
+	var body = this.html.children('.box-body');
 }
-
 
 
 
@@ -194,115 +180,148 @@ function BoxUI(boxName) {
 
 // The main control for a box.
 // @param boxName - The id of the box
-function Box(boxName) {
-
+LSST.UI.Box = function(options) {
 	// Handles the UI elements of the box	
-	var boxUI = new BoxUI(boxName);
+	this._boxUI = new LSST.UI.BoxUI(options.name);
 	// A handle to the html of the box
-	this.dom = boxUI.dom;
+	this.html = this._boxUI.html;
 	// A handle to the body of the box
-	var body = this.dom.children('.box-body');
+	this._body = this.html.children('.box-body');
 
 	// Is the box minimized?
-	var isMini = false;
+	this._bMini = false;
 	
 	// The text array (untransformed) currently displayed in the box.
-	var text = null;
+	this._text = null;
 	
 	// Callbacks for when this.clear is called.
-	var clearCallbacks = [];
-	
-	// Sets the text in the box.
-	// @param textArray - An array of objects for displaying.
-	//						The possible types of objects are BoxText, string, or number.
-	//						A string element can also be a special type, wrapped with colons (:).
-	//							Possible special strings:
-	//								line
-	this.setText = function(textArray) {
-		text = textArray;
-		
-		boxUI.setText(textArray);
-	}
-	
-	// Adds a one-time callback for when this.clear is called.
-	// @param f - The callback function
-	this.onClear = function(f) {
-		clearCallbacks.push(f);
-	}
-	
-	// Calls all clear callbacks, then clears the text from the box.
-	this.clear = function() {
-		// Call clear callbacks
-		for (var i = 0; i < clearCallbacks.length; i++) {
-			clearCallbacks[i]();
-		}
-		
-		// Clear the text
-		boxUI.clear();		
-		text = null;
-		
-		// Delete clear callbacks
-		clearCallbacks = [];
-	}
-	
-	// Destroys this box
-	this.destroy = function() {
-		this.clear();
-		boxUI.destroy();
-	}
-	
-	// Minimizes the box. Shows only the title bar.
-	this.minimize = function() {		
-		boxUI.minimize();
-		
-		isMini = true;
-	}
-	
-	// Restores the box from a minimized state.
-	this.maximize = function() {
-		boxUI.maximize();
-		
-		isMini = false;
-	}
-	
-	// Serializes this box.
-	// @return The serialized byte stream.
-	this.serialize = function() {
-		var stream = {
-			name : boxName,
-			bMini : isMini,
-			textArray : text
-		};
-		
-		return JSON.stringify(stream);
-	}
-	
-	// Deserializes a byte stream.
-	// @param s - A byte stream returned by this.serialize
-	this.deserialize = function(s) {
-		var data = JSON.parse(s);
-		
-		boxName = data.name;
-		isMini = data.bMini;
-		
-		this.setText(data.textArray);
-	}
+	this._clearCallbacks = [];
 	
 	
-	
-	
-	/////////////////////////////////////////////////////////
-	// INIT /////////////////////////////////////////////////
-	/////////////////////////////////////////////////////////
 	
 	// Appends this box the HTML body.
-	jQuery('body').append(this.dom);
+	jQuery('body').append(this.html);
+	
+	// Draggable settings
+	options.draggable = {
+		handle : '.box-title'
+	};
+	
+	// Resizable settings
+	options.resizable = {
+		handles : 'se'
+	};
+	
+	var toolbarDesc = [
+		new LSST_TB.ToolbarElement(
+			'close', 
+			{
+				onClick : cmds.delete_box,
+				parameters : { box_id : options.name },
+			}
+		),
+		new LSST_TB.ToolbarElement(
+			'mini',
+			 {
+				onClick : cmds.hide_box,
+				parameters : { box_id : options.name },
+			}
+		),
+	];
+	var toolbarOptions = {
+		// Only show toolbar when the user hovers over the box.
+		bShowOnHover : true,
+	};
+	options.toolbar = {
+		desc : toolbarDesc,
+		options : toolbarOptions
+	};
+	
+	// Init from UIElement
+	LSST.UI.UIElement.prototype._init.call(this, options);
 }
 
+// Inherit from LSST.UI.UIElement
+LSST.inherits(LSST.UI.Box, LSST.UI.UIElement);
 
+// Sets the text in the box.
+// @param textArray - An array of objects for displaying.
+//						The possible types of objects are BoxText, string, or number.
+//						A string element can also be a special type, wrapped with colons (:).
+//							Possible special strings:
+//								line
+LSST.UI.Box.prototype.setText = function(textArray) {
+	this._text = textArray;
+	
+	this._boxUI.setText(textArray);
+}
+	
+// Adds a one-time callback for when this.clear is called.
+// @param f - The callback function
+LSST.UI.Box.prototype.onClear = function(f) {
+	this._clearCallbacks.push(f);
+}
+	
+// Calls all clear callbacks, then clears the text from the box.
+LSST.UI.Box.prototype.clear = function() {
+	// Call clear callbacks
+	for (var i = 0; i < this._clearCallbacks.length; i++) {
+		this._clearCallbacks[i]();
+	}
+	
+	// Clear the text
+	this._boxUI.clear();		
+	this._text = null;
+	
+	// Delete clear callbacks
+	this._clearCallbacks = [];
+}
+	
+// Destroys this box
+LSST.UI.Box.prototype.destroy = function() {
+	this.clear();
+	this._boxUI.destroy();
+}
+	
+// Minimizes the box. Shows only the title bar.
+LSST.UI.Box.prototype.minimize = function() {		
+	this._boxUI.minimize();
+	
+	this._bMini = true;
+}
+	
+// Restores the box from a minimized state.
+LSST.UI.Box.prototype.maximize = function() {
+	this._boxUI.maximize();
+	
+	this._bMini = false;
+}
 
+// Serializes this box.
+// @param box - The box to serialize.
+// @return The serialized byte stream.
+LSST.UI.Box.Serialize = function(box) {
+	var stream = {
+		name : box._name,
+		bMini : box._bMini,
+		textArray : box._text,
+	};
+	
+	return JSON.stringify(stream);
+}
 
-
+// Deserializes a byte stream.
+// @param s - A byte stream returned by this.serialize
+// @return A new box described by the byte stream
+LSST.UI.Box.Deserialize = function(s) {
+	var data = JSON.parse(s);
+	var box = new LSST.UI.Box(data.name);
+	
+	if (data.bMini)
+		box.minimize();
+	
+	box.setText(data.textArray);
+}
 
 
 

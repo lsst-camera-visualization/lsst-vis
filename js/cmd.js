@@ -125,10 +125,14 @@ jQuery(document).ready(function() {
 
 
 
-var executeBackendFunction = function(nameOfTask, params, onFulfilled, onRejected) {
-
+var executeBackendFunction = function(nameOfTask, viewer, params, onFulfilled, onRejected) {
+	if (nameOfTask=='boundary'){
+		params.image_url = viewer.original_image_url;
+	}else{
+		params.image_url = viewer.image_url;
+	}
+	console.log(params);
 	firefly.getJsonFromTask( 'python', nameOfTask, params ).then(onFulfilled, onRejected);
-
 }
 
 
@@ -178,7 +182,7 @@ cmds = {
 
 			// Call average_pixel python task
 			var params = parse_region(region);
-			executeBackendFunction('average', params,
+			executeBackendFunction('average', viewer, params,
 				function(data) {
 					boxText = [
 						'average_pixel',
@@ -343,14 +347,14 @@ cmds = {
 
 			read_hotpixels(
 				{
-					filename: "default",
 					threshold: threshold,
 					"region": region
 				},
 				function(regions) {
 					imageViewer[regionID] = regions;
 					firefly.overlayRegionData(regions, regionID, 'hotpixel', viewerID);
-				}
+				},
+				imageViewer
 			);
 
 		}
@@ -387,21 +391,21 @@ cmds = {
 		console.log(LSST.state.viewers.get(viewerID));
 		return null;
 	},
-	
+
 	maximize_terminal : function(cmd_args) {
 		LSST.state.term.maximize();
 		jQuery('#cmd_container').outerHeight(LSST.state.term.outerHeight(true));
-		
+
 		var toolbar = jQuery('#cmd_container').children('.LSST_TB-toolbar');
 		var max = jQuery(toolbar.children()[1]);
 		max.attr('src', 'js/toolbar/images/minimize_40x40.png');
 		max.data('onClick', cmds.minimize_terminal);
 	},
-	
+
 	minimize_terminal : function(cmd_args) {
 		LSST.state.term.minimize();
 		jQuery('#cmd_container').outerHeight(LSST.state.term.outerHeight(true));
-		
+
 		var toolbar = jQuery('#cmd_container').children('.LSST_TB-toolbar');
 		var mini = jQuery(toolbar.children()[1]);
 		mini.attr('src', 'js/toolbar/images/maximize_40x40.png');
@@ -441,11 +445,14 @@ cmds = {
                     firefly.overlayRegionData(viewer.header["regions_ds9"], region_id, 'Boundary', plotid);
                     viewer.show_boundary = true;
                 }else{
-                    read_boundary(plotid, function(regions) { // Asynchronous
-                        viewer.header = regions;
-                        firefly.overlayRegionData(viewer.header["regions_ds9"], region_id, 'Boundary', plotid);
-                        viewer.show_boundary = true;
-                    })
+                    read_boundary(plotid,
+						function(regions) { // Asynchronous
+	                        viewer.header = regions;
+	                        firefly.overlayRegionData(viewer.header["regions_ds9"], region_id, 'Boundary', plotid);
+	                        viewer.show_boundary = true;
+						},
+						viewer
+					);
                 }
             }
 
@@ -523,11 +530,13 @@ cmds = {
                     firefly.overlayRegionData(viewer.header["regions_ds9"], region_id, 'Boundary', plotid);
                     viewer.show_boundary = true;
                 }else{
-                    read_boundary(plotid, function(regions) { // Asynchronous
-                        viewer.header = regions;
-                        firefly.overlayRegionData(viewer.header["regions_ds9"], region_id, 'Boundary', plotid);
-                        viewer.show_boundary = true;
-                    })
+                    read_boundary({},
+						function(regions) { // Asynchronous
+	                        viewer.header = regions;
+	                        firefly.overlayRegionData(viewer.header["regions_ds9"], region_id, 'Boundary', plotid);
+	                        viewer.show_boundary = true;
+						},
+						viewer);
                 }
             }else{
                 LSST.state.term.echo("Boundary of this viewer is already drawn.")

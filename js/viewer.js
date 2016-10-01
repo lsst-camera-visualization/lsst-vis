@@ -238,3 +238,23 @@ var createViewerSkeleton = function(viewerID) {
 
 	return container;
 }
+
+// A function that loads Firefly viewer.
+function loadFirefly(viewId, url){
+    var primaryViewer = firefly.makeImageViewer(viewId);
+    primaryViewer.plot({
+        "URL" : url,
+        "Title" : "Some WISE image",
+        "ZoomType" : "FULL_SCREEN"
+    });
+    return primaryViewer;
+}
+
+// A function that gets the url of the image to be loaded.
+function getNewImageURL(){
+	return document.location.origin+"/static/images/imageE2V_trimmed.fits";
+}
+
+function getNewOriginalImageURL(){
+	return document.location.origin+"/static/images/imageE2V.fits";
+}

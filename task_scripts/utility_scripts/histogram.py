@@ -25,7 +25,10 @@ def get_json(hist):
 		values.append(_bin)
 
 	ret = {"title" : filename, "type" : "Discrete Bar", "data" : {"values" : values}}
-	json.dump(ret, open('../../../frontend/data.json', "w"), indent=4)
+	file = open('../../../frontend/data.json', "w")
+	json.dump(ret, file, indent=4)
+	file.close()
+
 #	return json.dumps(ret, sort_keys = False)
 
 
@@ -36,5 +39,4 @@ def histogram(filename, boundary):
 if __name__ == "__main__":
     filename = "/home/yutong/firefly/backend/images/imageE2V.fits"
     boundary = [[1, 20], [2, 20]]
-    header = histogram(filename, boundary)
-    print header
+    histogram(filename, boundary)

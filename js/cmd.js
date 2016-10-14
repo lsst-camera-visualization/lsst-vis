@@ -254,11 +254,11 @@ cmds = {
 
 		if (!LSST.state.viewers.exists(viewerID)) {
 			var viewer = new LSST.UI.Viewer( { name : viewerID } );
-
-			//viewer.readout.register('SELECT_REGION', selectRegion);
-
 			LSST.state.viewers.add(viewerID, viewer);
-
+			
+			var uvControl = new LSST.UI.UV_Control(viewer, "http://172.17.0.1:8099/vis/checkImage");
+			LSST.state.uvControls.add(viewerID, uvControl);
+			
 			cmds.show_viewer( { 'viewer_id' : viewerID } );
 		}
 		else {
@@ -569,31 +569,11 @@ cmds = {
 		}
 	},
 
-	uv_freq: function(cmd_args){
-
+	uv_freq: function(cmd_args) {
 	    var viewerID = cmd_args['viewer_id'];
 
 	    if (LSST.state.viewers.exists(viewerID)) {
-			var viewer = LSST.state.viewers.get(viewerID);
-
-			var timeAsMilli = cmd_args['time_in_millis'];
-			// 5000 milliseconds is the lower bound
-			timeAsMilli = Math.min(timeAsMilli, 5000);
-
-			// Stop timer for viewer
-			clearInterval(viewer.uv.timer_id);
-
-			// Set new update frequency
-			viewer.uv.freq = timeAsMilli;
-
-			// Reset timer
-			viewer.uv.timer_id =
-				setInterval(
-				    function() {
-				    	cmds.uv_update( { 'viewer_id' : viewerID } )
-				    },
-				    viewer.uv.freq
-				);
+	    	LSST.state.uvControls.get(viewerID).setFrequency( cmd_args['time_in_millis'] );
 		}
 		else {
             LSST.state.term.echo('A viewer with the name \'' + viewerID + '\' does not exist!');
@@ -604,36 +584,7 @@ cmds = {
 		var viewerID = cmd_args['viewer_id'];
 
 		if (LSST.state.viewers.exists(viewerID)) {
-			var viewer = LSST.state.viewers.get(viewerID);
-
-		    if (viewer.show_boundary){
-		        viewer.show_boundary = false;
-		        firefly.removeRegionData(viewer.header["regions_ds9"], region_id);
-		    }
-		    viewer.header = null;
-
-			var newImage = viewer.uv.newest_image;
-
-			if (newImage) {
-
-				cmds.load_image( { 'viewer_id' : viewerID, 'uri' : newImage } );
-
-				/*var newPlot = {
-					url: newImage,
-					Title: viewerID,
-					ZoomType: 'TO_WIDTH'
-				};
-				viewer.ffHandle.plot(newPlot);
-
-				viewer.image_url = newImage;*/
-				viewer.uv.newest_image = null;
-
-				// Change button status
-				var id = viewerID + '---update_now';
-				var button = jQuery('input[data-buttonID="' + id + '"]');
-				button.prop('disabled', true);
-				button.attr('value', 'There are no new images.');
-			}
+			LSST.state.uvControls.get(viewerID).loadNewImage();
 		}
 		else {
             LSST.state.term.echo('A viewer with the name \'' + viewerID + '\' does not exist!');
@@ -644,13 +595,7 @@ cmds = {
 	    var viewerID = cmd_args['viewer_id'];
 
 	    if (LSST.state.viewers.exists(viewerID)) {
-			var viewer = LSST.state.viewers.get(viewerID);
-
-			var id = viewerID + '---pause_resume';
-			var button = jQuery('input[data-buttonID="' + id + '"]');
-			button.attr('value', 'Resume');
-
-			viewer.uv.paused = true;
+			LSST.state.uvControls.get(viewerID).pause();
 		}
 		else {
             LSST.state.term.echo('A viewer with the name \'' + viewerID + '\' does not exist!');
@@ -661,14 +606,7 @@ cmds = {
 	    var viewerID = cmd_args['viewer_id'];
 
 	    if (LSST.state.viewers.exists(viewerID)) {
-			var viewer = LSST.state.viewers.get(viewerID);
-
-			var id = viewerID + '---pause_resume';
-			var button = jQuery('input[data-buttonID="' + id + '"]');
-			button.attr('value', 'Pause');
-
-			viewer.uv.paused = false;
-			cmds.uv_load_new( { 'viewer_id' : viewerID } );
+			LSST.state.uvControls.get(viewerID).resume();
 		}
 		else {
             LSST.state.term.echo('A viewer with the name \'' + viewerID + '\' does not exist!');
@@ -679,40 +617,7 @@ cmds = {
 	    var viewerID = cmd_args['viewer_id'];
 
 	    if (LSST.state.viewers.exists(viewerID)) {
-			var viewer = LSST.state.viewers.get(viewerID);
-
-			var CHECK_IMAGE_PORT = "8099";
-		    var CHECK_IMAGE_URL = "http://172.17.0.1:" + CHECK_IMAGE_PORT + "/vis/checkImage";
-		    var params = {
-		    	'since': viewer.uv.image_ts
-		   	};
-
-		    jQuery.getJSON(CHECK_IMAGE_URL, params, function(data) {
-
-		        if (data) {
-		            // There's a new image.
-		            viewer.uv.image_ts = data.timestamp;
-					viewer.uv.newest_image = data.uri;
-
-					if (!viewer.uv.paused) {
-						cmds.uv_load_new( { 'viewer_id' : viewerID } );
-					}
-					else {
-						var id = viewerID + '---update_now';
-						var button = jQuery('input[data-buttonID="' + id + '"]');
-						button.prop('disabled', false);
-						button.attr('value', 'There is a new image available. Click to load.');
-					}
-				}
-
-				if (viewer.uv.newest_image == null) {
-					// Displayed when there is no new image, or the new image is done loading.
-					var id = viewerID + '---update_now';
-					var button = jQuery('input[data-buttonID="' + id + '"]');
-					button.prop('disabled', true);
-					button.attr('value', 'There are no new images.');
-				}
-		    });
+			LSST.state.uvControls.get(viewerID).update();
         }
 		else {
             LSST.state.term.echo('A viewer with the name \'' + viewerID + '\' does not exist!');

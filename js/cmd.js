@@ -148,7 +148,7 @@ cmds = {
 		if (boxExists && viewerExists) {
 
 			// The region to do the calculation over
-			var region = cmd_args['region'];
+			var regionParam = cmd_args['region'];
 
 			// A handle to the viewer
 			var viewer = LSST.state.viewers.get(viewerID);
@@ -161,19 +161,10 @@ cmds = {
 			cmds.clear_box( { 'box_id' : boxID } );
 
 			// Clear the viewer
-			var plotID = viewerID;
-			var regionID = plotID + '-boundary';
-			if (imageViewer[regionID]) {
-				firefly.removeRegionData(imageViewer[regionID], regionID);
-				imageViewer[regionID] = undefined;
-			}
-
-			// Show region on image viewer
-			var imageRegion = region_to_overlay(region);
-			imageViewer[regionID] = [ imageRegion ];
-			if (firefly.overlayRegionData) {
-				firefly.overlayRegionData( [ imageRegion ], regionID, "Boundary", plotID);
-			}
+			viewer.clear();
+			
+			var region = LSST.UI.Region.Parse(regionParam);
+			viewer.drawRegions( [ region.toOverlay() ], 'Average Pixel');
 
 			var boxText = [
 				'Processing average_pixel...'
@@ -181,7 +172,7 @@ cmds = {
 			box.setText(boxText);
 
 			// Call average_pixel python task
-			var params = parse_region(region);
+			var params = region.toBackendFormat();
 			executeBackendFunction('average', viewer, params,
 				function(data) {
 					boxText = [
@@ -189,7 +180,7 @@ cmds = {
 						'Viewer: ' + viewerID,
 						[
 							'Region:'
-						].concat(region_to_boxtext(region)),
+						].concat(region.toBoxText()),
 						':line-dashed:',
 						new LSST.UI.BoxText('Average Pixel Value', data['result'])
 					];
@@ -264,7 +255,7 @@ cmds = {
 		if (!LSST.state.viewers.exists(viewerID)) {
 			var viewer = new LSST.UI.Viewer( { name : viewerID } );
 
-			viewer.readout.register('SELECT_REGION', selectRegion);
+			//viewer.readout.register('SELECT_REGION', selectRegion);
 
 			LSST.state.viewers.add(viewerID, viewer);
 

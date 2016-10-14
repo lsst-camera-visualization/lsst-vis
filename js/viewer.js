@@ -99,14 +99,22 @@ LSST.UI.FFReadout = function(viewerID) {
 // - header: Store the header information of the image in the Viewer.
 LSST.UI.Viewer = function(options) {
 	this.html = jQuery(createViewerSkeleton(options.name));
-	this.ffHandle = loadFirefly(options.name);
 	this.image_url = null;
 	this.uv = new LSST.UI.UV_Data();
-	this.readout = new LSST.UI.FFReadout(options.name);
+	//this.readout = new LSST.UI.FFReadout(options.name);
 
 	this.header = null;
 	this.show_boundary = false;
 	this.overscan = false;
+	this._regionLayers = []
+	
+	firefly.showImage(options.name, {
+		plotId : options.name,
+		URL : 'http://web.ipac.caltech.edu/staff/roby/demo/wise-m51-band1.fits',
+		Title : options.name,
+		ZoomType : 'TO_WIDTH',
+		ZoomToWidth : '100%'
+	});
 
 	// Call uv_update every uv.freq milliseconds
 	this.uv.timer_id =
@@ -141,13 +149,34 @@ LSST.inherits(LSST.UI.Viewer, LSST.UI.UIElement);
 
 // Draws regions on the viewer.
 // @param regions - An array containing the ds9 regions to draw
-LSST.UI.Viewer.prototype.drawRegions = function(regions) {
+// @param layerName - The name describing the layer for these regions
+LSST.UI.Viewer.prototype.drawRegions = function(regions, layerName) {
+	for (var i = 0; i < regions.length; i++) {
+		regions[i] = regions[i] + ' # color=blue';
+	}
 	
+	if (this._regionLayers.indexOf(layerName) == -1)
+		this._regionLayers.push(layerName)
+	
+	firefly.action.dispatchCreateRegionLayer(layerName, layerName, null, regions, [ this.name ]);
 }
 
 // Clears the image the viewer from any markings
 LSST.UI.Viewer.prototype.clear = function() {
+	for (var i = 0; i < this._regionLayers.length; i++)
+		firefly.action.dispatchDeleteRegionLayer(this._regionLayers[i], [ this.name ]);
+		
+	this._regionLayers = [];
+}
+
+// Clears a layer of regions on this viewer
+// @param layerName - The layer to clear
+LSST.UI.Viewer.prototype.clearLayer = function(layerName) {
+	firefly.action.dispatchDeleteRegionLayer(layerName, [ this.name ]);
 	
+	var idx = this._regionLayers.indexOf(layerName);
+	if (idx != -1)
+		this._regionLayers.splice(idx, 1)	
 }
 
 

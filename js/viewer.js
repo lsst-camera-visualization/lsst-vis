@@ -1,6 +1,16 @@
 
 LSST.extend('LSST.UI');
 
+
+
+/*
+ \ \    / (_)                       
+  \ \  / / _  _____      _____ _ __ 
+   \ \/ / | |/ _ \ \ /\ / / _ \ '__|
+    \  /  | |  __/\ V  V /  __/ |   
+     \/   |_|\___| \_/\_/ \___|_|                                     
+*/
+
 // A viewer contains the following properties:
 // - ffHandle: A handle to the firefly viewer.
 // - image_url: The url of the image the viewer is currently displaying
@@ -35,6 +45,7 @@ LSST.UI.Viewer = function(options) {
 	LSST.UI.UIElement.prototype._init.call(this, options);		
 	
 	this.loadImage('http://web.ipac.caltech.edu/staff/roby/demo/wise-m51-band1.fits');
+	firefly.util.addActionListener(firefly.action.type.READOUT_DATA, this._cursorRead.bind(this));
 }
 
 // Inherit from LSST.UI.UIElement
@@ -91,6 +102,29 @@ LSST.UI.Viewer.prototype.loadImage = function(image) {
 	this.image = image;
 }
 
+// Adds a context extension to the viewer.
+// @param [string] title - The title of this extension
+// @param [string] type - The extension type, see firefly extension types
+// @param [function] f - The function to execute for this extension
+LSST.UI.Viewer.prototype.addExtension = function(title, type, f) {
+	var ext = {
+		id : title,
+		plotId : this.name,
+		title : title,
+		extType : type,
+		callback : f
+	};
+	
+	firefly.util.image.extensionAdd(ext);
+}
+
+LSST.UI.Viewer.prototype._cursorRead = function(action) {
+	var imgPt = action.payload.readoutItems.imagePt.value;
+	this.cursorPoint = {
+		x : imgPt.x,
+		y : imgPt.y
+	}
+}
 
 
 
@@ -98,8 +132,16 @@ LSST.UI.Viewer.prototype.loadImage = function(image) {
 
 
 
-
-
+/*
+  _    ___      __   _____            _             _ 
+ | |  | \ \    / /  / ____|          | |           | |
+ | |  | |\ \  / /  | |     ___  _ __ | |_ _ __ ___ | |
+ | |  | | \ \/ /   | |    / _ \| '_ \| __| '__/ _ \| |
+ | |__| |  \  /    | |___| (_) | | | | |_| | | (_) | |
+  \____/    \/      \_____\___/|_| |_|\__|_|  \___/|_|
+                                                      
+                                                      
+*/
 
 
 // A control class to handle updating a viewer.
@@ -213,6 +255,18 @@ LSST.UI.UV_Control.prototype.update = function() {
 
 
 
+
+
+/*
+  _   _               _       _    _           _       _   _             
+ | \ | |             | |     | |  | |         | |     | | (_)            
+ |  \| | ___  ___  __| |___  | |  | |_ __   __| | __ _| |_ _ _ __   __ _ 
+ | . ` |/ _ \/ _ \/ _` / __| | |  | | '_ \ / _` |/ _` | __| | '_ \ / _` |
+ | |\  |  __/  __/ (_| \__ \ | |__| | |_) | (_| | (_| | |_| | | | | (_| |
+ |_| \_|\___|\___|\__,_|___/  \____/| .__/ \__,_|\__,_|\__|_|_| |_|\__, |
+                                    | |                             __/ |
+                                    |_|                            |___/ 
+*/
 
 
 

@@ -1,4 +1,20 @@
 
+/*
+  _______    _     _         ____   __    _____            _             _       
+ |__   __|  | |   | |       / __ \ / _|  / ____|          | |           | |      
+    | | __ _| |__ | | ___  | |  | | |_  | |     ___  _ __ | |_ ___ _ __ | |_ ___ 
+    | |/ _` | '_ \| |/ _ \ | |  | |  _| | |    / _ \| '_ \| __/ _ \ '_ \| __/ __|
+    | | (_| | |_) | |  __/ | |__| | |   | |___| (_) | | | | ||  __/ | | | |_\__ \
+    |_|\__,_|_.__/|_|\___|  \____/|_|    \_____\___/|_| |_|\__\___|_| |_|\__|___/
+                                                                                 
+                                                                                 
+1. Init of terminal
+2. Commands, as executed by the terminal
+3. Commands, as executed by the viewer toolbar
+
+*/
+
+
 jQuery(document).ready(function() {
 
     var docLink = 'https://github.com/lsst-camera-visualization/frontend/wiki';
@@ -255,6 +271,8 @@ cmds = {
 		if (!LSST.state.viewers.exists(viewerID)) {
 			var viewer = new LSST.UI.Viewer( { name : viewerID } );
 			LSST.state.viewers.add(viewerID, viewer);
+			
+			viewer.addExtension('Average Pixel', 'AREA_SELECT', viewerCommands.average_pixel );
 			
 			var uvControl = new LSST.UI.UV_Control(viewer, "http://172.17.0.1:8099/vis/checkImage");
 			LSST.state.uvControls.add(viewerID, uvControl);
@@ -624,3 +642,31 @@ cmds = {
 		}
 	}
 }
+
+
+
+
+
+
+
+
+/*
+ __      ___                           _____                                          _     
+ \ \    / (_)                         / ____|                                        | |    
+  \ \  / / _  _____      _____ _ __  | |     ___  _ __ ___  _ __ ___   __ _ _ __   __| |___ 
+   \ \/ / | |/ _ \ \ /\ / / _ \ '__| | |    / _ \| '_ ` _ \| '_ ` _ \ / _` | '_ \ / _` / __|
+    \  /  | |  __/\ V  V /  __/ |    | |___| (_) | | | | | | | | | | | (_| | | | | (_| \__ \
+     \/   |_|\___| \_/\_/ \___|_|     \_____\___/|_| |_| |_|_| |_| |_|\__,_|_| |_|\__,_|___/
+*/
+
+var viewerCommands = {
+	average_pixel : function(data) {
+		var viewerID = data.plotId;
+		LSST.state.viewers.get(viewerID);
+		
+		console.log(data);
+	}
+}
+
+
+

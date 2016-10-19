@@ -44,8 +44,8 @@ LSST.UI.FFReadout = function(viewerID) {
 	};
 
 	var createExt = function(ext, name) {
-		var actions = firefly.appFlux.getActions('ExternalAccessActions');
-		actions.extensionAdd(ext);
+		// var actions = firefly.appFlux.getActions('ExternalAccessActions');
+		firefly.util.image.extensionAdd(ext);
 		callbacks[name] = [];
 	}
 
@@ -59,7 +59,7 @@ LSST.UI.FFReadout = function(viewerID) {
 		callback : dispatch
 	};
 	createExt(areaSelectionExt, 'SELECT_REGION');
-	
+
 	// Calculate average_pixel over a region
 	var averagePixelExt = {
 		id : 'AVERAGE_PIXEL',
@@ -70,7 +70,7 @@ LSST.UI.FFReadout = function(viewerID) {
 		callback : dispatch
 	};
 	createExt(averagePixelExt, 'AVERAGE_PIXEL');
-	
+
 	// Find the hot pixels over a region
 	var averagePixelExt = {
 		id : 'HOT_PIXEL',
@@ -99,8 +99,9 @@ LSST.UI.FFReadout = function(viewerID) {
 // - header: Store the header information of the image in the Viewer.
 LSST.UI.Viewer = function(options) {
 	this.html = jQuery(createViewerSkeleton(options.name));
-	this.ffHandle = loadFirefly(options.name);
-	this.image_url = null;
+	this.image_url = getNewImageURL();
+	this.original_image_url = getNewOriginalImageURL();
+	this.ffHandle = loadFirefly(options.name, this.image_url);
 	this.uv = new LSST.UI.UV_Data();
 	this.readout = new LSST.UI.FFReadout(options.name);
 
@@ -116,12 +117,12 @@ LSST.UI.Viewer = function(options) {
 			},
 			this.uv.freq
 		);
-		
-	
+
+
 	options.draggable = {
 		cancel : '.viewer-view',
 	};
-	
+
 	var w = this.html.css('width'); var h = this.html.css('height');
 	this.html.css('min-height', h);
 	options.resizable = {
@@ -130,7 +131,7 @@ LSST.UI.Viewer = function(options) {
 		minWidth : w,
 		minHeight : h
 	}
-	
+
 	// Init from UIElement
 	LSST.UI.UIElement.prototype._init.call(this, options);
 }
@@ -142,18 +143,18 @@ LSST.inherits(LSST.UI.Viewer, LSST.UI.UIElement);
 // Draws regions on the viewer.
 // @param regions - An array containing the ds9 regions to draw
 LSST.UI.Viewer.prototype.drawRegions = function(regions) {
-	
+
 }
 
 // Clears the image the viewer from any markings
 LSST.UI.Viewer.prototype.clear = function() {
-	
+
 }
 
 
 // Called when the user selects a region in a viewer.
 var selectRegion = function(data) {
-	
+
 	var region;
     if (data.type == 'AREA_SELECT') {
         var x1 = Math.trunc(data.ipt0.x);
@@ -162,7 +163,7 @@ var selectRegion = function(data) {
         var y2 = Math.trunc(data.ipt1.y);
         region = [ 'rect', x1, y1, x2, y2 ];
     }
-    
+
     if (data.id == 'SELECT_REGION') {
    		var regionAsString = region_to_string(region);
    		LSST.state.term.setVariable('selected', '(' + regionAsString + ')');

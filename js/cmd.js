@@ -231,7 +231,7 @@ cmds = {
 			LSST.state.term.echo('A box with the name \'' + boxID + '\' does not exist!');
 		}
 	},
-	
+
 	clear_viewer : function(cmd_args) {
 		var viewerID = cmd_args['viewer_id'];
 
@@ -248,7 +248,7 @@ cmds = {
 		var boxID = cmd_args['box_id'];
 
 		if (!LSST.state.boxes.exists(boxID)) {
-			var box = new LSST.UI.Box( { name : boxID } );			
+			var box = new LSST.UI.Box( { name : boxID } );
 			LSST.state.boxes.add(boxID, box);
 
 			cmds.show_box( { 'box_id' : boxID } );
@@ -297,7 +297,8 @@ cmds = {
         if (viewer){
             if (viewer.show_boundary){
                 viewer.show_boundary = false;
-                firefly.removeRegionData(viewer.header["regions_ds9"], region_id);
+                firefly.action.dispatchDeleteRegionLayer(region_id, plotid)
+                // firefly.removeRegionData(viewer.header["regions_ds9"], region_id);
                 LSST.state.term.echo("Boundary Removed");
             }else{
                 LSST.state.term.echo("The boundary has not been drawn yet.");
@@ -527,13 +528,13 @@ cmds = {
         if (viewer){
             if (!(viewer.show_boundary)){
                 if (viewer.header){
-                    firefly.overlayRegionData(viewer.header["regions_ds9"], region_id, 'Boundary', plotid);
+                    firefly.action.dispatchCreateRegionLayer(region_id, region_id, null, viewer.header["regions_ds9"], plotid);
                     viewer.show_boundary = true;
                 }else{
                     read_boundary({},
 						function(regions) { // Asynchronous
 	                        viewer.header = regions;
-	                        firefly.overlayRegionData(viewer.header["regions_ds9"], region_id, 'Boundary', plotid);
+	                        firefly.action.dispatchCreateRegionLayer(region_id, region_id, null, viewer.header["regions_ds9"], plotid);
 	                        viewer.show_boundary = true;
 						},
 						viewer);

@@ -162,18 +162,16 @@ cmds = {
 
 			// Clear the viewer
 			var plotID = viewerID;
-			var regionID = plotID + '-boundary';
+			var regionID = plotID + '-average_pixel';
 			if (imageViewer[regionID]) {
-				firefly.removeRegionData(imageViewer[regionID], regionID);
+                firefly.action.dispatchDeleteRegionLayer(regionID, plotID);
 				imageViewer[regionID] = undefined;
 			}
 
 			// Show region on image viewer
 			var imageRegion = region_to_overlay(region);
 			imageViewer[regionID] = [ imageRegion ];
-			if (firefly.overlayRegionData) {
-				firefly.overlayRegionData( [ imageRegion ], regionID, "Boundary", plotID);
-			}
+            firefly.action.dispatchCreateRegionLayer(regionID, regionID, null, [imageRegion], plotID);
 
 			var boxText = [
 				'Processing average_pixel...'
@@ -297,8 +295,7 @@ cmds = {
         if (viewer){
             if (viewer.show_boundary){
                 viewer.show_boundary = false;
-                firefly.action.dispatchDeleteRegionLayer(region_id, plotid)
-                // firefly.removeRegionData(viewer.header["regions_ds9"], region_id);
+                firefly.action.dispatchDeleteRegionLayer(region_id, plotid);
                 LSST.state.term.echo("Boundary Removed");
             }else{
                 LSST.state.term.echo("The boundary has not been drawn yet.");

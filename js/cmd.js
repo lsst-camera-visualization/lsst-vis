@@ -429,11 +429,11 @@ cmds = {
 
 			var boxText = [
 				'read_mouse',
-				new BoxText('Viewer', viewerID),
+				new LSST.UI.BoxText('Viewer', viewerID),
 				[
 					'Point: ',
-					new BoxText('X', ''),
-					new BoxText('Y', ''),
+					new LSST.UI.BoxText('X', ''),
+					new LSST.UI.BoxText('Y', ''),
 				],
                 'Processing boundary from back end...'
 			];
@@ -444,7 +444,7 @@ cmds = {
                     firefly.action.dispatchCreateRegionLayer(regionID, regionID, null, viewer.header["regions_ds9"], plotID);
                     viewer.show_boundary = true;
                 }else{
-                    read_boundary(plotID,
+                    read_boundary({},
 						function(regions) { // Asynchronous
 	                        viewer.header = regions;
 	                        firefly.action.dispatchCreateRegionLayer(regionID, regionID, null, viewer.header["regions_ds9"], plotID);
@@ -459,11 +459,11 @@ cmds = {
 
             boxText = [
                 'read_mouse',
-                new BoxText('Viewer', viewerID),
+                new LSST.UI.BoxText('Viewer', viewerID),
                 [
                     'Point: ',
-                    new BoxText('X', ''),
-                    new BoxText('Y', ''),
+                    new LSST.UI.BoxText('X', ''),
+                    new LSST.UI.BoxText('Y', ''),
                 ],
                 'Move the cursor in the viewer to get mouse readout...'
             ];

@@ -289,13 +289,13 @@ cmds = {
 
 	hide_boundary: function(cmd_args) {
 		var viewerID = cmd_args['viewer_id'];
-		var plotid = viewerID;
-		var region_id = plotid + '-boundary';
+		var plotID = viewerID;
+		var regionID = plotID + '-boundary';
         var viewer = LSST.state.viewers.get(viewerID);
         if (viewer){
             if (viewer.show_boundary){
                 viewer.show_boundary = false;
-                firefly.action.dispatchDeleteRegionLayer(region_id, plotid);
+                firefly.action.dispatchDeleteRegionLayer(regionID, plotID);
                 LSST.state.term.echo("Boundary Removed");
             }else{
                 LSST.state.term.echo("The boundary has not been drawn yet.");
@@ -338,8 +338,9 @@ cmds = {
 			var imageViewer = LSST.state.viewers.get(viewerID);
 
 			var regionID = viewerID + '-hotpixel';
+            var plotID = viewerID;
 			if (imageViewer[regionID]) {
-				firefly.removeRegionData(imageViewer[regionID], regionID);
+                firefly.action.dispatchDeleteRegionLayer(regionID, plotID);
 				imageViewer[regionID] = undefined;
 			}
 
@@ -350,7 +351,7 @@ cmds = {
 				},
 				function(regions) {
 					imageViewer[regionID] = regions;
-					firefly.overlayRegionData(regions, regionID, 'hotpixel', viewerID);
+                    firefly.action.dispatchCreateRegionLayer(regionID, regionID, null, regions, plotID);
 				},
 				imageViewer
 			);
@@ -420,8 +421,8 @@ cmds = {
 			var box = LSST.state.boxes.get(boxID);
 			var viewer = LSST.state.viewers.get(viewerID);
 
-            var plotid = viewerID;
-    		var region_id = plotid + '-boundary';
+            var plotID = viewerID;
+    		var regionID = plotID + '-boundary';
 
 			// Clear
 			cmds.clear_box( { 'box_id' : boxID } );
@@ -440,13 +441,13 @@ cmds = {
 
             if (!(viewer.show_boundary)){
                 if (viewer.header){
-                    firefly.overlayRegionData(viewer.header["regions_ds9"], region_id, 'Boundary', plotid);
+                    firefly.action.dispatchCreateRegionLayer(regionID, regionID, null, viewer.header["regions_ds9"], plotID);
                     viewer.show_boundary = true;
                 }else{
-                    read_boundary(plotid,
+                    read_boundary(plotID,
 						function(regions) { // Asynchronous
 	                        viewer.header = regions;
-	                        firefly.overlayRegionData(viewer.header["regions_ds9"], region_id, 'Boundary', plotid);
+	                        firefly.action.dispatchCreateRegionLayer(regionID, regionID, null, viewer.header["regions_ds9"], plotID);
 	                        viewer.show_boundary = true;
 						},
 						viewer
@@ -519,19 +520,19 @@ cmds = {
 
 	show_boundary: function(cmd_args) {
 		var viewerID = cmd_args['viewer_id'];
-		var plotid = viewerID; // ffview as a default
-		var region_id = plotid + '-boundary';
+		var plotID = viewerID; // ffview as a default
+		var regionID = plotID + '-boundary';
         var viewer = LSST.state.viewers.get(viewerID);
         if (viewer){
             if (!(viewer.show_boundary)){
                 if (viewer.header){
-                    firefly.action.dispatchCreateRegionLayer(region_id, region_id, null, viewer.header["regions_ds9"], plotid);
+                    firefly.action.dispatchCreateRegionLayer(regionID, regionID, null, viewer.header["regions_ds9"], plotID);
                     viewer.show_boundary = true;
                 }else{
                     read_boundary({},
 						function(regions) { // Asynchronous
 	                        viewer.header = regions;
-	                        firefly.action.dispatchCreateRegionLayer(region_id, region_id, null, viewer.header["regions_ds9"], plotid);
+	                        firefly.action.dispatchCreateRegionLayer(regionID, regionID, null, viewer.header["regions_ds9"], plotID);
 	                        viewer.show_boundary = true;
 						},
 						viewer);
@@ -615,7 +616,8 @@ cmds = {
 
 		    if (viewer.show_boundary){
 		        viewer.show_boundary = false;
-		        firefly.removeRegionData(viewer.header["regions_ds9"], region_id);
+                var regionID = plotID + '-boundary';
+                firefly.action.dispatchDeleteRegionLayer(regionID, plotID);
 		    }
 		    viewer.header = null;
 

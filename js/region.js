@@ -6,7 +6,7 @@ LSST.extend('LSST.UI')
 
 // Regions must support the following functions:
 //	- toString()
-//  - toOverlay()
+//  - toDS9()
 //	- toBoxText()
 //	- toBackendFormat()
 
@@ -25,7 +25,7 @@ LSST.UI.Rect.prototype.toString = function() {
 	return ['rect', this._data.x1, this._data.y1, this._data.x2, this._data.y2].join(' ');
 }
 
-LSST.UI.Rect.prototype.toOverlay = function() {
+LSST.UI.Rect.prototype.toDS9 = function() {
 	return ['box', this._data.x1, this._data.y1, this._data.x2 - this._data.x1, this._data.y2 - this._data.y1, 0].join(' ');
 }
 
@@ -59,7 +59,7 @@ LSST.UI.Circ.prototype.toString = function() {
 
 }
 
-LSST.UI.Circ.prototype.toOverlay = function() {
+LSST.UI.Circ.prototype.toDS9 = function() {
 
 }
 

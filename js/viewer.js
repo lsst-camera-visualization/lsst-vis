@@ -63,7 +63,7 @@ LSST.UI.Viewer.prototype.drawRegions = function(regions, layerName) {
 	if (this._regionLayers.indexOf(layerName) == -1)
 		this._regionLayers.push(layerName)
 	
-	firefly.action.dispatchCreateRegionLayer(layerName, layerName, null, regions, [ this.name ]);
+	firefly.action.dispatchCreateRegionLayer(layerName, layerName, null, regions, this.name);
 }
 
 // Clears the image the viewer from any markings

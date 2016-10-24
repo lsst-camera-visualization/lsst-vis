@@ -119,10 +119,12 @@ LSST.UI.Viewer.prototype.addExtension = function(title, type, f) {
 }
 
 LSST.UI.Viewer.prototype._cursorRead = function(action) {
-	var imgPt = action.payload.readoutItems.imagePt.value;
-	this.cursorPoint = {
-		x : imgPt.x,
-		y : imgPt.y
+	if (action.payload.readoutItems.imagePt) {
+		var imgPt = action.payload.readoutItems.imagePt.value;
+		this.cursorPoint = {
+			x : imgPt.x,
+			y : imgPt.y
+		}
 	}
 }
 

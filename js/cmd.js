@@ -225,7 +225,8 @@ cmds = {
 	},
 
 	chart: function(cmd_args) {
-		var chart = Chart.fromJSONFile(cmd_args.json_file);
+		var h = LSST.UI.Histogram.fromJSONFile(cmd_args.json_file);
+		h.setFocus(true);
 	},
 
 	clear_box: function(cmd_args) {

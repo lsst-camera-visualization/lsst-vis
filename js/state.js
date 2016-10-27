@@ -5,6 +5,9 @@ LSST.state = {
 
 	// A list of viewers
 	viewers : new LSST.UI.UIElementList(),
+	
+	// A list of uv controls
+	uvControls : new LSST.UI.UIElementList(),
 
 	// A handle to the terminal
 	term : null,

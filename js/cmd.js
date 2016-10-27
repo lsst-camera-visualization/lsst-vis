@@ -109,6 +109,11 @@ jQuery(document).ready(function() {
 			'description' : 'Pauses the automatic retrieval of new images from the Rest Server.',
 			'doc_link' : docLink + '#uv_resume'
 		},
+		'uv_start viewer_id' : {
+			callback : cmds.uv_resume,
+			description : 'Begins the update viewer cycle for a viewer.',
+			doc_link : docLink + '#uv_start'
+		},
 		'uv_update viewer_id' : {
 			'callback' : cmds.uv_update,
 			'description' : 'Updates a viewer immediately, bypassing the update_viewer_freq interval.',

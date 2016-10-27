@@ -239,7 +239,7 @@ cmds = {
 			LSST.state.term.echo('A box with the name \'' + boxID + '\' does not exist!');
 		}
 	},
-	
+
 	clear_viewer : function(cmd_args) {
 		var viewerID = cmd_args['viewer_id'];
 
@@ -256,7 +256,7 @@ cmds = {
 		var boxID = cmd_args['box_id'];
 
 		if (!LSST.state.boxes.exists(boxID)) {
-			var box = new LSST.UI.Box( { name : boxID } );			
+			var box = new LSST.UI.Box( { name : boxID } );
 			LSST.state.boxes.add(boxID, box);
 
 			cmds.show_box( { 'box_id' : boxID } );
@@ -301,13 +301,13 @@ cmds = {
 
 	hide_boundary: function(cmd_args) {
 		var viewerID = cmd_args['viewer_id'];
-		var plotid = viewerID;
-		var region_id = plotid + '-boundary';
+		var plotID = viewerID;
+		var regionID = plotID + '-boundary';
         var viewer = LSST.state.viewers.get(viewerID);
         if (viewer){
             if (viewer.show_boundary){
                 viewer.show_boundary = false;
-                firefly.removeRegionData(viewer.header["regions_ds9"], region_id);
+                firefly.action.dispatchDeleteRegionLayer(regionID, plotID);
                 LSST.state.term.echo("Boundary Removed");
             }else{
                 LSST.state.term.echo("The boundary has not been drawn yet.");
@@ -350,8 +350,9 @@ cmds = {
 			var imageViewer = LSST.state.viewers.get(viewerID);
 
 			var regionID = viewerID + '-hotpixel';
+            var plotID = viewerID;
 			if (imageViewer[regionID]) {
-				firefly.removeRegionData(imageViewer[regionID], regionID);
+                firefly.action.dispatchDeleteRegionLayer(regionID, plotID);
 				imageViewer[regionID] = undefined;
 			}
 
@@ -362,7 +363,7 @@ cmds = {
 				},
 				function(regions) {
 					imageViewer[regionID] = regions;
-					firefly.overlayRegionData(regions, regionID, 'hotpixel', viewerID);
+                    firefly.action.dispatchCreateRegionLayer(regionID, regionID, null, regions, plotID);
 				},
 				imageViewer
 			);
@@ -432,19 +433,19 @@ cmds = {
 			var box = LSST.state.boxes.get(boxID);
 			var viewer = LSST.state.viewers.get(viewerID);
 
-            var plotid = viewerID;
-    		var region_id = plotid + '-boundary';
+            var plotID = viewerID;
+    		var regionID = plotID + '-boundary';
 
 			// Clear
 			cmds.clear_box( { 'box_id' : boxID } );
 
 			var boxText = [
 				'read_mouse',
-				new BoxText('Viewer', viewerID),
+				new LSST.UI.BoxText('Viewer', viewerID),
 				[
 					'Point: ',
-					new BoxText('X', ''),
-					new BoxText('Y', ''),
+					new LSST.UI.BoxText('X', ''),
+					new LSST.UI.BoxText('Y', ''),
 				],
                 'Processing boundary from back end...'
 			];
@@ -452,13 +453,13 @@ cmds = {
 
             if (!(viewer.show_boundary)){
                 if (viewer.header){
-                    firefly.overlayRegionData(viewer.header["regions_ds9"], region_id, 'Boundary', plotid);
+                    firefly.action.dispatchCreateRegionLayer(regionID, regionID, null, viewer.header["regions_ds9"], plotID);
                     viewer.show_boundary = true;
                 }else{
-                    read_boundary(plotid,
+                    read_boundary({},
 						function(regions) { // Asynchronous
 	                        viewer.header = regions;
-	                        firefly.overlayRegionData(viewer.header["regions_ds9"], region_id, 'Boundary', plotid);
+	                        firefly.action.dispatchCreateRegionLayer(regionID, regionID, null, viewer.header["regions_ds9"], plotID);
 	                        viewer.show_boundary = true;
 						},
 						viewer
@@ -470,11 +471,11 @@ cmds = {
 
             boxText = [
                 'read_mouse',
-                new BoxText('Viewer', viewerID),
+                new LSST.UI.BoxText('Viewer', viewerID),
                 [
                     'Point: ',
-                    new BoxText('X', ''),
-                    new BoxText('Y', ''),
+                    new LSST.UI.BoxText('X', ''),
+                    new LSST.UI.BoxText('Y', ''),
                 ],
                 'Move the cursor in the viewer to get mouse readout...'
             ];
@@ -531,19 +532,19 @@ cmds = {
 
 	show_boundary: function(cmd_args) {
 		var viewerID = cmd_args['viewer_id'];
-		var plotid = viewerID; // ffview as a default
-		var region_id = plotid + '-boundary';
+		var plotID = viewerID; // ffview as a default
+		var regionID = plotID + '-boundary';
         var viewer = LSST.state.viewers.get(viewerID);
         if (viewer){
             if (!(viewer.show_boundary)){
                 if (viewer.header){
-                    firefly.overlayRegionData(viewer.header["regions_ds9"], region_id, 'Boundary', plotid);
+                    firefly.action.dispatchCreateRegionLayer(regionID, regionID, null, viewer.header["regions_ds9"], plotID);
                     viewer.show_boundary = true;
                 }else{
                     read_boundary({},
 						function(regions) { // Asynchronous
 	                        viewer.header = regions;
-	                        firefly.overlayRegionData(viewer.header["regions_ds9"], region_id, 'Boundary', plotid);
+	                        firefly.action.dispatchCreateRegionLayer(regionID, regionID, null, viewer.header["regions_ds9"], plotID);
 	                        viewer.show_boundary = true;
 						},
 						viewer);

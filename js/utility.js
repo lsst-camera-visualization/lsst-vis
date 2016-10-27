@@ -1,10 +1,11 @@
 function read_boundary(data, cb, viewer) {
     executeBackendFunction('boundary', viewer, data,
         function(data) {
+        console.log(data);
         var d = data.BOUNDARY;
         var regions = [];
         var color = 'red';
-        for (var i = 0; i < d.length; i++) {
+        for (var i = 0; i < d.length; i++) { //TODO: error handling!
             var di = d[i];
             for (var j = 0; j < di.length; j++) {
                 var dij = di[j];
@@ -123,6 +124,6 @@ function region_to_boxtext(region) {
 function region_to_string(region) {
 	if (region.type == 'rect')
 		return 'rect ' + region.value.x1 + ' ' + region.value.y1 + ' ' + region.value.x2 + ' ' + region.value.y2;
-		
+
 	return '';
 }

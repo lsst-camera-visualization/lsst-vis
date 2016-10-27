@@ -20,7 +20,8 @@ LSST.extend('LSST.UI');
 LSST.UI.Viewer = function(options) {
 	
 	this.html = jQuery(createViewerSkeleton(options.name));
-	this.image_url = null;
+	this.image_url = getNewImageURL();
+	this.original_image_url = getNewOriginalImageURL();
 	//this.readout = new LSST.UI.FFReadout(options.name);
 
 	this.header = null;
@@ -32,6 +33,7 @@ LSST.UI.Viewer = function(options) {
 	options.draggable = {
 		cancel : '.viewer-view',
 	};
+	
 	var w = this.html.css('width'); var h = this.html.css('height');
 	this.html.css('min-height', h);
 	options.resizable = {
@@ -40,7 +42,7 @@ LSST.UI.Viewer = function(options) {
 		minWidth : w,
 		minHeight : h
 	}
-	
+
 	// Init from UIElement
 	LSST.UI.UIElement.prototype._init.call(this, options);		
 	
@@ -274,7 +276,7 @@ LSST.UI.UV_Control.prototype.update = function() {
 
 // Called when the user selects a region in a viewer.
 var selectRegion = function(data) {
-	
+
 	var region;
     if (data.type == 'AREA_SELECT') {
         var x1 = Math.trunc(data.ipt0.x);
@@ -283,7 +285,7 @@ var selectRegion = function(data) {
         var y2 = Math.trunc(data.ipt1.y);
         region = [ 'rect', x1, y1, x2, y2 ];
     }
-    
+
     if (data.id == 'SELECT_REGION') {
    		var regionAsString = region_to_string(region);
    		LSST.state.term.setVariable('selected', '(' + regionAsString + ')');

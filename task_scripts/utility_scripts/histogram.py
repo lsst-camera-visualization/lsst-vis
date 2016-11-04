@@ -8,7 +8,7 @@ def _histogram(filename, region, numBins):
 	x_start, x_end = region[0][0], region[0][1]
 	y_start, y_end = region[1][0], region[1][1]
 	#works for single extension?  what about multi extension? convert coord?
-	file_data = hdulist[0].data
+	file_data = hdulist[1].data
 	#print file_data
     # data with in the given region
 	region_data = file_data[y_start:y_end, x_start:x_end]
@@ -19,12 +19,15 @@ def _histogram(filename, region, numBins):
 def get_json(hist):
 	labels = hist[1]
 	value = hist[0]
-	values = []
-	for i in range (0, len(hist[1])-1):
-		_bin = {'label' : str(labels[i]) + ' - ' + str(labels[i+1]), 'value' : value[i]}
-		values.append(_bin)
+	#values = []
+	ret = [[value[0], labels[0], labels[1]]]
+	for i in range (1, len(hist[1])-1):
+		#_bin = {'label' : str(labels[i]) + ' - ' + str(labels[i+1]), 'value' : value[i]}
+		_bin = [[value[i], labels[i], labels[i+1]]]
+		#values.append(_bin)
+		ret = np.concatenate((ret, _bin),axis=0)
 
-	ret = {"title" : filename, "type" : "Discrete Bar", "data" : {"values" : values}}
+	#ret = {"title" : filename, "type" : "Discrete Bar", "data" : {"values" : values}} 
 	#file = open('../../../frontend/data.json', "w")
 	#json.dump(ret, file, indent=4)
 	#file.close()
@@ -34,10 +37,10 @@ def get_json(hist):
 
 
 def histogram(filename, region, numBins):
-	get_json(_histogram(filename, region, numBins))
+	print get_json(_histogram(filename, region, numBins))
 
 #Testing
 if __name__ == "__main__":
     filename = "/home/yutong/firefly/backend/images/imageE2V.fits"
-    region = [[1, 20], [2, 20]]
+    region = [[1, 5], [1, 5]]
     histogram(filename, region, 10)

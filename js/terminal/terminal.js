@@ -101,6 +101,13 @@ var LSST_TERMINAL = {
 		}
 	
 		this.addCommand = function(cmd, helpText) {
+		    if (cmds[cmds.length - 1] == cmd) {
+		        index = cmds.length;
+		        return;
+		    }
+		        
+		    console.log('added');
+
 			cmds.push(cmd);
 			help.push(helpText);
 			

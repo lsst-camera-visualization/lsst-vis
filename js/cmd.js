@@ -24,7 +24,7 @@ jQuery(document).ready(function() {
 			'description' : 'Calculates the average pixel value for the region.',
 			'doc_link' : docLink + '#average_pixel'
 		},
-		'chart json_file' : {
+		'chart viewer_id region' : {
 			callback : cmds.chart,
 		},
 		'clear_box box_id' : {
@@ -185,7 +185,7 @@ cmds = {
 			viewer.clear();
 			
 			var region = LSST.UI.Region.Parse(regionParam);
-			viewer.drawRegions( [ region.toOverlay() ], 'Average Pixel');
+			viewer.drawRegions( [ region.toDS9() ], 'Average Pixel');
 
 			var boxText = [
 				'Processing average_pixel...'
@@ -230,8 +230,23 @@ cmds = {
 	},
 
 	chart: function(cmd_args) {
-		var h = LSST.UI.Histogram.fromJSONFile(cmd_args.json_file);
-		h.setFocus(true);
+	    if (LSST.state.viewers.exists(cmd_args.viewer_id)) {
+	        region = LSST.UI.Region.Parse(cmd_args.region);
+	        params = {
+	            numBins : 10,
+	            region : region.toBackendFormat()
+	        }
+	        executeBackendFunction('histogram', LSST.state.viewers.get(viewer_id), params,
+	            function(data) {
+	                var h = LSST.UI.Histogram.fromJSON(data);
+	                h.setFocus(true);
+	            },
+	            
+	            function(data) {
+	            
+	            }
+	        );
+		}
 	},
 
 	clear_box: function(cmd_args) {

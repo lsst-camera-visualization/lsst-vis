@@ -4,7 +4,6 @@ from task_scripts.averagePixel import task as task_average_pixel
 from task_scripts.boundary import task as task_boundary
 from task_scripts.fetchLatest import task as task_fetch_latest
 from task_scripts.hotPixel import task as task_hot_pixel
-import task_scripts.taskDef as taskDef
 
 # Dictionary mapping task names to functions
 _tasks = {} # DO NOT MODIFY THIS LINE (see generate_new_task.sh)
@@ -21,10 +20,7 @@ def _taskNotFound(param):
 
 # Handler to pass the correct filename and parameters for backend scripts.
 def params_handler(task_name, params):
-    if task_name in ["boundary"]:
-        filename = taskDef.IMAGE_ORIGINAL
-    else:
-        filename = taskDef.IMAGE_DISPLAY
+    filename = params['image_url']
     return (filename, params)
 
 def execute_task(task_name, task_params):

@@ -236,14 +236,15 @@ cmds = {
 	            numBins : 10,
 	            region : region.toBackendFormat()
 	        }
-	        executeBackendFunction('histogram', LSST.state.viewers.get(viewer_id), params,
+	        executeBackendFunction('chart', LSST.state.viewers.get(cmd_args.viewer_id), params,
 	            function(data) {
+	                console.log("Success: " + data);
 	                var h = LSST.UI.Histogram.fromJSON(data);
 	                h.setFocus(true);
 	            },
 	            
 	            function(data) {
-	            
+	                console.log("Failure: " + data);
 	            }
 	        );
 		}

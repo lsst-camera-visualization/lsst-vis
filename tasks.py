@@ -12,9 +12,7 @@ import task_scripts.taskDef as taskDef
 # Dictionary mapping task names to functions
 _tasks = {} # DO NOT MODIFY THIS LINE (see generate_new_task.sh)
 _tasks["chart"] = task_chart
-_tasks["chart1"] = task_chart1
 _tasks["prescan_chart"] = task_prescan_chart
-_tasks["prescan_chart.py"] = task_prescan_chart.py
 _tasks[""] = task_
 _tasks["average"] = task_average_pixel
 _tasks["boundary"] = task_boundary

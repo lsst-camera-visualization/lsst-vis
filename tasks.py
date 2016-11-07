@@ -1,3 +1,8 @@
+from task_scripts.chart import task as task_chart
+from task_scripts.chart1 import task as task_chart1
+from task_scripts.prescan_chart import task as task_prescan_chart
+from task_scripts.prescan_chart.py import task as task_prescan_chart.py
+from task_scripts. import task as task_
 from task_scripts.averagePixel import task as task_average_pixel
 from task_scripts.boundary import task as task_boundary
 from task_scripts.fetchLatest import task as task_fetch_latest
@@ -6,6 +11,11 @@ import task_scripts.taskDef as taskDef
 
 # Dictionary mapping task names to functions
 _tasks = {} # DO NOT MODIFY THIS LINE (see generate_new_task.sh)
+_tasks["chart"] = task_chart
+_tasks["chart1"] = task_chart1
+_tasks["prescan_chart"] = task_prescan_chart
+_tasks["prescan_chart.py"] = task_prescan_chart.py
+_tasks[""] = task_
 _tasks["average"] = task_average_pixel
 _tasks["boundary"] = task_boundary
 _tasks["fetch_latest"] = task_fetch_latest

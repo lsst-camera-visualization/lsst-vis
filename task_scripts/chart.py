@@ -1,17 +1,22 @@
+import taskDef
 from astropy.io import fits
 from utility_scripts.histogram import histogram
 
 def task(filename, task_params):
+	''' 
+	@author Yutong Wang
+	@param task_params - {type : rect/circ, value : region, numBins : int} 
+	@return data for general histogram function
+	'''
 	try:
-	    with fits.open(filename) as fits_object:
-	    	region_type, value, numBins = task_params['type'], task_params['value'], task_params['numBins']
-	    	ret =  histogram(fits_object, region_type, value, numBins)
-	    	if ret is None:
-	    		ret = "Region type is not recognized."
-	    	return {"data":ret}, None
+		with fits.open(filename) as fits_object:
+			region_type, value, numBins = task_params['type'], task_params['value'], task_params['numBins']
+			ret =  histogram(fits_object, region_type, value, numBins)
+			if ret is None:
+				ret = "Region type is not recognized."
+			return {"data":ret}, None
 	except Exception as e:
 		return ['Error when computing histogram.']
-
 
 
 #Testing

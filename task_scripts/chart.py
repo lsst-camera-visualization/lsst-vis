@@ -10,7 +10,8 @@ def task(filename, task_params):
 	'''
 	try:
 		with fits.open(filename) as fits_object:
-			region_type, value, numBins = task_params['type'], task_params['value'], task_params['numBins']
+			region = task_params['region']
+			region_type, value, numBins = region['type'], region['value'], task_params['numBins']
 			ret =  histogram(fits_object, region_type, value, numBins)
 			if ret is None:
 				ret = "Region type is not recognized."
@@ -23,4 +24,4 @@ def task(filename, task_params):
 if __name__ == "__main__":
     filename = "/home/yutong/firefly/backend/images/imageE2V.fits"
     region = {'x1': 1, 'x2' : 5, 'y1' : 1, 'y2' : 5}
-    print task(filename, {'type': 'rect', 'value' : region, 'numBins': 10})
+    print task(filename, {'region':{'type': 'rect', 'value' : region}, 'numBins': 10})

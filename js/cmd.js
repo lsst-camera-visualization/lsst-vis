@@ -185,7 +185,7 @@ cmds = {
 			viewer.clear();
 			
 			var region = LSST.UI.Region.Parse(regionParam);
-			viewer.drawRegions( [ region.toOverlay() ], 'Average Pixel');
+			viewer.drawRegions( [ region.toDS9() ], 'Average Pixel');
 
 			var boxText = [
 				'Processing average_pixel...'

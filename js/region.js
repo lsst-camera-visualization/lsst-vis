@@ -26,7 +26,9 @@ LSST.UI.Rect.prototype.toString = function() {
 }
 
 LSST.UI.Rect.prototype.toDS9 = function() {
-	return ['box', this._data.x1, this._data.y1, this._data.x2 - this._data.x1, this._data.y2 - this._data.y1, 0].join(' ');
+    var width = this._data.x2 - this._data.x1;
+    var height = this._data.y2 - this._data.y1;
+	return ['box', this._data.x1 + (width / 2), this._data.y1 + (height / 2), width, height, 0].join(' ');
 }
 
 LSST.UI.Rect.prototype.toBoxText = function() {

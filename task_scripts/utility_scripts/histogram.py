@@ -5,7 +5,7 @@ import numpy as np
 
 
 def _histogram(fits_object, region_type, value, numBins):
-	file_data = fits_object[1].data
+	file_data = fits_object[0].data
 	if (region_type=='rect'):
 		region_slice = parseRegion_rect(value)
 		ROI = file_data[region_slice]

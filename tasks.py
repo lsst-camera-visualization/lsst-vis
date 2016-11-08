@@ -1,3 +1,7 @@
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.abspath(__file__))+"/task_scripts")
+
 from task_scripts.chart import task as task_chart
 from task_scripts.prescan_chart import task as task_prescan_chart
 from task_scripts.averagePixel import task as task_average_pixel

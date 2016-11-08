@@ -5,7 +5,7 @@ import numpy as np
 
 
 def _histogram(fits_object, region_type, value, numBins):
-	file_data = fits_object[1].data
+	file_data = fits_object[0].data
 	if (region_type=='rect'):
 		region_slice = parseRegion_rect(value)
 		ROI = file_data[region_slice]
@@ -28,7 +28,7 @@ def get_data(hist):
 		for i in range (1, len(hist[1])-1):
 			_bin = [[value[i], labels[i], labels[i+1]]]
 			ret = np.concatenate((ret, _bin),axis=0)
-		return ret
+		return ret.tolist()
 
 
 def histogram(fits_object, region_type, value, numBins):

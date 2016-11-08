@@ -28,12 +28,12 @@ with open(options.infile) as paramfile:
 task_name = options.task
 
 try:
+    # echo_debug = "echo " + json.dumps(taskParams) + " > /home/wei/lsst/lsst_firefly/backend/debug_file"
+    # os.system(echo_debug)
     result, error = execute_task(task_name, taskParams)
 except Exception as e:
     result = {"error": str(e)}
 
-echo_debug = "echo " + str(result) + " > /www/algorithm/debug_file"
-os.system(echo_debug)
 
 
 (fd, outfile) = tempfile.mkstemp(suffix=".json", prefix=options.task, dir=options.outdir)

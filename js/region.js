@@ -26,7 +26,10 @@ LSST.UI.Rect.prototype.toString = function() {
 }
 
 LSST.UI.Rect.prototype.toDS9 = function() {
-	return ['box', this._data.x1, this._data.y1, this._data.x2 - this._data.x1, this._data.y2 - this._data.y1, 0].join(' ');
+	var p = ['circle', 'point', 1000, 2000].join(' ');
+	p = ['box', (this._data.x1+this._data.x2)/2, (this._data.y1+this._data.y2)/2, this._data.x2 - this._data.x1, this._data.y2 - this._data.y1, 0].join(' ')
+	console.log(p);
+	return p;
 }
 
 LSST.UI.Rect.prototype.toBoxText = function() {
@@ -64,11 +67,11 @@ LSST.UI.Circ.prototype.toDS9 = function() {
 }
 
 LSST.UI.Circ.prototype.toBoxText = function() {
-	
+
 }
 
 LSST.UI.Circ.Parse = function(circ) {
-	
+
 }
 
 

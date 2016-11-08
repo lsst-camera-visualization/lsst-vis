@@ -1,15 +1,15 @@
 LSST.extend('LSST.UI');
 
 // Represents a visual chart.
-// 
+//
 // In order to create a new chart, one should use one of the following functions (declared at the bottom of the page):
 //		- Chart.fromJSONFile
 //		- Chart.fromJSONString
 //		- Chart.fromObject
 LSST.UI.Histogram = function() {
-	
+
 	this._desc = null;
-	
+
 	options = {};
 	options.name = 'Chart ' + LSST.UI.Histogram._count++;
 	// Creates the html of the chart
@@ -25,13 +25,13 @@ LSST.UI.Histogram = function() {
 
 	// Draggable settings
 	options.draggable = { };
-	
+
 	// Resizable settings
 	options.resizable = {
 		stop : LSST.UI.Histogram.prototype.resize.bind(this),
 		handles : 'se'
 	};
-	
+
 	// Toolbar settings
 	// Close button
 	var closeData = {
@@ -48,7 +48,7 @@ LSST.UI.Histogram = function() {
 		desc : toolbarDesc,
 		options : toolbarOptions
 	};
-	
+
 	// Init from UIElement
 	LSST.UI.UIElement.prototype._init.call(this, options);
 }
@@ -104,19 +104,20 @@ LSST.UI.Histogram.fromJSONFile = function(file) {
 	var onFail = function(jqXHR, textStatus, errorThrown) {
 		h.html.children('.chart-body').text('Failed to load histogram data from file: ' + file);
 	}
-	
+
 	jQuery.getJSON(file, createHisto.bind(h) )
 		.fail(onFail.bind(h));
-	
+
 	return h;
 }
 
 // Creates a chart from a JSON formatted string.
 // @param str - The JSON formatted string
 // @return The newly created chart
-LSST.UI.Histogram.fromJSONString = function(str) {
+LSST.UI.Histogram.fromJSONString = function(data) {
+	// NOTE: returned data from backend should already be a json file.
 	var h = new LSST.UI.Histogram();
-	h.set(JSON.parse(str));
+	h.set(data);
 	return h;
 }
 
@@ -133,19 +134,3 @@ LSST.UI.Histogram.fromObject = function(desc) {
 	h.set(desc);
 	return h;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

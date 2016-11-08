@@ -1,14 +1,13 @@
-
 LSST.extend('LSST.UI');
 
 
 
 /*
- \ \    / (_)                       
-  \ \  / / _  _____      _____ _ __ 
+ \ \    / (_)
+  \ \  / / _  _____      _____ _ __
    \ \/ / | |/ _ \ \ /\ / / _ \ '__|
-    \  /  | |  __/\ V  V /  __/ |   
-     \/   |_|\___| \_/\_/ \___|_|                                     
+    \  /  | |  __/\ V  V /  __/ |
+     \/   |_|\___| \_/\_/ \___|_|
 */
 
 // A viewer contains the following properties:
@@ -18,22 +17,20 @@ LSST.extend('LSST.UI');
 // - readout: An FFReadout object.
 // - header: Store the header information of the image in the Viewer.
 LSST.UI.Viewer = function(options) {
-	
+
 	this.html = jQuery(createViewerSkeleton(options.name));
-	this.image_url = getNewImageURL();
-	this.original_image_url = getNewOriginalImageURL();
 	//this.readout = new LSST.UI.FFReadout(options.name);
 
 	this.header = null;
 	this.show_boundary = false;
 	this.overscan = false;
 	this._regionLayers = []
-	
-	
+
+
 	options.draggable = {
 		cancel : '.viewer-view',
 	};
-	
+
 	var w = this.html.css('width'); var h = this.html.css('height');
 	this.html.css('min-height', h);
 	options.resizable = {
@@ -44,9 +41,10 @@ LSST.UI.Viewer = function(options) {
 	}
 
 	// Init from UIElement
-	LSST.UI.UIElement.prototype._init.call(this, options);		
-	
-	this.loadImage('http://web.ipac.caltech.edu/staff/roby/demo/wise-m51-band1.fits');
+	LSST.UI.UIElement.prototype._init.call(this, options);
+
+	this.loadImage(getNewImageURL());
+	// this.loadImage(("http://web.ipac.caltech.edu/staff/roby/demo/wise-m51-band1.fits"));
 	firefly.util.addActionListener(firefly.action.type.READOUT_DATA, this._cursorRead.bind(this));
 }
 
@@ -61,10 +59,10 @@ LSST.UI.Viewer.prototype.drawRegions = function(regions, layerName) {
 	for (var i = 0; i < regions.length; i++) {
 		regions[i] = 'image;' + regions[i] + ' # color=blue';
 	}
-	
+
 	if (this._regionLayers.indexOf(layerName) == -1)
 		this._regionLayers.push(layerName)
-	
+
 	firefly.action.dispatchCreateRegionLayer(layerName, layerName, null, regions, this.name);
 }
 
@@ -72,7 +70,7 @@ LSST.UI.Viewer.prototype.drawRegions = function(regions, layerName) {
 LSST.UI.Viewer.prototype.clear = function() {
 	for (var i = 0; i < this._regionLayers.length; i++)
 		firefly.action.dispatchDeleteRegionLayer(this._regionLayers[i], [ this.name ]);
-		
+
 	this._regionLayers = [];
 }
 
@@ -80,10 +78,10 @@ LSST.UI.Viewer.prototype.clear = function() {
 // @param layerName - The layer to clear
 LSST.UI.Viewer.prototype.clearLayer = function(layerName) {
 	firefly.action.dispatchDeleteRegionLayer(layerName, [ this.name ]);
-	
+
 	var idx = this._regionLayers.indexOf(layerName);
 	if (idx != -1)
-		this._regionLayers.splice(idx, 1)	
+		this._regionLayers.splice(idx, 1)
 }
 
 // Displays a new image in the viewer.
@@ -100,8 +98,9 @@ LSST.UI.Viewer.prototype.loadImage = function(image) {
 		ZoomType : 'TO_WIDTH',
 		ZoomToWidth : '100%'
 	});
-	
-	this.image = image;
+
+	this.image_url = image;
+	this.original_image_url = getNewOriginalImageURL(image);
 }
 
 // Adds a context extension to the viewer.
@@ -116,7 +115,7 @@ LSST.UI.Viewer.prototype.addExtension = function(title, type, f) {
 		extType : type,
 		callback : f
 	};
-	
+
 	firefly.util.image.extensionAdd(ext);
 }
 
@@ -137,14 +136,14 @@ LSST.UI.Viewer.prototype._cursorRead = function(action) {
 
 
 /*
-  _    ___      __   _____            _             _ 
+  _    ___      __   _____            _             _
  | |  | \ \    / /  / ____|          | |           | |
  | |  | |\ \  / /  | |     ___  _ __ | |_ _ __ ___ | |
  | |  | | \ \/ /   | |    / _ \| '_ \| __| '__/ _ \| |
  | |__| |  \  /    | |___| (_) | | | | |_| | | (_) | |
   \____/    \/      \_____\___/|_| |_|\__|_|  \___/|_|
-                                                      
-                                                      
+
+
 */
 
 
@@ -154,17 +153,18 @@ LSST.UI.Viewer.prototype._cursorRead = function(action) {
 // @param bStartPaused - The UV_Control initially be paused?
 // @param frequency - The initial frequency to check the image repository, in milliseconds (@default = 10000)
 LSST.UI.UV_Control = function(viewer, imageRepository, bStartPaused = true, frequency = 10000) {
-	this._viewer = viewer;	
+	this._viewer = viewer;
 	this.imageRepo = imageRepository;
-	
+
 	this._bPaused = bStartPaused;
 	this._timerID = null;
 	this._timestamp = 0;
 	this._newImage = null;
-	
+
 	this._minimumFreq = 10000;
-	
-	this.setFrequency(frequency);
+
+	if (!this._bPaused)
+	    this.setFrequency(frequency);
 }
 
 // Sets the new update frequency for this control.
@@ -172,7 +172,7 @@ LSST.UI.UV_Control = function(viewer, imageRepository, bStartPaused = true, freq
 LSST.UI.UV_Control.prototype.setFrequency = function(newFrequency) {
 	// Stop timer for viewer
 	clearInterval(this._timerID);
-	
+
 	this._timerID = setInterval(LSST.UI.UV_Control.prototype.update.bind(this), Math.max(this._minimumFreq, newFrequency));
 }
 
@@ -189,7 +189,7 @@ LSST.UI.UV_Control.prototype.loadNewImage = function() {
 			button.prop('disabled', true);
 			button.attr('value', 'There are no new images.');
 		}
-	
+
 		this._newImage = null;
 	}
 }
@@ -197,7 +197,7 @@ LSST.UI.UV_Control.prototype.loadNewImage = function() {
 // Pauses this viewer control
 LSST.UI.UV_Control.prototype.pause = function() {
 	this._bPaused = true;
-	
+
 	var id = this._viewer.name + '---pause_resume';
 	var button = jQuery('input[data-buttonID="' + id + '"]');
 	button.attr('value', 'Resume');
@@ -206,11 +206,11 @@ LSST.UI.UV_Control.prototype.pause = function() {
 // Resumes this viewer control
 LSST.UI.UV_Control.prototype.resume = function() {
 	this._bPaused = false;
-	
+
 	var id = this._viewer.name + '---pause_resume';
 	var button = jQuery('input[data-buttonID="' + id + '"]');
 	button.attr('value', 'Pause');
-	
+
 	// Load new image, if it exists
 	this.loadNewImage();
 }
@@ -220,15 +220,15 @@ LSST.UI.UV_Control.prototype.update = function() {
     var params = {
     	'since': this._timestamp
    	};
-   	
+
    	var updateFunc = function(data) {
    		if (data) {
             // There's a new image.
             this._timestamp = data.timestamp;
             this._newImage = data.uri;
-            
+
 			if (!this._bPaused) {
-				this.loadNewImage();	
+				this.loadNewImage();
 			}
 			else {
 				var id = this._viewer.name + '---update_now';
@@ -246,7 +246,7 @@ LSST.UI.UV_Control.prototype.update = function() {
 			button.attr('value', 'There are no new images.');
 		}
    	}.bind(this);
-   	
+
     jQuery.getJSON(this.imageRepo, params, updateFunc);
 }
 
@@ -262,14 +262,14 @@ LSST.UI.UV_Control.prototype.update = function() {
 
 
 /*
-  _   _               _       _    _           _       _   _             
- | \ | |             | |     | |  | |         | |     | | (_)            
- |  \| | ___  ___  __| |___  | |  | |_ __   __| | __ _| |_ _ _ __   __ _ 
+  _   _               _       _    _           _       _   _
+ | \ | |             | |     | |  | |         | |     | | (_)
+ |  \| | ___  ___  __| |___  | |  | |_ __   __| | __ _| |_ _ _ __   __ _
  | . ` |/ _ \/ _ \/ _` / __| | |  | | '_ \ / _` |/ _` | __| | '_ \ / _` |
  | |\  |  __/  __/ (_| \__ \ | |__| | |_) | (_| | (_| | |_| | | | | (_| |
  |_| \_|\___|\___|\__,_|___/  \____/| .__/ \__,_|\__,_|\__|_|_| |_|\__, |
                                     | |                             __/ |
-                                    |_|                            |___/ 
+                                    |_|                            |___/
 */
 
 
@@ -378,6 +378,10 @@ function getNewImageURL(){
 	return document.location.origin+"/static/images/imageE2V_trimmed.fits";
 }
 
-function getNewOriginalImageURL(){
-	return document.location.origin+"/static/images/imageE2V.fits";
+function getNewOriginalImageURL(imageName){
+	var newName = imageName;
+	if (imageName.includes("_trimmed.fits")){
+		newName = imageName.replace("_trimmed.fits", ".fits");
+	}
+	return newName;
 }

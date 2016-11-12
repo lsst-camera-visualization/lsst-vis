@@ -761,6 +761,8 @@ var viewerCommands = {
             params.region = new LSST.UI.Rect(data.ipt0.x, data.ipt0.y, data.ipt1.x, data.ipt1.y).toCmdLineArrayFormat();
             
             cmds[LSST.state.currentViewerCommand](params);
+            
+            container.remove();
         });
 	}
 }

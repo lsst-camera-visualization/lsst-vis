@@ -235,7 +235,85 @@ img:hover {
 
 
 
+.viewer-command-container {
+    width: 800px;
+    height: 400px;
+    
+    margin: 0 auto;
+    padding: 0px;
+    
+    background-color: #888;
+    border: solid 2px #000;
+    
+    position: relative;
+    top: 200px;
+    
+    z-index: 1999;
+}
 
+.viewer-command-left {
+    float: left;
+    width: 35%;
+    height: 100%;
+    
+    margin: 0px;
+}
+
+.viewer-command-right {
+    float: right;
+    width: 64%;
+    height: 100%;
+    border-left: solid 2px #000;
+}
+
+.viewer-command-commandlist {
+    margin: 0px;
+    
+    padding: 10px 0px 0px 0px;
+    list-style-type: none;
+}
+
+.viewer-command-entry {
+    font-size: 150%;
+    margin: 0px 10px 5px 10px;
+    
+    border: solid 1px #000;
+    background-color: #aaa;
+    
+    text-align: center;
+    
+    opacity: 1.0;
+    filter: alpha(opacity=100); /* For IE8 and earlier */
+}
+
+.viewer-command-entry:hover {
+    opacity: 0.5;
+    filter: alpha(opacity=50); /* For IE8 and earlier */
+    
+    cursor: default;
+}
+
+.viewer-command-params-header {
+    text-align: center;
+    border-bottom: solid 2px #000;
+    font-size: 250%;
+    margin-bottom: 15px;
+    padding: 10px;
+}
+
+.viewer-command-params-entry {
+    width: 100%;
+    margin: 0px 5px 5px 5px;
+    font-size: 150%;
+}
+
+#viewer-command-execute {
+  position: absolute;
+  right: 5px;
+  bottom: 5px;
+  
+  font-size: 150%;
+}
 
 
 

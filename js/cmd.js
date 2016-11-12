@@ -1,3 +1,5 @@
+LSST.extend('LSST.state')
+
 
 /*
   _______    _     _         ____   __    _____            _             _
@@ -295,7 +297,7 @@ cmds = {
 			var viewer = new LSST.UI.Viewer( { name : viewerID } );
 			LSST.state.viewers.add(viewerID, viewer);
 
-			viewer.addExtension('Average Pixel', 'AREA_SELECT', viewerCommands.average_pixel );
+			viewer.addExtension('Choose Command...', 'AREA_SELECT', viewerCommands.display_area_commands );
 
 			var uvControl = new LSST.UI.UV_Control(viewer, "http://172.17.0.1:8099/vis/checkImage");
 			LSST.state.uvControls.add(viewerID, uvControl);
@@ -683,11 +685,82 @@ cmds = {
      \/   |_|\___| \_/\_/ \___|_|     \_____\___/|_| |_| |_|_| |_| |_|\__,_|_| |_|\__,_|___/
 */
 
-var viewerCommands = {
-	average_pixel : function(data) {
-		var viewerID = data.plotId;
-		LSST.state.viewers.get(viewerID);
+viewerCommandParameterForms = {
+	'VCAVG' :
+        jQuery(
+        ' \
+        	<div class="viewer-command-params-entry"> \
+            <span>Output Box:</span> \
+            <input type="text" data-param-name="box_id"/> \
+          </div> \
+        '),
+        
+	'VCCHART' :
+        jQuery(
+        ' \
+        	<div class="viewer-command-params-entry"> \
+            <span>Number of bins:</span> \
+            <input type="text" size=3 data-param-name="numBins" value="10"/> \
+          </div> \
+          <div class="viewer-command-params-entry"> \
+            <span>Min:</span> \
+            <input type="text" size=10 data-param-name="min" value="0"/> \
+          </div> \
+          <div class="viewer-command-params-entry"> \
+            <span>Max:</span> \
+            <input type="text" size=10 data-param-name="max" value="0"/> \
+          </div> \
+        ')
+}
 
-		console.log(data);
+var viewerCommands = {
+	display_area_commands : function(data) {
+	    var viewerID = data.plotId;
+	    
+	    if (jQuery('.viewer-command-container').size() > 0)
+	        return;
+	    
+		container = jQuery(' \
+		    <div class="viewer-command-container"> \
+              <div class="viewer-command-left"> \
+                <ul class="viewer-command-commandlist"> \
+                  <li class="viewer-command-entry" id="VCAVG" data-cmd="average_pixel">Average Pixel</li> \
+                  <li class="viewer-command-entry" id="VCHOT" data-cmd="hot_pixel">Hot Pixel</li> \
+                  <li class="viewer-command-entry" id="VCCHART" data-cmd="chart">Chart</li> \
+                </ul> \
+              </div> \
+              <div class="viewer-command-right"> \
+                <h1 class="viewer-command-params-header">Parameters</h1> \
+                <div id="viewer-command-params"></div> \
+                <button id="viewer-command-execute">Execute Command</button> \
+              </div> \
+            </div> \
+            '
+	    );
+	    jQuery('body').append(container);
+	    
+	    jQuery('.viewer-command-entry').click(function() {
+            var id = jQuery(this).attr('id')
+
+            var form = jQuery('#viewer-command-params').empty()
+            form.append(viewerCommandParameterForms[id]);
+            
+            LSST.state.currentViewerCommand = jQuery(this).data('cmd');
+        });
+        
+        jQuery('#viewer-command-execute').click(function() {
+            var form = jQuery('#viewer-command-params');
+            var entries = form.children('.viewer-command-params-entry');
+            var params = {};
+            entries.children('input').each(function(idx, elem) {
+                e = jQuery(elem);
+                params[e.data('param-name')] = e.val();
+            });
+            
+            params.viewer_id = viewerID;
+            params.region = new LSST.UI.Rect(data.ipt0.x, data.ipt0.y, data.ipt1.x, data.ipt1.y).toCmdLineArrayFormat();
+            
+            cmds[LSST.state.currentViewerCommand](params);
+        });
 	}
 }

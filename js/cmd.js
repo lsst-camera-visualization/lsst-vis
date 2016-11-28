@@ -154,8 +154,8 @@ var executeBackendFunction = function(nameOfTask, viewer, params, onFulfilled, o
 	}else{
 		params.image_url = viewer.image_url;
 	}
-	console.log(params);
-	firefly.getJsonFromTask( 'python', nameOfTask, params ).then(onFulfilled, onRejected);
+	
+	firefly.getJsonFromTask( 'python', nameOfTask, params ).then(function(data){onFulfilled(data);}).catch(function(data){onRejected(data);})
 }
 
 
@@ -196,7 +196,7 @@ cmds = {
 
 			// Call average_pixel python task
 			var params = region.toBackendFormat();
-            console.log(params);
+			
 			executeBackendFunction('average', viewer, params,
 				function(data) {
 					boxText = [
@@ -719,8 +719,8 @@ var viewerCommands = {
 	    
 	    if (jQuery('.viewer-command-container').size() > 0)
 	        return;
-	    
-		container = jQuery(' \
+	        
+	    container = jQuery(' \
 		    <div class="viewer-command-container"> \
               <div class="viewer-command-left"> \
                 <ul class="viewer-command-commandlist"> \
@@ -737,6 +737,26 @@ var viewerCommands = {
             </div> \
             '
 	    );
+	    
+	    var options = {
+	        toolbar : {
+	            desc : [
+	                new LSST_TB.ToolbarElement(
+	                    'close',
+	                     {
+				            onClick : function(c) { c.html.remove() },
+				            parameters : { html : container },
+			            }
+			        )
+			    ],
+			    options : {
+			        bShowOnHover : false
+			    }
+	        },
+	        html : container
+	    }
+	    popup = new LSST.UI.UIElement(options);
+	    
 	    jQuery('body').append(container);
 	    
 	    jQuery('.viewer-command-entry').click(function() {

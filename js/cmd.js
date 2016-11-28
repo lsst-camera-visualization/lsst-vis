@@ -26,7 +26,7 @@ jQuery(document).ready(function() {
 			'description' : 'Calculates the average pixel value for the region.',
 			'doc_link' : docLink + '#average_pixel'
 		},
-		'chart viewer_id region' : {
+		'chart viewer_id region num_bins min max' : {
 			callback : cmds.chart,
 		},
 		'clear_box box_id' : {
@@ -236,12 +236,13 @@ cmds = {
 	    if (LSST.state.viewers.exists(cmd_args.viewer_id)) {
 	        region = LSST.UI.Region.Parse(cmd_args.region);
 	        params = {
-	            numBins : 10,
+	            numBins : (cmd_args.num_bins == undefined) ? 10 : parseInt(cmd_args.num_bins),
+	            min : (cmd_args.min == undefined) ? 0 : parseInt(cmd_args.min),
+	            max : (cmd_args.max == undefined) ? 0 : parseInt(cmd_args.max),
 	            region : region.toBackendFormat()
 	        }
 	        executeBackendFunction('chart', LSST.state.viewers.get(cmd_args.viewer_id), params,
 	            function(data) {
-	                console.log("Success: " + data);
 	                var h = LSST.UI.Histogram.fromJSONString(data);
 	                h.setFocus(true);
 	            },
@@ -700,7 +701,7 @@ viewerCommandParameterForms = {
         ' \
         	<div class="viewer-command-params-entry"> \
             <span>Number of bins:</span> \
-            <input type="text" size=3 data-param-name="numBins" value="10"/> \
+            <input type="text" size=3 data-param-name="num_bins" value="10"/> \
           </div> \
           <div class="viewer-command-params-entry"> \
             <span>Min:</span> \

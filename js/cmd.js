@@ -362,6 +362,7 @@ cmds = {
 	},
 
 	hot_pixel: function(cmd_args) {
+	    console.log(cmd_args);
 		var viewerID = cmd_args['viewer_id'];
 		if (LSST.state.viewers.exists(viewerID)) {
 
@@ -693,6 +694,15 @@ viewerCommandParameterForms = {
         	<div class="viewer-command-params-entry"> \
             <span>Output Box:</span> \
             <input type="text" data-param-name="box_id"/> \
+          </div> \
+        '),
+        
+    'VCHOT' :
+        jQuery(
+        ' \
+        	<div class="viewer-command-params-entry"> \
+            <span>Threshold:</span> \
+            <input type="text" data-param-name="threshold"/> \
           </div> \
         '),
         

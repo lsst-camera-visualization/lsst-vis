@@ -19,7 +19,6 @@ LSST.extend('LSST.UI');
 LSST.UI.Viewer = function(options) {
 
 	this.html = jQuery(createViewerSkeleton(options.name));
-	//this.readout = new LSST.UI.FFReadout(options.name);
 
 	this.header = null;
 	this.show_boundary = false;
@@ -43,8 +42,9 @@ LSST.UI.Viewer = function(options) {
 	// Init from UIElement
 	LSST.UI.UIElement.prototype._init.call(this, options);
 
-	// this.loadImage(getNewImageURL());
-	this.loadImage(("http://web.ipac.caltech.edu/staff/roby/demo/wise-m51-band1.fits"));
+    console.log(getNewImageURL());
+	this.loadImage(getNewImageURL());
+	// this.loadImage(("http://web.ipac.caltech.edu/staff/roby/demo/wise-m51-band1.fits"));
 	firefly.util.addActionListener(firefly.action.type.READOUT_DATA, this._cursorRead.bind(this));
 }
 
@@ -119,6 +119,10 @@ LSST.UI.Viewer.prototype.addExtension = function(title, type, f) {
 	firefly.util.image.extensionAdd(ext);
 }
 
+LSST.UI.Viewer.prototype.onCursorMove = function(c) {
+    this._onCursorMoveCallback = c;
+}
+
 LSST.UI.Viewer.prototype._cursorRead = function(action) {
 	if (action.payload.readoutItems.imagePt) {
 		var imgPt = action.payload.readoutItems.imagePt.value;
@@ -126,6 +130,10 @@ LSST.UI.Viewer.prototype._cursorRead = function(action) {
 		    this.cursorPoint = {
 			    x : imgPt.x,
 			    y : imgPt.y
+		    }
+		    
+		    if (this._onCursorMoveCallback) {
+		        this._onCursorMoveCallback(this.cursorPoint);
 		    }
 		}
 	}

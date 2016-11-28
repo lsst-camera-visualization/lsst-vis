@@ -43,8 +43,8 @@ LSST.UI.Viewer = function(options) {
 	// Init from UIElement
 	LSST.UI.UIElement.prototype._init.call(this, options);
 
-	this.loadImage(getNewImageURL());
-	// this.loadImage(("http://web.ipac.caltech.edu/staff/roby/demo/wise-m51-band1.fits"));
+	//this.loadImage(getNewImageURL());
+	this.loadImage(("http://web.ipac.caltech.edu/staff/roby/demo/wise-m51-band1.fits"));
 	firefly.util.addActionListener(firefly.action.type.READOUT_DATA, this._cursorRead.bind(this));
 }
 

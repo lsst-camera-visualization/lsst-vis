@@ -239,7 +239,6 @@ cmds = {
 	        }
 	        executeBackendFunction('chart', LSST.state.viewers.get(cmd_args.viewer_id), params,
 	            function(data) {
-	                console.log("Success: " + data);
 	                var h = LSST.UI.Histogram.fromJSONString(data);
 	                h.setFocus(true);
 	            },

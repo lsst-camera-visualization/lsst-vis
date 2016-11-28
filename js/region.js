@@ -66,11 +66,11 @@ LSST.UI.Circ.prototype.toDS9 = function() {
 }
 
 LSST.UI.Circ.prototype.toBoxText = function() {
-	
+
 }
 
 LSST.UI.Circ.Parse = function(circ) {
-	
+
 }
 
 

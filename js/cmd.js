@@ -1,13 +1,13 @@
 
 /*
-  _______    _     _         ____   __    _____            _             _       
- |__   __|  | |   | |       / __ \ / _|  / ____|          | |           | |      
-    | | __ _| |__ | | ___  | |  | | |_  | |     ___  _ __ | |_ ___ _ __ | |_ ___ 
+  _______    _     _         ____   __    _____            _             _
+ |__   __|  | |   | |       / __ \ / _|  / ____|          | |           | |
+    | | __ _| |__ | | ___  | |  | | |_  | |     ___  _ __ | |_ ___ _ __ | |_ ___
     | |/ _` | '_ \| |/ _ \ | |  | |  _| | |    / _ \| '_ \| __/ _ \ '_ \| __/ __|
     | | (_| | |_) | |  __/ | |__| | |   | |___| (_) | | | | ||  __/ | | | |_\__ \
     |_|\__,_|_.__/|_|\___|  \____/|_|    \_____\___/|_| |_|\__\___|_| |_|\__|___/
-                                                                                 
-                                                                                 
+
+
 1. Init of terminal
 2. Commands, as executed by the terminal
 3. Commands, as executed by the viewer toolbar
@@ -24,7 +24,7 @@ jQuery(document).ready(function() {
 			'description' : 'Calculates the average pixel value for the region.',
 			'doc_link' : docLink + '#average_pixel'
 		},
-		'chart json_file' : {
+		'chart viewer_id region' : {
 			callback : cmds.chart,
 		},
 		'clear_box box_id' : {
@@ -183,7 +183,7 @@ cmds = {
 
 			// Clear the viewer
 			viewer.clear();
-			
+
 			var region = LSST.UI.Region.Parse(regionParam);
 			viewer.drawRegions( [ region.toDS9() ], 'Average Pixel');
 
@@ -194,6 +194,7 @@ cmds = {
 
 			// Call average_pixel python task
 			var params = region.toBackendFormat();
+            console.log(params);
 			executeBackendFunction('average', viewer, params,
 				function(data) {
 					boxText = [
@@ -230,8 +231,23 @@ cmds = {
 	},
 
 	chart: function(cmd_args) {
-		var h = LSST.UI.Histogram.fromJSONFile(cmd_args.json_file);
-		h.setFocus(true);
+	    if (LSST.state.viewers.exists(cmd_args.viewer_id)) {
+	        region = LSST.UI.Region.Parse(cmd_args.region);
+	        params = {
+	            numBins : 10,
+	            region : region.toBackendFormat()
+	        }
+	        executeBackendFunction('chart', LSST.state.viewers.get(cmd_args.viewer_id), params,
+	            function(data) {
+	                var h = LSST.UI.Histogram.fromJSONString(data);
+	                h.setFocus(true);
+	            },
+
+	            function(data) {
+	                console.log("Failure: " + data);
+	            }
+	        );
+		}
 	},
 
 	clear_box: function(cmd_args) {
@@ -277,12 +293,12 @@ cmds = {
 		if (!LSST.state.viewers.exists(viewerID)) {
 			var viewer = new LSST.UI.Viewer( { name : viewerID } );
 			LSST.state.viewers.add(viewerID, viewer);
-			
+
 			viewer.addExtension('Average Pixel', 'AREA_SELECT', viewerCommands.average_pixel );
-			
+
 			var uvControl = new LSST.UI.UV_Control(viewer, "http://172.17.0.1:8099/vis/checkImage");
 			LSST.state.uvControls.add(viewerID, uvControl);
-			
+
 			cmds.show_viewer( { 'viewer_id' : viewerID } );
 		}
 		else {
@@ -658,9 +674,9 @@ cmds = {
 
 
 /*
- __      ___                           _____                                          _     
- \ \    / (_)                         / ____|                                        | |    
-  \ \  / / _  _____      _____ _ __  | |     ___  _ __ ___  _ __ ___   __ _ _ __   __| |___ 
+ __      ___                           _____                                          _
+ \ \    / (_)                         / ____|                                        | |
+  \ \  / / _  _____      _____ _ __  | |     ___  _ __ ___  _ __ ___   __ _ _ __   __| |___
    \ \/ / | |/ _ \ \ /\ / / _ \ '__| | |    / _ \| '_ ` _ \| '_ ` _ \ / _` | '_ \ / _` / __|
     \  /  | |  __/\ V  V /  __/ |    | |___| (_) | | | | | | | | | | | (_| | | | | (_| \__ \
      \/   |_|\___| \_/\_/ \___|_|     \_____\___/|_| |_| |_|_| |_| |_|\__,_|_| |_|\__,_|___/
@@ -670,10 +686,7 @@ var viewerCommands = {
 	average_pixel : function(data) {
 		var viewerID = data.plotId;
 		LSST.state.viewers.get(viewerID);
-		
+
 		console.log(data);
 	}
 }
-
-
-

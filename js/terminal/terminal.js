@@ -78,7 +78,7 @@ var LSST_TERMINAL = {
 				cmd_args[curr] = splitByParam[i];
 			}
 			
-			callback(cmd_args);
+			callback(cmd_args, input);
 			
 		}
 	},
@@ -101,6 +101,11 @@ var LSST_TERMINAL = {
 		}
 	
 		this.addCommand = function(cmd, helpText) {
+		    if (cmds[cmds.length - 1] == cmd) {
+		        index = cmds.length;
+		        return;
+		    }
+
 			cmds.push(cmd);
 			help.push(helpText);
 			

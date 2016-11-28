@@ -162,7 +162,6 @@ LSST.UI.UV_Control = function(viewer, imageRepository, bStartPaused = true, freq
 	this._newImage = null;
 
 	this._minimumFreq = 10000;
-
 	if (!this._bPaused)
 	    this.setFrequency(frequency);
 }

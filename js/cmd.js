@@ -160,7 +160,7 @@ var executeBackendFunction = function(nameOfTask, viewer, params, onFulfilled, o
 // Terminal commands handlers
 cmds = {
 
-	average_pixel: function(cmd_args) {
+	average_pixel: function(cmd_args, userInput) {
 		var boxID = cmd_args['box_id'];
 		var viewerID = cmd_args['viewer_id'];
 
@@ -214,7 +214,7 @@ cmds = {
 					boxText = [
 						'There was a problem with executing the average_pixel function',
 						'\n',
-						'Please make sure all parameters were typed in correctly',
+						new LSST.UI.BoxText('User Input', userInput, false),
 						new LSST.UI.BoxText('Error', data, false)
 					];
 

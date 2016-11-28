@@ -14,10 +14,10 @@ LSST.extend('LSST.UI')
 
 LSST.UI.Rect = function(x1, y1, x2, y2) {
 	this._data = {
-		x1 : Math.min(x1, x2),
-		y1 : Math.min(y1, y2),
-		x2 : Math.max(x1, x2),
-		y2 : Math.max(y1, y2)
+		x1 : Math.trunc(Math.min(x1, x2)),
+		y1 : Math.trunc(Math.min(y1, y2)),
+		x2 : Math.trunc(Math.max(x1, x2)),
+		y2 : Math.trunc(Math.max(y1, y2))
 	};
 }
 
@@ -42,6 +42,14 @@ LSST.UI.Rect.prototype.toBackendFormat = function() {
 		type : 'rect',
 		value : this._data
 	};
+}
+
+LSST.UI.Rect.prototype.toCmdLineFormat = function() {
+    return '(' + [ 'rect', this._data.x1, this._data.y1, this._data.x2, this._data.y2 ].join(' ') + ')';
+}
+
+LSST.UI.Rect.prototype.toCmdLineArrayFormat = function() {
+    return [ 'rect', this._data.x1, this._data.y1, this._data.x2, this._data.y2 ];
 }
 
 LSST.UI.Rect.Parse = function(rect) {

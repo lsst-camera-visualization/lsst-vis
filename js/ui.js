@@ -6,7 +6,7 @@ LSST.UI.state.topElement = null;
 // The base class of all UI elements
 LSST.UI.UIElement = function(options) {
 	// The HTML container for this element
-	this.html = null;
+	this.html = options.html;
 	
 	this._init(options);
 }

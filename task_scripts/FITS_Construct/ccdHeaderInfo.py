@@ -53,8 +53,8 @@ def _get_Header_Info(imgHDUs):
         boundary[seg_Y_converted][seg_X]['EXTNAME'] = header['EXTNAME']
         boundary_overscan[seg_Y_converted][seg_X] ={
                                                 # NOTE: DS9 box region start from top left corner
-                                                'x':seg_X*seg_dimension[0],
-                                                'y':seg_Y*seg_dimension[1]+seg_datadim[1]-1,
+                                                'x':seg_X*seg_dimension[0] + seg_datadim[0]/2,
+                                                'y':seg_Y*seg_dimension[1] + seg_datadim[1]/2,
                                                 'width':seg_datadim[0],
                                                 'height':seg_datadim[1],
                                                 'EXTNAME':header['EXTNAME']

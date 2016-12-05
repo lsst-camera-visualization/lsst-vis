@@ -507,9 +507,12 @@ cmds = {
             ];
             box.setText(boxText);
 
-			var readoutID = viewer.readout.register('READ_MOUSE', function(data) {
-                var mouse_x = Math.trunc(data.ipt.x);
-                var mouse_y = Math.trunc(data.ipt.y);
+			var readoutID = viewer.onCursorMove(function(data) {
+                var mouse_x = Math.trunc(data.x);
+                var mouse_y = Math.trunc(data.y);
+                
+                if (viewer.header == null)
+                    return;
 
                 var header_info = viewer.header['header'];
                 var width = header_info['SEG_DATASIZE']['x'];
@@ -542,9 +545,10 @@ cmds = {
 				];
 				box.setText(boxText);
 	  		});
+	  		
 	  		box.onClear(
 	  			function() {
-	    			viewer.readout.unregister('READ_MOUSE', readoutID);
+	    			viewer.onCursorMove(null);
 	  			}
 	  		);
 		}

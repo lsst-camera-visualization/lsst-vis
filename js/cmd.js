@@ -511,7 +511,7 @@ cmds = {
                 var mouse_x = Math.trunc(data.x);
                 var mouse_y = Math.trunc(data.y);
                 
-                if (viewer.header == null)
+                if (!viewer.header)
                     return;
 
                 var header_info = viewer.header['header'];
@@ -527,6 +527,9 @@ cmds = {
                 }
                 var seg_x = Math.floor(mouse_x/width);
                 var seg_y = num_y - 1 - Math.floor(mouse_y/height);
+
+                if (seg_y < 0 || seg_x < 0 || seg_y >= boundary.length || seg_x >= boundary[0].length)
+                    return;
 
 				boxText = [
 					'read_mouse',

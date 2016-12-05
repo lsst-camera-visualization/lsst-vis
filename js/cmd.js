@@ -509,6 +509,9 @@ cmds = {
 			var readoutID = viewer.onCursorMove(function(data) {
                 var mouse_x = Math.trunc(data.x);
                 var mouse_y = Math.trunc(data.y);
+                
+                if (viewer.header == null)
+                    return;
 
                 var header_info = viewer.header['header'];
                 var width = header_info['SEG_DATASIZE']['x'];

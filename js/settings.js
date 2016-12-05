@@ -54,6 +54,27 @@ jQuery(document).ready(function() {
 	};
 	
 	jQuery('#cmd_container').lsst_toolbar(toolbarInfo, options).draggable(draggableProp).resizable(resizableProp);
+	
+	
+	
+	
+	
+	// Set defaults for first time
+	if (!localStorage.getItem('LSST.state.defaults.viewer')) {
+	    LSST.state.defaults.viewer = 'ffview';
+	    localStorage.setItem('LSST.state.defaults.viewer', 'ffview');
+	}
+	else {
+	    LSST.state.defaults.viewer = localStorage.getItem('LSST.state.defaults.viewer');
+	}
+	
+	if (!localStorage.getItem('LSST.state.defaults.box')) {
+	    LSST.state.defaults.box = 'ffbox';
+	    localStorage.setItem('LSST.state.defaults.box', 'ffbox');
+	}
+	else {   
+	    LSST.state.defaults.box = localStorage.getItem('LSST.state.defaults.box');
+	}
 
 });
 
@@ -133,6 +154,115 @@ var onCSFTopClick = function() {
 		t.click(onChangeFocus);
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+   _____ _       _           _    _____      _   _   _                 
+  / ____| |     | |         | |  / ____|    | | | | (_)                
+ | |  __| | ___ | |__   __ _| | | (___   ___| |_| |_ _ _ __   __ _ ___ 
+ | | |_ | |/ _ \| '_ \ / _` | |  \___ \ / _ \ __| __| | '_ \ / _` / __|
+ | |__| | | (_) | |_) | (_| | |  ____) |  __/ |_| |_| | | | | (_| \__ \
+  \_____|_|\___/|_.__/ \__,_|_| |_____/ \___|\__|\__|_|_| |_|\__, |___/
+                                                              __/ |    
+                                                             |___/     
+*/
+var onGlobalSettingsClick = function() {
+    if (jQuery('#global_settings_popup').length != 0) {
+        jQuery('#global_settings_popup').detach();
+        return;
+    }
+    
+    var popup = jQuery(
+        ' \
+            <div id="global_settings_popup"> \
+                <p id="global_settings_title">Global Settings</p> \
+                <li><div>Default Viewer</div> \
+                    <ul id="global_settings_viewers" class="global_settings_ul"> \
+                    </ul> \
+                </li> \
+                <li><div>Default Box</div> \
+                    <ul id="global_settings_boxes" class="global_settings_ul"> \
+                    </ul> \
+                </li> \
+            </div> \
+        '
+    );
+    
+    jQuery('body').append(popup);
+    
+    // Add viewers to list
+    var viewerList = jQuery('#global_settings_viewers');
+    LSST.state.viewers.foreach(function(e) {
+        var display = e.name;
+        if (display === LSST.state.defaults.viewer)
+            display += '*'
+        
+        viewerList.append('<li><div>' + display + '</div></li>').click(function() {
+            LSST.state.defaults.viewer = e.name;
+	        // localStorage.setItem('LSST.state.defaults.viewer', e.name);
+        });
+    });
+    
+    // Add boxes to list
+    var boxList = jQuery('#global_settings_boxes');
+    LSST.state.boxes.foreach(function(e) {
+        var display = e.name;
+        if (display === LSST.state.defaults.box)
+            display += '*'
+            
+        boxList.append('<li><div>' + display + '</div></li>').click(function() {
+            LSST.state.defaults.box = e.name;
+	        // localStorage.setItem('LSST.state.defaults.box', e.name);
+        });
+    });
+    
+    jQuery('#global_settings_popup').menu();
+    
+    jQuery(document).click(function(e) {
+        if (jQuery('#global_settings').is(e.target))
+            return;
+            
+        var elem = jQuery('#global_settings_popup');
+    
+        var bIs = !elem.is(e.target);
+		var bHas = (elem.has(e.target).length == 0);
+		if (bIs && bHas) {
+			// We clicked outside the form
+			elem.detach();
+		}
+    });
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

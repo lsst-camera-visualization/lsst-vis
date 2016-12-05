@@ -316,6 +316,9 @@ cmds = {
 		if (LSST.state.boxes.exists(boxID)) {
 			LSST.state.boxes.get(boxID).destroy();
 			LSST.state.boxes.remove(boxID);
+			
+			if (LSST.state.defaults.box == boxID)
+			    LSST.state.defaults.box = null;
 
 			LSST.state.term.deleteParameterAuto('box_id', boxID);
 		}

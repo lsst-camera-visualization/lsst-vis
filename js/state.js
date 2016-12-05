@@ -11,6 +11,12 @@ LSST.state = {
 
 	// A handle to the terminal
 	term : null,
+	
+	// Defaults for terminal
+	defaults : {
+	    viewer : null,
+	    box : null,
+	}
 };
 
 var onFireflyLoaded = function() {

@@ -76,6 +76,14 @@ LSST.UI.UIElementList = function() {
 	this.exists = function(id) {
 		return (id.toLowerCase() in elements);
 	}
+	
+	this.foreach = function(f) {
+	    for (var e in elements) {
+            if (elements.hasOwnProperty(e)) {
+                f(elements[e]);
+            }
+        }
+	}
 }
 
 

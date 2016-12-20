@@ -332,6 +332,52 @@ img:hover {
 
 
 
+#global_settings {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+}
+
+#global_settings_popup {
+    position: absolute;
+    top: 50px;
+    left: 50px;
+    
+    padding: 20px;
+    
+    font-size: 200%;
+    
+    background: white;
+    z-index: 9999;
+    
+    border: 5px solid black;
+}
+
+#global_settings_title {
+    text-align: center;
+    border-bottom: 2px solid black;
+    
+    font-size: 150%;
+    margin-bottom: 5px;
+}
+
+.global_settings_elem {
+    background: #ccc;
+    margin-bottom: 2px;
+}
+
+.global_settings_ul {
+    background: #999;
+    display: block;
+    width: 100%;
+}
+
+
+
+
+
+
+
 
 
 

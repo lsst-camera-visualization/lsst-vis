@@ -1,11 +1,11 @@
 LSST.extend('LSST.UI');
 
-// Represents a visual chart.
+// Represents a histogram.
 //
-// In order to create a new chart, one should use one of the following functions (declared at the bottom of the page):
-//		- Chart.fromJSONFile
-//		- Chart.fromJSONString
-//		- Chart.fromObject
+// In order to create a new histogram, one should use one of the following functions (declared at the bottom of the page):
+//		- LSST.UI.Histogram.FromJSONFile
+//		- LSST.UI.Histogram.FromJSONString
+//		- LSST.UI.Histogram.FromObject
 LSST.UI.Histogram = function() {
 
 	this._desc = null;
@@ -63,7 +63,6 @@ LSST.UI.Histogram._count = 0;
 //					  It will contain the following properties (* properties are required):
 //						title - The title of the chart, which is displayed to the user
 //						data* - The data that the chart will display.
-// 					  See frontend/test_graph.json for example
 LSST.UI.Histogram.prototype.set = function(desc) {
 	this._desc = desc;
 	var title = 'Histogram';
@@ -86,16 +85,16 @@ LSST.UI.Histogram.prototype.resize = function() {
 		this.set(this._desc);
 }
 
-// Destroys this histogram
+// Destroys this histogram.
 LSST.UI.Histogram.prototype.destroy = function() {
 	// Remove the html element from the page
 	this.html.remove();
 }
 
-// Creates a chart from a JSON file.
-// @param file - The JSON file representing this chart
-// @return The newly created chart
-LSST.UI.Histogram.fromJSONFile = function(file) {
+// Creates a histogram from a JSON file.
+// @param file - The JSON file representing this histogram. See LSST.UI.Histogram.FromObject for file formatting.
+// @return The newly created histogram.
+LSST.UI.Histogram.FromJSONFile = function(file) {
 	var h = new LSST.UI.Histogram();
 	var createHisto = function(data) {
 		console.log(data);
@@ -111,25 +110,23 @@ LSST.UI.Histogram.fromJSONFile = function(file) {
 	return h;
 }
 
-// Creates a chart from a JSON formatted string.
-// @param str - The JSON formatted string
-// @return The newly created chart
-LSST.UI.Histogram.fromJSONString = function(data) {
+// Creates a histogram from a JSON formatted string.
+// @param str - The JSON formatted string. See LSST.UI.Histogram.FromObject for file formatting.
+// @return The newly created histogram.
+LSST.UI.Histogram.FromJSONString = function(data) {
 	// NOTE: returned data from backend should already be a json file.
 	var h = new LSST.UI.Histogram();
 	h.set(data);
 	return h;
 }
 
-// Creates a chart from an object, following the chart guidelines.
-// @param desc - An object describing the chart.
+// Creates a histogram from an object, following the chart guidelines.
+// @param desc - An object describing the histogram.
 	//					  It will contain the following properties (* properties are required):
-	//						title - The title of the chart, which is displayed to the user
-	//						type* - The type of chart used, must be one of the following:
-	//							- "Discrete Bar"
-	//						data* - The data that the chart will display. Since we use nvd3 to display the charts, it follows their guidelines
-	// 					  See frontend/test_graph.json for example
-LSST.UI.Histogram.fromObject = function(desc) {
+	//						title - The title of the histogram, which is displayed to the user.
+	//						data* - The data that the histogram will display. Check wiki for example link.
+// @return The newly created histogram.
+LSST.UI.Histogram.FromObject = function(desc) {
 	var h = new LSST.UI.Histogram();
 	h.set(desc);
 	return h;

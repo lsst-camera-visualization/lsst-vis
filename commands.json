@@ -1,6 +1,6 @@
 {
 
-  "average_pixel box_id viewer_id region" : {
+    "average_pixel box_id viewer_id region" : {
 			"description" : "Calculates the average pixel value for the region.",
 			"doc_link" : "https://github.com/lsst-camera-visualization/frontend/wiki#average_pixel"
 		},

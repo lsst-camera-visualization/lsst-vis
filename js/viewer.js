@@ -91,16 +91,39 @@ LSST.UI.Viewer.prototype.loadImage = function(image) {
 	this.show_boundary = false;
 	this.header = null;
 
-	firefly.showImage(this.name, {
-		plotId : this.name,
-		URL : image,
-		Title : this.name,
-		ZoomType : 'TO_WIDTH',
-		ZoomToWidth : '100%'
-	});
+	var re = /^https?:/;
+	var result = "Image: " + image;
+	if (re.test(image)) { // this is a URL
+		firefly.showImage(this.name, {
+			plotId : this.name,
+			URL : image,
+			Title : result,
+			ZoomType : "TO_WIDTH",
+			ZoomToWidth : '100%'
+		});
+
+	} else {
+		result = image + " !matched " + re;
+		viewer.showImage(this.name, {
+			plotId : this.name,
+			File : image,
+			Title : result,
+			ZoomType : "TO_WIDTH",
+			ZoomToWidth : '100%'
+		});
+	}
+
+	// firefly.showImage(this.name, {
+	// 	plotId : this.name,
+	// 	URL : image,
+	// 	Title : this.name,
+	// 	ZoomType : 'TO_WIDTH',
+	// 	ZoomToWidth : '100%'
+	// });
 
 	this.image_url = image;
 	this.original_image_url = getNewOriginalImageURL(image);
+	return result;
 }
 
 // Adds a context extension to the viewer.
@@ -131,7 +154,7 @@ LSST.UI.Viewer.prototype._cursorRead = function(action) {
 			    x : imgPt.x,
 			    y : imgPt.y
 		    }
-		    
+
 		    if (this._onCursorMoveCallback) {
 		        this._onCursorMoveCallback(this.cursorPoint);
 		    }
@@ -354,7 +377,7 @@ function loadFirefly(viewId, url){
 
 // A function that gets the url of the image to be loaded.
 function getNewImageURL(){
-	return document.location.origin+"/static/images/imageE2V_trimmed.fits";
+	return document.location.origin+"/static/images/imageE2V_trimmed";
 }
 
 function getNewOriginalImageURL(imageName){

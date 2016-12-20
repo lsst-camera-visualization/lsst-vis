@@ -172,7 +172,7 @@ var executeBackendFunction = function(nameOfTask, viewer, params, onFulfilled, o
 	}else{
 		params.image_url = viewer.image_url;
 	}
-	
+
 	firefly.getJsonFromTask( 'python', nameOfTask, params ).then(function(data){onFulfilled(data);}).catch(function(data){onRejected(data);})
 }
 
@@ -214,7 +214,7 @@ cmds = {
 
 			// Call average_pixel python task
 			var params = region.toBackendFormat();
-			
+
 			executeBackendFunction('average', viewer, params,
 				function(data) {
 					boxText = [
@@ -425,27 +425,11 @@ cmds = {
 		var help_string = 'load an image from a URI';
 		var viewerID = cmd_args['viewer_id'];
 		var uri = cmd_args['uri'];
-		var re = /^https?:/;
-		var result = "";
-		result = "Image: " + uri;
-		var viewer = LSST.state.viewers.get(viewerID).ffHandle;
-		if (re.test(uri)) { // this is a URL
-		    viewer.plot({
-		        "URL" : uri,
-		        "Title" : result,
-		        "ZoomType" : "TO_WIDTH"
-		    });
-		    LSST.state.term.lsst_term('echo', result);
-		} else {
-		    result = uri + " !matched " + re;
-		    viewer.plot({
-		        "File" : uri,
-		        "Title" : result,
-		        "ZoomType" : "TO_WIDTH"
-		    });
-		    LSST.state.term.lsst_term('echo', result);
-		}
+		var viewer = LSST.state.viewers.get(viewerID);
+    var result = viewer.loadImage(uri);
+
 		LSST.state.viewers.get(viewerID).image_url = uri;
+		LSST.state.term.echo(result);
 		console.log(LSST.state.viewers.get(viewerID));
 		return null;
 	},
@@ -531,7 +515,7 @@ cmds = {
 			var readoutID = viewer.onCursorMove(function(data) {
                 var mouse_x = Math.trunc(data.x);
                 var mouse_y = Math.trunc(data.y);
-                
+
                 if (!viewer.header)
                     return;
 
@@ -569,7 +553,7 @@ cmds = {
 				];
 				box.setText(boxText);
 	  		});
-	  		
+
 	  		box.onClear(
 	  			function() {
 	    			viewer.onCursorMove(null);
@@ -724,7 +708,7 @@ viewerCommandParameterForms = {
             <input type="text" data-param-name="box_id"/> \
           </div> \
         '),
-        
+
     'VCHOT' :
         jQuery(
         ' \
@@ -733,7 +717,7 @@ viewerCommandParameterForms = {
             <input type="text" data-param-name="threshold"/> \
           </div> \
         '),
-        
+
 	'VCCHART' :
         jQuery(
         ' \
@@ -755,10 +739,10 @@ viewerCommandParameterForms = {
 var viewerCommands = {
 	display_area_commands : function(data) {
 	    var viewerID = data.plotId;
-	    
+
 	    if (jQuery('.viewer-command-container').size() > 0)
 	        return;
-	        
+
 	    container = jQuery(' \
 		    <div class="viewer-command-container"> \
               <div class="viewer-command-left"> \
@@ -776,7 +760,7 @@ var viewerCommands = {
             </div> \
             '
 	    );
-	    
+
 	    var options = {
 	        toolbar : {
 	            desc : [
@@ -795,18 +779,18 @@ var viewerCommands = {
 	        html : container
 	    }
 	    popup = new LSST.UI.UIElement(options);
-	    
+
 	    jQuery('body').append(container);
-	    
+
 	    jQuery('.viewer-command-entry').click(function() {
             var id = jQuery(this).attr('id')
 
             var form = jQuery('#viewer-command-params').empty()
             form.append(viewerCommandParameterForms[id]);
-            
+
             LSST.state.currentViewerCommand = jQuery(this).data('cmd');
         });
-        
+
         jQuery('#viewer-command-execute').click(function() {
             var form = jQuery('#viewer-command-params');
             var entries = form.children('.viewer-command-params-entry');
@@ -815,12 +799,12 @@ var viewerCommands = {
                 e = jQuery(elem);
                 params[e.data('param-name')] = e.val();
             });
-            
+
             params.viewer_id = viewerID;
             params.region = new LSST.UI.Rect(data.ipt0.x, data.ipt0.y, data.ipt1.x, data.ipt1.y).toCmdLineArrayFormat();
-            
+
             cmds[LSST.state.currentViewerCommand](params);
-            
+
             container.remove();
         });
 	}

@@ -551,30 +551,34 @@ cmds = {
 			LSST.state.uvControls.get(viewerID).loadNewImage();
 		}
 		else {
-            LSST.state.term.lsst_term('echo', 'A viewer with the name \'' + viewerID + '\' does not exist!');
+      LSST.state.term.lsst_term('echo', 'A viewer with the name \'' + viewerID + '\' does not exist!');
 		}
 	},
 
 	uv_pause: function(cmd_args) {
-	    var viewerID = cmd_args['viewer_id'];
+    var viewerID = cmd_args['viewer_id'];
 
-	    if (LSST.state.viewers.exists(viewerID)) {
-			LSST.state.uvControls.get(viewerID).pause();
-		}
-		else {
-            LSST.state.term.lsst_term('echo', 'A viewer with the name \'' + viewerID + '\' does not exist!');
-		}
+    if (LSST.state.viewers.exists(viewerID)) {
+		  LSST.state.uvControls.get(viewerID).pause();
+	  }
+	  else {
+      LSST.state.term.lsst_term('echo', 'A viewer with the name \'' + viewerID + '\' does not exist!');
+	  }
 	},
 
 	uv_resume: function(cmd_args) {
-	    var viewerID = cmd_args['viewer_id'];
+    var viewerID = cmd_args['viewer_id'];
 
-	    if (LSST.state.viewers.exists(viewerID)) {
-			LSST.state.uvControls.get(viewerID).resume();
+    if (LSST.state.viewers.exists(viewerID)) {
+		  LSST.state.uvControls.get(viewerID).resume();
 		}
 		else {
-            LSST.state.term.lsst_term('echo', 'A viewer with the name \'' + viewerID + '\' does not exist!');
+      LSST.state.term.lsst_term('echo', 'A viewer with the name \'' + viewerID + '\' does not exist!');
 		}
+	},
+	
+	uv_start : function(cmd_args) {
+	  cmds.uv_resume(cmd_args);
 	},
 
 	uv_update: function(cmd_args) {

@@ -1,0 +1,17 @@
+
+.chart {
+	position: absolute;
+	left: 5px;
+	top: 5px;
+
+	width: 500px;
+	height: 300px;
+	
+	border: solid 2px #aaf;
+	padding: 10px;
+	background-color: #fff;	
+}
+
+.chart-body {
+	margin: auto;
+}

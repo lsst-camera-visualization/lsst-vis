@@ -18,7 +18,33 @@ LSST.extend('LSST.UI');
 // - header: Store the header information of the image in the Viewer.
 LSST.UI.Viewer = function(options) {
 
-	this.html = jQuery(createViewerSkeleton(options.name));
+	this.html = jQuery(
+	  " \
+	  <div class='viewer'> \
+	    <p class='viewer-title'>" + options.name + "</p> \
+	    <div id=" + options.name + " class='viewer-view'></div> \
+	    <div class='viewer-info'> \
+	      <div class='viewer-uv'> \
+	        <p class='viewer-uv-header'>Update Viewer Settings</p> \
+          <input class='viewer-uv-button viewer-uv-pr' type='button' value='Resume' data-viewerID=" + options.name + "> \
+          <input class='viewer-uv-button viewer-uv-un' type='button' value='There are no new images.' data-viewerID=" + options.name + " disabled> \
+	      </div> \
+	    </div> \
+	  </div> \
+	  "
+	);
+	jQuery('body').append(this.html);
+	
+	this.html.find('.viewer-uv-pr').click(function() {
+	  if (jQuery(this).attr("value") == "Resume") 
+	    cmds.uv_resume( { viewer_id : jQuery(this).data("viewerid") } );
+	  else
+	    cmds.uv_pause( { viewer_id : jQuery(this).data("viewerid") } );
+	});
+	this.html.find('.viewer-uv-un').click(function() {
+	  cmds.uv_load_new( { viewer_id : jQuery(this).data("viewerid") } );
+	});
+	
 
 	this.header = null;
 	this.show_boundary = false;
@@ -195,8 +221,9 @@ LSST.UI.UV_Control = function(viewer, imageRepository, bStartPaused = true, freq
 	this._newImage = null;
 
 	this._minimumFreq = 10000;
-	if (!this._bPaused)
-	    this.setFrequency(frequency);
+	
+	// PUT THIS LINE BACK IN, ONCE WE GET THE REAL SERVER
+	// this.setFrequency(frequency);
 }
 
 // Sets the new update frequency for this control.
@@ -216,8 +243,7 @@ LSST.UI.UV_Control.prototype.loadNewImage = function() {
 			this._viewer.loadImage(this._newImage);
 
 			// Change button status
-			var id = this._viewer.name + '---update_now';
-			var button = jQuery('input[data-buttonID="' + id + '"]');
+			var button = this._viewer.html.find('.viewer-uv-un');
 			button.prop('disabled', true);
 			button.attr('value', 'There are no new images.');
 		}
@@ -229,19 +255,15 @@ LSST.UI.UV_Control.prototype.loadNewImage = function() {
 // Pauses this viewer control
 LSST.UI.UV_Control.prototype.pause = function() {
 	this._bPaused = true;
-
-	var id = this._viewer.name + '---pause_resume';
-	var button = jQuery('input[data-buttonID="' + id + '"]');
-	button.attr('value', 'Resume');
+	
+	var button = this._viewer.html.find(".viewer-uv-pr").attr('value', 'Resume');
 }
 
 // Resumes this viewer control
 LSST.UI.UV_Control.prototype.resume = function() {
 	this._bPaused = false;
 
-	var id = this._viewer.name + '---pause_resume';
-	var button = jQuery('input[data-buttonID="' + id + '"]');
-	button.attr('value', 'Pause');
+	var button = this._viewer.html.find(".viewer-uv-pr").attr('value', 'Pause');
 
 	// Load new image, if it exists
 	this.loadNewImage();
@@ -255,28 +277,26 @@ LSST.UI.UV_Control.prototype.update = function() {
 
    	var updateFunc = function(data) {
    		if (data) {
-            // There's a new image.
-            this._timestamp = data.timestamp;
-            this._newImage = data.uri;
+        // There's a new image.
+        this._timestamp = data.timestamp;
+        this._newImage = data.uri;
 
-			if (!this._bPaused) {
-				this.loadNewImage();
-			}
-			else {
-				var id = this._viewer.name + '---update_now';
-				var button = jQuery('input[data-buttonID="' + id + '"]');
-				button.prop('disabled', false);
-				button.attr('value', 'There is a new image available. Click to load.');
-			}
-		}
+			  if (!this._bPaused) {
+				  this.loadNewImage();
+			  }
+			  else {
+				  this._viewer.html.find('.viewer-uv-un');
+				  button.prop('disabled', false);
+				  button.attr('value', 'There is a new image available. Click to load.');
+			  }
+		  }
 
-		if (this._newImage == null) {
-			// Displayed when there is no new image, or the new image is done loading.
-			var id = this._viewer.name + '---update_now';
-			var button = jQuery('input[data-buttonID="' + id + '"]');
-			button.prop('disabled', true);
-			button.attr('value', 'There are no new images.');
-		}
+		  if (this._newImage == null) {
+			  // Displayed when there is no new image, or the new image is done loading.
+			  this._viewer.html.find('.viewer-uv-un');
+			  button.prop('disabled', true);
+			  button.attr('value', 'There are no new images.');
+		  }
    	}.bind(this);
 
     jQuery.getJSON(this.imageRepo, params, updateFunc);
@@ -303,77 +323,6 @@ LSST.UI.UV_Control.prototype.update = function() {
                                     | |                             __/ |
                                     |_|                            |___/
 */
-
-// Handles button clicks for viewers
-var onClickViewer = function() {
-	var id = jQuery(this).attr('data-buttonID');
-    var viewerID = id.split('---')[0];
-    var whichButton = id.split('---')[1];
-
-    switch (whichButton)
-    {
-        case "pause_resume":
-            if (jQuery(this).attr('value') == "Pause")
-            	cmds.uv_pause( { 'viewer_id' : viewerID } );
-            else
-                cmds.uv_resume( { 'viewer_id' : viewerID } );
-
-            break;
-
-        case "update_now":
-            cmds.uv_load_new( { 'viewer_id' : viewerID } );
-            break;
-    }
-};
-
-
-// Creates an HTML skeleton of a viewer. The parent container is called viewerID-container (ie ffview-container).
-var createViewerSkeleton = function(viewerID) {
-
-	var container = jQuery('<div>').addClass('viewer');
-	var infoHeader = jQuery('<p>').addClass('viewer-title').text(viewerID);
-	var viewer = jQuery('<div>').addClass('viewer-view').attr('id', viewerID);
-
-	var viewerInfo = jQuery('<div>').addClass('viewer-info');
-
-	var updateViewer = jQuery('<div>').addClass('viewer-data border-right');
-	var UVHeader = jQuery('<p>').addClass('viewer-data-header').text('Update Viewer Settings');
-	var UVPauseResume = jQuery('<input>').addClass('button').on('click', onClickViewer).attr('type', 'button').attr('value', 'Resume').attr('data-buttonID', viewerID + '---pause_resume');
-	var UVUpdateNow = jQuery('<input>').addClass('button').on('click', onClickViewer).attr('type', 'button').attr('value', 'There are no new images.').attr('data-buttonID', viewerID + '---update_now').prop('disabled', true);
-
-	var terminalVariables = jQuery('<div>').addClass('viewer-data');
-	var TVHeader = jQuery('<p>').addClass('viewer-data-header').text('Terminal Variables');
-	var TVSelected = jQuery('<p>').addClass('viewer-data-text viewer-data-text-unselected').attr('id', viewerID + '-var-selected').text('selected');
-
-	container.append(infoHeader);
-	container.append(viewer);
-
-	container.append(viewerInfo);
-
-	viewerInfo.append(updateViewer);
-	updateViewer.append(UVHeader);
-	updateViewer.append(UVPauseResume);
-	updateViewer.append(UVUpdateNow);
-
-	viewerInfo.append(terminalVariables);
-	terminalVariables.append(TVHeader);
-	terminalVariables.append(TVSelected);
-
-	$('body').append(container);
-
-	return container;
-}
-
-// A function that loads Firefly viewer.
-function loadFirefly(viewId, url){
-    var primaryViewer = firefly.makeImageViewer(viewId);
-    primaryViewer.plot({
-        "URL" : url,
-        "Title" : "Some WISE image",
-        "ZoomType" : "FULL_SCREEN"
-    });
-    return primaryViewer;
-}
 
 // A function that gets the url of the image to be loaded.
 function getNewImageURL(){

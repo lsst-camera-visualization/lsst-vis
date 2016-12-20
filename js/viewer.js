@@ -377,7 +377,7 @@ function loadFirefly(viewId, url){
 
 // A function that gets the url of the image to be loaded.
 function getNewImageURL(){
-	return document.location.origin+"/static/images/imageE2V_trimmed";
+	return document.location.origin+"/static/images/imageE2V_trimmed.fits";
 }
 
 function getNewOriginalImageURL(imageName){

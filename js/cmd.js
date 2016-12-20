@@ -19,149 +19,55 @@ LSST.extend('LSST.state')
 
 jQuery(document).ready(function() {
 
-    var docLink = 'https://github.com/lsst-camera-visualization/frontend/wiki';
-	var commands = {
-		'average_pixel box_id viewer_id region' : {
-			'callback' : cmds.average_pixel,
-			'description' : 'Calculates the average pixel value for the region.',
-			'doc_link' : docLink + '#average_pixel'
-		},
-		'chart viewer_id region num_bins min max' : {
-			callback : cmds.chart,
-		},
-		'clear_box box_id' : {
-			'callback' : cmds.clear_box,
-			'description' : 'Clears an information box.',
-			'doc_link' : docLink + '#clear_box'
-		},
-		'clear_viewer viewer_id' : {
-		    'callback' : cmds.clear_viewer,
-		    'description' : 'Clears a viewer.',
-		    'doc_link' : docLink + '#clear_viewer'
-		},
-	    'create_box box_id' : {
-			'callback' : cmds.create_box,
-			'description' : 'Creates a new box for displaying information.',
-			'doc_link' : docLink + '#create_box'
-		},
-		'create_viewer viewer_id' : {
-			'callback' : cmds.create_viewer,
-			'description' : 'Creates a new viewer.',
-			'doc_link' : docLink + '#create_viewer'
-		},
-		'delete_box box_id' : {
-			'callback' : cmds.delete_box,
-			'description' : 'Deletes an existing information box.',
-			'doc_link' : docLink + '#delete_box'
-		},
-		'hide_box box_id' : {
-			'callback' : cmds.hide_box,
-			'description' : 'Hides an information box.',
-			'doc_link' : docLink + '#hide_box'
-		},
-		'hide_boundary viewer_id' : {
-			'callback' : cmds.hide_boundary,
-			'description' : 'Hide the boudary of amplifiers in the specified viewer.',
-			'doc_link' : docLink + '#hide_boundary'
-		},
-		'hot_pixel viewer_id threshold region' : {
-			'callback' : cmds.hot_pixel,
-			'description' : 'Calculates the hot pixels within the threshold for the region.',
-			'doc_link' : docLink + '#hot_pixel'
-		},
-		'load_image viewer_id uri' : {
-			'callback' : cmds.load_image
-		},
-		'read_mouse viewer_id box_id' : {
-			'callback' : cmds.read_mouse,
-			'description' : 'Tracks the mouse inside of the view \'viewer_id\' and displays the information in the box \'box_id\'.',
-		},
-		'show_boundary viewer_id' : {
-			'callback' : cmds.show_boundary,
-			'description' : 'Show the boudary of amplifiers in the specified viewer.',
-			'doc_link' : docLink + '#show_boundary'
-		},
-		'show_box box_id' : {
-			'callback' : cmds.show_box,
-			'description' : 'Shows a hidden information box.',
-			'doc_link' : docLink + '#show_box'
-		},
-		'show_viewer viewer_id' : {
-			'callback' : cmds.show_viewer,
-			'description' : 'Maximizes a viewer and brings it to the front of the window.',
-			'doc_link' : docLink + '#show_viewer'
-		},
-		'uv_freq viewer_id time_in_millis' : {
-			'callback' : cmds.uv_freq,
-			'description' : 'Changes the frequency for checking for new images from the Rest Server.',
-			'doc_link' : docLink + '#uv_freq'
-		},
-		'uv_load_new viewer_id' : {
-			'callback' : cmds.uv_load_new,
-			'description' : 'If in a paused LSST.state and there is a new image available, calling this command will load the new image without changing the LSST.state.',
-			'doc_link' : docLink + '#uv_load_new'
-		},
-		'uv_pause viewer_id' : {
-			'callback' : cmds.uv_pause,
-			'description' : 'Pauses the automatic retrieval of new images from the Rest Server.',
-			'doc_link' : docLink + '#uv_pause'
-		},
-		'uv_resume viewer_id' : {
-			'callback' : cmds.uv_resume,
-			'description' : 'Pauses the automatic retrieval of new images from the Rest Server.',
-			'doc_link' : docLink + '#uv_resume'
-		},
-		'uv_start viewer_id' : {
-			callback : cmds.uv_resume,
-			description : 'Begins the update viewer cycle for a viewer.',
-			doc_link : docLink + '#uv_start'
-		},
-		'uv_update viewer_id' : {
-			'callback' : cmds.uv_update,
-			'description' : 'Updates a viewer immediately, bypassing the update_viewer_freq interval.',
-			'doc_link' : docLink + '#uv_update'
-		},
-	};
+  jQuery.getJSON("commands.json", function(data) {
+    for (command in data) {
+      if (data.hasOwnProperty(command)) {
+        var commandName = LSST_TERMINAL.Utility.SplitStringByWS(command)[0];
+        data[command].callback = cmds[commandName];
+      }
+    }
 	
-	var terminalOptions = {
-	  // The description of commands that can be entered by the user
-	  commands : commands,
-	  
-	  // Parameters that require more than a single word.
-	  // These will be wrapped in parenthesis's by the user.
-	  subCommands : [
-	    'rect x1 y1 x2 y2',
-	    'circ originX originY radius'
-	  ],
-	  
-	  // Parameters that can be auto completed using tab.
-	  // Will be updated (through code) when necessary, through a terminal function.
-	  autoCompleteParams : {
-		  'box_id' : [ 'ffbox' ],
-		  'viewer_id' : [ 'ffview' ]
-	  },
-	  
-	  // Hints for certain parameters. Will be displayed to the user
-	  // when he/she comes upon this parameter.
-	  paramsWithHint : {
-	    'region' : 'Hint: (rect), (circ), or selected'
-	  },
-	  
-	  // Various properties for the terminal.
-	  properties : {
-	    helpLink : docLink,
-	    prefix : '~>',
-	    fontSize : '150%'
-	  },
-	  
-	  defaults : {
-	    "viewer_id" : LSST.state.defaults.viewer,
-	    "box_id" : LSST.state.defaults.box
+	  var terminalOptions = {
+	    // The description of commands that can be entered by the user
+	    commands : data,
+	    
+	    // Parameters that require more than a single word.
+	    // These will be wrapped in parenthesis's by the user.
+	    subCommands : [
+	      'rect x1 y1 x2 y2',
+	      'circ originX originY radius'
+	    ],
+	    
+	    // Parameters that can be auto completed using tab.
+	    // Will be updated (through code) when necessary, through a terminal function.
+	    autoCompleteParams : {
+		    'box_id' : [ 'ffbox' ],
+		    'viewer_id' : [ 'ffview' ]
+	    },
+	    
+	    // Hints for certain parameters. Will be displayed to the user
+	    // when he/she comes upon this parameter.
+	    paramsWithHint : {
+	      'region' : 'Hint: (rect), (circ), or selected'
+	    },
+	    
+	    // Various properties for the terminal.
+	    properties : {
+	      helpLink : "https://github.com/lsst-camera-visualization/frontend/wiki",
+	      prefix : '~>',
+	      fontSize : '150%'
+	    },
+	    
+	    defaults : {
+	      "viewer_id" : LSST.state.defaults.viewer,
+	      "box_id" : LSST.state.defaults.box
+	    }
+	    
 	  }
-	  
-	}
 	
-	LSST.state.term = jQuery('#cmd').lsst_term( terminalOptions );
+	  LSST.state.term = jQuery('#cmd').lsst_term( terminalOptions );
+  }).fail( function(jqXHR, textStatus, errorThrown) { console.log("Error loading commands.json: " + errorThrown); });
+  
 });
 
 

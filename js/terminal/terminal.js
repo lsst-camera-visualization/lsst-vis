@@ -516,22 +516,24 @@ var LSST_TERMINAL = {
   		
   		var command = getCommand(input.toLowerCase());    		
   		if (command) {
+  		  // Add parameter to auto complete, if necessary
+  		  var splitByParams = LSST_TERMINAL.Utility.SplitStringByParameter(input, properties.multiStart, properties.multiEnd);
+        splitByParams.shift();
+        for (var i = 0; i < splitByParams.length; i++) {
+        	var currParam = command.parameters[i];
+        	if (currParam in paramAutoCompletes) {
+        		var currAC = paramAutoCompletes[currParam];
+        		currAC.insert(splitByParams[i]);
+        	}
+        }
+  		  
+  		  // Execute the command
   			command.execute(input, properties.multiStart, properties.multiEnd);
   		}
   		else {
   			cmd_echo( { 'string' : 'Please enter a valid command!\n' } );
   			return;
 	    }
-	
-      var splitByParams = LSST_TERMINAL.Utility.SplitStringByParameter(input, properties.multiStart, properties.multiEnd);
-      splitByParams.shift();
-      for (var i = 0; i < splitByParams.length; i++) {
-      	var currParam = command.parameters[i];
-      	if (currParam in paramAutoCompletes) {
-      		var currAC = paramAutoCompletes[currParam];
-      		currAC.insert(splitByParams[i]);
-      	}
-      }
   	}	
   
   	var createHelpText = function(input) {
@@ -635,12 +637,14 @@ var LSST_TERMINAL = {
   	
   	function deleteParameterAuto(param, value) {
   	  var paramAutoCompletes = getOption("paramAutoCompletes");
-  	    	
+  	 
   		if (param in paramAutoCompletes) {
   			var array = paramAutoCompletes[param].getArray();
+  			
   			var idx = array.indexOf(value);
   			if (idx != -1) {
   				array.splice(idx, 1);
+  				paramAutoCompletes[param] = new LSST_TERMINAL.AutoCompleteArray(array);
   			}
   		}
   		

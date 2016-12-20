@@ -58,8 +58,17 @@ jQuery(document).ready(function() {
 	
 	
 	
+	LSST.state.defaults.viewer = "ffview";
+	LSST.state.defaults.box = "ffbox";
 	
+	if (LSST.state.term) {
+	  LSST.state.term.lsst_term("setDefault", { param : "viewer_id", value : LSST.state.defaults.viewer } );
+	  LSST.state.term.lsst_term("setDefault", { param : "box_id", value : LSST.state.defaults.box } );
+	}
+	
+	// For future use, as we don't save anything in a session
 	// Set defaults for first time
+	/*
 	if (!localStorage.getItem('LSST.state.defaults.viewer')) {
 	    LSST.state.defaults.viewer = 'ffview';
 	    localStorage.setItem('LSST.state.defaults.viewer', 'ffview');
@@ -74,8 +83,7 @@ jQuery(document).ready(function() {
 	}
 	else {   
 	    LSST.state.defaults.box = localStorage.getItem('LSST.state.defaults.box');
-	}
-
+	}*/
 });
 
 // When the terminal settings popup is shown
@@ -97,7 +105,7 @@ var csfChangeFontSize = function(obj) {
 	fontSize = Math.min(Math.max(fontSize, 100), 200);
 	
 	fontSizeInput.val(fontSize);
-	LSST.state.term.setFontSize(fontSize);
+	LSST.state.term.lsst_term("setFontSize", fontSize);
 }
 
 // When either anchor or draggable is clicked
@@ -190,11 +198,11 @@ var onGlobalSettingsClick = function() {
         ' \
             <div id="global_settings_popup"> \
                 <p id="global_settings_title">Global Settings</p> \
-                <li><div>Default Viewer</div> \
+                <li><div class="global_settings_elem">Default Viewer</div> \
                     <ul id="global_settings_viewers" class="global_settings_ul"> \
                     </ul> \
                 </li> \
-                <li><div>Default Box</div> \
+                <li><div class="global_settings_elem">Default Box</div> \
                     <ul id="global_settings_boxes" class="global_settings_ul"> \
                     </ul> \
                 </li> \

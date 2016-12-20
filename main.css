@@ -361,10 +361,24 @@ img:hover {
     margin-bottom: 5px;
 }
 
+.global_settings_elem {
+    background: #ccc;
+    margin-bottom: 2px;
+}
+
 .global_settings_ul {
+    background: #999;
     display: block;
     width: 100%;
-}   
+}
+
+
+
+
+
+
+
+
 
 
 

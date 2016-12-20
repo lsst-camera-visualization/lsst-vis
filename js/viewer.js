@@ -281,36 +281,6 @@ LSST.UI.UV_Control.prototype.update = function() {
                                     |_|                            |___/
 */
 
-
-
-// Called when the user selects a region in a viewer.
-var selectRegion = function(data) {
-
-	var region;
-    if (data.type == 'AREA_SELECT') {
-        var x1 = Math.trunc(data.ipt0.x);
-        var y1 = Math.trunc(data.ipt0.y);
-        var x2 = Math.trunc(data.ipt1.x);
-        var y2 = Math.trunc(data.ipt1.y);
-        region = [ 'rect', x1, y1, x2, y2 ];
-    }
-
-    if (data.id == 'SELECT_REGION') {
-   		var regionAsString = region_to_string(region);
-   		LSST.state.term.setVariable('selected', '(' + regionAsString + ')');
-        jQuery("#ffview-var-selected").css('color', 'white');
-    }
-    else if (data.id == 'AVERAGE_PIXEL') {
-    	cmds.average_pixel( { 'box_id' : 'ffbox', 'viewer_id' : data.PlotId, 'region' : region } );
-    }
-    else if (data.id == 'HOT_PIXEL') {
-    	// Once we actually use the threshold value, we will need a way for the user to set it
-    	var threshold = 1.0;
-    	cmds.hot_pixel( { 'viewer_id' : data.PlotId, 'threshold' : threshold, 'region' : region } );
-    }
-}
-
-
 // Handles button clicks for viewers
 var onClickViewer = function() {
 	var id = jQuery(this).attr('data-buttonID');

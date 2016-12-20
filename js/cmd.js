@@ -122,28 +122,46 @@ jQuery(document).ready(function() {
 			'doc_link' : docLink + '#uv_update'
 		},
 	};
-
-	var subCommands = [
+	
+	var terminalOptions = {
+	  // The description of commands that can be entered by the user
+	  commands : commands,
+	  
+	  // Parameters that require more than a single word.
+	  // These will be wrapped in parenthesis's by the user.
+	  subCommands : [
 	    'rect x1 y1 x2 y2',
 	    'circ originX originY radius'
-	];
-
-	var autoCompleteParams = {
-		'box_id' : [ 'ffbox' ],
-		'viewer_id' : [ 'ffview' ]
-	};
-
-	var paramsWithHint = {
-		'region' : 'Hint: (rect), (circ), or selected'
+	  ],
+	  
+	  // Parameters that can be auto completed using tab.
+	  // Will be updated (through code) when necessary, through a terminal function.
+	  autoCompleteParams : {
+		  'box_id' : [ 'ffbox' ],
+		  'viewer_id' : [ 'ffview' ]
+	  },
+	  
+	  // Hints for certain parameters. Will be displayed to the user
+	  // when he/she comes upon this parameter.
+	  paramsWithHint : {
+	    'region' : 'Hint: (rect), (circ), or selected'
+	  },
+	  
+	  // Various properties for the terminal.
+	  properties : {
+	    helpLink : docLink,
+	    prefix : '~>',
+	    fontSize : '150%'
+	  },
+	  
+	  defaults : {
+	    "viewer_id" : LSST.state.defaults.viewer,
+	    "box_id" : LSST.state.defaults.box
+	  }
+	  
 	}
-
-	var terminalProperties = {
-		helpLink: docLink,
-	    prefix: '~>',
-	    fontSize: '150%'
-	};
-	LSST.state.term = jQuery('#cmd').terminal( commands, subCommands, autoCompleteParams, paramsWithHint, terminalProperties );
-
+	
+	LSST.state.term = jQuery('#cmd').lsst_term( terminalOptions );
 });
 
 
@@ -225,10 +243,10 @@ cmds = {
 			);
 		}
 		else if (!boxExists) {
-			LSST.state.term.echo('A box with the name \'' + boxID + '\' does not exist!');
+			LSST.state.term.lsst_term('echo', 'A box with the name \'' + boxID + '\' does not exist!');
 		}
 		else if (!viewerExists) {
-			LSST.state.term.echo('A viewer with the name \'' + viewerID + '\' does not exist!');
+			LSST.state.term.lsst_term('echo', 'A viewer with the name \'' + viewerID + '\' does not exist!');
 		}
 	},
 
@@ -261,7 +279,7 @@ cmds = {
 			var box = LSST.state.boxes.get(boxID);
 			box.clear();
 		} else {
-			LSST.state.term.echo('A box with the name \'' + boxID + '\' does not exist!');
+			LSST.state.term.lsst_term('echo', 'A box with the name \'' + boxID + '\' does not exist!');
 		}
 	},
 
@@ -273,7 +291,7 @@ cmds = {
 			viewer.clear();
 		}
 		else {
-			LSST.state.term.echo('A viewer with the name \'' + viewerID + '\' does not exist!');
+			LSST.state.term.lsst_term('echo', 'A viewer with the name \'' + viewerID + '\' does not exist!');
 		}
 	},
 
@@ -287,7 +305,7 @@ cmds = {
 			cmds.show_box( { 'box_id' : boxID } );
 		}
 		else {
-            LSST.state.term.echo('A box with the name \'' + boxID + '\' already exists!');
+            LSST.state.term.lsst_term('echo', 'A box with the name \'' + boxID + '\' already exists!');
 		}
 	},
 
@@ -306,7 +324,7 @@ cmds = {
 			cmds.show_viewer( { 'viewer_id' : viewerID } );
 		}
 		else {
-			LSST.state.term.echo('A viewer with the name \'' + viewerID + '\' already exist!');
+			LSST.state.term.lsst_term('echo', 'A viewer with the name \'' + viewerID + '\' already exist!');
 		}
 	},
 
@@ -320,10 +338,10 @@ cmds = {
 			if (LSST.state.defaults.box == boxID)
 			    LSST.state.defaults.box = null;
 
-			LSST.state.term.deleteParameterAuto('box_id', boxID);
+			LSST.state.term.lsst_term("deleteParameterAuto", { param : 'box_id', value : boxID });
 		}
 		else {
-			LSST.state.term.echo('A box with the name \'' + boxID + '\' does not exist!');
+			LSST.state.term.lsst_term('echo', 'A box with the name \'' + boxID + '\' does not exist!');
 		}
 	},
 
@@ -336,12 +354,12 @@ cmds = {
             if (viewer.show_boundary){
                 viewer.show_boundary = false;
                 firefly.action.dispatchDeleteRegionLayer(regionID, plotID);
-                LSST.state.term.echo("Boundary Removed");
+                LSST.state.term.lsst_term('echo', "Boundary Removed");
             }else{
-                LSST.state.term.echo("The boundary has not been drawn yet.");
+                LSST.state.term.lsst_term('echo', "The boundary has not been drawn yet.");
             }
         }else{
-            LSST.state.term.echo('A viewer with the name \'' + viewerID + '\' does not exist!');
+            LSST.state.term.lsst_term('echo', 'A viewer with the name \'' + viewerID + '\' does not exist!');
         }
 	},
 
@@ -360,7 +378,7 @@ cmds = {
 			mini.data('onClick', cmds.show_box);
 		}
 		else {
-			LSST.state.term.echo('A box with the name \'' + boxID + '\' does not exist!');
+			LSST.state.term.lsst_term('echo', 'A box with the name \'' + boxID + '\' does not exist!');
 		}
 	},
 
@@ -399,7 +417,7 @@ cmds = {
 
 		}
 		else {
-            LSST.state.term.echo('A viewer with the name \'' + viewerID + '\' does not exist!');
+            LSST.state.term.lsst_term('echo', 'A viewer with the name \'' + viewerID + '\' does not exist!');
 		}
 	},
 
@@ -417,7 +435,7 @@ cmds = {
 		        "Title" : result,
 		        "ZoomType" : "TO_WIDTH"
 		    });
-		    LSST.state.term.echo(result);
+		    LSST.state.term.lsst_term('echo', result);
 		} else {
 		    result = uri + " !matched " + re;
 		    viewer.plot({
@@ -425,7 +443,7 @@ cmds = {
 		        "Title" : result,
 		        "ZoomType" : "TO_WIDTH"
 		    });
-		    LSST.state.term.echo(result);
+		    LSST.state.term.lsst_term('echo', result);
 		}
 		LSST.state.viewers.get(viewerID).image_url = uri;
 		console.log(LSST.state.viewers.get(viewerID));
@@ -433,7 +451,7 @@ cmds = {
 	},
 
 	maximize_terminal : function(cmd_args) {
-		LSST.state.term.maximize();
+		LSST.state.term.lsst_term("maximize");
 		jQuery('#cmd_container').outerHeight(LSST.state.term.outerHeight(true));
 
 		var toolbar = jQuery('#cmd_container').children('.LSST_TB-toolbar');
@@ -443,7 +461,7 @@ cmds = {
 	},
 
 	minimize_terminal : function(cmd_args) {
-		LSST.state.term.minimize();
+		LSST.state.term.lsst_term("minimize");
 		jQuery('#cmd_container').outerHeight(LSST.state.term.outerHeight(true));
 
 		var toolbar = jQuery('#cmd_container').children('.LSST_TB-toolbar');
@@ -496,7 +514,7 @@ cmds = {
                 }
             }
 
-            LSST.state.term.echo('Boundary of amplifiers shown by default. Use `hide_boundary` to hide it.');
+            LSST.state.term.lsst_term('echo', 'Boundary of amplifiers shown by default. Use `hide_boundary` to hide it.');
 
             boxText = [
                 'read_mouse',
@@ -559,10 +577,10 @@ cmds = {
 	  		);
 		}
 		else if (!boxExists) {
-			LSST.state.term.echo('A box with the name \'' + boxID + '\' does not exist!');
+			LSST.state.term.lsst_term('echo', 'A box with the name \'' + boxID + '\' does not exist!');
 		}
 		else if (!viewerExists) {
-            LSST.state.term.echo('A viewer with the name \'' + viewerID + '\' does not exist!');
+            LSST.state.term.lsst_term('echo', 'A viewer with the name \'' + viewerID + '\' does not exist!');
 		}
 	},
 
@@ -586,10 +604,10 @@ cmds = {
 						viewer);
                 }
             }else{
-                LSST.state.term.echo("Boundary of this viewer is already drawn.")
+                LSST.state.term.lsst_term('echo', "Boundary of this viewer is already drawn.")
             }
         }else{
-			LSST.state.term.echo('A viewer with the name \'' + viewerID + '\' does not exist!');
+			LSST.state.term.lsst_term('echo', 'A viewer with the name \'' + viewerID + '\' does not exist!');
         }
 	},
 
@@ -610,7 +628,7 @@ cmds = {
 			max.data('onClick', cmds.hide_box);
 		}
 		else {
-			LSST.state.term.echo('A box with the name \'' + boxID + '\' does not exist!');
+			LSST.state.term.lsst_term('echo', 'A box with the name \'' + boxID + '\' does not exist!');
 		}
 	},
 
@@ -621,7 +639,7 @@ cmds = {
 			LSST.state.viewers.get(viewerID).setFocus(true);
 		}
 		else {
-            LSST.state.term.echo('A viewer with the name \'' + viewerID + '\' does not exist!');
+            LSST.state.term.lsst_term('echo', 'A viewer with the name \'' + viewerID + '\' does not exist!');
 		}
 	},
 
@@ -632,7 +650,7 @@ cmds = {
 	    	LSST.state.uvControls.get(viewerID).setFrequency( cmd_args['time_in_millis'] );
 		}
 		else {
-            LSST.state.term.echo('A viewer with the name \'' + viewerID + '\' does not exist!');
+            LSST.state.term.lsst_term('echo', 'A viewer with the name \'' + viewerID + '\' does not exist!');
 		}
 	},
 
@@ -643,7 +661,7 @@ cmds = {
 			LSST.state.uvControls.get(viewerID).loadNewImage();
 		}
 		else {
-            LSST.state.term.echo('A viewer with the name \'' + viewerID + '\' does not exist!');
+            LSST.state.term.lsst_term('echo', 'A viewer with the name \'' + viewerID + '\' does not exist!');
 		}
 	},
 
@@ -654,7 +672,7 @@ cmds = {
 			LSST.state.uvControls.get(viewerID).pause();
 		}
 		else {
-            LSST.state.term.echo('A viewer with the name \'' + viewerID + '\' does not exist!');
+            LSST.state.term.lsst_term('echo', 'A viewer with the name \'' + viewerID + '\' does not exist!');
 		}
 	},
 
@@ -665,7 +683,7 @@ cmds = {
 			LSST.state.uvControls.get(viewerID).resume();
 		}
 		else {
-            LSST.state.term.echo('A viewer with the name \'' + viewerID + '\' does not exist!');
+            LSST.state.term.lsst_term('echo', 'A viewer with the name \'' + viewerID + '\' does not exist!');
 		}
 	},
 
@@ -676,7 +694,7 @@ cmds = {
 			LSST.state.uvControls.get(viewerID).update();
         }
 		else {
-            LSST.state.term.echo('A viewer with the name \'' + viewerID + '\' does not exist!');
+            LSST.state.term.lsst_term('echo', 'A viewer with the name \'' + viewerID + '\' does not exist!');
 		}
 	}
 }

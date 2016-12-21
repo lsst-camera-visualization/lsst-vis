@@ -630,7 +630,7 @@ var LSST_TERMINAL = {
   			value = value.toString();
   		if (value.charAt(value.length - 1) != '%')
   			value += '%';
-  		terminal.css('font-size', value);
+  		getOption("terminal").css('font-size', value);
   		
   		setOutputAreaHeight();
   	}
@@ -702,6 +702,9 @@ var LSST_TERMINAL = {
       }
       else if (request === "setDefault") {
         setDefault(params.param, params.value);
+      }
+      else if (request === "setFontSize") {
+        setFontSize(params);
       }
     }
     else {

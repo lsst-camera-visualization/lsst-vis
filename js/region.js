@@ -61,24 +61,49 @@ LSST.UI.Rect.Parse = function(rect) {
 
 
 
-LSST.UI.Circ = function(circ) {
-
+LSST.UI.Circ = function(originX, originY, radius) {
+  this.originX = originX;
+  this.originY = originY;
+  this.radius = radius;
 }
 
 LSST.UI.Circ.prototype.toString = function() {
-
+  return [ 'circ', this.originX, this.originY, this.radius ].join(' ');
 }
 
 LSST.UI.Circ.prototype.toDS9 = function() {
-
+  return [ 'cicle', this.originX, this.originY, this.radius ].join(' ');
 }
 
 LSST.UI.Circ.prototype.toBoxText = function() {
+  var origin = new LSST.UI.BoxText('(x, y)', '(' + this.originX + ',' + this.originY + ')');
+  var radius = new LSST.UI.BoxText('Radius:', this.radius);
+  return [ origin, ',', radius ];
+}
 
+LSST.UI.Circ.prototype.toBackendFormat = function() {
+	return {
+		type : 'circ',
+		value : {
+		  originX : this.originX,
+		  originY : this.originY,
+		  radius : this.radius
+		}
+	};
+}
+
+LSST.UI.Circ.prototype.toCmdLineFormat = function() {
+    return '(' + [ 'circ', this.originX, this.originY, this.radius ].join(' ') + ')';
+}
+
+LSST.UI.Circ.prototype.toCmdLineArrayFormat = function() {
+    return [ 'circ', this.originX, this.originY, this.radius ];
 }
 
 LSST.UI.Circ.Parse = function(circ) {
-
+  if (Array.isArray(circ) && circ.length == 4) {
+    return new LSST.UI.Circ(circ[1], circ[2], circ[3]);
+  }
 }
 
 

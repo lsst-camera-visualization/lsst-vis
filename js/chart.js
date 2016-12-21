@@ -16,7 +16,7 @@ LSST.UI.Histogram = function() {
 	this.html = jQuery(
 		' \
 		<div class="chart"> \
-		  <p class="chart-title"></p> \
+		  <p class="chart-title"> <span class="chart-title-text" contenteditable="true"></span> </p> \
 			<div id="' + options.name + '" class="chart-body"></div> \
 		</div> \
 		'
@@ -25,7 +25,9 @@ LSST.UI.Histogram = function() {
 	jQuery('body').append(this.html);
 
 	// Draggable settings
-	options.draggable = { };
+	options.draggable = { 
+	  cancel : ".chart-title .chart-title-text"
+	};
 
 	// Resizable settings
 	options.resizable = {
@@ -72,10 +74,10 @@ LSST.UI.Histogram.prototype.set = function(desc) {
 	var title = 'Histogram';
 	if (desc.title)
 		title = desc.title;
-  this.html.children('.chart-title').text(title);
+  this.html.find('.chart-title-text').text(title);
 
   if (desc.xAxis == undefined)
-    desc.xAxis = "";
+    desc.xAxis = "asdf";
 		
   var containerOffset = this.html.offset();
   var chartOffset = jQuery('#' + this.name).offset();

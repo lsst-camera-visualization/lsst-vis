@@ -66,7 +66,7 @@ jQuery(document).ready(function() {
 	  LSST.state.term.lsst_term("setDefault", { param : "box_id", value : LSST.state.defaults.box } );
 	}
 	
-	// For future use, as we don't save anything in a session
+	// For future use, as we don't save session information
 	// Set defaults for first time
 	/*
 	if (!localStorage.getItem('LSST.state.defaults.viewer')) {

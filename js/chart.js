@@ -11,11 +11,12 @@ LSST.UI.Histogram = function() {
 	this._desc = null;
 
 	options = {};
-	options.name = 'Chart ' + LSST.UI.Histogram._count++;
+	options.name = '_Chart' + LSST.UI.Histogram._count++;
 	// Creates the html of the chart
 	this.html = jQuery(
 		' \
 		<div class="chart"> \
+		  <p class="chart-title"></p> \
 			<div id="' + options.name + '" class="chart-body"></div> \
 		</div> \
 		'
@@ -61,20 +62,32 @@ LSST.UI.Histogram._count = 0;
 // Initializes this chart. Use the static LSST.UI.Histogram functions to create a histogram, do not use this function directly.
 // @param desc - An object describing the chart.
 //					  It will contain the following properties (* properties are required):
-//						title - The title of the chart, which is displayed to the user
+//						title - The title of the chart, which is displayed to the user.
+//            xAxis - A label for the x axis.
 //						data* - The data that the chart will display.
 LSST.UI.Histogram.prototype.set = function(desc) {
 	this._desc = desc;
+
+  // Set the chart title
 	var title = 'Histogram';
 	if (desc.title)
 		title = desc.title;
+  this.html.children('.chart-title').text(title);
+
+  if (desc.xAxis == undefined)
+    desc.xAxis = "";
+		
+  var containerOffset = this.html.offset();
+  var chartOffset = jQuery('#' + this.name).offset();
+  var totalHeight = this.html.outerHeight();
+  var delta = chartOffset.top - containerOffset.top;
 
 	props = {
 		data : desc.data,
 		width: this.html.width(),
-		height: this.html.height(),
+		height: totalHeight - delta - parseInt(this.html.css('padding-bottom')),
 		logs: 'xy',
-		desc: title,
+		desc: desc.xAxis,
 		binColor: '#659cef'
  	};
 	firefly.util.renderDOM(this.name, firefly.ui.Histogram, props);
@@ -123,7 +136,8 @@ LSST.UI.Histogram.FromJSONString = function(data) {
 // Creates a histogram from an object, following the chart guidelines.
 // @param desc - An object describing the histogram.
 	//					  It will contain the following properties (* properties are required):
-	//						title - The title of the histogram, which is displayed to the user.
+  //						title - The title of the chart, which is displayed to the user.
+  //            xAxis - A label for the x axis.
 	//						data* - The data that the histogram will display. Check wiki for example link.
 // @return The newly created histogram.
 LSST.UI.Histogram.FromObject = function(desc) {

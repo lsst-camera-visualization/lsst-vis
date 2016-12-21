@@ -77,7 +77,7 @@ LSST.UI.Histogram.prototype.set = function(desc) {
   this.html.find('.chart-title-text').text(title);
 
   if (desc.xAxis == undefined)
-    desc.xAxis = "asdf";
+    desc.xAxis = "x-axis";
 		
   var containerOffset = this.html.offset();
   var chartOffset = jQuery('#' + this.name).offset();

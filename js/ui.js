@@ -16,6 +16,7 @@ LSST.UI.UIElement.prototype = {
 		this.name = options.name || '';
 		
 		this.html.click(LSST.UI.UIElement.prototype.setFocus.bind(this, true));
+		this._bFocusOnClick = true;
 		
 		// Draggable settings
 		if (options.draggable) {
@@ -45,6 +46,9 @@ LSST.UI.UIElement.prototype = {
 	// Sets or unsets the focus for this UI element
 	// @param bFocus - Should the element be in focus?
 	setFocus : function(bFocus) {
+	  if (!this._bFocusOnClick)
+	    return;
+	
 		if (bFocus) {
 			if (LSST.UI.state.topElement)
 				LSST.UI.state.topElement.setFocus(false);
@@ -55,6 +59,10 @@ LSST.UI.UIElement.prototype = {
 		else {
 			this.html.css('z-index', 0);
 		}
+	},
+	
+	focusOnClick : function(bFocusOnClick) {
+	  this._bFocusOnClick = bFocusOnClick;
 	}
 };
 

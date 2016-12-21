@@ -64,8 +64,10 @@ jQuery(document).ready(function() {
 	    }
 	    
 	  }
-	
-	  LSST.state.term = jQuery('#cmd').lsst_term( terminalOptions );
+	  
+	  // Create the terminal
+	  LSST.state.term = new LSST.UI.Terminal( { name : 'MainTerminal', terminalOptions : terminalOptions } );
+	  
   }).fail( function(jqXHR, textStatus, errorThrown) { console.log("Error loading commands.json: " + errorThrown); });
   
 });

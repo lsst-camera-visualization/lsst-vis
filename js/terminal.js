@@ -92,6 +92,12 @@ LSST.UI.Terminal = function(options) {
 	  else
 	    this.setFontSize(150);
 	}
+	else {
+    this.anchor("bottom-right");
+    this.draggable(false);
+    this.alwaysOnTop(true);
+    this.setFontSize(150);
+	}
 	
 	this.focusOnClick(false);
 }

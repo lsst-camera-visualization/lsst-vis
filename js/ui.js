@@ -63,6 +63,11 @@ LSST.UI.UIElement.prototype = {
 	
 	focusOnClick : function(bFocusOnClick) {
 	  this._bFocusOnClick = bFocusOnClick;
+	},
+	
+	// Called when this UI element should save itself, for instance when the user exits the page.
+	save : function() {
+	
 	}
 };
 

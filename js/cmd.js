@@ -66,7 +66,7 @@ jQuery(document).ready(function() {
 	  }
 	  
 	  // Create the terminal
-	  LSST.state.term = new LSST.UI.Terminal( { name : 'MainTerminal', terminalOptions : terminalOptions } );
+	  LSST.state.term = new LSST.UI.Terminal( { name : 'MainTerminal', terminalOptions : terminalOptions, settings : LSST.getSettings("MainTerminal") } );
 	  
   }).fail( function(jqXHR, textStatus, errorThrown) { console.log("Error loading commands.json: " + errorThrown); });
   

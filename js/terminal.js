@@ -70,9 +70,30 @@ LSST.UI.Terminal = function(options) {
 	// Init from UIElement
 	LSST.UI.UIElement.prototype._init.call(this, options);
 	
+	// Restore settings
+	if (options.settings) {
+	  if (options.settings.anchor != undefined)
+	    this.anchor(options.settings.anchor);
+	  else
+	    this.anchor("bottom-right");
+	  
+	  if (options.settings.draggable != undefined)
+	    this.draggable(options.settings.draggable);
+	  else
+	    this.draggable(false);
+	  
+	  if (options.settings.alwaysOnTop != undefined)
+	    this.alwaysOnTop(options.settings.alwaysOnTop);
+	  else
+	    this.alwaysOnTop(true);
+	    
+	  if (options.settings.fontSize != undefined)
+	    this.setFontSize(options.settings.fontSize);
+	  else
+	    this.setFontSize(150);
+	}
+	
 	this.focusOnClick(false);
-	this.anchor("bottom-right");
-	this.alwaysOnTop(true);
 }
 
 // Inherit from LSST.UI.UIElement
@@ -97,6 +118,10 @@ LSST.UI.Terminal.prototype._settingsOnCreate = function() {
 	  jQuery("#ts_" + this.name + "_anchor").prop("checked", true);
 	  jQuery("#ts_" + this.name + "_draggableText").css('text-decoration', 'line-through');
     jQuery("#ts_" + this.name + "_draggable").prop('disabled', true);
+	}
+	else {
+	  jQuery("#ts_" + this.name + "_draggableText").css('text-decoration', 'none');
+    jQuery("#ts_" + this.name + "_draggable").prop('disabled', false);
 	}
 	
 	if (this._bDraggable)
@@ -140,7 +165,7 @@ LSST.UI.Terminal.prototype._settingsChangeFontSize = function(bPlusButton) {
   var fontSize = parseInt(jQuery("#ts_" + this.name + "_fontSize").text());
   var delta = bPlusButton ? 10 : -10;
 	fontSize += delta;
-	this.changeFontSize(fontSize);
+	this.setFontSize(fontSize);
 }
 
 LSST.UI.Terminal.prototype.anchor = function(spot, bDraggable = false) {
@@ -192,18 +217,27 @@ LSST.UI.Terminal.prototype.alwaysOnTop = function(bOnTop = true) {
 	}
 }
 
-LSST.UI.Terminal.prototype.changeFontSize = function(fontSize) {	
+LSST.UI.Terminal.prototype.setFontSize = function(fontSize) {	
 	// Clamp to 100% and 170%
 	var min = 100;
 	var max = 170;
-	fontSize = Math.min(Math.max(fontSize, min), max);
+	this._fontSize = Math.min(Math.max(parseInt(fontSize), min), max);
 	
-  jQuery("#ts_" + this.name + "_fontSize").text(fontSize);
+  jQuery("#ts_" + this.name + "_fontSize").text(this._fontSize);
 	
-	this.lsst_term("setFontSize", fontSize);
+	this.lsst_term("setFontSize", this._fontSize);
 }
 
-
+LSST.UI.Terminal.prototype.save = function() {
+  var settings = {
+    anchor : this._anchor,
+    draggable : this._bDraggable,
+    alwaysOnTop : this._bOnTop,
+    fontSize : this._fontSize
+  }
+  
+  LSST.saveSettings(this.name, settings);
+}
 
 
 

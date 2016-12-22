@@ -32,3 +32,37 @@ LSST.inherits = function(sub, base) {
 	sub.prototype = new s();
 	sub.prototype.constructor = sub;
 }
+
+LSST._getSaveID = function(id) {
+  return "LSST.settings." + id;
+}
+
+
+// Gets the saved settings for an object.
+// @param id [String]: The ID for this object.
+// @return [Object] The settings and values.
+LSST.getSettings = function(id) {
+  var saveID = LSST._getSaveID(id);
+  return JSON.parse(localStorage.getItem(saveID));
+}
+
+// Saves an individual setting for an object.
+// @param id [String]: The ID holder for this setting.
+// @param settings [Dictionary]: The settings to save.
+//        Key [String]: A settings name.
+//        Value [Anything]: A settings value.
+LSST.saveSettings = function(id, settings) {
+  var saveID = LSST._getSaveID(id);
+  var existing = JSON.parse(localStorage.getItem(saveID));
+  var newSettings = jQuery.extend({}, existing, settings);
+  console.log(newSettings);
+  console.log(JSON.stringify(newSettings));
+  localStorage.setItem(saveID, JSON.stringify(newSettings));
+}
+
+// Deletes any saved settings for the ID.
+// @param id [String]: The ID for these settings.
+LSST.deleteSettings = function(id) {
+  var saveID = LSST._getSaveID(id);
+  localStorage.removeItem(saveID);
+}

@@ -31,11 +31,11 @@ img:hover {
 	width: 50%;
 	height: 300px;
 
-    position: absolute;
-    bottom: 5px;
-    right: 5px;
+  position: fixed;
+  bottom: 5px;
+  right: 5px;
 
-    z-index: 999;
+  z-index: 999;
 }
 
 #cmd {

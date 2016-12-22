@@ -29,3 +29,6 @@ var onFireflyLoaded = function() {
 	console.log("Finished creating ffbox");
 };
 
+jQuery(window).bind('beforeunload', function(){
+  LSST.state.term.save();
+});

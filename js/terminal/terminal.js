@@ -628,6 +628,7 @@ var LSST_TERMINAL = {
   	function setFontSize(value) {
   		if (Number.isInteger(value))
   			value = value.toString();
+  			
   		if (value.charAt(value.length - 1) != '%')
   			value += '%';
   		getOption("terminal").css('font-size', value);

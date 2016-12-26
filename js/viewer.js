@@ -68,9 +68,8 @@ LSST.UI.Viewer = function(options) {
 	// Init from UIElement
 	LSST.UI.UIElement.prototype._init.call(this, options);
 
-    console.log(getNewImageURL());
 	this.loadImage(getNewImageURL());
-	// this.loadImage(("http://web.ipac.caltech.edu/staff/roby/demo/wise-m51-band1.fits"));
+	
 	firefly.util.addActionListener(firefly.action.type.READOUT_DATA, this._cursorRead.bind(this));
 }
 
@@ -138,14 +137,6 @@ LSST.UI.Viewer.prototype.loadImage = function(image) {
 			ZoomToWidth : '100%'
 		});
 	}
-
-	// firefly.showImage(this.name, {
-	// 	plotId : this.name,
-	// 	URL : image,
-	// 	Title : this.name,
-	// 	ZoomType : 'TO_WIDTH',
-	// 	ZoomToWidth : '100%'
-	// });
 
 	this.image_url = image;
 	this.original_image_url = getNewOriginalImageURL(image);

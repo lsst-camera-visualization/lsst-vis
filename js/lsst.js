@@ -55,8 +55,6 @@ LSST.saveSettings = function(id, settings) {
   var saveID = LSST._getSaveID(id);
   var existing = JSON.parse(localStorage.getItem(saveID));
   var newSettings = jQuery.extend({}, existing, settings);
-  console.log(newSettings);
-  console.log(JSON.stringify(newSettings));
   localStorage.setItem(saveID, JSON.stringify(newSettings));
 }
 

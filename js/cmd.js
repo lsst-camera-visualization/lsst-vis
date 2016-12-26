@@ -61,6 +61,12 @@ jQuery(document).ready(function() {
 	    defaults : {
 	      "viewer_id" : LSST.state.defaults.viewer,
 	      "box_id" : LSST.state.defaults.box
+	    },
+	    
+	    examples : {
+	      "region" : [
+	          "(rect 1000 1000 3000 3000)"
+	        ]
 	    }
 	    
 	  }
@@ -235,6 +241,30 @@ cmds = {
 		else {
 			LSST.state.term.lsst_term('echo', 'A viewer with the name \'' + viewerID + '\' already exist!');
 		}
+	},
+	
+	default_box : function(cmd_args) {
+	  var boxID = cmd_args.box_id;
+	  
+	  if (LSST.state.boxes.exists(boxID)) {
+	    LSST.state.defaults.box = boxID;
+	    LSST.state.term.lsst_term("setDefault", { param : "box_id", value : boxID } );
+	  }
+	  else {
+	    LSST.state.term.lsst_term("echo", "A box with that name does not exist!");
+	  }
+	},
+	
+	default_viewer : function(cmd_args) {
+	  var viewerID = cmd_args.viewer_id;
+	  
+	  if (LSST.state.viewers.exists(viewerID)) {
+	    LSST.state.defaults.viewer = viewerID;
+	    LSST.state.term.lsst_term("setDefault", { param : "viewer_id", value : viewerID } );
+	  }
+	  else {
+	    LSST.state.term.lsst_term("echo", "A viewer with that name does not exist!");
+	  }
 	},
 
 	delete_box: function(cmd_args) {

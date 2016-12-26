@@ -29,6 +29,14 @@
 			"doc_link" : "https://github.com/lsst-camera-visualization/frontend/wiki#create_viewer"
 		},
 		
+		"default_box box_id" : {
+		  "description" : "Set the default box."
+		},
+		
+		"default_viewer viewer_id" : {
+		  "description" : "Set the default viewer."
+		},
+		
 		"delete_box box_id" : {
 			"description" : "Deletes an existing information box.",
 			"doc_link" : "https://github.com/lsst-camera-visualization/frontend/wiki#delete_box"

@@ -62,8 +62,7 @@ var onGlobalSettingsClick = function() {
             display += '*'
         
         viewerList.append('<li><div>' + display + '</div></li>').click(function() {
-            LSST.state.defaults.viewer = e.name;
-	        // localStorage.setItem('LSST.state.defaults.viewer', e.name);
+            cmds.default_box( { box_id : e.name } );
         });
     });
     
@@ -72,11 +71,10 @@ var onGlobalSettingsClick = function() {
     LSST.state.boxes.foreach(function(e) {
         var display = e.name;
         if (display === LSST.state.defaults.box)
-            display += '*'
+          display += '*'
             
         boxList.append('<li><div>' + display + '</div></li>').click(function() {
-            LSST.state.defaults.box = e.name;
-	        // localStorage.setItem('LSST.state.defaults.box', e.name);
+            cmds.default_viewer( { viewer_id : e.name } );
         });
     });
     

@@ -715,6 +715,7 @@ var LSST_TERMINAL = {
       var paramsWithHint = request.paramsWithHint;
       var properties = request.properties;   
       setOption("defaults", jQuery.extend({}, request.defaults));
+      setOption("examples", request.examples);
     
       // Create terminal
 		  var terminal                 = setOption("terminal", jQuery(this).addClass('cmd_container'));

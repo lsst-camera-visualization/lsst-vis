@@ -68,13 +68,22 @@ LSST.UI.Viewer = function(options) {
 	// Init from UIElement
 	LSST.UI.UIElement.prototype._init.call(this, options);
 
-	this.loadImage(getNewImageURL());
+  if (!options.image)
+	  this.loadImage(getNewImageURL());
+	else
+	  this.loadImage(options.image);
 	
 	firefly.util.addActionListener(firefly.action.type.READOUT_DATA, this._cursorRead.bind(this));
 }
 
 // Inherit from LSST.UI.UIElement
 LSST.inherits(LSST.UI.Viewer, LSST.UI.UIElement);
+
+
+// Destroys this viewer and removes it from the webpage.
+LSST.UI.Viewer.prototype.destroy = function() {
+	this.html.remove();
+}
 
 
 // Draws regions on the viewer.

@@ -19,12 +19,12 @@
 		    "doc_link" : "https://github.com/lsst-camera-visualization/frontend/wiki#clear_viewer"
 		},
 		
-	    "create_box box_id" : {
+	  "create_box box_id" : {
 			"description" : "Creates a new box for displaying information.",
 			"doc_link" : "https://github.com/lsst-camera-visualization/frontend/wiki#create_box"
 		},
 		
-		"create_viewer viewer_id" : {
+		"create_viewer viewer_id [image]" : {
 			"description" : "Creates a new viewer.",
 			"doc_link" : "https://github.com/lsst-camera-visualization/frontend/wiki#create_viewer"
 		},
@@ -32,6 +32,10 @@
 		"delete_box box_id" : {
 			"description" : "Deletes an existing information box.",
 			"doc_link" : "https://github.com/lsst-camera-visualization/frontend/wiki#delete_box"
+		},
+		
+		"delete_viewer viewer_id" : {
+			"description" : "Deletes an existing viewer."
 		},
 		
 		"hide_box box_id" : {

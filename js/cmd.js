@@ -219,9 +219,10 @@ cmds = {
 
 	create_viewer: function(cmd_args) {
 		var viewerID = cmd_args['viewer_id'];
+	  var image = cmd_args['[image]'];
 
 		if (!LSST.state.viewers.exists(viewerID)) {
-			var viewer = new LSST.UI.Viewer( { name : viewerID } );
+			var viewer = new LSST.UI.Viewer( { name : viewerID, image : image } );
 			LSST.state.viewers.add(viewerID, viewer);
 
 			viewer.addExtension('Choose Command...', 'AREA_SELECT', viewerCommands.display_area_commands );
@@ -251,6 +252,24 @@ cmds = {
 		else {
 			LSST.state.term.lsst_term('echo', 'A box with the name \'' + boxID + '\' does not exist!');
 		}
+	},
+	
+	delete_viewer : function(cmd_args) {
+	  var viewerID = cmd_args.viewer_id;
+	  
+	  if (LSST.state.viewers.exists(viewerID)) {
+	    var viewer = LSST.state.viewers.get(viewerID);
+	    viewer.destroy();
+	    LSST.state.viewers.remove(viewerID);
+	    
+	    if (LSST.state.defaults.viewer == viewerID)
+	      LSST.state.defaults.viewer = null;
+	      
+	    LSST.state.term.lsst_term("deleteParameterAuto", { param : 'viewer_id', value : viewerID });
+	  }
+	  else {
+	    LSST.state.term.lsst_term("echo", "A viewer with the name '" + viewerID + "' does not exist!");
+	  }
 	},
 
 	hide_boundary: function(cmd_args) {

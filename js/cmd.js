@@ -61,6 +61,12 @@ jQuery(document).ready(function() {
 	    defaults : {
 	      "viewer_id" : LSST.state.defaults.viewer,
 	      "box_id" : LSST.state.defaults.box
+	    },
+	    
+	    examples : {
+	      "region" : [
+	        "(rect 1000 1200 3000 3200)"
+	      ]
 	    }
 	    
 	  }

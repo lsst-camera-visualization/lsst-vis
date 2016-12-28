@@ -117,6 +117,20 @@ a {
 
 
 
+.cmd_examples {
+  background-color: #fff;
+  border: 1px solid #000;
+  border-radius: 5px;
+  
+  padding: 10px;
+  
+  display: none;
+}
+
+.cmd_examples > p {
+  margin-bottom: 2px;
+}
+
 
 
 

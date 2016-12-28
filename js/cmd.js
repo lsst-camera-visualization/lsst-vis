@@ -215,11 +215,14 @@ cmds = {
 		if (!LSST.state.boxes.exists(boxID)) {
 			var box = new LSST.UI.Box( { name : boxID } );
 			LSST.state.boxes.add(boxID, box);
+			
+			if (LSST.state.boxes.size() == 1)
+			  cmds.default_box( { box_id : boxID } );
 
 			cmds.show_box( { 'box_id' : boxID } );
 		}
 		else {
-            LSST.state.term.lsst_term('echo', 'A box with the name \'' + boxID + '\' already exists!');
+      LSST.state.term.lsst_term('echo', 'A box with the name \'' + boxID + '\' already exists!');
 		}
 	},
 
@@ -230,6 +233,9 @@ cmds = {
 		if (!LSST.state.viewers.exists(viewerID)) {
 			var viewer = new LSST.UI.Viewer( { name : viewerID, image : image } );
 			LSST.state.viewers.add(viewerID, viewer);
+			
+			if (LSST.state.viewers.size() == 1)
+			  cmds.default_viewer( { viewer_id : viewerID } );
 
 			viewer.addExtension('Choose Command...', 'AREA_SELECT', viewerCommands.display_area_commands );
 
@@ -246,7 +252,7 @@ cmds = {
 	default_box : function(cmd_args) {
 	  var boxID = cmd_args.box_id;
 	  
-	  if (LSST.state.boxes.exists(boxID)) {
+	  if (boxID === null || LSST.state.boxes.exists(boxID)) {
 	    LSST.state.defaults.box = boxID;
 	    LSST.state.term.lsst_term("setDefault", { param : "box_id", value : boxID } );
 	  }
@@ -258,7 +264,7 @@ cmds = {
 	default_viewer : function(cmd_args) {
 	  var viewerID = cmd_args.viewer_id;
 	  
-	  if (LSST.state.viewers.exists(viewerID)) {
+	  if (viewerID === null || LSST.state.viewers.exists(viewerID)) {
 	    LSST.state.defaults.viewer = viewerID;
 	    LSST.state.term.lsst_term("setDefault", { param : "viewer_id", value : viewerID } );
 	  }
@@ -274,8 +280,12 @@ cmds = {
 			LSST.state.boxes.get(boxID).destroy();
 			LSST.state.boxes.remove(boxID);
 			
-			if (LSST.state.defaults.box == boxID)
-			    LSST.state.defaults.box = null;
+			if (LSST.state.defaults.box == boxID) {
+			    if (LSST.state.boxes.size() > 0)
+			      cmds.default_box( { box_id : LSST.state.boxes.get() } );
+			    else
+			      cmds.default_box( { box_id : null } );
+			}
 
 			LSST.state.term.lsst_term("deleteParameterAuto", { param : 'box_id', value : boxID });
 		}
@@ -292,8 +302,12 @@ cmds = {
 	    viewer.destroy();
 	    LSST.state.viewers.remove(viewerID);
 	    
-	    if (LSST.state.defaults.viewer == viewerID)
-	      LSST.state.defaults.viewer = null;
+	    if (LSST.state.defaults.viewer == viewerID) {
+			    if (LSST.state.viewers.size() > 0)
+			      cmds.default_viewer( { viewer_id : LSST.state.viewers.get() } );
+			    else
+			      cmds.default_viewer( { viewer_id : null } );
+			}
 	      
 	    LSST.state.term.lsst_term("deleteParameterAuto", { param : 'viewer_id', value : viewerID });
 	  }

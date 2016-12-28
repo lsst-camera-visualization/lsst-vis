@@ -83,11 +83,21 @@ LSST.UI.UIElementList = function() {
 	}
 
 	this.get = function(id) {
-		return elements[id.toLowerCase()];
+	  if (id != undefined)
+		  return elements[id.toLowerCase()];
+	  else {
+	    for (var e in elements)
+	      if (elements.hasOwnProperty(e))
+	        return e;
+	  }
 	}
 
 	this.exists = function(id) {
 		return (id.toLowerCase() in elements);
+	}
+	
+	this.size = function() {
+	  return Object.keys(elements).length;
 	}
 	
 	this.foreach = function(f) {

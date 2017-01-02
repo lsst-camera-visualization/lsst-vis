@@ -416,23 +416,11 @@ cmds = {
 	},
 
 	maximize_terminal : function(cmd_args) {
-		LSST.state.term.lsst_term("maximize");
-		jQuery('#cmd_container').outerHeight(LSST.state.term.outerHeight(true));
-
-		var toolbar = jQuery('#cmd_container').children('.LSST_TB-toolbar');
-		var max = jQuery(toolbar.children()[1]);
-		max.attr('src', 'js/toolbar/images/minimize_40x40.png');
-		max.data('onClick', cmds.minimize_terminal);
+	  LSST.state.term.maximize();
 	},
 
 	minimize_terminal : function(cmd_args) {
-		LSST.state.term.lsst_term("minimize");
-		jQuery('#cmd_container').outerHeight(LSST.state.term.outerHeight(true));
-
-		var toolbar = jQuery('#cmd_container').children('.LSST_TB-toolbar');
-		var mini = jQuery(toolbar.children()[1]);
-		mini.attr('src', 'js/toolbar/images/maximize_40x40.png');
-		mini.data('onClick', cmds.maximize_terminal);
+		LSST.state.term.minimize();
 	},
 
 	read_mouse: function(cmd_args) {

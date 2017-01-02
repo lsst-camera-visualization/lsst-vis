@@ -245,7 +245,23 @@ LSST.UI.Terminal.prototype.save = function() {
   LSST.saveSettings(this.name, settings);
 }
 
+LSST.UI.Terminal.prototype.minimize = function() {
+  this.lsst_term("minimize");
 
+	var toolbar = this.html.children('.LSST_TB-toolbar');
+	var mini = jQuery(toolbar.children()[1]);
+	mini.attr('src', 'js/toolbar/images/maximize_40x40.png');
+	mini.data('onClick', LSST.UI.Terminal.prototype.maximize.bind(this));
+}
+
+LSST.UI.Terminal.prototype.maximize = function() {
+  this.lsst_term("maximize");
+
+	var toolbar = this.html.children('.LSST_TB-toolbar');
+	var max = jQuery(toolbar.children()[1]);
+	max.attr('src', 'js/toolbar/images/minimize_40x40.png');
+	max.data('onClick', LSST.UI.Terminal.prototype.minimize.bind(this));
+}
 
 
 

@@ -65,6 +65,14 @@
 		
 		},
 		
+		"maximize_terminal" : {
+		
+		},
+		
+		"minimize_terminal" : {
+		
+		},		
+		
 		"read_mouse viewer_id box_id" : {
 			"description" : "Tracks the mouse inside of the view \"viewer_id\" and displays the information in the box \"box_id\"."
 		},

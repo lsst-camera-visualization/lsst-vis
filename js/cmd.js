@@ -340,7 +340,6 @@ cmds = {
 	},
 
 	hot_pixel: function(cmd_args) {
-	    console.log(cmd_args);
 		var viewerID = cmd_args['viewer_id'];
 		if (LSST.state.viewers.exists(viewerID)) {
 
@@ -359,22 +358,6 @@ cmds = {
 
             imageViewer.clear();
             imageViewer.drawRegions([region.toDS9()], 'Hot Pixel Boundary', 'blue');
-			// if (imageViewer[regionID]) {
-            //     firefly.action.dispatchDeleteRegionLayer(regionID, plotID);
-			// 	imageViewer[regionID] = undefined;
-			// }
-            console.log(region);
-			// read_hotpixels(
-			// 	{
-			// 		threshold: threshold,
-			// 		"region": region
-			// 	},
-			// 	function(regions) {
-			// 		imageViewer[regionID] = regions;
-            //         firefly.action.dispatchCreateRegionLayer(regionID, regionID, null, regions, plotID);
-			// 	},
-			// 	imageViewer
-			// );
 
             var region_backend = region.toBackendFormat();
             var param_backend = {
@@ -391,8 +374,6 @@ cmds = {
                         var content = ['circle', 'point', d[0], d[1]].join(' ');
                         regions.push(content);
                       }
-                    //   cb(regions);
-                    console.log(regions);
                     imageViewer.drawRegions(regions, 'Hot Pixels', 'red');
                 },
                 function(data) {

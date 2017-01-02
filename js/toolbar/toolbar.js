@@ -241,7 +241,7 @@ jQuery.fn.lsst_toolbar = function(toolbarDesc, options) {
 			else
 				placeToolbar();
 		},
-		1000, this);
+		500, this);
 	
 	
 	return this;

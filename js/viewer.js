@@ -34,9 +34,9 @@ LSST.UI.Viewer = function(options) {
 	  "
 	);
 	jQuery('body').append(this.html);
-	
+
 	this.html.find('.viewer-uv-pr').click(function() {
-	  if (jQuery(this).attr("value") == "Resume") 
+	  if (jQuery(this).attr("value") == "Resume")
 	    cmds.uv_resume( { viewer_id : jQuery(this).data("viewerid") } );
 	  else
 	    cmds.uv_pause( { viewer_id : jQuery(this).data("viewerid") } );
@@ -44,7 +44,7 @@ LSST.UI.Viewer = function(options) {
 	this.html.find('.viewer-uv-un').click(function() {
 	  cmds.uv_load_new( { viewer_id : jQuery(this).data("viewerid") } );
 	});
-	
+
 
 	this.header = null;
 	this.show_boundary = false;
@@ -72,7 +72,7 @@ LSST.UI.Viewer = function(options) {
 	  this.loadImage(getNewImageURL());
 	else
 	  this.loadImage(options.image);
-	
+
 	firefly.util.addActionListener(firefly.action.type.READOUT_DATA, this._cursorRead.bind(this));
 }
 
@@ -89,9 +89,9 @@ LSST.UI.Viewer.prototype.destroy = function() {
 // Draws regions on the viewer.
 // @param regions - An array containing the ds9 regions to draw
 // @param layerName - The name describing the layer for these regions
-LSST.UI.Viewer.prototype.drawRegions = function(regions, layerName) {
+LSST.UI.Viewer.prototype.drawRegions = function(regions, layerName, color) {
 	for (var i = 0; i < regions.length; i++) {
-		regions[i] = 'image;' + regions[i] + ' # color=blue';
+		regions[i] = 'image;' + regions[i] + ' # color=' + color;
 	}
 
 	if (this._regionLayers.indexOf(layerName) == -1)
@@ -221,7 +221,7 @@ LSST.UI.UV_Control = function(viewer, imageRepository, bStartPaused = true, freq
 	this._newImage = null;
 
 	this._minimumFreq = 10000;
-	
+
 	// PUT THIS LINE BACK IN, ONCE WE GET THE REAL SERVER
 	// this.setFrequency(frequency);
 }
@@ -255,7 +255,7 @@ LSST.UI.UV_Control.prototype.loadNewImage = function() {
 // Pauses this viewer control
 LSST.UI.UV_Control.prototype.pause = function() {
 	this._bPaused = true;
-	
+
 	var button = this._viewer.html.find(".viewer-uv-pr").attr('value', 'Resume');
 }
 

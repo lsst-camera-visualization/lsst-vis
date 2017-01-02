@@ -94,6 +94,7 @@ var LSST_TERMINAL = {
 	
 		// The current index
 		var index = cmds.length;
+		console.log(index);
 		
 		var saveHistory = function() {
 		    localStorage.setItem('cmdHistory', JSON.stringify(cmds));
@@ -112,8 +113,8 @@ var LSST_TERMINAL = {
 			saveHistory();
 		    
 		    if (cmds.length > maxEntries) {
-		        cmds.shift();
-		        help.shift();
+		      cmds.splice(maxEntries, cmds.length - maxEntries);
+		      help.splice(maxEntries, help.length - maxEntries);
 		    }
 		    
 		    index = cmds.length;

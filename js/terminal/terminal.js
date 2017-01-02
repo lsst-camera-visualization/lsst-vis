@@ -622,11 +622,15 @@ var LSST_TERMINAL = {
 	    if (currParam && currParam in examples) {
 	      var currExamples = examples[currParam];
 	      examplesDOM.css("display", "inline-block");
-	      examplesDOM.append(jQuery("<p>").text("Examples:"));
+	      examplesDOM.append(jQuery("<p>").text("Examples for " + currParam + " parameter:"));
 	      for (var i = 0; i < currExamples.length; i++) {
 	        var e = currExamples[i];
 	        examplesDOM.append(jQuery("<p>").text(e));
 	      }
+	      var height = examplesDOM.outerHeight(true);
+	      var offset = getOption("terminalHelpDOM").children(".cmd_highlight").offset();
+	      offset.top -= (height + 20);
+	      examplesDOM.offset(offset);
 	    }
 	    
 	    
@@ -752,7 +756,8 @@ var LSST_TERMINAL = {
 		  var terminalExamplesDOM      = setOption("terminalExamplesDOM", jQuery('<div>').addClass('cmd_examples'));
 	
 		  terminal.append(terminalHelpContainerDOM).append(terminalOutputDOM).append(terminalInputDOM);
-		  terminalHelpContainerDOM.append(terminalHelpDOM).append(terminalHelpSubDOM).append(terminalExamplesDOM);
+		  terminalHelpContainerDOM.append(terminalHelpDOM).append(terminalHelpSubDOM);
+		  jQuery('body').append(terminalExamplesDOM);
       	
     	// Make sure all properties have values
 	    properties.fontSize = LSST_TERMINAL.Utility.GetValue(properties.fontSize, '150%');

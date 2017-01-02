@@ -65,7 +65,9 @@ jQuery(document).ready(function() {
 	    
 	    examples : {
 	      "region" : [
-	        "(rect 1000 1200 3000 3200)"
+	        "(rect 1000 1200 3000 3200)",
+	        "example 2",
+	        "example 3",
 	      ]
 	    }
 	    

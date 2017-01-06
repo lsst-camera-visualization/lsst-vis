@@ -8,14 +8,16 @@ def task(filename, task_params):
 	@param task_params - {type : rect/circ, value : region, numBins : int}
 	@return data for general histogram function
 	'''
-
-	with fits.open(filename) as fits_object:
-		region = task_params['region']
-		region_type, value, numBins, _min, _max = region['type'], region['value'], task_params['numBins'], task_params['min'], task_params['max']
-		ret =  histogram(fits_object, region_type, value, numBins, _min, _max)
-		if ret is None:
-			ret = "Region type is not recognized."
-		return {"data":ret.tolist()}, None
+	try:
+		with fits.open(filename) as fits_object:
+			region = task_params['region']
+			region_type, value, numBins, _min, _max = region['type'], region['value'], task_params['numBins'], task_params['min'], task_params['max']
+			ret =  histogram(fits_object, region_type, value, numBins, _min, _max)
+			if ret is None:
+				ret = "Region type is not recognized."
+			return {"data":ret.tolist()}, None
+	except Exception as e:
+		return ["Error when computing histogram."], None
 # Testing
 if __name__ == "__main__":
 	filename = "http://web.ipac.caltech.edu/staff/roby/demo/wise-m51-band1.fits"

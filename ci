@@ -16,34 +16,11 @@ then
 fi
 
 
-
-if [ $1 == "-X" ] 
-  then
-    INC=0
-elif [ $1 == '-Y' ] 
-  then
-    INC=1
-elif [ $1 == '-Z' ] 
-  then
-    INC=2
-else
-  echo "Please enter a valid increment flag"
-  print_usage
-  exit 0
-fi
-
-old_version=$(sed '1q;d' version)
-
-IFS='.' read -ra OV <<< $old_version
-OV[$INC]=$(expr ${OV[$INC]} + 1)
+# Run ./inc
+./inc $1
 
 
-new_version=""
-for i in {0..2}; do
-  new_version=$new_version${OV[$i]}"."
-done
-new_version=$new_version"r"$(git rev-parse HEAD)
-echo $new_version
 
+# Run git commands
 git add -A
 git commit -m "$2"

@@ -18,7 +18,7 @@ fi
 
 # Run ./inc
 ./inc $1
-
+echo $?
 
 
 # Run git commands

@@ -12,7 +12,7 @@ print_usage() {
 if [[ ( $1 == "--help") ||  $1 == "-h"  || $# -ne 1 ]]
 then
 	print_usage
-	exit 0
+	exit 1
 fi
 
 
@@ -29,7 +29,7 @@ elif [ $1 == '-Z' ]
 else
   echo "Please enter a valid increment flag"
   print_usage
-  exit 0
+  exit 1
 fi
 
 old_version=$(sed '1q;d' version)

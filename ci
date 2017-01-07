@@ -18,7 +18,6 @@ fi
 
 # Run ./inc
 ./inc $1
-echo $?
 if [ $? -ne 0 ]
   then
     echo "Please enter valid increment flag"

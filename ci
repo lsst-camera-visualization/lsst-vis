@@ -1,0 +1,48 @@
+#!/bin/bash
+
+print_usage() {
+  echo "Usage:"
+  echo -e "\t./ci [-X or -Y or -Z] \"Commit Message In Quotations\""
+  echo ""
+  echo "Example:"
+  echo -e "\t./ci -Y \"Added new feature\""
+}
+
+
+if [[ ( $1 == "--help") ||  $1 == "-h"  || $# -ne 2 ]]
+then
+	print_usage
+	exit 0
+fi
+
+
+
+if [ $1 == "-X" ] 
+  then
+    INC=0
+elif [ $1 == '-Y' ] 
+  then
+    INC=1
+elif [ $1 == '-Z' ] 
+  then
+    INC=2
+else
+  echo "Please enter a valid increment flag"
+  print_usage
+  exit 0
+fi
+
+old_version=$(sed '1q;d' version)
+
+IFS='.' read -ra ADDR <<< $old_version
+for i in "${ADDR[@]}"; do
+    echo $i
+done
+ADDR[$INC]=$(expr ${ADDR[$INC]} + 1)
+
+commit_number=$(git rev-parse)
+echo $commit_number
+
+for i in "${ADDR[@]}"; do
+  :
+done

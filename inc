@@ -37,6 +37,14 @@ old_version=$(sed '1q;d' version)
 IFS='.' read -ra OV <<< $old_version
 OV[$INC]=$(expr ${OV[$INC]} + 1)
 
+if [ $INC -eq 0 ]
+  then
+    OV[1]=0
+    OV[2]=0
+elif [ $INC -eq 1 ]
+  then
+    OV[2]=0
+fi
 
 new_version=""
 for i in {0..2}; do

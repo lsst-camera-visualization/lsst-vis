@@ -112,8 +112,8 @@ var LSST_TERMINAL = {
 			saveHistory();
 		    
 		    if (cmds.length > maxEntries) {
-		      cmds.splice(maxEntries, cmds.length - maxEntries);
-		      help.splice(maxEntries, help.length - maxEntries);
+		      cmds.splice(0, cmds.length - maxEntries);
+		      help.splice(0, help.length - maxEntries);
 		    }
 		    
 		    index = cmds.length;
@@ -507,6 +507,7 @@ var LSST_TERMINAL = {
   	
   	var executeCommand = function(input) {
   		getOption("history").addCommand(input, getOption("terminalHelp").text());
+  		jQuery(getOption("terminalExamplesDOM")).empty().css("display", "none");
   		
   		var properties = getOption("properties");
   		var paramAutoCompletes = getOption("paramAutoCompletes");

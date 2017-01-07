@@ -118,4 +118,6 @@ LSST.UI.Region.Parse = function(region) {
 		else if (region[0] == 'circ')
 			return LSST.UI.Circ.Parse(region);
 	}
+	
+	return null;
 }

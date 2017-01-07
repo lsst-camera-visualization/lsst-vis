@@ -19,6 +19,10 @@ fi
 # Run ./inc
 ./inc $1
 echo $?
+if [ $? -ne 1 ]
+  then
+    echo "Please enter valid increment flag"
+fi
 
 
 # Run git commands

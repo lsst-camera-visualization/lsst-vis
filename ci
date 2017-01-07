@@ -34,15 +34,16 @@ fi
 
 old_version=$(sed '1q;d' version)
 
-IFS='.' read -ra ADDR <<< $old_version
-for i in "${ADDR[@]}"; do
-    echo $i
-done
-ADDR[$INC]=$(expr ${ADDR[$INC]} + 1)
+IFS='.' read -ra OV <<< $old_version
+OV[$INC]=$(expr ${OV[$INC]} + 1)
 
-commit_number=$(git rev-parse)
-echo $commit_number
 
-for i in "${ADDR[@]}"; do
-  :
+new_version=""
+for i in {0..2}; do
+  new_version=$new_version${OV[$i]}"."
 done
+new_version=$new_version"r"$(git rev-parse HEAD)
+echo $new_version
+
+$(git add -A)
+$(git commit -m "$2")

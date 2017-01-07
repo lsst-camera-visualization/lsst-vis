@@ -42,7 +42,7 @@ new_version=""
 for i in {0..2}; do
   new_version=$new_version${OV[$i]}"."
 done
-new_version=$new_version"r"$(git rev-parse HEAD)
+new_version=$new_version$(git rev-parse HEAD)
 
 echo $new_version
 echo $new_version > version

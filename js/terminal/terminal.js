@@ -543,6 +543,8 @@ var LSST_TERMINAL = {
   	  var commandNames = getOption("commandNames");
   	  var terminalHelpSub = getOption("terminalHelpSub");
   	  var subCommandAutoCompletes = getOption("subCommandAutoCompletes");
+  	  var examples = getOption("examples");
+      var examplesDOM = jQuery(getOption("terminalExamplesDOM")).empty().css("display", "none");
   	  
       var split = LSST_TERMINAL.Utility.SplitStringByParameter(input, properties.multiStart, properties.multiEnd);
       
@@ -583,6 +585,8 @@ var LSST_TERMINAL = {
 			    helpString += '<span class="cmd_help_element">' + cmdParams[i] + '</span>';
 		    }
 	    }
+	    
+	    
 	
 	    var validSubCommand = false;
 	    // If the parameter has a sub command
@@ -609,6 +613,31 @@ var LSST_TERMINAL = {
 	    }
 	    else if (!validSubCommand)
 		    terminalHelpSub.clear();
+		    
+		    
+		    
+		    
+		 
+	    
+	    // Display examples if necessary
+	    if (currParam && currParam in examples) {
+	      var currExamples = examples[currParam];
+	      examplesDOM.css("display", "inline-block");
+	      examplesDOM.append(jQuery("<p>").text("Examples for " + currParam + " parameter:"));
+	      for (var i = 0; i < currExamples.length; i++) {
+	        var e = currExamples[i];
+	        examplesDOM.append(jQuery("<p>").text(e));
+	      }
+	      var height = examplesDOM.outerHeight(true);
+	      var offset = getOption("terminalHelpDOM").children(".cmd_highlight").offset();
+	      offset.top -= (height + 20);
+	      examplesDOM.offset(offset);
+	    }
+	    
+	    
+	    
+	    
+	    
 	
 	    return helpString;
     }
@@ -725,9 +754,11 @@ var LSST_TERMINAL = {
 		  var terminalHelpSubDOM       = setOption("terminalHelpSubDOM", jQuery('<span>').addClass('cmd_help_sub'));
 		  var terminalOutputDOM        = setOption("terminalOutputDOM", jQuery('<div>').addClass('cmd_output'));
 		  var terminalInputDOM         = setOption("terminalInputDOM", jQuery('<input>').addClass('cmd_input').attr('placeholder', 'Enter command here'));
+		  var terminalExamplesDOM      = setOption("terminalExamplesDOM", jQuery('<div>').addClass('cmd_examples'));
 	
 		  terminal.append(terminalHelpContainerDOM).append(terminalOutputDOM).append(terminalInputDOM);
 		  terminalHelpContainerDOM.append(terminalHelpDOM).append(terminalHelpSubDOM);
+		  jQuery('body').append(terminalExamplesDOM);
       	
     	// Make sure all properties have values
 	    properties.fontSize = LSST_TERMINAL.Utility.GetValue(properties.fontSize, '150%');

@@ -45,5 +45,5 @@ done
 new_version=$new_version"r"$(git rev-parse HEAD)
 echo $new_version
 
-$(git add -A)
-$(git commit -m "$2")
+git add -A
+git commit -m "$2"

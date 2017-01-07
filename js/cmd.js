@@ -26,38 +26,38 @@ jQuery(document).ready(function() {
         data[command].callback = cmds[commandName];
       }
     }
-	
+
 	  var terminalOptions = {
 	    // The description of commands that can be entered by the user
 	    commands : data,
-	    
+
 	    // Parameters that require more than a single word.
 	    // These will be wrapped in parenthesis's by the user.
 	    subCommands : [
 	      'rect x1 y1 x2 y2',
 	      'circ originX originY radius'
 	    ],
-	    
+
 	    // Parameters that can be auto completed using tab.
 	    // Will be updated (through code) when necessary, through a terminal function.
 	    autoCompleteParams : {
 		    'box_id' : [ 'ffbox' ],
 		    'viewer_id' : [ 'ffview' ]
 	    },
-	    
+
 	    // Hints for certain parameters. Will be displayed to the user
 	    // when he/she comes upon this parameter.
 	    paramsWithHint : {
 	      'region' : 'Hint: (rect), (circ), or selected'
 	    },
-	    
+
 	    // Various properties for the terminal.
 	    properties : {
 	      helpLink : "https://github.com/lsst-camera-visualization/frontend/wiki",
 	      prefix : '~>',
 	      fontSize : '150%'
 	    },
-	    
+
 	    defaults : {
 	      "viewer_id" : LSST.state.defaults.viewer,
 	      "box_id" : LSST.state.defaults.box
@@ -68,14 +68,14 @@ jQuery(document).ready(function() {
 	        "(rect 1000 1200 3000 3200)"
 	      ]
 	    }
-	    
+
 	  }
-	  
+
 	  // Create the terminal
 	  LSST.state.term = new LSST.UI.Terminal( { name : 'MainTerminal', terminalOptions : terminalOptions, settings : LSST.getSettings("MainTerminal") } );
-	  
+
   }).fail( function(jqXHR, textStatus, errorThrown) { console.log("Error loading commands.json: " + errorThrown); });
-  
+
 });
 
 
@@ -119,7 +119,7 @@ cmds = {
 			viewer.clear();
 
 			var region = LSST.UI.Region.Parse(regionParam);
-			viewer.drawRegions( [ region.toDS9() ], 'Average Pixel');
+			viewer.drawRegions( [ region.toDS9() ], 'Average Pixel', 'blue');
 
 			var boxText = [
 				'Processing average_pixel...'
@@ -215,11 +215,14 @@ cmds = {
 		if (!LSST.state.boxes.exists(boxID)) {
 			var box = new LSST.UI.Box( { name : boxID } );
 			LSST.state.boxes.add(boxID, box);
+			
+			if (LSST.state.boxes.size() == 1)
+			  cmds.default_box( { box_id : boxID } );
 
 			cmds.show_box( { 'box_id' : boxID } );
 		}
 		else {
-            LSST.state.term.lsst_term('echo', 'A box with the name \'' + boxID + '\' already exists!');
+      LSST.state.term.lsst_term('echo', 'A box with the name \'' + boxID + '\' already exists!');
 		}
 	},
 
@@ -230,6 +233,9 @@ cmds = {
 		if (!LSST.state.viewers.exists(viewerID)) {
 			var viewer = new LSST.UI.Viewer( { name : viewerID, image : image } );
 			LSST.state.viewers.add(viewerID, viewer);
+			
+			if (LSST.state.viewers.size() == 1)
+			  cmds.default_viewer( { viewer_id : viewerID } );
 
 			viewer.addExtension('Choose Command...', 'AREA_SELECT', viewerCommands.display_area_commands );
 
@@ -243,6 +249,30 @@ cmds = {
 		}
 	},
 
+	default_box : function(cmd_args) {
+	  var boxID = cmd_args.box_id;
+	  
+	  if (boxID === null || LSST.state.boxes.exists(boxID)) {
+	    LSST.state.defaults.box = boxID;
+	    LSST.state.term.lsst_term("setDefault", { param : "box_id", value : boxID } );
+	  }
+	  else {
+	    LSST.state.term.lsst_term("echo", "A box with that name does not exist!");
+	  }
+	},
+
+	default_viewer : function(cmd_args) {
+	  var viewerID = cmd_args.viewer_id;
+	  
+	  if (viewerID === null || LSST.state.viewers.exists(viewerID)) {
+	    LSST.state.defaults.viewer = viewerID;
+	    LSST.state.term.lsst_term("setDefault", { param : "viewer_id", value : viewerID } );
+	  }
+	  else {
+	    LSST.state.term.lsst_term("echo", "A viewer with that name does not exist!");
+	  }
+	},
+
 	delete_box: function(cmd_args) {
 		var boxID = cmd_args['box_id'];
 
@@ -250,8 +280,12 @@ cmds = {
 			LSST.state.boxes.get(boxID).destroy();
 			LSST.state.boxes.remove(boxID);
 			
-			if (LSST.state.defaults.box == boxID)
-			    LSST.state.defaults.box = null;
+			if (LSST.state.defaults.box == boxID) {
+			    if (LSST.state.boxes.size() > 0)
+			      cmds.default_box( { box_id : LSST.state.boxes.get() } );
+			    else
+			      cmds.default_box( { box_id : null } );
+			}
 
 			LSST.state.term.lsst_term("deleteParameterAuto", { param : 'box_id', value : boxID });
 		}
@@ -259,17 +293,21 @@ cmds = {
 			LSST.state.term.lsst_term('echo', 'A box with the name \'' + boxID + '\' does not exist!');
 		}
 	},
-	
+
 	delete_viewer : function(cmd_args) {
 	  var viewerID = cmd_args.viewer_id;
-	  
+
 	  if (LSST.state.viewers.exists(viewerID)) {
 	    var viewer = LSST.state.viewers.get(viewerID);
 	    viewer.destroy();
 	    LSST.state.viewers.remove(viewerID);
 	    
-	    if (LSST.state.defaults.viewer == viewerID)
-	      LSST.state.defaults.viewer = null;
+	    if (LSST.state.defaults.viewer == viewerID) {
+			    if (LSST.state.viewers.size() > 0)
+			      cmds.default_viewer( { viewer_id : LSST.state.viewers.get() } );
+			    else
+			      cmds.default_viewer( { viewer_id : null } );
+			}
 	      
 	    LSST.state.term.lsst_term("deleteParameterAuto", { param : 'viewer_id', value : viewerID });
 	  }
@@ -316,7 +354,6 @@ cmds = {
 	},
 
 	hot_pixel: function(cmd_args) {
-	    console.log(cmd_args);
 		var viewerID = cmd_args['viewer_id'];
 		if (LSST.state.viewers.exists(viewerID)) {
 
@@ -324,29 +361,40 @@ cmds = {
 			if (cmd_args['threshold']!=='max'){
 					threshold = parseInt(cmd_args['threshold']);
 			}
-			var region = parse_region(cmd_args['region']);
+			var regionParam = cmd_args['region'];
+            var region = LSST.UI.Region.Parse(regionParam);
 
 			// A handle to the ff image viewer
 			var imageViewer = LSST.state.viewers.get(viewerID);
 
 			var regionID = viewerID + '-hotpixel';
             var plotID = viewerID;
-			if (imageViewer[regionID]) {
-                firefly.action.dispatchDeleteRegionLayer(regionID, plotID);
-				imageViewer[regionID] = undefined;
-			}
 
-			read_hotpixels(
-				{
-					threshold: threshold,
-					"region": region
-				},
-				function(regions) {
-					imageViewer[regionID] = regions;
-                    firefly.action.dispatchCreateRegionLayer(regionID, regionID, null, regions, plotID);
-				},
-				imageViewer
-			);
+            imageViewer.clear();
+            imageViewer.drawRegions([region.toDS9()], 'Hot Pixel Boundary', 'blue');
+
+            var region_backend = region.toBackendFormat();
+            var param_backend = {
+                'threshold': threshold,
+                "region": region_backend
+            }
+
+            executeBackendFunction('hot_pixel', imageViewer, param_backend,
+                function(data) {
+                    var regions = [];
+                    var color = 'red';
+                    for (var i = 0; i < data.length; i++) {
+                        var d = data[i];
+                        var content = ['circle', 'point', d[0], d[1]].join(' ');
+                        regions.push(content);
+                      }
+                    imageViewer.drawRegions(regions, 'Hot Pixels', 'red');
+                },
+                function(data) {
+                    LSST.state.term.lsst_term('echo', 'There was a problem when fetching hot pixel information in the FITS file.');
+                    LSST.state.term.lsst_term('echo', 'Please make sure all parameters were typed in correctly.');
+                }
+            );
 
 		}
 		else {
@@ -368,23 +416,11 @@ cmds = {
 	},
 
 	maximize_terminal : function(cmd_args) {
-		LSST.state.term.lsst_term("maximize");
-		jQuery('#cmd_container').outerHeight(LSST.state.term.outerHeight(true));
-
-		var toolbar = jQuery('#cmd_container').children('.LSST_TB-toolbar');
-		var max = jQuery(toolbar.children()[1]);
-		max.attr('src', 'js/toolbar/images/minimize_40x40.png');
-		max.data('onClick', cmds.minimize_terminal);
+	  LSST.state.term.maximize();
 	},
 
 	minimize_terminal : function(cmd_args) {
-		LSST.state.term.lsst_term("minimize");
-		jQuery('#cmd_container').outerHeight(LSST.state.term.outerHeight(true));
-
-		var toolbar = jQuery('#cmd_container').children('.LSST_TB-toolbar');
-		var mini = jQuery(toolbar.children()[1]);
-		mini.attr('src', 'js/toolbar/images/maximize_40x40.png');
-		mini.data('onClick', cmds.maximize_terminal);
+		LSST.state.term.minimize();
 	},
 
 	read_mouse: function(cmd_args) {
@@ -603,7 +639,7 @@ cmds = {
       LSST.state.term.lsst_term('echo', 'A viewer with the name \'' + viewerID + '\' does not exist!');
 		}
 	},
-	
+
 	uv_start : function(cmd_args) {
 	  cmds.uv_resume(cmd_args);
 	},

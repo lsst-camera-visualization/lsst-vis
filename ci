@@ -1,0 +1,30 @@
+#!/bin/bash
+
+print_usage() {
+  echo "Usage:"
+  echo -e "\t./ci [-X or -Y or -Z] \"Commit Message In Quotations\""
+  echo ""
+  echo "Example:"
+  echo -e "\t./ci -Y \"Added new feature\""
+}
+
+
+if [[ ( $1 == "--help") ||  $1 == "-h"  || $# -ne 2 ]]
+then
+	print_usage
+	exit 0
+fi
+
+
+# Run ./inc
+./inc $1
+if [ $? -ne 0 ]
+  then
+    echo "Please enter valid increment flag"
+    exit 1
+fi
+
+
+# Run git commands
+git add -A
+git commit -m "$2"

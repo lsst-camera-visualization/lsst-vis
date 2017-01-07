@@ -36,7 +36,6 @@ jQuery(window).bind('beforeunload', function(){
 jQuery(document).ready(function() {
   // Set the version number
   jQuery.get("version", function(data) {
-    console.log(data);
     jQuery("#version").text(data);
   });
 });

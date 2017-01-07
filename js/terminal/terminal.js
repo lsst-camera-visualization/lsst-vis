@@ -94,7 +94,6 @@ var LSST_TERMINAL = {
 	
 		// The current index
 		var index = cmds.length;
-		console.log(index);
 		
 		var saveHistory = function() {
 		    localStorage.setItem('cmdHistory', JSON.stringify(cmds));

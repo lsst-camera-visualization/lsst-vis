@@ -182,8 +182,8 @@ cmds = {
     region = LSST.UI.Region.Parse(cmd_args.region);
     params = {
         numBins : (cmd_args.num_bins == undefined) ? 10 : parseInt(cmd_args.num_bins),
-        min : (cmd_args.min == undefined) ? 0 : parseInt(cmd_args.min),
-        max : (cmd_args.max == undefined) ? 0 : parseInt(cmd_args.max),
+        min : (cmd_args.min == undefined) ? -1 : parseInt(cmd_args.min),
+        max : (cmd_args.max == undefined) ? -1 : parseInt(cmd_args.max),
         region : region.toBackendFormat()
     }
     executeBackendFunction('chart', LSST.state.viewers.get(cmd_args.viewer_id), params,
@@ -414,7 +414,7 @@ cmds = {
     var result = viewer.loadImage(uri);
 
 		LSST.state.viewers.get(viewerID).image_url = uri;
-		LSST.state.term.echo(result);
+		LSST.state.term.lsst_term("echo", result);
 		console.log(LSST.state.viewers.get(viewerID));
 		return null;
 	},

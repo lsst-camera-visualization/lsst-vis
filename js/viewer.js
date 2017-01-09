@@ -10,12 +10,6 @@ LSST.extend('LSST.UI');
      \/   |_|\___| \_/\_/ \___|_|
 */
 
-// A viewer contains the following properties:
-// - ffHandle: A handle to the firefly viewer.
-// - image_url: The url of the image the viewer is currently displaying
-// - uv: A UV_Data object.
-// - readout: An FFReadout object.
-// - header: Store the header information of the image in the Viewer.
 LSST.UI.Viewer = function(options) {
 
 	this.html = jQuery(

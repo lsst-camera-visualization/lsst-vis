@@ -39,12 +39,12 @@ def get_data(hist,_min, _max):
 		labels = hist[1]
 		value = hist[0]
 		ret = [[underflow_bins, _min - 2*width, _min - width]] # underflow bar
-		_bin = [[1,_min - width, _min]] # empty bar
+		_bin = [[0,_min - width, _min]] # empty bar
 		ret = np.concatenate((ret, _bin),axis=0)
 		for i in range (0, len(hist[1])-1):
 			_bin = [[value[i], labels[i], labels[i+1]]]
 			ret = np.concatenate((ret, _bin),axis=0)
-		_bin = [[1, _max, _max + width]] # empty bar
+		_bin = [[0, _max, _max + width]] # empty bar
 		ret = np.concatenate((ret, _bin),axis=0)
 		_bin = [[overflow_bins, _max + width, _max + 2*width]] # overflow bar
 		ret = np.concatenate((ret, _bin),axis=0)

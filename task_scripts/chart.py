@@ -5,7 +5,7 @@ from utility_scripts.histogram import histogram
 def task(filename, task_params):
 	'''
 	@author Yutong Wang
-	@param task_params - {type : rect/circ, value : region, numBins : int}
+	@param task_params - {type : rect/circ, value : region, numBins : int, min/double : int, max: int/double}
 	@return data for general histogram function
 	'''
 	try:
@@ -21,5 +21,5 @@ def task(filename, task_params):
 # Testing
 if __name__ == "__main__":
 	filename = "http://web.ipac.caltech.edu/staff/roby/demo/wise-m51-band1.fits"
-	region = {'x1': 1000, 'x2' : 1000, 'y1' : 3000, 'y2' : 3000}
-	print(task(filename, {'region':{'type': 'rect', 'value' : region}, 'numBins': 10, 'min':10, 'max':100}))
+	region = {'x1': 100, 'x2' : 200, 'y1' : 100, 'y2' : 200}
+	print(task(filename, {'region':{'type': 'rect', 'value' : region}, 'numBins': 10, 'min':2, 'max':4}))

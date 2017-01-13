@@ -472,7 +472,7 @@ cmds = {
       }
     }
 
-    LSST.state.term.lsst_term('echo', 'Boundary of amplifiers shown by default. Use `hide_boundary` to hide it.');
+    LSST.state.term.lsst_term('echo', 'Boundaries of amplifiers shown by default. Use `hide_boundary` to hide it.');
 
     boxText = [
         'read_mouse',

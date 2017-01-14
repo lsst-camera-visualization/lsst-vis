@@ -62,7 +62,7 @@ jQuery(document).ready(function() {
 	      "viewer_id" : LSST.state.defaults.viewer,
 	      "box_id" : LSST.state.defaults.box
 	    },
-	    
+
 	    examples : {
 	      "region" : [
 	        "(rect 1000 1200 3000 3200)"
@@ -82,11 +82,12 @@ jQuery(document).ready(function() {
 
 var executeBackendFunction = function(nameOfTask, viewer, params, onFulfilled, onRejected) {
 	if (nameOfTask=='boundary'){
+		console.log(viewer);
 		params.image_url = viewer.original_image_url;
 	}else{
 		params.image_url = viewer.image_url;
 	}
-
+	console.log(params);
 	firefly.getJsonFromTask( 'python', nameOfTask, params ).then(function(data){onFulfilled(data);}).catch(function(data){onRejected(data);})
 }
 
@@ -95,17 +96,17 @@ function validateParams(cmd_args) {
 	  LSST.state.term.lsst_term('echo', 'A viewer with the name \'' + cmd_args.viewer_id + '\' does not exist!');
 	  return false;
   }
-  
+
   if (cmd_args.box_id != undefined && !LSST.state.boxes.exists(cmd_args.box_id)) {
 		LSST.state.term.lsst_term('echo', 'A box with the name \'' + cmd_args.box_id + '\' does not exist!');
     return false;
   }
-  
+
   if (cmd_args.region != undefined && LSST.UI.Region.Parse(cmd_args.region) == null) {
     LSST.state.term.lsst_term("echo", "Please enter a valid region");
     return false;
   }
-  
+
   return true;
 }
 
@@ -119,7 +120,7 @@ cmds = {
 
 		if (!validateParams(cmd_args))
 		  return;
-		  
+
 		// The region to do the calculation over
 		var regionParam = cmd_args['region'];
 
@@ -178,7 +179,7 @@ cmds = {
 	chart: function(cmd_args) {
 		if (!validateParams(cmd_args))
 		  return;
-	
+
     region = LSST.UI.Region.Parse(cmd_args.region);
     params = {
         numBins : (cmd_args.num_bins == undefined) ? 10 : parseInt(cmd_args.num_bins),
@@ -201,7 +202,7 @@ cmds = {
 	clear_box: function(cmd_args) {
 		if (!validateParams(cmd_args))
 		  return;
-	
+
 		var boxID = cmd_args['box_id'];
 		var box = LSST.state.boxes.get(boxID);
 		box.clear();
@@ -210,7 +211,7 @@ cmds = {
 	clear_viewer : function(cmd_args) {
 		if (!validateParams(cmd_args))
 		  return;
-		  
+
 		var viewerID = cmd_args['viewer_id'];
 		var viewer = LSST.state.viewers.get(viewerID);
 		viewer.clear();
@@ -218,25 +219,25 @@ cmds = {
 
 	create_box: function(cmd_args) {
 		var boxID = cmd_args['box_id'];
-		
+
 	  if (LSST.state.boxes.exists(boxID)) {
 		  LSST.state.term.lsst_term('echo', 'A box with the name \'' + boxID + '\' already exists!');
 		  return;
 	  }
-		
+
 		var box = new LSST.UI.Box( { name : boxID } );
 		LSST.state.boxes.add(boxID, box);
-		
+
 		if (LSST.state.boxes.size() == 1)
 		  cmds.default_box( { box_id : boxID } );
 
 		cmds.show_box( { 'box_id' : boxID } );
 	},
 
-	create_viewer: function(cmd_args) {		
+	create_viewer: function(cmd_args) {
 		var viewerID = cmd_args['viewer_id'];
 	  var image = cmd_args['[image]'];
-	  
+
 	  if (LSST.state.viewers.exists(viewerID)) {
 		  LSST.state.term.lsst_term('echo', 'A viewer with the name \'' + viewerID + '\' already exists!');
 		  return;
@@ -244,7 +245,7 @@ cmds = {
 
 		var viewer = new LSST.UI.Viewer( { name : viewerID, image : image } );
 		LSST.state.viewers.add(viewerID, viewer);
-		
+
 		if (LSST.state.viewers.size() == 1)
 		  cmds.default_viewer( { viewer_id : viewerID } );
 
@@ -258,7 +259,7 @@ cmds = {
 
 	default_box : function(cmd_args) {
 	  var boxID = cmd_args.box_id;
-	  
+
 	  if (boxID === null || LSST.state.boxes.exists(boxID)) {
 	    LSST.state.defaults.box = boxID;
 	    LSST.state.term.lsst_term("setDefault", { param : "box_id", value : boxID } );
@@ -270,7 +271,7 @@ cmds = {
 
 	default_viewer : function(cmd_args) {
 	  var viewerID = cmd_args.viewer_id;
-	  
+
 	  if (viewerID === null || LSST.state.viewers.exists(viewerID)) {
 	    LSST.state.defaults.viewer = viewerID;
 	    LSST.state.term.lsst_term("setDefault", { param : "viewer_id", value : viewerID } );
@@ -286,7 +287,7 @@ cmds = {
 		if (LSST.state.boxes.exists(boxID)) {
 			LSST.state.boxes.get(boxID).destroy();
 			LSST.state.boxes.remove(boxID);
-			
+
 			if (LSST.state.defaults.box == boxID) {
 			    if (LSST.state.boxes.size() > 0)
 			      cmds.default_box( { box_id : LSST.state.boxes.get() } );
@@ -308,14 +309,14 @@ cmds = {
 	    var viewer = LSST.state.viewers.get(viewerID);
 	    viewer.destroy();
 	    LSST.state.viewers.remove(viewerID);
-	    
+
 	    if (LSST.state.defaults.viewer == viewerID) {
 			    if (LSST.state.viewers.size() > 0)
 			      cmds.default_viewer( { viewer_id : LSST.state.viewers.get() } );
 			    else
 			      cmds.default_viewer( { viewer_id : null } );
 			}
-	      
+
 	    LSST.state.term.lsst_term("deleteParameterAuto", { param : 'viewer_id', value : viewerID });
 	  }
 	  else {
@@ -323,10 +324,10 @@ cmds = {
 	  }
 	},
 
-	hide_boundary: function(cmd_args) {  
+	hide_boundary: function(cmd_args) {
 		if (!validateParams(cmd_args))
 		  return;
-	
+
 		var viewerID = cmd_args['viewer_id'];
 		var plotID = viewerID;
 		var regionID = plotID + '-boundary';
@@ -340,10 +341,10 @@ cmds = {
     }
 	},
 
-	hide_box: function(cmd_args) {  
+	hide_box: function(cmd_args) {
 		if (!validateParams(cmd_args))
 		  return;
-	
+
 		var boxID = cmd_args['box_id'];
 
 		// A handle to the box
@@ -360,13 +361,13 @@ cmds = {
 	hot_pixel: function(cmd_args) {
 		if (!validateParams(cmd_args))
 		  return;
-		  
+
 		var viewerID = cmd_args['viewer_id'];
 		var threshold = 'max';
 		if (cmd_args['threshold']!=='max'){
 				threshold = parseInt(cmd_args['threshold']);
 		}
-		
+
 		var regionParam = cmd_args['region'];
     var region = LSST.UI.Region.Parse(regionParam);
 
@@ -386,7 +387,7 @@ cmds = {
     }
 
     executeBackendFunction('hot_pixel', imageViewer, param_backend,
-      function(data) {
+    function(data) {
         var regions = [];
         var color = 'red';
         for (var i = 0; i < data.length; i++) {
@@ -395,23 +396,23 @@ cmds = {
             regions.push(content);
         }
         imageViewer.drawRegions(regions, 'Hot Pixels', 'red');
-      },
-      function(data) {
-        LSST.state.term.lsst_term('echo', 'There was a problem when fetching hot pixel information in the FITS file.');
-        LSST.state.term.lsst_term('echo', 'Please make sure all parameters were typed in correctly.');
-      }
+    },
+        function(data) {
+            LSST.state.term.lsst_term('echo', 'There was a problem when fetching hot pixel information in the FITS file.');
+            LSST.state.term.lsst_term('echo', 'Please make sure all parameters were typed in correctly.');
+        }
     );
 	},
 
 	load_image: function(cmd_args) {
 		if (!validateParams(cmd_args))
 		  return;
-		  
+
 		var help_string = 'load an image from a URI';
 		var viewerID = cmd_args['viewer_id'];
 		var uri = cmd_args['uri'];
 		var viewer = LSST.state.viewers.get(viewerID);
-    var result = viewer.loadImage(uri);
+        var result = viewer.loadImage(uri);
 
 		LSST.state.viewers.get(viewerID).image_url = uri;
 		LSST.state.term.lsst_term("echo", result);
@@ -430,7 +431,7 @@ cmds = {
 	read_mouse: function(cmd_args) {
 		if (!validateParams(cmd_args))
 		  return;
-		  
+
 		var boxID = cmd_args['box_id'];
 		var viewerID = cmd_args['viewer_id'];
 
@@ -540,7 +541,7 @@ cmds = {
 	show_boundary: function(cmd_args) {
 		if (!validateParams(cmd_args))
 		  return;
-		  
+
 		var viewerID = cmd_args['viewer_id'];
 		var plotID = viewerID; // ffview as a default
 		var regionID = plotID + '-boundary';
@@ -569,7 +570,7 @@ cmds = {
 	show_box: function(cmd_args) {
 		if (!validateParams(cmd_args))
 		  return;
-		  
+
 		var boxID = cmd_args['box_id'];
 
 		// A handle to the box
@@ -588,7 +589,7 @@ cmds = {
 	show_viewer : function(cmd_args) {
 		if (!validateParams(cmd_args))
 		  return;
-		  
+
 		var viewerID = cmd_args['viewer_id'];
 		LSST.state.viewers.get(viewerID).setFocus(true);
 	},
@@ -604,7 +605,7 @@ cmds = {
 	uv_load_new: function(cmd_args) {
 		if (!validateParams(cmd_args))
 		  return;
-		  
+
 		var viewerID = cmd_args['viewer_id'];
   	LSST.state.uvControls.get(viewerID).loadNewImage();
 	},
@@ -612,7 +613,7 @@ cmds = {
 	uv_pause: function(cmd_args) {
 		if (!validateParams(cmd_args))
 		  return;
-		  
+
     var viewerID = cmd_args['viewer_id'];
 	  LSST.state.uvControls.get(viewerID).pause();
 	},
@@ -620,7 +621,7 @@ cmds = {
 	uv_resume: function(cmd_args) {
 		if (!validateParams(cmd_args))
 		  return;
-		  
+
     var viewerID = cmd_args['viewer_id'];
 	  LSST.state.uvControls.get(viewerID).resume();
 	},
@@ -628,16 +629,16 @@ cmds = {
 	uv_start : function(cmd_args) {
 		if (!validateParams(cmd_args))
 		  return;
-		  
+
 	  cmds.uv_resume(cmd_args);
 	},
 
 	uv_update: function(cmd_args) {
 		if (!validateParams(cmd_args))
 		  return;
-	  
+
 	  var viewerID = cmd_args['viewer_id'];
-    LSST.state.uvControls.get(viewerID).update();    
+    LSST.state.uvControls.get(viewerID).update();
 	}
 }
 

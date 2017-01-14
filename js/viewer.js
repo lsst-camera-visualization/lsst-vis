@@ -39,10 +39,6 @@ LSST.UI.Viewer = function(options) {
 	  cmds.uv_load_new( { viewer_id : jQuery(this).data("viewerid") } );
 	});
 
-
-	this.header = null;
-	this.show_boundary = false;
-	this.overscan = false;
 	this._regionLayers = []
 
 
@@ -62,11 +58,10 @@ LSST.UI.Viewer = function(options) {
 	// Init from UIElement
 	LSST.UI.UIElement.prototype._init.call(this, options);
 
-  if (!options.image)
-	  this.loadImage(getNewImageURL());
+	if (!options.image)
+		this.loadImage(getNewImageURL());
 	else
-	  this.loadImage(options.image);
-
+		this.loadImage(options.image);
 	firefly.util.addActionListener(firefly.action.type.READOUT_DATA, this._cursorRead.bind(this));
 }
 
@@ -118,6 +113,7 @@ LSST.UI.Viewer.prototype.loadImage = function(image) {
 	this.clear();
 	this.show_boundary = false;
 	this.header = null;
+	this.overscan = false;
 
 	var re = /^https?:/;
 	var result = "Image: " + image;
@@ -143,6 +139,10 @@ LSST.UI.Viewer.prototype.loadImage = function(image) {
 
 	this.image_url = image;
 	this.original_image_url = getNewOriginalImageURL(image);
+	// NOTE: Check if the image contains overscan based on filename.
+	if (this.image_url.includes('_untrimmed.fits')){
+		this.overscan = true;
+	}
 	return result;
 }
 
@@ -320,13 +320,15 @@ LSST.UI.UV_Control.prototype.update = function() {
 
 // A function that gets the url of the image to be loaded.
 function getNewImageURL(){
-	return document.location.origin+"/static/images/imageE2V_trimmed.fits";
+	return document.location.origin+"/static/images/imageE2V_untrimmed.fits";
 }
 
 function getNewOriginalImageURL(imageName){
 	var newName = imageName;
 	if (imageName.includes("_trimmed.fits")){
 		newName = imageName.replace("_trimmed.fits", ".fits");
+	}else if (imageName.includes("_untrimmed.fits")){
+		newName = imageName.replace("_untrimmed.fits", ".fits");
 	}
 	return newName;
 }

@@ -20,8 +20,8 @@ function read_boundary(data, cb, viewer) {
             cb({"header":data, "regions_ds9":regions});
         },
         function(data) {
-            LSST.state.term.echo('There was a problem when fetching boundary information of FITS file.');
-            LSST.state.term.echo('Please make sure all parameters were typed in correctly.');
+            LSST.state.term.lsst_term('echo', 'There was a problem when fetching boundary information of FITS file.');
+            LSST.state.term.lsst_term('echo', 'Please make sure all parameters were typed in correctly.');
         }
     );
 }

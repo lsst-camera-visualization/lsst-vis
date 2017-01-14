@@ -444,33 +444,32 @@ cmds = {
 	  // Clear
 	  cmds.clear_box( { 'box_id' : boxID } );
 
-	  var boxText = [
-		  'read_mouse',
-		  new LSST.UI.BoxText('Viewer', viewerID),
-		  [
-			  'Point: ',
-			  new LSST.UI.BoxText('X', ''),
-			  new LSST.UI.BoxText('Y', ''),
-		  ],
-              'Processing boundary from back end...'
+	var boxText = [
+		'read_mouse',
+		new LSST.UI.BoxText('Viewer', viewerID),
+		[
+			'Point: ',
+			new LSST.UI.BoxText('X', ''),
+			new LSST.UI.BoxText('Y', ''),
+		],
+            'Processing boundary from back end...'
   	];
-	  box.setText(boxText);
+	box.setText(boxText);
 
     if (!(viewer.show_boundary)){
-      if (viewer.header){
-        firefly.action.dispatchCreateRegionLayer(regionID, regionID, null, viewer.header["regions_ds9"], plotID);
-        viewer.show_boundary = true;
-      }
-      else {
-        read_boundary({},
-	        function(regions) { // Asynchronous
-            viewer.header = regions;
+        if (viewer.header){
             firefly.action.dispatchCreateRegionLayer(regionID, regionID, null, viewer.header["regions_ds9"], plotID);
             viewer.show_boundary = true;
-	        },
-	        viewer
-	      );
-      }
+        }else{
+            read_boundary({},
+    	        function(regions) { // Asynchronous
+                viewer.header = regions;
+                firefly.action.dispatchCreateRegionLayer(regionID, regionID, null, viewer.header["regions_ds9"], plotID);
+                viewer.show_boundary = true;
+    	        },
+    	        viewer
+    	    );
+        }
     }
 
     LSST.state.term.lsst_term('echo', 'Boundaries of amplifiers shown by default. Use `hide_boundary` to hide it.');
@@ -520,51 +519,56 @@ cmds = {
 				    new LSST.UI.BoxText('X', mouse_x),
 				    new LSST.UI.BoxText('Y', mouse_y)
 			    ],
-          [
-              'Region/segment: ',
-              new LSST.UI.BoxText('X', seg_x),
-              new LSST.UI.BoxText('Y', seg_y)
-          ],
-          new LSST.UI.BoxText('EXTNAME', (boundary[seg_y][seg_x])['EXTNAME'])
+                [
+                    'Region/segment: ',
+                    new LSST.UI.BoxText('X', seg_x),
+                    new LSST.UI.BoxText('Y', seg_y)
+                ],
+                new LSST.UI.BoxText('EXTNAME', (boundary[seg_y][seg_x])['EXTNAME'])
 		    ];
+            if (viewer.overscan){
+                boxText.push(new LSST.UI.BoxText('Region', 'Pre-scan'));
+            }else{
+                boxText.push(new LSST.UI.BoxText('Region', 'Data'));
+            }
 		    box.setText(boxText);
-		  }
+    		}
 		);
 
 		box.onClear(
 			function() {
-  			viewer.onCursorMove(null);
+      			viewer.onCursorMove(null);
 			}
 		);
 	},
 
 	show_boundary: function(cmd_args) {
 		if (!validateParams(cmd_args))
-		  return;
+    		return;
 
 		var viewerID = cmd_args['viewer_id'];
 		var plotID = viewerID; // ffview as a default
 		var regionID = plotID + '-boundary';
-    var viewer = LSST.state.viewers.get(viewerID);
-    if (!(viewer.show_boundary)){
-      if (viewer.header){
-        firefly.action.dispatchCreateRegionLayer(regionID, regionID, null, viewer.header["regions_ds9"], plotID);
-        viewer.show_boundary = true;
-      }
-      else {
-        read_boundary({},
-				  function(regions) { // Asynchronous
-            viewer.header = regions;
-            firefly.action.dispatchCreateRegionLayer(regionID, regionID, null, viewer.header["regions_ds9"], plotID);
-           viewer.show_boundary = true;
-				  },
-				  viewer
+        var viewer = LSST.state.viewers.get(viewerID);
+        if (!(viewer.show_boundary)){
+            if (viewer.header){
+                firefly.action.dispatchCreateRegionLayer(regionID, regionID, null, viewer.header["regions_ds9"], plotID);
+                viewer.show_boundary = true;
+            }
+            else {
+                read_boundary({},
+    				function(regions) { // Asynchronous
+                        viewer.header = regions;
+                        firefly.action.dispatchCreateRegionLayer(regionID, regionID, null, viewer.header["regions_ds9"], plotID);
+                        viewer.show_boundary = true;
+    				},
+    				viewer
 				);
-      }
-    }
-    else {
-      LSST.state.term.lsst_term('echo', "Boundary of this viewer is already drawn.")
-    }
+            }
+        }
+        else {
+            LSST.state.term.lsst_term('echo', "Boundary of this viewer is already drawn.")
+        }
 	},
 
 	show_box: function(cmd_args) {
@@ -597,9 +601,9 @@ cmds = {
 	uv_freq: function(cmd_args) {
 		if (!validateParams(cmd_args))
 		  return;
-	  var viewerID = cmd_args['viewer_id'];
 
-	  LSST.state.uvControls.get(viewerID).setFrequency( cmd_args['time_in_millis'] );
+        var viewerID = cmd_args['viewer_id'];
+    	LSST.state.uvControls.get(viewerID).setFrequency( cmd_args['time_in_millis'] );
 	},
 
 	uv_load_new: function(cmd_args) {
@@ -607,14 +611,14 @@ cmds = {
 		  return;
 
 		var viewerID = cmd_args['viewer_id'];
-  	LSST.state.uvControls.get(viewerID).loadNewImage();
+      	LSST.state.uvControls.get(viewerID).loadNewImage();
 	},
 
 	uv_pause: function(cmd_args) {
 		if (!validateParams(cmd_args))
 		  return;
 
-    var viewerID = cmd_args['viewer_id'];
+        var viewerID = cmd_args['viewer_id'];
 	  LSST.state.uvControls.get(viewerID).pause();
 	},
 
@@ -622,23 +626,23 @@ cmds = {
 		if (!validateParams(cmd_args))
 		  return;
 
-    var viewerID = cmd_args['viewer_id'];
-	  LSST.state.uvControls.get(viewerID).resume();
+        var viewerID = cmd_args['viewer_id'];
+    	LSST.state.uvControls.get(viewerID).resume();
 	},
 
 	uv_start : function(cmd_args) {
 		if (!validateParams(cmd_args))
 		  return;
 
-	  cmds.uv_resume(cmd_args);
+    	cmds.uv_resume(cmd_args);
 	},
 
 	uv_update: function(cmd_args) {
 		if (!validateParams(cmd_args))
 		  return;
 
-	  var viewerID = cmd_args['viewer_id'];
-    LSST.state.uvControls.get(viewerID).update();
+    	var viewerID = cmd_args['viewer_id'];
+        LSST.state.uvControls.get(viewerID).update();
 	}
 }
 

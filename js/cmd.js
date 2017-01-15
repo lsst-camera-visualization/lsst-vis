@@ -82,12 +82,10 @@ jQuery(document).ready(function() {
 
 var executeBackendFunction = function(nameOfTask, viewer, params, onFulfilled, onRejected) {
 	if (nameOfTask=='boundary'){
-		console.log(viewer);
 		params.image_url = viewer.original_image_url;
 	}else{
 		params.image_url = viewer.image_url;
 	}
-	console.log(params);
 	firefly.getJsonFromTask( 'python', nameOfTask, params ).then(function(data){onFulfilled(data);}).catch(function(data){onRejected(data);})
 }
 
@@ -135,7 +133,7 @@ cmds = {
 		cmds.clear_box( { 'box_id' : boxID } );
 
 		// Clear the viewer
-		viewer.clear();
+		viewer.clear_except_boundary();
 
 		var region = LSST.UI.Region.Parse(regionParam);
 		viewer.drawRegions( [ region.toDS9() ], 'Average Pixel', 'blue');
@@ -334,7 +332,7 @@ cmds = {
     var viewer = LSST.state.viewers.get(viewerID);
     if (viewer.show_boundary){
         viewer.show_boundary = false;
-        firefly.action.dispatchDeleteRegionLayer(regionID, plotID);
+        viewer.clearLayer('Boundary');
         LSST.state.term.lsst_term('echo', "Boundary Removed");
     } else {
         LSST.state.term.lsst_term('echo', "The boundary has not been drawn yet.");
@@ -377,7 +375,7 @@ cmds = {
 		var regionID = viewerID + '-hotpixel';
         var plotID = viewerID;
 
-        imageViewer.clear();
+        imageViewer.clear_except_boundary();
         imageViewer.drawRegions([region.toDS9()], 'Hot Pixel Boundary', 'blue');
 
         var region_backend = region.toBackendFormat();
@@ -392,7 +390,8 @@ cmds = {
             var color = 'red';
             for (var i = 0; i < data.length; i++) {
                 var d = data[i];
-                var content = ['circle', 'point', d[0], d[1]].join(' ');
+                // ds9 point format: (circle point x, y)
+                var content = ['circle', 'point', d[1], d[0]].join(' ');
                 regions.push(content);
             }
             imageViewer.drawRegions(regions, 'Hot Pixels', 'red');
@@ -558,16 +557,15 @@ cmds = {
         var viewer = LSST.state.viewers.get(viewerID);
         if (!(viewer.show_boundary)){
             if (viewer.header){
-                firefly.action.dispatchCreateRegionLayer(regionID, regionID, null, viewer.header["regions_ds9"], plotID);
+                viewer.drawRegions(viewer.header['regions_ds9'], 'Boundary', 'red');
                 viewer.show_boundary = true;
             }
             else {
-                function read_boundary(data, cb, viewer) {
+                function read_boundary(data, callback, viewer) {
                     executeBackendFunction('boundary', viewer, data,
                         function(data) {
                         var regions = [];
                         console.log(data);
-                        var color = 'white';
                         var d = data.BOUNDARY;
                         if (viewer.overscan){
                             d = data.BOUNDARY_OVERSCAN;
@@ -577,11 +575,10 @@ cmds = {
                                 for (var j=0; j<data.NUM_AMPS.y; j++){
                                     var x = i*seg_width + seg_width/2;
                                     var y = j*seg_height + seg_height/2;
-                                    regions.push(['box', x, y, seg_width, seg_height, 0, '#color=' + color].join(' '));
+                                    regions.push(['box', x, y, seg_width, seg_height, 0].join(' '));
                                 }
                             }
                         }
-                        color = 'red';
                         for (var i = 0; i < d.length; i++) {
                             var di = d[i];
                             for (var j = 0; j < di.length; j++) {
@@ -590,12 +587,11 @@ cmds = {
                                 var width = dij['width'];
                                 var x = dij['x'];
                                 var y = dij['y'];
-                                var content = ['box', x, y, width, height, 0, '#color=' + color].join(' ');
+                                var content = ['box', x, y, width, height, 0].join(' ');
                                 regions.push(content);
                             }
                         }
-                        console.log(regions);
-                        cb({"header":data, "regions_ds9":regions});
+                        callback({'header': data, 'regions_ds9': regions});
                         },
                         function(data) {
                             LSST.state.term.lsst_term('echo', 'There was a problem when fetching boundary information of FITS file.');
@@ -606,7 +602,7 @@ cmds = {
                 read_boundary({},
     				function(regions) { // Asynchronous
                         viewer.header = regions;
-                        firefly.action.dispatchCreateRegionLayer(regionID, regionID, null, viewer.header["regions_ds9"], plotID);
+                        viewer.drawRegions(regions['regions_ds9'], 'Boundary', 'red');
                         viewer.show_boundary = true;
     				},
     				viewer

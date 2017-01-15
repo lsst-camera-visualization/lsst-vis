@@ -79,14 +79,15 @@ LSST.UI.Viewer.prototype.destroy = function() {
 // @param regions - An array containing the ds9 regions to draw
 // @param layerName - The name describing the layer for these regions
 LSST.UI.Viewer.prototype.drawRegions = function(regions, layerName, color) {
+	var regions_to_draw = [];
 	for (var i = 0; i < regions.length; i++) {
-		regions[i] = 'image;' + regions[i] + ' # color=' + color;
+		regions_to_draw.push('image;' + regions[i] + ' # color=' + color);
 	}
 
 	if (this._regionLayers.indexOf(layerName) == -1)
 		this._regionLayers.push(layerName)
 
-	firefly.action.dispatchCreateRegionLayer(layerName, layerName, null, regions, this.name);
+	firefly.action.dispatchCreateRegionLayer(layerName, layerName, null, regions_to_draw, this.name);
 }
 
 // Clears the image the viewer from any markings
@@ -95,6 +96,14 @@ LSST.UI.Viewer.prototype.clear = function() {
 		firefly.action.dispatchDeleteRegionLayer(this._regionLayers[i], [ this.name ]);
 
 	this._regionLayers = [];
+}
+
+// Clears the image the viewer from any markings
+LSST.UI.Viewer.prototype.clear_except_boundary = function() {
+	for (var i = 0; i < this._regionLayers.length; i++)
+		if (this._regionLayers[i]!='Boundary')
+			firefly.action.dispatchDeleteRegionLayer(this._regionLayers[i], [ this.name ]);
+	this._regionLayers = ['Boundary'];
 }
 
 // Clears a layer of regions on this viewer
@@ -320,7 +329,7 @@ LSST.UI.UV_Control.prototype.update = function() {
 
 // A function that gets the url of the image to be loaded.
 function getNewImageURL(){
-	return document.location.origin+"/static/images/imageE2V_untrimmed.fits";
+	return document.location.origin+"/static/images/imageE2V_trimmed.fits";
 }
 
 function getNewOriginalImageURL(imageName){

@@ -128,7 +128,7 @@ LSST.UI.Viewer.prototype.loadImage = function(image) {
 
 	} else {
 		result = image + " !matched " + re;
-		viewer.showImage(this.name, {
+		firefly.showImage(this.name, {
 			plotId : this.name,
 			File : image,
 			Title : result,

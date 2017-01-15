@@ -369,39 +369,39 @@ cmds = {
 		}
 
 		var regionParam = cmd_args['region'];
-    var region = LSST.UI.Region.Parse(regionParam);
+        var region = LSST.UI.Region.Parse(regionParam);
 
 		// A handle to the ff image viewer
 		var imageViewer = LSST.state.viewers.get(viewerID);
 
 		var regionID = viewerID + '-hotpixel';
-    var plotID = viewerID;
+        var plotID = viewerID;
 
-    imageViewer.clear();
-    imageViewer.drawRegions([region.toDS9()], 'Hot Pixel Boundary', 'blue');
+        imageViewer.clear();
+        imageViewer.drawRegions([region.toDS9()], 'Hot Pixel Boundary', 'blue');
 
-    var region_backend = region.toBackendFormat();
-    var param_backend = {
-        'threshold': threshold,
-        "region": region_backend
-    }
-
-    executeBackendFunction('hot_pixel', imageViewer, param_backend,
-    function(data) {
-        var regions = [];
-        var color = 'red';
-        for (var i = 0; i < data.length; i++) {
-            var d = data[i];
-            var content = ['circle', 'point', d[0], d[1]].join(' ');
-            regions.push(content);
+        var region_backend = region.toBackendFormat();
+        var param_backend = {
+            'threshold': threshold,
+            "region": region_backend
         }
-        imageViewer.drawRegions(regions, 'Hot Pixels', 'red');
-    },
+
+        executeBackendFunction('hot_pixel', imageViewer, param_backend,
         function(data) {
-            LSST.state.term.lsst_term('echo', 'There was a problem when fetching hot pixel information in the FITS file.');
-            LSST.state.term.lsst_term('echo', 'Please make sure all parameters were typed in correctly.');
-        }
-    );
+            var regions = [];
+            var color = 'red';
+            for (var i = 0; i < data.length; i++) {
+                var d = data[i];
+                var content = ['circle', 'point', d[0], d[1]].join(' ');
+                regions.push(content);
+            }
+            imageViewer.drawRegions(regions, 'Hot Pixels', 'red');
+        },
+            function(data) {
+                LSST.state.term.lsst_term('echo', 'There was a problem when fetching hot pixel information in the FITS file.');
+                LSST.state.term.lsst_term('echo', 'Please make sure all parameters were typed in correctly.');
+            }
+        );
 	},
 
 	load_image: function(cmd_args) {
@@ -456,21 +456,7 @@ cmds = {
       	];
     	box.setText(boxText);
 
-        if (!(viewer.show_boundary)){
-            if (viewer.header){
-                firefly.action.dispatchCreateRegionLayer(regionID, regionID, null, viewer.header["regions_ds9"], plotID);
-                viewer.show_boundary = true;
-            }else{
-                read_boundary({},
-        	        function(regions) { // Asynchronous
-                    viewer.header = regions;
-                    firefly.action.dispatchCreateRegionLayer(regionID, regionID, null, viewer.header["regions_ds9"], plotID);
-                    viewer.show_boundary = true;
-        	        },
-        	        viewer
-        	    );
-            }
-        }
+        cmds.show_boundary({'viewer_id':viewerID});
 
         LSST.state.term.lsst_term('echo', 'Boundaries of amplifiers shown by default. Use `hide_boundary` to hide it.');
 

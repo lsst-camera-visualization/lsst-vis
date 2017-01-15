@@ -430,63 +430,63 @@ cmds = {
 
 	read_mouse: function(cmd_args) {
 		if (!validateParams(cmd_args))
-		  return;
+    		return;
 
-		var boxID = cmd_args['box_id'];
+    	var boxID = cmd_args['box_id'];
 		var viewerID = cmd_args['viewer_id'];
 
-	  var box = LSST.state.boxes.get(boxID);
-	  var viewer = LSST.state.viewers.get(viewerID);
+    	var box = LSST.state.boxes.get(boxID);
+    	var viewer = LSST.state.viewers.get(viewerID);
 
-    var plotID = viewerID;
+        var plotID = viewerID;
 		var regionID = plotID + '-boundary';
 
-	  // Clear
-	  cmds.clear_box( { 'box_id' : boxID } );
+    	// Clear
+    	cmds.clear_box( { 'box_id' : boxID } );
 
-	var boxText = [
-		'read_mouse',
-		new LSST.UI.BoxText('Viewer', viewerID),
-		[
-			'Point: ',
-			new LSST.UI.BoxText('X', ''),
-			new LSST.UI.BoxText('Y', ''),
-		],
-            'Processing boundary from back end...'
-  	];
-	box.setText(boxText);
+    	var boxText = [
+    		'read_mouse',
+    		new LSST.UI.BoxText('Viewer', viewerID),
+    		[
+    			'Point: ',
+    			new LSST.UI.BoxText('X', ''),
+    			new LSST.UI.BoxText('Y', ''),
+    		],
+                'Processing boundary from back end...'
+      	];
+    	box.setText(boxText);
 
-    if (!(viewer.show_boundary)){
-        if (viewer.header){
-            firefly.action.dispatchCreateRegionLayer(regionID, regionID, null, viewer.header["regions_ds9"], plotID);
-            viewer.show_boundary = true;
-        }else{
-            read_boundary({},
-    	        function(regions) { // Asynchronous
-                viewer.header = regions;
+        if (!(viewer.show_boundary)){
+            if (viewer.header){
                 firefly.action.dispatchCreateRegionLayer(regionID, regionID, null, viewer.header["regions_ds9"], plotID);
                 viewer.show_boundary = true;
-    	        },
-    	        viewer
-    	    );
+            }else{
+                read_boundary({},
+        	        function(regions) { // Asynchronous
+                    viewer.header = regions;
+                    firefly.action.dispatchCreateRegionLayer(regionID, regionID, null, viewer.header["regions_ds9"], plotID);
+                    viewer.show_boundary = true;
+        	        },
+        	        viewer
+        	    );
+            }
         }
-    }
 
-    LSST.state.term.lsst_term('echo', 'Boundaries of amplifiers shown by default. Use `hide_boundary` to hide it.');
+        LSST.state.term.lsst_term('echo', 'Boundaries of amplifiers shown by default. Use `hide_boundary` to hide it.');
 
-    boxText = [
-        'read_mouse',
-        new LSST.UI.BoxText('Viewer', viewerID),
-        [
-            'Point: ',
-            new LSST.UI.BoxText('X', ''),
-            new LSST.UI.BoxText('Y', ''),
-        ],
-        'Move the cursor in the viewer to get mouse readout...'
-    ];
-    box.setText(boxText);
+        boxText = [
+            'read_mouse',
+            new LSST.UI.BoxText('Viewer', viewerID),
+            [
+                'Point: ',
+                new LSST.UI.BoxText('X', ''),
+                new LSST.UI.BoxText('Y', ''),
+            ],
+            'Move the cursor in the viewer to get mouse readout...'
+        ];
+        box.setText(boxText);
 
-	  var readoutID = viewer.onCursorMove(
+    	var readoutID = viewer.onCursorMove(
 	    function(data) {
         var mouse_x = Math.trunc(data.x);
         var mouse_y = Math.trunc(data.y);
@@ -499,7 +499,10 @@ cmds = {
         var height = header_info['SEG_DATASIZE']['y'];
         var boundary = header_info['BOUNDARY'];
         var num_y = header_info['NUM_AMPS']['y']; // Segments origin at top left. Need to flip the Y coordinate for segment coordinate.
-
+        var overscan_info = header_info['OVERSCAN'];
+        var pre_x = overscan_info['PRE'];
+        var post_x = overscan_info['POST'];
+        var over_y = overscan_info['OVER'];
         if (viewer.overscan){
             width = header_info['SEG_SIZE']['x'];
             height = header_info['SEG_SIZE']['y'];
@@ -527,9 +530,26 @@ cmds = {
                 new LSST.UI.BoxText('EXTNAME', (boundary[seg_y][seg_x])['EXTNAME'])
 		    ];
             if (viewer.overscan){
-                boxText.push(new LSST.UI.BoxText('Region', 'Pre-scan'));
+                var mouse_region;
+                var seg_mouse_x = mouse_x % width;
+                var seg_mouse_y = mouse_y % height;
+                if (seg_y==1){
+                    seg_mouse_x = width - seg_mouse_x;
+                }else if (seg_y==0){
+                    seg_mouse_y = height - seg_mouse_y;
+                }
+                if (seg_mouse_y > over_y){
+                    mouse_region = 'overscan';
+                }else if (seg_mouse_x < pre_x){
+                    mouse_region = 'pre-scan';
+                }else if (seg_mouse_x > post_x){
+                    mouse_region = 'post-scan';
+                }else{
+                    mouse_region = 'data'
+                }
+                boxText.push(new LSST.UI.BoxText('Region', mouse_region));
             }else{
-                boxText.push(new LSST.UI.BoxText('Region', 'Data'));
+                boxText.push(new LSST.UI.BoxText('Region', 'data'));
             }
 		    box.setText(boxText);
     		}

@@ -1,13 +1,23 @@
 function read_boundary(data, cb, viewer) {
     executeBackendFunction('boundary', viewer, data,
         function(data) {
+        var regions = [];
         console.log(data);
+        var color = 'white';
         var d = data.BOUNDARY;
         if (viewer.overscan){
             d = data.BOUNDARY_OVERSCAN;
+            var seg_width = data.SEG_SIZE.x;
+            var seg_height = data.SEG_SIZE.y;
+            for (var i=0; i<data.NUM_AMPS.x; i++){
+                for (var j=0; j<data.NUM_AMPS.y; j++){
+                    var x = i*seg_width + seg_width/2;
+                    var y = j*seg_height + seg_height/2;
+                    regions.push(['box', x, y, seg_width, seg_height, 0, '#color=' + color].join(' '));
+                }
+            }
         }
-        var regions = [];
-        var color = 'red';
+        color = 'red';
         for (var i = 0; i < d.length; i++) {
             var di = d[i];
             for (var j = 0; j < di.length; j++) {

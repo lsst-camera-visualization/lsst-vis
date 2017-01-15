@@ -26,7 +26,12 @@ def _get_Header_Info(imgHDUs):
         raise ValueError('Incorrect segment/amplifier dimension.')
     num_X, num_Y = DETSIZE[0]//seg_dimension[0], DETSIZE[1]//seg_dimension[1]
     num_amps = num_X*num_Y
-
+    # Get the pre and post scan regions
+    DATASEC = getCoord(first_seg['DATASEC'])
+    BIASSEC = getCoord(first_seg['BIASSEC'])
+    overscan = max(DATASEC['start_Y'], DATASEC['end_Y'])
+    prescan = min(DATASEC['start_X'], DATASEC['end_X'])
+    postscan = min(BIASSEC['start_X'], BIASSEC['end_X'])
     boundary = [[{} for x in range(num_X)] for y in range(num_Y)]
     boundary_overscan = [[{} for x in range(num_X)] for y in range(num_Y)]
     # Traverse the list of headers
@@ -70,6 +75,7 @@ def _get_Header_Info(imgHDUs):
             'NUM_AMPS'      : {'num':num_amps, 'x':num_X, 'y':num_Y},
             'SEG_SIZE'      : {'x':seg_dimension[0], 'y':seg_dimension[1]},
             'SEG_DATASIZE'  : {'x':seg_datadim[0], 'y':seg_datadim[1]},
+            'OVERSCAN'      : {'PRE': prescan, 'POST': postscan, 'OVER': overscan},
             'BOUNDARY'      : boundary,
             'BOUNDARY_OVERSCAN' : boundary_overscan
     }

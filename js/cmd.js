@@ -62,7 +62,7 @@ jQuery(document).ready(function() {
 	      "viewer_id" : LSST.state.defaults.viewer,
 	      "box_id" : LSST.state.defaults.box
 	    },
-	    
+
 	    examples : {
 	      "region" : [
 	        "(rect 1000 1200 3000 3200)"
@@ -86,7 +86,6 @@ var executeBackendFunction = function(nameOfTask, viewer, params, onFulfilled, o
 	}else{
 		params.image_url = viewer.image_url;
 	}
-
 	firefly.getJsonFromTask( 'python', nameOfTask, params ).then(function(data){onFulfilled(data);}).catch(function(data){onRejected(data);})
 }
 
@@ -95,17 +94,17 @@ function validateParams(cmd_args) {
 	  LSST.state.term.lsst_term('echo', 'A viewer with the name \'' + cmd_args.viewer_id + '\' does not exist!');
 	  return false;
   }
-  
+
   if (cmd_args.box_id != undefined && !LSST.state.boxes.exists(cmd_args.box_id)) {
 		LSST.state.term.lsst_term('echo', 'A box with the name \'' + cmd_args.box_id + '\' does not exist!');
     return false;
   }
-  
+
   if (cmd_args.region != undefined && LSST.UI.Region.Parse(cmd_args.region) == null) {
     LSST.state.term.lsst_term("echo", "Please enter a valid region");
     return false;
   }
-  
+
   return true;
 }
 
@@ -119,7 +118,7 @@ cmds = {
 
 		if (!validateParams(cmd_args))
 		  return;
-		  
+
 		// The region to do the calculation over
 		var regionParam = cmd_args['region'];
 
@@ -134,7 +133,7 @@ cmds = {
 		cmds.clear_box( { 'box_id' : boxID } );
 
 		// Clear the viewer
-		viewer.clear();
+		viewer.clear_except_boundary();
 
 		var region = LSST.UI.Region.Parse(regionParam);
 		viewer.drawRegions( [ region.toDS9() ], 'Average Pixel', 'blue');
@@ -178,7 +177,7 @@ cmds = {
 	chart: function(cmd_args) {
 		if (!validateParams(cmd_args))
 		  return;
-	
+
     region = LSST.UI.Region.Parse(cmd_args.region);
     params = {
         numBins : (cmd_args.num_bins == undefined) ? 10 : parseInt(cmd_args.num_bins),
@@ -201,7 +200,7 @@ cmds = {
 	clear_box: function(cmd_args) {
 		if (!validateParams(cmd_args))
 		  return;
-	
+
 		var boxID = cmd_args['box_id'];
 		var box = LSST.state.boxes.get(boxID);
 		box.clear();
@@ -210,7 +209,7 @@ cmds = {
 	clear_viewer : function(cmd_args) {
 		if (!validateParams(cmd_args))
 		  return;
-		  
+
 		var viewerID = cmd_args['viewer_id'];
 		var viewer = LSST.state.viewers.get(viewerID);
 		viewer.clear();
@@ -218,25 +217,25 @@ cmds = {
 
 	create_box: function(cmd_args) {
 		var boxID = cmd_args['box_id'];
-		
+
 	  if (LSST.state.boxes.exists(boxID)) {
 		  LSST.state.term.lsst_term('echo', 'A box with the name \'' + boxID + '\' already exists!');
 		  return;
 	  }
-		
+
 		var box = new LSST.UI.Box( { name : boxID } );
 		LSST.state.boxes.add(boxID, box);
-		
+
 		if (LSST.state.boxes.size() == 1)
 		  cmds.default_box( { box_id : boxID } );
 
 		cmds.show_box( { 'box_id' : boxID } );
 	},
 
-	create_viewer: function(cmd_args) {		
+	create_viewer: function(cmd_args) {
 		var viewerID = cmd_args['viewer_id'];
 	  var image = cmd_args['[image]'];
-	  
+
 	  if (LSST.state.viewers.exists(viewerID)) {
 		  LSST.state.term.lsst_term('echo', 'A viewer with the name \'' + viewerID + '\' already exists!');
 		  return;
@@ -244,7 +243,7 @@ cmds = {
 
 		var viewer = new LSST.UI.Viewer( { name : viewerID, image : image } );
 		LSST.state.viewers.add(viewerID, viewer);
-		
+
 		if (LSST.state.viewers.size() == 1)
 		  cmds.default_viewer( { viewer_id : viewerID } );
 
@@ -258,7 +257,7 @@ cmds = {
 
 	default_box : function(cmd_args) {
 	  var boxID = cmd_args.box_id;
-	  
+
 	  if (boxID === null || LSST.state.boxes.exists(boxID)) {
 	    LSST.state.defaults.box = boxID;
 	    LSST.state.term.lsst_term("setDefault", { param : "box_id", value : boxID } );
@@ -270,7 +269,7 @@ cmds = {
 
 	default_viewer : function(cmd_args) {
 	  var viewerID = cmd_args.viewer_id;
-	  
+
 	  if (viewerID === null || LSST.state.viewers.exists(viewerID)) {
 	    LSST.state.defaults.viewer = viewerID;
 	    LSST.state.term.lsst_term("setDefault", { param : "viewer_id", value : viewerID } );
@@ -286,7 +285,7 @@ cmds = {
 		if (LSST.state.boxes.exists(boxID)) {
 			LSST.state.boxes.get(boxID).destroy();
 			LSST.state.boxes.remove(boxID);
-			
+
 			if (LSST.state.defaults.box == boxID) {
 			    if (LSST.state.boxes.size() > 0)
 			      cmds.default_box( { box_id : LSST.state.boxes.get() } );
@@ -308,14 +307,14 @@ cmds = {
 	    var viewer = LSST.state.viewers.get(viewerID);
 	    viewer.destroy();
 	    LSST.state.viewers.remove(viewerID);
-	    
+
 	    if (LSST.state.defaults.viewer == viewerID) {
 			    if (LSST.state.viewers.size() > 0)
 			      cmds.default_viewer( { viewer_id : LSST.state.viewers.get() } );
 			    else
 			      cmds.default_viewer( { viewer_id : null } );
 			}
-	      
+
 	    LSST.state.term.lsst_term("deleteParameterAuto", { param : 'viewer_id', value : viewerID });
 	  }
 	  else {
@@ -323,27 +322,27 @@ cmds = {
 	  }
 	},
 
-	hide_boundary: function(cmd_args) {  
+	hide_boundary: function(cmd_args) {
 		if (!validateParams(cmd_args))
 		  return;
-	
+
 		var viewerID = cmd_args['viewer_id'];
 		var plotID = viewerID;
 		var regionID = plotID + '-boundary';
     var viewer = LSST.state.viewers.get(viewerID);
     if (viewer.show_boundary){
         viewer.show_boundary = false;
-        firefly.action.dispatchDeleteRegionLayer(regionID, plotID);
+        viewer.clearLayer('Boundary');
         LSST.state.term.lsst_term('echo', "Boundary Removed");
     } else {
         LSST.state.term.lsst_term('echo', "The boundary has not been drawn yet.");
     }
 	},
 
-	hide_box: function(cmd_args) {  
+	hide_box: function(cmd_args) {
 		if (!validateParams(cmd_args))
 		  return;
-	
+
 		var boxID = cmd_args['box_id'];
 
 		// A handle to the box
@@ -360,58 +359,59 @@ cmds = {
 	hot_pixel: function(cmd_args) {
 		if (!validateParams(cmd_args))
 		  return;
-		  
+
 		var viewerID = cmd_args['viewer_id'];
 		var threshold = 'max';
 		if (cmd_args['threshold']!=='max'){
 				threshold = parseInt(cmd_args['threshold']);
 		}
-		
+
 		var regionParam = cmd_args['region'];
-    var region = LSST.UI.Region.Parse(regionParam);
+        var region = LSST.UI.Region.Parse(regionParam);
 
 		// A handle to the ff image viewer
 		var imageViewer = LSST.state.viewers.get(viewerID);
 
 		var regionID = viewerID + '-hotpixel';
-    var plotID = viewerID;
+        var plotID = viewerID;
 
-    imageViewer.clear();
-    imageViewer.drawRegions([region.toDS9()], 'Hot Pixel Boundary', 'blue');
+        imageViewer.clear_except_boundary();
+        imageViewer.drawRegions([region.toDS9()], 'Hot Pixel Boundary', 'blue');
 
-    var region_backend = region.toBackendFormat();
-    var param_backend = {
-        'threshold': threshold,
-        "region": region_backend
-    }
-
-    executeBackendFunction('hot_pixel', imageViewer, param_backend,
-      function(data) {
-        var regions = [];
-        var color = 'red';
-        for (var i = 0; i < data.length; i++) {
-            var d = data[i];
-            var content = ['circle', 'point', d[0], d[1]].join(' ');
-            regions.push(content);
+        var region_backend = region.toBackendFormat();
+        var param_backend = {
+            'threshold': threshold,
+            "region": region_backend
         }
-        imageViewer.drawRegions(regions, 'Hot Pixels', 'red');
-      },
-      function(data) {
-        LSST.state.term.lsst_term('echo', 'There was a problem when fetching hot pixel information in the FITS file.');
-        LSST.state.term.lsst_term('echo', 'Please make sure all parameters were typed in correctly.');
-      }
-    );
+
+        executeBackendFunction('hot_pixel', imageViewer, param_backend,
+        function(data) {
+            var regions = [];
+            var color = 'red';
+            for (var i = 0; i < data.length; i++) {
+                var d = data[i];
+                // ds9 point format: (circle point x, y)
+                var content = ['circle', 'point', d[1], d[0]].join(' ');
+                regions.push(content);
+            }
+            imageViewer.drawRegions(regions, 'Hot Pixels', 'red');
+        },
+            function(data) {
+                LSST.state.term.lsst_term('echo', 'There was a problem when fetching hot pixel information in the FITS file.');
+                LSST.state.term.lsst_term('echo', 'Please make sure all parameters were typed in correctly.');
+            }
+        );
 	},
 
 	load_image: function(cmd_args) {
 		if (!validateParams(cmd_args))
 		  return;
-		  
+
 		var help_string = 'load an image from a URI';
 		var viewerID = cmd_args['viewer_id'];
 		var uri = cmd_args['uri'];
 		var viewer = LSST.state.viewers.get(viewerID);
-    var result = viewer.loadImage(uri);
+        var result = viewer.loadImage(uri);
 
 		LSST.state.viewers.get(viewerID).image_url = uri;
 		LSST.state.term.lsst_term("echo", result);
@@ -429,64 +429,49 @@ cmds = {
 
 	read_mouse: function(cmd_args) {
 		if (!validateParams(cmd_args))
-		  return;
-		  
-		var boxID = cmd_args['box_id'];
+    		return;
+
+    	var boxID = cmd_args['box_id'];
 		var viewerID = cmd_args['viewer_id'];
 
-	  var box = LSST.state.boxes.get(boxID);
-	  var viewer = LSST.state.viewers.get(viewerID);
+    	var box = LSST.state.boxes.get(boxID);
+    	var viewer = LSST.state.viewers.get(viewerID);
 
-    var plotID = viewerID;
+        var plotID = viewerID;
 		var regionID = plotID + '-boundary';
 
-	  // Clear
-	  cmds.clear_box( { 'box_id' : boxID } );
+    	// Clear
+    	cmds.clear_box( { 'box_id' : boxID } );
 
-	  var boxText = [
-		  'read_mouse',
-		  new LSST.UI.BoxText('Viewer', viewerID),
-		  [
-			  'Point: ',
-			  new LSST.UI.BoxText('X', ''),
-			  new LSST.UI.BoxText('Y', ''),
-		  ],
-              'Processing boundary from back end...'
-  	];
-	  box.setText(boxText);
+    	var boxText = [
+    		'read_mouse',
+    		new LSST.UI.BoxText('Viewer', viewerID),
+    		[
+    			'Point: ',
+    			new LSST.UI.BoxText('X', ''),
+    			new LSST.UI.BoxText('Y', ''),
+    		],
+                'Processing boundary from back end...'
+      	];
+    	box.setText(boxText);
 
-    if (!(viewer.show_boundary)){
-      if (viewer.header){
-        firefly.action.dispatchCreateRegionLayer(regionID, regionID, null, viewer.header["regions_ds9"], plotID);
-        viewer.show_boundary = true;
-      }
-      else {
-        read_boundary({},
-	        function(regions) { // Asynchronous
-            viewer.header = regions;
-            firefly.action.dispatchCreateRegionLayer(regionID, regionID, null, viewer.header["regions_ds9"], plotID);
-            viewer.show_boundary = true;
-	        },
-	        viewer
-	      );
-      }
-    }
+        cmds.show_boundary({'viewer_id': viewerID});
 
-    LSST.state.term.lsst_term('echo', 'Boundary of amplifiers shown by default. Use `hide_boundary` to hide it.');
+        LSST.state.term.lsst_term('echo', 'Boundaries of amplifiers shown by default. Use `hide_boundary` to hide it.');
 
-    boxText = [
-        'read_mouse',
-        new LSST.UI.BoxText('Viewer', viewerID),
-        [
-            'Point: ',
-            new LSST.UI.BoxText('X', ''),
-            new LSST.UI.BoxText('Y', ''),
-        ],
-        'Move the cursor in the viewer to get mouse readout...'
-    ];
-    box.setText(boxText);
+        boxText = [
+            'read_mouse',
+            new LSST.UI.BoxText('Viewer', viewerID),
+            [
+                'Point: ',
+                new LSST.UI.BoxText('X', ''),
+                new LSST.UI.BoxText('Y', ''),
+            ],
+            'Move the cursor in the viewer to get mouse readout...'
+        ];
+        box.setText(boxText);
 
-	  var readoutID = viewer.onCursorMove(
+    	var readoutID = viewer.onCursorMove(
 	    function(data) {
         var mouse_x = Math.trunc(data.x);
         var mouse_y = Math.trunc(data.y);
@@ -499,7 +484,10 @@ cmds = {
         var height = header_info['SEG_DATASIZE']['y'];
         var boundary = header_info['BOUNDARY'];
         var num_y = header_info['NUM_AMPS']['y']; // Segments origin at top left. Need to flip the Y coordinate for segment coordinate.
-
+        var overscan_info = header_info['OVERSCAN'];
+        var pre_x = overscan_info['PRE'];
+        var post_x = overscan_info['POST'];
+        var over_y = overscan_info['OVER'];
         if (viewer.overscan){
             width = header_info['SEG_SIZE']['x'];
             height = header_info['SEG_SIZE']['y'];
@@ -519,57 +507,117 @@ cmds = {
 				    new LSST.UI.BoxText('X', mouse_x),
 				    new LSST.UI.BoxText('Y', mouse_y)
 			    ],
-          [
-              'Region/segment: ',
-              new LSST.UI.BoxText('X', seg_x),
-              new LSST.UI.BoxText('Y', seg_y)
-          ],
-          new LSST.UI.BoxText('EXTNAME', (boundary[seg_y][seg_x])['EXTNAME'])
+                [
+                    'Region/segment: ',
+                    new LSST.UI.BoxText('X', seg_x),
+                    new LSST.UI.BoxText('Y', seg_y)
+                ],
+                new LSST.UI.BoxText('EXTNAME', (boundary[seg_y][seg_x])['EXTNAME'])
 		    ];
+            if (viewer.overscan){
+                var mouse_region;
+                var seg_mouse_x = mouse_x % width;
+                var seg_mouse_y = mouse_y % height;
+                if (seg_y==1){
+                    seg_mouse_x = width - seg_mouse_x;
+                }else if (seg_y==0){
+                    seg_mouse_y = height - seg_mouse_y;
+                }
+                if (seg_mouse_y > over_y){
+                    mouse_region = 'overscan';
+                }else if (seg_mouse_x < pre_x){
+                    mouse_region = 'pre-scan';
+                }else if (seg_mouse_x > post_x){
+                    mouse_region = 'post-scan';
+                }else{
+                    mouse_region = 'data'
+                }
+                boxText.push(new LSST.UI.BoxText('Region', mouse_region));
+            }else{
+                boxText.push(new LSST.UI.BoxText('Region', 'data'));
+            }
 		    box.setText(boxText);
-		  }
+    		}
 		);
 
 		box.onClear(
 			function() {
-  			viewer.onCursorMove(null);
+      			viewer.onCursorMove(null);
 			}
 		);
 	},
 
 	show_boundary: function(cmd_args) {
 		if (!validateParams(cmd_args))
-		  return;
-		  
+    		return;
+
 		var viewerID = cmd_args['viewer_id'];
 		var plotID = viewerID; // ffview as a default
 		var regionID = plotID + '-boundary';
-    var viewer = LSST.state.viewers.get(viewerID);
-    if (!(viewer.show_boundary)){
-      if (viewer.header){
-        firefly.action.dispatchCreateRegionLayer(regionID, regionID, null, viewer.header["regions_ds9"], plotID);
-        viewer.show_boundary = true;
-      }
-      else {
-        read_boundary({},
-				  function(regions) { // Asynchronous
-            viewer.header = regions;
-            firefly.action.dispatchCreateRegionLayer(regionID, regionID, null, viewer.header["regions_ds9"], plotID);
-           viewer.show_boundary = true;
-				  },
-				  viewer
+        var viewer = LSST.state.viewers.get(viewerID);
+        if (!(viewer.show_boundary)){
+            if (viewer.header){
+                viewer.drawRegions(viewer.header['regions_ds9'], 'Boundary', 'red');
+                viewer.show_boundary = true;
+            }
+            else {
+                function read_boundary(data, callback, viewer) {
+                    executeBackendFunction('boundary', viewer, data,
+                        function(data) {
+                        var regions = [];
+                        console.log(data);
+                        var d = data.BOUNDARY;
+                        if (viewer.overscan){
+                            d = data.BOUNDARY_OVERSCAN;
+                            var seg_width = data.SEG_SIZE.x;
+                            var seg_height = data.SEG_SIZE.y;
+                            for (var i=0; i<data.NUM_AMPS.x; i++){
+                                for (var j=0; j<data.NUM_AMPS.y; j++){
+                                    var x = i*seg_width + seg_width/2;
+                                    var y = j*seg_height + seg_height/2;
+                                    regions.push(['box', x, y, seg_width, seg_height, 0].join(' '));
+                                }
+                            }
+                        }
+                        for (var i = 0; i < d.length; i++) {
+                            var di = d[i];
+                            for (var j = 0; j < di.length; j++) {
+                                var dij = di[j];
+                                var height = dij['height'];
+                                var width = dij['width'];
+                                var x = dij['x'];
+                                var y = dij['y'];
+                                var content = ['box', x, y, width, height, 0].join(' ');
+                                regions.push(content);
+                            }
+                        }
+                        callback({'header': data, 'regions_ds9': regions});
+                        },
+                        function(data) {
+                            LSST.state.term.lsst_term('echo', 'There was a problem when fetching boundary information of FITS file.');
+                            LSST.state.term.lsst_term('echo', 'Please make sure all parameters were typed in correctly.');
+                        }
+                    );
+                };
+                read_boundary({},
+    				function(regions) { // Asynchronous
+                        viewer.header = regions;
+                        viewer.drawRegions(regions['regions_ds9'], 'Boundary', 'red');
+                        viewer.show_boundary = true;
+    				},
+    				viewer
 				);
-      }
-    }
-    else {
-      LSST.state.term.lsst_term('echo', "Boundary of this viewer is already drawn.")
-    }
+            }
+        }
+        else {
+            LSST.state.term.lsst_term('echo', "Boundary of this viewer is already drawn.")
+        }
 	},
 
 	show_box: function(cmd_args) {
 		if (!validateParams(cmd_args))
 		  return;
-		  
+
 		var boxID = cmd_args['box_id'];
 
 		// A handle to the box
@@ -588,7 +636,7 @@ cmds = {
 	show_viewer : function(cmd_args) {
 		if (!validateParams(cmd_args))
 		  return;
-		  
+
 		var viewerID = cmd_args['viewer_id'];
 		LSST.state.viewers.get(viewerID).setFocus(true);
 	},
@@ -596,48 +644,48 @@ cmds = {
 	uv_freq: function(cmd_args) {
 		if (!validateParams(cmd_args))
 		  return;
-	  var viewerID = cmd_args['viewer_id'];
 
-	  LSST.state.uvControls.get(viewerID).setFrequency( cmd_args['time_in_millis'] );
+        var viewerID = cmd_args['viewer_id'];
+    	LSST.state.uvControls.get(viewerID).setFrequency( cmd_args['time_in_millis'] );
 	},
 
 	uv_load_new: function(cmd_args) {
 		if (!validateParams(cmd_args))
 		  return;
-		  
+
 		var viewerID = cmd_args['viewer_id'];
-  	LSST.state.uvControls.get(viewerID).loadNewImage();
+      	LSST.state.uvControls.get(viewerID).loadNewImage();
 	},
 
 	uv_pause: function(cmd_args) {
 		if (!validateParams(cmd_args))
 		  return;
-		  
-    var viewerID = cmd_args['viewer_id'];
+
+        var viewerID = cmd_args['viewer_id'];
 	  LSST.state.uvControls.get(viewerID).pause();
 	},
 
 	uv_resume: function(cmd_args) {
 		if (!validateParams(cmd_args))
 		  return;
-		  
-    var viewerID = cmd_args['viewer_id'];
-	  LSST.state.uvControls.get(viewerID).resume();
+
+        var viewerID = cmd_args['viewer_id'];
+    	LSST.state.uvControls.get(viewerID).resume();
 	},
 
 	uv_start : function(cmd_args) {
 		if (!validateParams(cmd_args))
 		  return;
-		  
-	  cmds.uv_resume(cmd_args);
+
+    	cmds.uv_resume(cmd_args);
 	},
 
 	uv_update: function(cmd_args) {
 		if (!validateParams(cmd_args))
 		  return;
-	  
-	  var viewerID = cmd_args['viewer_id'];
-    LSST.state.uvControls.get(viewerID).update();    
+
+    	var viewerID = cmd_args['viewer_id'];
+        LSST.state.uvControls.get(viewerID).update();
 	}
 }
 

@@ -329,7 +329,7 @@ LSST.UI.UV_Control.prototype.update = function() {
 
 // A function that gets the url of the image to be loaded.
 function getNewImageURL(){
-	return document.location.origin+"/static/images/imageE2V_trimmed.fits";
+	return document.location.origin+"/static/images/imageE2V_untrimmed.fits";
 }
 
 function getNewOriginalImageURL(imageName){

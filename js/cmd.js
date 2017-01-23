@@ -472,70 +472,74 @@ cmds = {
         box.setText(boxText);
 
         var readoutID = viewer.onCursorMove(
-        function(data) {
-        var mouse_x = Math.trunc(data.x);
-        var mouse_y = Math.trunc(data.y);
+            function(data) {
+                var mouse_x = Math.trunc(data.x);
+                var mouse_y = Math.trunc(data.y);
 
-        if (!viewer.header)
-            return;
+                if (!viewer.header)
+                    return;
 
-        var header_info = viewer.header['header'];
-        var width = header_info['SEG_DATASIZE']['x'];
-        var height = header_info['SEG_DATASIZE']['y'];
-        var boundary = header_info['BOUNDARY'];
-        var num_y = header_info['NUM_AMPS']['y']; // Segments origin at top left. Need to flip the Y coordinate for segment coordinate.
-        var overscan_info = header_info['OVERSCAN'];
-        var pre_x = overscan_info['PRE'];
-        var post_x = overscan_info['POST'];
-        var over_y = overscan_info['OVER'];
-        if (viewer.overscan){
-            width = header_info['SEG_SIZE']['x'];
-            height = header_info['SEG_SIZE']['y'];
-            boundary = header_info['BOUNDARY_OVERSCAN'];
-        }
-        var seg_x = Math.floor(mouse_x/width);
-        var seg_y = num_y - 1 - Math.floor(mouse_y/height);
-
-        if (seg_y < 0 || seg_x < 0 || seg_y >= boundary.length || seg_x >= boundary[0].length)
-            return;
-
-		    boxText = [
-			    'read_mouse',
-			    new LSST.UI.BoxText('Viewer', viewerID),
-			    [
-				    'Point: ',
-				    new LSST.UI.BoxText('X', mouse_x),
-				    new LSST.UI.BoxText('Y', mouse_y)
-			    ],
-                [
-                    'Region/segment: ',
-                    new LSST.UI.BoxText('X', seg_x),
-                    new LSST.UI.BoxText('Y', seg_y)
-                ]
-		    ];
-            var mouse_region = 'amp'+seg_y.toString()+seg_x.toString();
-            if (viewer.overscan){
-                var seg_mouse_x = mouse_x % width;
-                var seg_mouse_y = mouse_y % height;
-                if (seg_y==1){
-                    seg_mouse_x = width - seg_mouse_x;
-                }else if (seg_y==0){
-                    seg_mouse_y = height - seg_mouse_y;
+                var header_info = viewer.header['header'];
+                var width = header_info['SEG_DATASIZE']['x'];
+                var height = header_info['SEG_DATASIZE']['y'];
+                var boundary = header_info['BOUNDARY'];
+                var num_y = header_info['NUM_AMPS']['y']; // Segments origin at top left. Need to flip the Y coordinate for segment coordinate.
+                var overscan_info = header_info['OVERSCAN'];
+                var pre_x = overscan_info['PRE'];
+                var post_x = overscan_info['POST'];
+                var over_y = overscan_info['OVER'];
+                if (viewer.overscan){
+                    width = header_info['SEG_SIZE']['x'];
+                    height = header_info['SEG_SIZE']['y'];
+                    boundary = header_info['BOUNDARY_OVERSCAN'];
                 }
-                if (seg_mouse_y > over_y){
-                    mouse_region += 'overscan';
-                }else if (seg_mouse_x < pre_x){
-                    mouse_region += 'pre-scan';
-                }else if (seg_mouse_x > post_x){
-                    mouse_region += 'post-scan';
+                var seg_x = Math.floor(mouse_x/width);
+                var seg_y = num_y - 1 - Math.floor(mouse_y/height);
+
+                if (seg_y < 0 || seg_x < 0 || seg_y >= boundary.length || seg_x >= boundary[0].length)
+                    return;
+
+                boxText = [
+	                'read_mouse',
+	                new LSST.UI.BoxText('Viewer', viewerID),
+	                [
+		                'Point: ',
+		                new LSST.UI.BoxText('X', mouse_x),
+		                new LSST.UI.BoxText('Y', mouse_y)
+	                ],
+                    [
+                        'Region/segment: ',
+                        new LSST.UI.BoxText('X', seg_x),
+                        new LSST.UI.BoxText('Y', seg_y)
+                    ]
+                ];
+                
+                var mouse_region = 'amp'+seg_y.toString()+seg_x.toString();
+                if (viewer.overscan){
+                    var seg_mouse_x = mouse_x % width;
+                    var seg_mouse_y = mouse_y % height;
+                    if (seg_y==1){
+                        seg_mouse_x = width - seg_mouse_x;
+                    }else if (seg_y==0){
+                        seg_mouse_y = height - seg_mouse_y;
+                    }
+                    if (seg_mouse_y > over_y){
+                        mouse_region += 'overscan';
+                    }else if (seg_mouse_x < pre_x){
+                        mouse_region += 'pre-scan';
+                    }else if (seg_mouse_x > post_x){
+                        mouse_region += 'post-scan';
+                    }else{
+                        mouse_region += 'data'
+                    }
+                    LSST.state.currAmp = mouse_region;
+                    boxText.push(new LSST.UI.BoxText('Region name', mouse_region));
                 }else{
-                    mouse_region += 'data'
+                    LSST.state.currAmp = mouse_region + "data";
+                    boxText.push(new LSST.UI.BoxText('Region name', mouse_region+'data'));
                 }
-                boxText.push(new LSST.UI.BoxText('Region name', mouse_region));
-            }else{
-                boxText.push(new LSST.UI.BoxText('Region name', mouse_region+'data'));
-            }
-		    box.setText(boxText);
+                
+                box.setText(boxText);
     		}
 		);
 

@@ -2,8 +2,8 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.abspath(__file__))+"/task_scripts")
 
+from task_scripts.second_moment import task as task_second_moment
 from task_scripts.chart import task as task_chart
-from task_scripts.prescan_chart import task as task_prescan_chart
 from task_scripts.averagePixel import task as task_average_pixel
 from task_scripts.boundary import task as task_boundary
 from task_scripts.fetchLatest import task as task_fetch_latest
@@ -11,8 +11,8 @@ from task_scripts.hotPixel import task as task_hot_pixel
 
 # Dictionary mapping task names to functions
 _tasks = {} # DO NOT MODIFY THIS LINE (see generate_new_task.sh)
+_tasks["second_moment"] = task_second_moment
 _tasks["chart"] = task_chart
-_tasks["prescan_chart"] = task_prescan_chart
 _tasks["average"] = task_average_pixel
 _tasks["boundary"] = task_boundary
 _tasks["fetch_latest"] = task_fetch_latest

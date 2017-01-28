@@ -38,8 +38,13 @@ LSST.UI.Viewer = function(options) {
 	this.html.find('.viewer-uv-un').click(function() {
 	  cmds.uv_load_new( { viewer_id : jQuery(this).data("viewerid") } );
 	});
+	
+	this.cursorPoint = { x : 0, y : 0 };
+	this.hoveredSeg = { x : 0, y : 0 };
+	this.cursorAmpName = "";
+	this.selectedAmp = "";
 
-	this._regionLayers = []
+	this._regionLayers = [];
 
 
 	options.draggable = {
@@ -183,12 +188,74 @@ LSST.UI.Viewer.prototype._cursorRead = function(action) {
 			    x : imgPt.x,
 			    y : imgPt.y
 		    }
+		    
+		    // Update hoveredSeg, cursorAmp
+		    this._updateAmpInfo();
 
 		    if (this._onCursorMoveCallback) {
 		        this._onCursorMoveCallback(this.cursorPoint);
 		    }
 		}
 	}
+}
+
+LSST.UI.Viewer.prototype._updateAmpInfo = function() {
+    if (!this.header)
+        return;
+        
+    var header_info = this.header['header'];
+    var width = header_info['SEG_DATASIZE']['x'];
+    var height = header_info['SEG_DATASIZE']['y'];
+    var boundary = header_info['BOUNDARY'];
+    var num_y = header_info['NUM_AMPS']['y']; // Segments origin at top left. Need to flip the Y coordinate for segment coordinate.
+    var overscan_info = header_info['OVERSCAN'];
+    var pre_x = overscan_info['PRE'];
+    var post_x = overscan_info['POST'];
+    var over_y = overscan_info['OVER'];
+    if (this.overscan) {
+        width = header_info['SEG_SIZE']['x'];
+        height = header_info['SEG_SIZE']['y'];
+        boundary = header_info['BOUNDARY_OVERSCAN'];
+    }
+
+    // Calculate segment coords
+    this.hoveredSeg.x = Math.floor(this.cursorPoint.x / width);
+    this.hoveredSeg.y = num_y - 1 - Math.floor(this.cursorPoint.y / height);
+
+    if (this.hoveredSeg.y < 0 || this.hoveredSeg.x < 0 || this.hoveredSeg.y >= boundary.length || this.hoveredSeg.x >= boundary[0].length)
+        return;
+        
+        
+        
+    // Calculate segment name
+    this.cursorAmpName = 'amp' + this.hoveredSeg.y.toString() + this.hoveredSeg.x.toString();
+    if (this.overscan) {
+        var seg_mouse_x = this.cursorPoint.x % width;
+        var seg_mouse_y = this.cursorPoint.y % height;
+        
+        if (this.hoveredSeg.y == 1){
+            seg_mouse_x = width - seg_mouse_x;
+        }
+        else if (this.hoveredSeg.y == 0) {
+            seg_mouse_y = height - seg_mouse_y;
+        }
+        
+        if (seg_mouse_y > over_y) {
+            this.cursorAmpName += 'overscan';
+        }
+        else if (seg_mouse_x < pre_x) {
+            this.cursorAmpName += 'pre-scan';
+        }
+        else if (seg_mouse_x > post_x) {
+            this.cursorAmpName += 'post-scan';
+        }
+        else {
+            this.cursorAmpName += 'data'
+        }
+    }
+    else {
+        this.cursorAmpName += "data";
+    }
 }
 
 

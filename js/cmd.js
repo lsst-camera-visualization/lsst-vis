@@ -86,6 +86,7 @@ var executeBackendFunction = function(nameOfTask, viewer, params, onFulfilled, o
 	}else{
 		params.image_url = viewer.image_url;
 	}
+    console.log(params);
 	firefly.getJsonFromTask( 'python', nameOfTask, params ).then(function(data){onFulfilled(data);}).catch(function(data){onRejected(data);})
 }
 
@@ -464,8 +465,8 @@ cmds = {
         cmds.show_boundary({'viewer_id': viewerID});
 
         LSST.state.term.lsst_term('echo', 'Boundaries of amplifiers shown by default. Use `hide_boundary` to hide it.');
-        
-        
+
+
         // Set click event on viewer image, for selecting a region
         viewer.html.children("#" + viewer.name).click(
             function(e) {
@@ -473,8 +474,8 @@ cmds = {
                     viewer.selectedAmp = viewer.cursorAmpName;
             }
         );
-        
-        
+
+
 
         boxText = [
             'read_mouse',
@@ -507,7 +508,7 @@ cmds = {
                     new LSST.UI.BoxText("Region name", viewer.cursorAmpName),
                     new LSST.UI.BoxText("Currently selected region", viewer.selectedAmp)
                 ];
-                
+
                 box.setText(boxText);
     		}
 		);
@@ -533,52 +534,12 @@ cmds = {
                 viewer.show_boundary = true;
             }
             else {
-                function read_boundary(data, callback, viewer) {
-                    executeBackendFunction('boundary', viewer, data,
-                        function(data) {
-                        var regions = [];
-                        console.log(data);
-                        var d = data.BOUNDARY;
-                        if (viewer.overscan){
-                            d = data.BOUNDARY_OVERSCAN;
-                            var seg_width = data.SEG_SIZE.x;
-                            var seg_height = data.SEG_SIZE.y;
-                            for (var i=0; i<data.NUM_AMPS.x; i++){
-                                for (var j=0; j<data.NUM_AMPS.y; j++){
-                                    var x = i*seg_width + seg_width/2;
-                                    var y = j*seg_height + seg_height/2;
-                                    regions.push(['box', x, y, seg_width, seg_height, 0].join(' '));
-                                }
-                            }
-                        }
-                        for (var i = 0; i < d.length; i++) {
-                            var di = d[i];
-                            for (var j = 0; j < di.length; j++) {
-                                var dij = di[j];
-                                var height = dij['height'];
-                                var width = dij['width'];
-                                var x = dij['x'];
-                                var y = dij['y'];
-                                var content = ['box', x, y, width, height, 0].join(' ');
-                                regions.push(content);
-                            }
-                        }
-                        callback({'header': data, 'regions_ds9': regions});
-                        },
-                        function(data) {
-                            LSST.state.term.lsst_term('echo', 'There was a problem when fetching boundary information of FITS file.');
-                            LSST.state.term.lsst_term('echo', 'Please make sure all parameters were typed in correctly.');
-                        }
-                    );
-                };
-                read_boundary({},
-    				function(regions) { // Asynchronous
+                viewer.fetch_boundary(function(regions) { // Asynchronous
                         viewer.header = regions;
                         viewer.drawRegions(regions['regions_ds9'], 'Boundary', 'red');
                         viewer.show_boundary = true;
-    				},
-    				viewer
-				);
+    				}
+                );
             }
         }
         else {

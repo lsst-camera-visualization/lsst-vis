@@ -12,8 +12,8 @@ LSST.extend('LSST.UI');
 
 LSST.UI.Viewer = function(options) {
 
-	this.html = jQuery(
-	  " \
+    this.html = jQuery(
+        " \
 	  <div class='viewer'> \
 	    <p class='viewer-title'>" + options.name + "</p> \
 	    <div id=" + options.name + " class='viewer-view'></div> \
@@ -26,48 +26,61 @@ LSST.UI.Viewer = function(options) {
 	    </div> \
 	  </div> \
 	  "
-	);
-	jQuery('body').append(this.html);
+    );
+    jQuery('body').append(this.html);
 
-	this.html.find('.viewer-uv-pr').click(function() {
-	  if (jQuery(this).attr("value") == "Resume")
-	    cmds.uv_resume( { viewer_id : jQuery(this).data("viewerid") } );
-	  else
-	    cmds.uv_pause( { viewer_id : jQuery(this).data("viewerid") } );
-	});
-	this.html.find('.viewer-uv-un').click(function() {
-	  cmds.uv_load_new( { viewer_id : jQuery(this).data("viewerid") } );
-	});
-	
-	this.cursorPoint = { x : 0, y : 0 };
-	this.hoveredSeg = { x : 0, y : 0 };
-	this.cursorAmpName = "";
-	this.selectedAmp = "";
+    this.html.find('.viewer-uv-pr').click(function() {
+        if (jQuery(this).attr("value") == "Resume")
+            cmds.uv_resume({
+                viewer_id: jQuery(this).data("viewerid")
+            });
+        else
+            cmds.uv_pause({
+                viewer_id: jQuery(this).data("viewerid")
+            });
+    });
+    this.html.find('.viewer-uv-un').click(function() {
+        cmds.uv_load_new({
+            viewer_id: jQuery(this).data("viewerid")
+        });
+    });
 
-	this._regionLayers = [];
+    this.cursorPoint = {
+        x: 0,
+        y: 0
+    };
+    this.hoveredSeg = {
+        x: 0,
+        y: 0
+    };
+    this.cursorAmpName = "";
+    this.selectedAmp = "";
+
+    this._regionLayers = [];
 
 
-	options.draggable = {
-		cancel : '.viewer-view',
-	};
+    options.draggable = {
+        cancel: '.viewer-view',
+    };
 
-	var w = this.html.css('width'); var h = this.html.css('height');
-	this.html.css('min-height', h);
-	options.resizable = {
-		handles : 'se',
-		alsoResize : this.html.children('viewer-view'),
-		minWidth : w,
-		minHeight : h
-	}
+    var w = this.html.css('width');
+    var h = this.html.css('height');
+    this.html.css('min-height', h);
+    options.resizable = {
+        handles: 'se',
+        alsoResize: this.html.children('viewer-view'),
+        minWidth: w,
+        minHeight: h
+    }
 
-	// Init from UIElement
-	LSST.UI.UIElement.prototype._init.call(this, options);
+    // Init from UIElement
+    LSST.UI.UIElement.prototype._init.call(this, options);
 
-	if (!options.image)
-		this.loadImage(getNewImageURL());
-	else
-		this.loadImage(options.image);
-	firefly.util.addActionListener(firefly.action.type.READOUT_DATA, this._cursorRead.bind(this));
+    if (!options.image)
+        this.loadImage(getNewImageURL());
+    else
+        this.loadImage(options.image);
+    firefly.util.addActionListener(firefly.action.type.READOUT_DATA, this._cursorRead.bind(this));
 }
 
 // Inherit from LSST.UI.UIElement
@@ -76,7 +89,7 @@ LSST.inherits(LSST.UI.Viewer, LSST.UI.UIElement);
 
 // Destroys this viewer and removes it from the webpage.
 LSST.UI.Viewer.prototype.destroy = function() {
-	this.html.remove();
+    this.html.remove();
 }
 
 
@@ -84,80 +97,80 @@ LSST.UI.Viewer.prototype.destroy = function() {
 // @param regions - An array containing the ds9 regions to draw
 // @param layerName - The name describing the layer for these regions
 LSST.UI.Viewer.prototype.drawRegions = function(regions, layerName, color) {
-	var regions_to_draw = [];
-	for (var i = 0; i < regions.length; i++) {
-		regions_to_draw.push('image;' + regions[i] + ' # color=' + color);
-	}
+    var regions_to_draw = [];
+    for (var i = 0; i < regions.length; i++) {
+        regions_to_draw.push('image;' + regions[i] + ' # color=' + color);
+    }
 
-	if (this._regionLayers.indexOf(layerName) == -1)
-		this._regionLayers.push(layerName)
+    if (this._regionLayers.indexOf(layerName) == -1)
+        this._regionLayers.push(layerName)
 
-	firefly.action.dispatchCreateRegionLayer(layerName, layerName, null, regions_to_draw, this.name);
+    firefly.action.dispatchCreateRegionLayer(layerName, layerName, null, regions_to_draw, this.name);
 }
 
 // Clears the image the viewer from any markings
 LSST.UI.Viewer.prototype.clear = function() {
-	for (var i = 0; i < this._regionLayers.length; i++)
-		firefly.action.dispatchDeleteRegionLayer(this._regionLayers[i], [ this.name ]);
+    for (var i = 0; i < this._regionLayers.length; i++)
+        firefly.action.dispatchDeleteRegionLayer(this._regionLayers[i], [this.name]);
 
-	this._regionLayers = [];
+    this._regionLayers = [];
 }
 
 // Clears the image the viewer from any markings
 LSST.UI.Viewer.prototype.clear_except_boundary = function() {
-	for (var i = 0; i < this._regionLayers.length; i++)
-		if (this._regionLayers[i]!='Boundary')
-			firefly.action.dispatchDeleteRegionLayer(this._regionLayers[i], [ this.name ]);
-	this._regionLayers = ['Boundary'];
+    for (var i = 0; i < this._regionLayers.length; i++)
+        if (this._regionLayers[i] != 'Boundary')
+            firefly.action.dispatchDeleteRegionLayer(this._regionLayers[i], [this.name]);
+    this._regionLayers = ['Boundary'];
 }
 
 // Clears a layer of regions on this viewer
 // @param layerName - The layer to clear
 LSST.UI.Viewer.prototype.clearLayer = function(layerName) {
-	firefly.action.dispatchDeleteRegionLayer(layerName, [ this.name ]);
+    firefly.action.dispatchDeleteRegionLayer(layerName, [this.name]);
 
-	var idx = this._regionLayers.indexOf(layerName);
-	if (idx != -1)
-		this._regionLayers.splice(idx, 1)
+    var idx = this._regionLayers.indexOf(layerName);
+    if (idx != -1)
+        this._regionLayers.splice(idx, 1)
 }
 
 // Displays a new image in the viewer.
 // @param image - The path to the new image
 LSST.UI.Viewer.prototype.loadImage = function(image) {
-	this.clear();
-	this.show_boundary = false;
-	this.header = null;
-	this.overscan = false;
+    this.clear();
+    this.show_boundary = false;
+    this.header = null;
+    this.overscan = false;
 
-	var re = /^https?:/;
-	var result = "Image: " + image;
-	if (re.test(image)) { // this is a URL
-		firefly.showImage(this.name, {
-			plotId : this.name,
-			URL : image,
-			Title : result,
-			ZoomType : "TO_WIDTH",
-			ZoomToWidth : '100%'
-		});
+    var re = /^https?:/;
+    var result = "Image: " + image;
+    if (re.test(image)) { // this is a URL
+        firefly.showImage(this.name, {
+            plotId: this.name,
+            URL: image,
+            Title: result,
+            ZoomType: "TO_WIDTH",
+            ZoomToWidth: '100%'
+        });
 
-	} else {
-		result = image + " !matched " + re;
-		firefly.showImage(this.name, {
-			plotId : this.name,
-			File : image,
-			Title : result,
-			ZoomType : "TO_WIDTH",
-			ZoomToWidth : '100%'
-		});
-	}
+    } else {
+        result = image + " !matched " + re;
+        firefly.showImage(this.name, {
+            plotId: this.name,
+            File: image,
+            Title: result,
+            ZoomType: "TO_WIDTH",
+            ZoomToWidth: '100%'
+        });
+    }
 
-	this.image_url = image;
-	this.original_image_url = getNewOriginalImageURL(image);
-	// NOTE: Check if the image contains overscan based on filename.
-	if (this.image_url.includes('_untrimmed.fits')){
-		this.overscan = true;
-	}
-	return result;
+    this.image_url = image;
+    this.original_image_url = getNewOriginalImageURL(image);
+    // NOTE: Check if the image contains overscan based on filename.
+    if (this.image_url.includes('_untrimmed.fits')) {
+        this.overscan = true;
+    }
+    return result;
 }
 
 // Adds a context extension to the viewer.
@@ -165,15 +178,15 @@ LSST.UI.Viewer.prototype.loadImage = function(image) {
 // @param [string] type - The extension type, see firefly extension types
 // @param [function] f - The function to execute for this extension
 LSST.UI.Viewer.prototype.addExtension = function(title, type, f) {
-	var ext = {
-		id : title,
-		plotId : this.name,
-		title : title,
-		extType : type,
-		callback : f
-	};
+    var ext = {
+        id: title,
+        plotId: this.name,
+        title: title,
+        extType: type,
+        callback: f
+    };
 
-	firefly.util.image.extensionAdd(ext);
+    firefly.util.image.extensionAdd(ext);
 }
 
 LSST.UI.Viewer.prototype.onCursorMove = function(c) {
@@ -181,28 +194,28 @@ LSST.UI.Viewer.prototype.onCursorMove = function(c) {
 }
 
 LSST.UI.Viewer.prototype._cursorRead = function(action) {
-	if (action.payload.readoutItems.imagePt) {
-		var imgPt = action.payload.readoutItems.imagePt.value;
-		if (imgPt) {
-		    this.cursorPoint = {
-			    x : imgPt.x,
-			    y : imgPt.y
-		    }
-		    
-		    // Update hoveredSeg, cursorAmp
-		    this._updateAmpInfo();
+    if (action.payload.readoutItems.imagePt) {
+        var imgPt = action.payload.readoutItems.imagePt.value;
+        if (imgPt) {
+            this.cursorPoint = {
+                x: imgPt.x,
+                y: imgPt.y
+            }
 
-		    if (this._onCursorMoveCallback) {
-		        this._onCursorMoveCallback(this.cursorPoint);
-		    }
-		}
-	}
+            // Update hoveredSeg, cursorAmp
+            this._updateAmpInfo();
+
+            if (this._onCursorMoveCallback) {
+                this._onCursorMoveCallback(this.cursorPoint);
+            }
+        }
+    }
 }
 
 LSST.UI.Viewer.prototype._updateAmpInfo = function() {
     if (!this.header)
         return;
-        
+
     var header_info = this.header['header'];
     var width = header_info['SEG_DATASIZE']['x'];
     var height = header_info['SEG_DATASIZE']['y'];
@@ -224,42 +237,77 @@ LSST.UI.Viewer.prototype._updateAmpInfo = function() {
 
     if (this.hoveredSeg.y < 0 || this.hoveredSeg.x < 0 || this.hoveredSeg.y >= boundary.length || this.hoveredSeg.x >= boundary[0].length)
         return;
-        
-        
-        
+
+
+
     // Calculate segment name
     this.cursorAmpName = 'amp' + this.hoveredSeg.y.toString() + this.hoveredSeg.x.toString();
     if (this.overscan) {
         var seg_mouse_x = this.cursorPoint.x % width;
         var seg_mouse_y = this.cursorPoint.y % height;
-        
-        if (this.hoveredSeg.y == 1){
+
+        if (this.hoveredSeg.y == 1) {
             seg_mouse_x = width - seg_mouse_x;
-        }
-        else if (this.hoveredSeg.y == 0) {
+        } else if (this.hoveredSeg.y == 0) {
             seg_mouse_y = height - seg_mouse_y;
         }
-        
+
         if (seg_mouse_y > over_y) {
             this.cursorAmpName += 'overscan';
-        }
-        else if (seg_mouse_x < pre_x) {
+        } else if (seg_mouse_x < pre_x) {
             this.cursorAmpName += 'pre-scan';
-        }
-        else if (seg_mouse_x > post_x) {
+        } else if (seg_mouse_x > post_x) {
             this.cursorAmpName += 'post-scan';
-        }
-        else {
+        } else {
             this.cursorAmpName += 'data'
         }
-    }
-    else {
+    } else {
         this.cursorAmpName += "data";
     }
 }
 
 
-
+LSST.UI.Viewer.prototype.fetch_boundary = function(callback) {
+    executeBackendFunction('boundary', this, {},
+        function(data) {
+            var regions = [];
+            console.log(this);
+            var d = data.BOUNDARY;
+            if (this.overscan) {
+                d = data.BOUNDARY_OVERSCAN;
+                var seg_width = data.SEG_SIZE.x;
+                var seg_height = data.SEG_SIZE.y;
+                for (var i = 0; i < data.NUM_AMPS.x; i++) {
+                    for (var j = 0; j < data.NUM_AMPS.y; j++) {
+                        var x = i * seg_width + seg_width / 2;
+                        var y = j * seg_height + seg_height / 2;
+                        regions.push(['box', x, y, seg_width, seg_height, 0].join(' '));
+                    }
+                }
+            }
+            for (var i = 0; i < d.length; i++) {
+                var di = d[i];
+                for (var j = 0; j < di.length; j++) {
+                    var dij = di[j];
+                    var height = dij['height'];
+                    var width = dij['width'];
+                    var x = dij['x'];
+                    var y = dij['y'];
+                    var content = ['box', x, y, width, height, 0].join(' ');
+                    regions.push(content);
+                }
+            }
+            callback({
+                'header': data,
+                'regions_ds9': regions
+            });
+        }.bind(this),
+        function(data) {
+            LSST.state.term.lsst_term('echo', 'There was a problem when fetching boundary information of FITS file.');
+            LSST.state.term.lsst_term('echo', 'Please make sure all parameters were typed in correctly.');
+        }
+    );
+}
 
 
 
@@ -282,98 +330,94 @@ LSST.UI.Viewer.prototype._updateAmpInfo = function() {
 // @param bStartPaused - The UV_Control initially be paused?
 // @param frequency - The initial frequency to check the image repository, in milliseconds (@default = 10000)
 LSST.UI.UV_Control = function(viewer, imageRepository, bStartPaused = true, frequency = 10000) {
-	this._viewer = viewer;
-	this.imageRepo = imageRepository;
+    this._viewer = viewer;
+    this.imageRepo = imageRepository;
 
-	this._bPaused = bStartPaused;
-	this._timerID = null;
-	this._timestamp = 0;
-	this._newImage = null;
+    this._bPaused = bStartPaused;
+    this._timerID = null;
+    this._timestamp = 0;
+    this._newImage = null;
 
-	this._minimumFreq = 10000;
+    this._minimumFreq = 10000;
 
-	// PUT THIS LINE BACK IN, ONCE WE GET THE REAL SERVER
-	// this.setFrequency(frequency);
+    // PUT THIS LINE BACK IN, ONCE WE GET THE REAL SERVER
+    // this.setFrequency(frequency);
 }
 
 // Sets the new update frequency for this control.
 // @param newFrequency - The new update frequency, in milliseconds
 LSST.UI.UV_Control.prototype.setFrequency = function(newFrequency) {
-	// Stop timer for viewer
-	clearInterval(this._timerID);
+    // Stop timer for viewer
+    clearInterval(this._timerID);
 
-	this._timerID = setInterval(LSST.UI.UV_Control.prototype.update.bind(this), Math.max(this._minimumFreq, newFrequency));
+    this._timerID = setInterval(LSST.UI.UV_Control.prototype.update.bind(this), Math.max(this._minimumFreq, newFrequency));
 }
 
 // Loads the new image, attained from LSST.UI.UV_Control.update().
 LSST.UI.UV_Control.prototype.loadNewImage = function() {
-	if (this._newImage != null) {
-		if (this._newImage) {
+    if (this._newImage != null) {
+        if (this._newImage) {
 
-			this._viewer.loadImage(this._newImage);
+            this._viewer.loadImage(this._newImage);
 
-			// Change button status
-			var button = this._viewer.html.find('.viewer-uv-un');
-			button.prop('disabled', true);
-			button.attr('value', 'There are no new images.');
-		}
+            // Change button status
+            var button = this._viewer.html.find('.viewer-uv-un');
+            button.prop('disabled', true);
+            button.attr('value', 'There are no new images.');
+        }
 
-		this._newImage = null;
-	}
+        this._newImage = null;
+    }
 }
 
 // Pauses this viewer control
 LSST.UI.UV_Control.prototype.pause = function() {
-	this._bPaused = true;
+    this._bPaused = true;
 
-	var button = this._viewer.html.find(".viewer-uv-pr").attr('value', 'Resume');
+    var button = this._viewer.html.find(".viewer-uv-pr").attr('value', 'Resume');
 }
 
 // Resumes this viewer control
 LSST.UI.UV_Control.prototype.resume = function() {
-	this._bPaused = false;
+    this._bPaused = false;
 
-	var button = this._viewer.html.find(".viewer-uv-pr").attr('value', 'Pause');
+    var button = this._viewer.html.find(".viewer-uv-pr").attr('value', 'Pause');
 
-	// Load new image, if it exists
-	this.loadNewImage();
+    // Load new image, if it exists
+    this.loadNewImage();
 }
 
 // Called on a timer to check the image repository for new images.
 LSST.UI.UV_Control.prototype.update = function() {
     var params = {
-    	'since': this._timestamp
-   	};
+        'since': this._timestamp
+    };
 
-   	var updateFunc = function(data) {
-   		if (data) {
-        // There's a new image.
-        this._timestamp = data.timestamp;
-        this._newImage = data.uri;
+    var updateFunc = function(data) {
+        if (data) {
+            // There's a new image.
+            this._timestamp = data.timestamp;
+            this._newImage = data.uri;
 
-			  if (!this._bPaused) {
-				  this.loadNewImage();
-			  }
-			  else {
-				  this._viewer.html.find('.viewer-uv-un');
-				  button.prop('disabled', false);
-				  button.attr('value', 'There is a new image available. Click to load.');
-			  }
-		  }
+            if (!this._bPaused) {
+                this.loadNewImage();
+            } else {
+                this._viewer.html.find('.viewer-uv-un');
+                button.prop('disabled', false);
+                button.attr('value', 'There is a new image available. Click to load.');
+            }
+        }
 
-		  if (this._newImage == null) {
-			  // Displayed when there is no new image, or the new image is done loading.
-			  this._viewer.html.find('.viewer-uv-un');
-			  button.prop('disabled', true);
-			  button.attr('value', 'There are no new images.');
-		  }
-   	}.bind(this);
+        if (this._newImage == null) {
+            // Displayed when there is no new image, or the new image is done loading.
+            this._viewer.html.find('.viewer-uv-un');
+            button.prop('disabled', true);
+            button.attr('value', 'There are no new images.');
+        }
+    }.bind(this);
 
     jQuery.getJSON(this.imageRepo, params, updateFunc);
 }
-
-
-
 
 
 
@@ -395,16 +439,17 @@ LSST.UI.UV_Control.prototype.update = function() {
 */
 
 // A function that gets the url of the image to be loaded.
-function getNewImageURL(){
-	return document.location.origin+"/static/images/imageE2V_untrimmed.fits";
+function getNewImageURL() {
+    return document.location.origin + "/static/images/imageE2V_untrimmed.fits";
 }
 
-function getNewOriginalImageURL(imageName){
-	var newName = imageName;
-	if (imageName.includes("_trimmed.fits")){
-		newName = imageName.replace("_trimmed.fits", ".fits");
-	}else if (imageName.includes("_untrimmed.fits")){
-		newName = imageName.replace("_untrimmed.fits", ".fits");
-	}
-	return newName;
+// Assume we know the image names beforehand. Useful for debugging.
+function getNewOriginalImageURL(imageName) {
+    var newName = imageName;
+    if (imageName.includes("_trimmed.fits")) {
+        newName = imageName.replace("_trimmed.fits", ".fits");
+    } else if (imageName.includes("_untrimmed.fits")) {
+        newName = imageName.replace("_untrimmed.fits", ".fits");
+    }
+    return newName;
 }

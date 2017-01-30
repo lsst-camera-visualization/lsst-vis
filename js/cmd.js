@@ -100,18 +100,29 @@ function validateParams(cmd_args) {
     return false;
   }
 
-  if (cmd_args.region != undefined && (LSST.UI.Region.Parse(cmd_args.region) == null && cmd_args.region != "sel")) {
-    LSST.state.term.lsst_term("echo", "Please enter a valid region");
-    return false;
-  }
-
   return true;
 }
 
 var getRegion = function(region, viewer) {
-    if (region === "sel")
-        return viewer.selectedAmp;
-    return LSST.UI.Region.Parse(region);
+    var result = null;
+    
+    if (region === "sel") {
+        result = viewer.selectedAmp;
+    }
+    else if (typeof(region) == "string") {
+        // If we are here, the region should be the name of an amp,
+        //    so convert the name to an LSST.UI.Region
+        
+    }
+    else if (Array.isArray(region)) {
+        result = LSST.UI.Region.Parse(region)
+    }
+    
+    // If we have an null region, echo invalidity to user
+    if (result == null)
+       LSST.state.term.lsst_term("echo", "Please enter a valid region");
+       
+    return result;
 }
 
 
@@ -135,13 +146,18 @@ cmds = {
 		// A handle to the box to use
 		var box = LSST.state.boxes.get(boxID);
 
+        // Get region, return if it is invalid
+        var region = getRegion(regionParam, viewer);
+        if (region == null)
+            return;
+
 		// Clear the box of any existing information
 		cmds.clear_box( { 'box_id' : boxID } );
 
 		// Clear the viewer
 		viewer.clear_except_boundary();
-
-        var region = getRegion(regionParam, viewer);
+            
+        // Draw the region on the viewer
 		viewer.drawRegions( [ region.toDS9() ], 'Average Pixel', 'blue');
 
 		var boxText = [
@@ -181,26 +197,33 @@ cmds = {
 	},
 
 	chart: function(cmd_args) {
-		if (!validateParams(cmd_args))
-		  return;
+        if (!validateParams(cmd_args))
+		    return;
+		    
+		var viewerID = cmd_args.viewer_id;
+		var viewer = LSST.state.viewers.get(viewerID);
 
-    region = LSST.UI.Region.Parse(cmd_args.region);
-    params = {
-        numBins : (cmd_args.num_bins == undefined) ? 10 : parseInt(cmd_args.num_bins),
-        min : (cmd_args.min == undefined) ? -1 : parseInt(cmd_args.min),
-        max : (cmd_args.max == undefined) ? -1 : parseInt(cmd_args.max),
-        region : region.toBackendFormat()
-    }
-    executeBackendFunction('chart', LSST.state.viewers.get(cmd_args.viewer_id), params,
-        function(data) {
-            var h = LSST.UI.Histogram.FromJSONString(data);
-            h.setFocus(true);
-        },
+        // Get region, return if it is invalid
+        var region = getRegion(cmd_args.region, viewer);
+        if (region == null)
+            return;
 
-        function(data) {
-            console.log("Failure: " + data);
+        var params = {
+            numBins : (cmd_args.num_bins == undefined) ? 10 : parseInt(cmd_args.num_bins),
+            min : (cmd_args.min == undefined) ? -1 : parseInt(cmd_args.min),
+            max : (cmd_args.max == undefined) ? -1 : parseInt(cmd_args.max),
+            region : region.toBackendFormat()
         }
-    );
+        executeBackendFunction('chart', LSST.state.viewers.get(cmd_args.viewer_id), params,
+            function(data) {
+                var h = LSST.UI.Histogram.FromJSONString(data);
+                h.setFocus(true);
+            },
+
+            function(data) {
+                console.log("Failure: " + data);
+            }
+        );
 	},
 
 	clear_box: function(cmd_args) {
@@ -224,10 +247,10 @@ cmds = {
 	create_box: function(cmd_args) {
 		var boxID = cmd_args['box_id'];
 
-	  if (LSST.state.boxes.exists(boxID)) {
-		  LSST.state.term.lsst_term('echo', 'A box with the name \'' + boxID + '\' already exists!');
-		  return;
-	  }
+        if (LSST.state.boxes.exists(boxID)) {
+            LSST.state.term.lsst_term('echo', 'A box with the name \'' + boxID + '\' already exists!');
+            return;
+        }
 
 		var box = new LSST.UI.Box( { name : boxID } );
 		LSST.state.boxes.add(boxID, box);
@@ -367,22 +390,23 @@ cmds = {
 		  return;
 
 		var viewerID = cmd_args['viewer_id'];
+		var viewer = LSST.state.viewers.get(viewerID);
+		
 		var threshold = 'max';
 		if (cmd_args['threshold']!=='max'){
 				threshold = parseInt(cmd_args['threshold']);
 		}
 
-		var regionParam = cmd_args['region'];
-        var region = LSST.UI.Region.Parse(regionParam);
-
-		// A handle to the ff image viewer
-		var imageViewer = LSST.state.viewers.get(viewerID);
+        // Get region, return if it is invalid
+        var region = getRegion(cmd_args.region, viewer);
+        if (region == null)
+            return;
 
 		var regionID = viewerID + '-hotpixel';
         var plotID = viewerID;
 
-        imageViewer.clear_except_boundary();
-        imageViewer.drawRegions([region.toDS9()], 'Hot Pixel Boundary', 'blue');
+        viewer.clear_except_boundary();
+        viewer.drawRegions([region.toDS9()], 'Hot Pixel Boundary', 'blue');
 
         var region_backend = region.toBackendFormat();
         var param_backend = {
@@ -390,17 +414,17 @@ cmds = {
             "region": region_backend
         }
 
-        executeBackendFunction('hot_pixel', imageViewer, param_backend,
-        function(data) {
-            var regions = [];
-            var color = 'red';
-            for (var i = 0; i < data.length; i++) {
-                var d = data[i];
-                // ds9 point format: (circle point x, y)
-                var content = ['circle', 'point', d[1], d[0]].join(' ');
-                regions.push(content);
-            }
-            imageViewer.drawRegions(regions, 'Hot Pixels', 'red');
+        executeBackendFunction('hot_pixel', viewer, param_backend,
+            function(data) {
+                var regions = [];
+                var color = 'red';
+                for (var i = 0; i < data.length; i++) {
+                    var d = data[i];
+                    // ds9 point format: (circle point x, y)
+                    var content = ['circle', 'point', d[1], d[0]].join(' ');
+                    regions.push(content);
+                }
+                viewer.drawRegions(regions, 'Hot Pixels', 'red');
         },
             function(data) {
                 LSST.state.term.lsst_term('echo', 'There was a problem when fetching hot pixel information in the FITS file.');

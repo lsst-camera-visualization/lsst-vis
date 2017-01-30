@@ -468,8 +468,9 @@ cmds = {
         
         // Set click event on viewer image, for selecting a region
         viewer.html.children("#" + viewer.name).click(
-            function() {
-                viewer.selectedAmp = viewer.cursorAmpName;
+            function(e) {
+                if (e.ctrlKey)
+                    viewer.selectedAmp = viewer.cursorAmpName;
             }
         );
         

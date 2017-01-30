@@ -28,7 +28,6 @@ LSST.UI.BoxText = function(label, value, bWrap = true) {
 
 
 
-
 // Represents the UI of a box (html, text).
 // @param boxName - The id of the box
 LSST.UI.BoxUI = function(boxName) {
@@ -172,7 +171,32 @@ LSST.UI.BoxUI = function(boxName) {
 	this.html = createDOMSkeleton();
 	// A handle to the body of the box
 	var body = this.html.children('.box-body');
+	
+	setTimeout(
+	    function() {
+	        // Offset the box location
+	        var o = this.html.offset();
+	        o.top += (LSST.UI.BoxUI.offset.dY * LSST.UI.BoxUI.offset.index);
+	        o.left += (LSST.UI.BoxUI.offset.dX * LSST.UI.BoxUI.offset.index);
+	        this.html.offset(o);
+        	LSST.UI.BoxUI.offset.index = (LSST.UI.BoxUI.offset.index + 1) % LSST.UI.BoxUI.offset.max;
+	    }.bind(this),
+	    500
+	);
 }
+
+
+// Offset index when a new box is created
+LSST.UI.BoxUI.offset = {
+    // Current index
+    index : 0,
+    // Max index value
+    max : 3,
+    // delta-x offset
+    dX : 50,
+    // delta-y offset
+    dY : 75
+};
 
 
 

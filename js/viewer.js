@@ -81,6 +81,12 @@ LSST.UI.Viewer = function(options) {
     else
         this.loadImage(options.image);
     firefly.util.addActionListener(firefly.action.type.READOUT_DATA, this._cursorRead.bind(this));
+
+    // Fetch the boundary/segment information from back end.
+    this.fetch_boundary(function(regions) {
+        this.header = regions;
+        this.show_boundary = false;
+    }.bind(this));
 }
 
 // Inherit from LSST.UI.UIElement
@@ -255,9 +261,9 @@ LSST.UI.Viewer.prototype._updateAmpInfo = function() {
         if (seg_mouse_y > over_y) {
             this.cursorAmpName += 'overscan';
         } else if (seg_mouse_x < pre_x) {
-            this.cursorAmpName += 'pre-scan';
+            this.cursorAmpName += 'prescan';
         } else if (seg_mouse_x > post_x) {
-            this.cursorAmpName += 'post-scan';
+            this.cursorAmpName += 'postscan';
         } else {
             this.cursorAmpName += 'data'
         }
@@ -271,7 +277,6 @@ LSST.UI.Viewer.prototype.fetch_boundary = function(callback) {
     executeBackendFunction('boundary', this, {},
         function(data) {
             var regions = [];
-            console.log(this);
             var d = data.BOUNDARY;
             if (this.overscan) {
                 d = data.BOUNDARY_OVERSCAN;
@@ -309,6 +314,54 @@ LSST.UI.Viewer.prototype.fetch_boundary = function(callback) {
     );
 }
 
+LSST.UI.Viewer.prototype._convertAmpToRect = function(regionName) {
+    var seg;
+    // region name valid if it starts from "amp[0-1][0-7]..."
+    if (/^amp/.test(regionName) && this.header) {
+
+        var header_info = this.header['header'];
+        var width = header_info['SEG_DATASIZE']['x'];
+        var height = header_info['SEG_DATASIZE']['y'];
+        var boundary = header_info['BOUNDARY'];
+        var num_y = header_info['NUM_AMPS']['y']; // Segments origin at top left. Need to flip the Y coordinate for segment coordinate.
+
+        seg.x = int(regionName[3]);
+        seg.y = num_y - int(regionName[4]);
+
+        var x1 = seg.x * width,
+            y1 = seg.y * height,
+            x2 = x1 + width,
+            y2 = y1 + height;
+        if (this.overscan) {
+            width = header_info['SEG_SIZE']['x'];
+            height = header_info['SEG_SIZE']['y'];
+            boundary = header_info['BOUNDARY_OVERSCAN'];
+            var overscan_info = header_info['OVERSCAN'];
+            var pre_x = overscan_info['PRE'];
+            var post_x = overscan_info['POST'];
+            var over_y = overscan_info['OVER'];
+            if (regionName.endsWith('overscan')) {
+                x1 = seg.x * width;
+                x2 = x1 + width - 1;
+                if (seg.y == 0) {
+                    y1 = over_y;
+                    y2 = height - 1;
+                } else {
+                    y1 = height;
+                    y2 = (seg.y + 1) * height - over_y - 1;
+                }
+
+            }else if (regionName.endsWith('prescan')){
+
+            }else if (regionName.endsWith('postscan')){
+
+            }
+        }else{
+            return new LSST.UI.Rect(x1, y1, x2, y2);
+        }
+    }
+    LSST.state.term.lsst_term('echo', 'Selected region incorrect.');
+}
 
 
 

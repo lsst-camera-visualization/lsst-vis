@@ -241,8 +241,10 @@ LSST.UI.Viewer.prototype._updateAmpInfo = function() {
     this.hoveredSeg.x = Math.floor(this.cursorPoint.x / width);
     this.hoveredSeg.y = num_y - 1 - Math.floor(this.cursorPoint.y / height);
 
-    if (this.hoveredSeg.y < 0 || this.hoveredSeg.x < 0 || this.hoveredSeg.y >= boundary.length || this.hoveredSeg.x >= boundary[0].length)
+    if (this.hoveredSeg.y < 0 || this.hoveredSeg.x < 0 || this.hoveredSeg.y >= boundary.length || this.hoveredSeg.x >= boundary[0].length){
+        LSST.state.term.lsst_term('echo', 'Segment Error.');
         return;
+    }
 
 
 
@@ -252,17 +254,18 @@ LSST.UI.Viewer.prototype._updateAmpInfo = function() {
         var seg_mouse_x = this.cursorPoint.x % width;
         var seg_mouse_y = this.cursorPoint.y % height;
 
-        if (this.hoveredSeg.y == 1) {
-            seg_mouse_x = width - seg_mouse_x;
-        } else if (this.hoveredSeg.y == 0) {
+        if (boundary[this.hoveredSeg.y][this.hoveredSeg.x]['reverse_slice']['y']) {
             seg_mouse_y = height - seg_mouse_y;
         }
+        if (boundary[this.hoveredSeg.y][this.hoveredSeg.x]['reverse_slice']['x']) {
+            seg_mouse_x = width - seg_mouse_x;
+        }
 
-        if (seg_mouse_y > over_y) {
+        if (seg_mouse_y >= over_y) {
             this.cursorAmpName += 'overscan';
         } else if (seg_mouse_x < pre_x) {
             this.cursorAmpName += 'prescan';
-        } else if (seg_mouse_x > post_x) {
+        } else if (seg_mouse_x >= post_x) {
             this.cursorAmpName += 'postscan';
         } else {
             this.cursorAmpName += 'data'
@@ -317,50 +320,85 @@ LSST.UI.Viewer.prototype.fetch_boundary = function(callback) {
 LSST.UI.Viewer.prototype._convertAmpToRect = function(regionName) {
     var seg;
     // region name valid if it starts from "amp[0-1][0-7]..."
-    if (/^amp/.test(regionName) && this.header) {
-
+    var match = regionName.match(/amp(?=\d\d$|\d\d[^\d])/);
+    if (match && this.header) {
         var header_info = this.header['header'];
-        var width = header_info['SEG_DATASIZE']['x'];
-        var height = header_info['SEG_DATASIZE']['y'];
-        var boundary = header_info['BOUNDARY'];
+        var width = header_info['SEG_SIZE']['x'];
+        var height = header_info['SEG_SIZE']['y'];
+        var boundary = header_info['BOUNDARY_OVERSCAN'];
         var num_y = header_info['NUM_AMPS']['y']; // Segments origin at top left. Need to flip the Y coordinate for segment coordinate.
 
-        seg.x = int(regionName[3]);
-        seg.y = num_y - int(regionName[4]);
+        seg.x = int(regionName[match.index+3]);
+        seg.y = num_y - int(regionName[match.index+4]);
 
         var x1 = seg.x * width,
             y1 = seg.y * height,
-            x2 = x1 + width,
-            y2 = y1 + height;
-        if (this.overscan) {
-            width = header_info['SEG_SIZE']['x'];
-            height = header_info['SEG_SIZE']['y'];
-            boundary = header_info['BOUNDARY_OVERSCAN'];
+            x2 = x1 + width - 1,
+            y2 = y1 + height - 1;
+        if (!this.overscan){
+            width = header_info['SEG_DATASIZE']['x'];
+            height = header_info['SEG_DATASIZE']['y'];
+            boundary = header_info['BOUNDARY'];
+            x1 = seg.x * width;
+            x2 = x1 + width - 1;
+            y1 = seg.y * height;
+            y2 = y1 + height - 1;
+        } else {
             var overscan_info = header_info['OVERSCAN'];
             var pre_x = overscan_info['PRE'];
             var post_x = overscan_info['POST'];
             var over_y = overscan_info['OVER'];
-            if (regionName.endsWith('overscan')) {
-                x1 = seg.x * width;
-                x2 = x1 + width - 1;
-                if (seg.y == 0) {
-                    y1 = over_y;
-                    y2 = height - 1;
+
+            if (/amp\d\doverscan$/.test(regionName)){
+                if (boundary[seg.y][seg.x]['reverse_slice']['y']) {
+                    y2 = y2 - over_y;
                 } else {
-                    y1 = height;
-                    y2 = (seg.y + 1) * height - over_y - 1;
+                    y1 = y1 + over_y;
                 }
-
-            }else if (regionName.endsWith('prescan')){
-
-            }else if (regionName.endsWith('postscan')){
-
+            } else if (/amp\d\dpostscan$/.test(regionName)){
+                if (boundary[seg.y][seg.x]['reverse_slice']['y']) {
+                    y1 = y2 - over_y + 1;
+                } else {
+                    y2 = y1 + over_y - 1;
+                }
+                if (boundary[seg.y][seg.x]['reverse_slice']['x']) {
+                    x2 = x2 - post_x;
+                } else {
+                    x1 = x1 + post_x;
+                }
+            } else if (/amp\d\dprescan$/.test(regionName)){
+                if (boundary[seg.y][seg.x]['reverse_slice']['y']) {
+                    y1 = y2 - over_y + 1;
+                } else {
+                    y2 = y1 + over_y - 1;
+                }
+                if (boundary[seg.y][seg.x]['reverse_slice']['x']) {
+                    x1 = x2 - pre_x + 1;
+                } else {
+                    x2 = x1 + pre_x - 1;
+                }
+            } else if (/amp\d\ddata$/.test(regionName)) {
+                if (boundary[seg.y][seg.x]['reverse_slice']['y']) {
+                    y1 = y2 - over_y + 1;
+                } else {
+                    y2 = y1 + over_y - 1;
+                }
+                var temp_x = x2;
+                if (boundary[seg.y][seg.x]['reverse_slice']['x']) {
+                    x2 = temp_x - pre_x;
+                    x1 = x2 - post_x + 1;
+                } else {
+                    x1 = temp_x + pre_x;
+                    x2 = temp_x + post_x - 1;
+                }
+            } else if (!(/amp\d\d$/.test(regionName))) {
+                LSST.state.term.lsst_term('echo', 'Incorrect region name.');
             }
-        }else{
-            return new LSST.UI.Rect(x1, y1, x2, y2);
         }
+        return new LSST.UI.Rect(x1, y1, x2, y2);
+    } else{
+        LSST.state.term.lsst_term('echo', 'Incorrect region name.');
     }
-    LSST.state.term.lsst_term('echo', 'Selected region incorrect.');
 }
 
 

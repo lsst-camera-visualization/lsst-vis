@@ -29,9 +29,9 @@ def _get_Header_Info(imgHDUs):
     # Get the pre and post scan regions
     DATASEC = getCoord(first_seg['DATASEC'])
     BIASSEC = getCoord(first_seg['BIASSEC'])
-    overscan = max(DATASEC['start_Y'], DATASEC['end_Y'])
-    prescan = min(DATASEC['start_X'], DATASEC['end_X'])
-    postscan = min(BIASSEC['start_X'], BIASSEC['end_X'])
+    overscan = max(DATASEC['start_Y'], DATASEC['end_Y']) + 1
+    prescan = min(DATASEC['start_X'], DATASEC['end_X']) + 1
+    postscan = min(BIASSEC['start_X'], BIASSEC['end_X']) + 1
     boundary = [[{} for x in range(num_X)] for y in range(num_Y)]
     boundary_overscan = [[{} for x in range(num_X)] for y in range(num_Y)]
     # Traverse the list of headers

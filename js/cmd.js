@@ -19,74 +19,85 @@ LSST.extend('LSST.state')
 
 jQuery(document).ready(function() {
 
-  jQuery.getJSON("commands.json", function(data) {
-    for (command in data) {
-      if (data.hasOwnProperty(command)) {
-        var commandName = LSST_TERMINAL.Utility.SplitStringByWS(command)[0];
-        data[command].callback = cmds[commandName];
-      }
-    }
+    jQuery.getJSON("commands.json", function(data) {
+        for (command in data) {
+            if (data.hasOwnProperty(command)) {
+                var commandName = LSST_TERMINAL.Utility.SplitStringByWS(command)[0];
+                data[command].callback = cmds[commandName];
+            }
+        }
 
-	  var terminalOptions = {
-	    // The description of commands that can be entered by the user
-	    commands : data,
+        var terminalOptions = {
+            // The description of commands that can be entered by the user
+            commands: data,
 
-	    // Parameters that require more than a single word.
-	    // These will be wrapped in parenthesis's by the user.
-	    subCommands : [
-	      'rect x1 y1 x2 y2',
-	      'circ originX originY radius'
-	    ],
+            // Parameters that require more than a single word.
+            // These will be wrapped in parenthesis's by the user.
+            subCommands: [
+                'rect x1 y1 x2 y2',
+                'circ originX originY radius'
+            ],
 
-	    // Parameters that can be auto completed using tab.
-	    // Will be updated (through code) when necessary, through a terminal function.
-	    autoCompleteParams : {
-		    'box_id' : [ 'ffbox' ],
-		    'viewer_id' : [ 'ffview' ]
-	    },
+            // Parameters that can be auto completed using tab.
+            // Will be updated (through code) when necessary, through a terminal function.
+            autoCompleteParams: {
+                'box_id': ['ffbox'],
+                'viewer_id': ['ffview']
+            },
 
-	    // Hints for certain parameters. Will be displayed to the user
-	    // when he/she comes upon this parameter.
-	    paramsWithHint : {
-	      'region' : 'Hint: (rect), (circ), or selected'
-	    },
+            // Hints for certain parameters. Will be displayed to the user
+            // when he/she comes upon this parameter.
+            paramsWithHint: {
+                'region': 'Hint: (rect), (circ), or selected'
+            },
 
-	    // Various properties for the terminal.
-	    properties : {
-	      helpLink : "https://github.com/lsst-camera-visualization/frontend/wiki",
-	      prefix : '~>',
-	      fontSize : '150%'
-	    },
+            // Various properties for the terminal.
+            properties: {
+                helpLink: "https://github.com/lsst-camera-visualization/frontend/wiki",
+                prefix: '~>',
+                fontSize: '150%'
+            },
 
-	    defaults : {
-	      "viewer_id" : LSST.state.defaults.viewer,
-	      "box_id" : LSST.state.defaults.box
-	    },
+            defaults: {
+                "viewer_id": LSST.state.defaults.viewer,
+                "box_id": LSST.state.defaults.box
+            },
 
-	    examples : {
-	      "region" : [
-	        "(rect 1000 1200 3000 3200)"
-	      ]
-	    }
+            examples: {
+                "region": [
+                    "(rect 1000 1200 3000 3200)"
+                ]
+            }
 
-	  }
+        }
 
-	  // Create the terminal
-	  LSST.state.term = new LSST.UI.Terminal( { name : 'MainTerminal', terminalOptions : terminalOptions, settings : LSST.getSettings("MainTerminal") } );
+        // Create the terminal
+        LSST.state.term = new LSST.UI.Terminal({
+            name: 'MainTerminal',
+            terminalOptions: terminalOptions,
+            settings: LSST.getSettings("MainTerminal")
+        });
 
-  }).fail( function(jqXHR, textStatus, errorThrown) { console.log("Error loading commands.json: " + errorThrown); });
+    }).fail(function(jqXHR, textStatus, errorThrown) {
+        console.log("Error loading commands.json: " + errorThrown);
+    });
 
 });
 
 
 
 var executeBackendFunction = function(nameOfTask, viewer, params, onFulfilled, onRejected) {
-	if (nameOfTask=='boundary'){
-		params.image_url = viewer.original_image_url;
-	}else{
-		params.image_url = viewer.image_url;
-	}
-	firefly.getJsonFromTask( 'python', nameOfTask, params ).then(function(data){onFulfilled(data);}).catch(function(data){onRejected(data);})
+    if (nameOfTask == 'boundary') {
+        params.image_url = viewer.original_image_url;
+    } else {
+        params.image_url = viewer.image_url;
+    }
+    console.log(params);
+    firefly.getJsonFromTask('python', nameOfTask, params).then(function(data) {
+        onFulfilled(data);
+    }).catch(function(data) {
+        onRejected(data);
+    })
 }
 
 function validateParams(cmd_args) {
@@ -105,23 +116,23 @@ function validateParams(cmd_args) {
 
 var getRegion = function(region, viewer) {
     var result = null;
-    
+
     if (region === "sel") {
-        result = viewer.selectedAmp;
+        result = viewer.convertAmpToRect(viewer.selectedAmp);
     }
     else if (typeof(region) == "string") {
         // If we are here, the region should be the name of an amp,
         //    so convert the name to an LSST.UI.Region
-        
+
     }
     else if (Array.isArray(region)) {
         result = LSST.UI.Region.Parse(region)
     }
-    
+
     // If we have an null region, echo invalidity to user
     if (result == null)
        LSST.state.term.lsst_term("echo", "Please enter a valid region");
-       
+
     return result;
 }
 
@@ -129,22 +140,18 @@ var getRegion = function(region, viewer) {
 // Terminal commands handlers
 cmds = {
 
-	average_pixel: function(cmd_args, userInput) {
-		var boxID = cmd_args['box_id'];
-		var viewerID = cmd_args['viewer_id'];
+    average_pixel: function(cmd_args, userInput) {
+        var boxID = cmd_args['box_id'];
+        var viewerID = cmd_args['viewer_id'];
 
-		if (!validateParams(cmd_args))
-		  return;
+        var box = LSST.state.boxes.get(boxID);
+        var viewer = LSST.state.viewers.get(viewerID);
 
-		// The region to do the calculation over
-		var regionParam = cmd_args['region'];
+        if (!validateParams(cmd_args))
+            return;
 
-		// A handle to the viewer
-		var viewer = LSST.state.viewers.get(viewerID);
-		// A handle to the ff image viewer
-		var imageViewer = viewer;
-		// A handle to the box to use
-		var box = LSST.state.boxes.get(boxID);
+        // The region to do the calculation over
+        var regionParam = cmd_args['region'];
 
         // Get region, return if it is invalid
         var region = getRegion(regionParam, viewer);
@@ -156,7 +163,7 @@ cmds = {
 
 		// Clear the viewer
 		viewer.clear_except_boundary();
-            
+
         // Draw the region on the viewer
 		viewer.drawRegions( [ region.toDS9() ], 'Average Pixel', 'blue');
 
@@ -199,7 +206,7 @@ cmds = {
 	chart: function(cmd_args) {
         if (!validateParams(cmd_args))
 		    return;
-		    
+
 		var viewerID = cmd_args.viewer_id;
 		var viewer = LSST.state.viewers.get(viewerID);
 
@@ -358,40 +365,41 @@ cmds = {
 		var viewerID = cmd_args['viewer_id'];
 		var plotID = viewerID;
 		var regionID = plotID + '-boundary';
-    var viewer = LSST.state.viewers.get(viewerID);
-    if (viewer.show_boundary){
-        viewer.show_boundary = false;
-        viewer.clearLayer('Boundary');
-        LSST.state.term.lsst_term('echo', "Boundary Removed");
-    } else {
-        LSST.state.term.lsst_term('echo', "The boundary has not been drawn yet.");
-    }
+        var viewer = LSST.state.viewers.get(viewerID);
+        if (viewer.show_boundary){
+            viewer.show_boundary = false;
+            viewer.clearLayer('Boundary');
+            LSST.state.term.lsst_term('echo', "Boundary Removed");
+        } else {
+            LSST.state.term.lsst_term('echo', "The boundary has not been drawn yet.");
+        }
 	},
 
-	hide_box: function(cmd_args) {
-		if (!validateParams(cmd_args))
-		  return;
+    create_viewer: function(cmd_args) {
+        var viewerID = cmd_args['viewer_id'];
+        var image = cmd_args['[image]'];
 
-		var boxID = cmd_args['box_id'];
+        if (LSST.state.viewers.exists(viewerID)) {
+            LSST.state.term.lsst_term('echo', 'A viewer with the name \'' + viewerID + '\' already exists!');
+            return;
+        }
 
-		// A handle to the box
-		var box = LSST.state.boxes.get(boxID);
-		box.minimize();
-		box.html.draggable('option', 'handle', '.box-title-mini');
+        var viewer = new LSST.UI.Viewer({
+            name: viewerID,
+            image: image
+        });
+        LSST.state.viewers.add(viewerID, viewer);
 
-		var toolbar = box.html.children('.LSST_TB-toolbar');
-		var mini = jQuery(toolbar.children()[1]);
-		mini.attr('src', 'js/toolbar/images/maximize_40x40.png');
-		mini.data('onClick', cmds.show_box);
-	},
+        if (LSST.state.viewers.size() == 1)
+            cmds.default_viewer({
+                viewer_id: viewerID
+            });
 
-	hot_pixel: function(cmd_args) {
-		if (!validateParams(cmd_args))
-		  return;
+        viewer.addExtension('Choose Command...', 'AREA_SELECT', viewerCommands.display_area_commands);
 
 		var viewerID = cmd_args['viewer_id'];
 		var viewer = LSST.state.viewers.get(viewerID);
-		
+
 		var threshold = 'max';
 		if (cmd_args['threshold']!=='max'){
 				threshold = parseInt(cmd_args['threshold']);
@@ -402,7 +410,7 @@ cmds = {
         if (region == null)
             return;
 
-		var regionID = viewerID + '-hotpixel';
+        var regionID = viewerID + '-hotpixel';
         var plotID = viewerID;
 
         viewer.clear_except_boundary();
@@ -431,65 +439,68 @@ cmds = {
                 LSST.state.term.lsst_term('echo', 'Please make sure all parameters were typed in correctly.');
             }
         );
-	},
+    },
 
-	load_image: function(cmd_args) {
-		if (!validateParams(cmd_args))
-		  return;
+    load_image: function(cmd_args) {
+        if (!validateParams(cmd_args))
+            return;
 
-		var help_string = 'load an image from a URI';
-		var viewerID = cmd_args['viewer_id'];
-		var uri = cmd_args['uri'];
-		var viewer = LSST.state.viewers.get(viewerID);
+        var help_string = 'load an image from a URI';
+        var viewerID = cmd_args['viewer_id'];
+        var uri = cmd_args['uri'];
+        var viewer = LSST.state.viewers.get(viewerID);
         var result = viewer.loadImage(uri);
 
-		LSST.state.viewers.get(viewerID).image_url = uri;
-		LSST.state.term.lsst_term("echo", result);
-		console.log(LSST.state.viewers.get(viewerID));
-		return null;
-	},
+        LSST.state.viewers.get(viewerID).image_url = uri;
+        LSST.state.term.lsst_term("echo", result);
+        console.log(LSST.state.viewers.get(viewerID));
+        return null;
+    },
 
-	maximize_terminal : function(cmd_args) {
-	  LSST.state.term.maximize();
-	},
+    maximize_terminal: function(cmd_args) {
+        LSST.state.term.maximize();
+    },
 
-	minimize_terminal : function(cmd_args) {
-		LSST.state.term.minimize();
-	},
+    minimize_terminal: function(cmd_args) {
+        LSST.state.term.minimize();
+    },
 
-	read_mouse: function(cmd_args) {
-		if (!validateParams(cmd_args))
-    		return;
+    read_mouse: function(cmd_args) {
+        if (!validateParams(cmd_args))
+            return;
 
-    	var boxID = cmd_args['box_id'];
-		var viewerID = cmd_args['viewer_id'];
+        var boxID = cmd_args['box_id'];
+        var viewerID = cmd_args['viewer_id'];
 
-    	var box = LSST.state.boxes.get(boxID);
-    	var viewer = LSST.state.viewers.get(viewerID);
+        var box = LSST.state.boxes.get(boxID);
+        var viewer = LSST.state.viewers.get(viewerID);
 
         var plotID = viewerID;
-		var regionID = plotID + '-boundary';
+        var regionID = plotID + '-boundary';
 
-    	// Clear
-    	cmds.clear_box( { 'box_id' : boxID } );
+        // Clear
+        cmds.clear_box({
+            'box_id': boxID
+        });
 
-    	var boxText = [
-    		'read_mouse',
-    		new LSST.UI.BoxText('Viewer', viewerID),
-    		[
-    			'Point: ',
-    			new LSST.UI.BoxText('X', ''),
-    			new LSST.UI.BoxText('Y', ''),
-    		],
-                'Processing boundary from back end...'
-      	];
-    	box.setText(boxText);
+        var boxText = [
+            'read_mouse',
+            new LSST.UI.BoxText('Viewer', viewerID), [
+                'Point: ',
+                new LSST.UI.BoxText('X', ''),
+                new LSST.UI.BoxText('Y', ''),
+            ],
+            'Processing boundary from back end...'
+        ];
+        box.setText(boxText);
 
-        cmds.show_boundary({'viewer_id': viewerID});
+        cmds.show_boundary({
+            'viewer_id': viewerID
+        });
 
         LSST.state.term.lsst_term('echo', 'Boundaries of amplifiers shown by default. Use `hide_boundary` to hide it.');
-        
-        
+
+
         // Set click event on viewer image, for selecting a region
         viewer.html.children("#" + viewer.name).click(
             function(e) {
@@ -497,13 +508,12 @@ cmds = {
                     viewer.selectedAmp = viewer.cursorAmpName;
             }
         );
-        
-        
+
+
 
         boxText = [
             'read_mouse',
-            new LSST.UI.BoxText('Viewer', viewerID),
-            [
+            new LSST.UI.BoxText('Viewer', viewerID), [
                 'Point: ',
                 new LSST.UI.BoxText('X', ''),
                 new LSST.UI.BoxText('Y', ''),
@@ -516,13 +526,12 @@ cmds = {
             function(data) {
                 // Update box's text
                 boxText = [
-	                'read_mouse',
-	                new LSST.UI.BoxText('Viewer', viewerID),
-	                [
-		                'Point: ',
-		                new LSST.UI.BoxText('X', Math.trunc(viewer.cursorPoint.x)),
-		                new LSST.UI.BoxText('Y', Math.trunc(viewer.cursorPoint.y))
-	                ],
+                    'read_mouse',
+                    new LSST.UI.BoxText('Viewer', viewerID), [
+                        'Point: ',
+                        new LSST.UI.BoxText('X', Math.trunc(viewer.cursorPoint.x)),
+                        new LSST.UI.BoxText('Y', Math.trunc(viewer.cursorPoint.y))
+                    ],
                     [
                         'Region/segment: ',
                         new LSST.UI.BoxText('X', viewer.hoveredSeg.x),
@@ -531,158 +540,115 @@ cmds = {
                     new LSST.UI.BoxText("Region name", viewer.cursorAmpName),
                     new LSST.UI.BoxText("Currently selected region", viewer.selectedAmp)
                 ];
-                
+
                 box.setText(boxText);
-    		}
-		);
+            }
+        );
 
-		box.onClear(
-			function() {
-      			viewer.onCursorMove(null);
-			}
-		);
-	},
+        box.onClear(
+            function() {
+                viewer.onCursorMove(null);
+            }
+        );
+    },
 
-	show_boundary: function(cmd_args) {
-		if (!validateParams(cmd_args))
-    		return;
+    show_boundary: function(cmd_args) {
+        if (!validateParams(cmd_args))
+            return;
 
-		var viewerID = cmd_args['viewer_id'];
-		var plotID = viewerID; // ffview as a default
-		var regionID = plotID + '-boundary';
+        var viewerID = cmd_args['viewer_id'];
+        var plotID = viewerID; // ffview as a default
+        var regionID = plotID + '-boundary';
         var viewer = LSST.state.viewers.get(viewerID);
-        if (!(viewer.show_boundary)){
-            if (viewer.header){
+        if (!(viewer.show_boundary)) {
+            if (viewer.header) {
                 viewer.drawRegions(viewer.header['regions_ds9'], 'Boundary', 'red');
                 viewer.show_boundary = true;
+            } else {
+                viewer.fetch_boundary(function(regions) { // Asynchronous
+                    viewer.header = regions;
+                    viewer.drawRegions(regions['regions_ds9'], 'Boundary', 'red');
+                    viewer.show_boundary = true;
+                });
             }
-            else {
-                function read_boundary(data, callback, viewer) {
-                    executeBackendFunction('boundary', viewer, data,
-                        function(data) {
-                        var regions = [];
-                        console.log(data);
-                        var d = data.BOUNDARY;
-                        if (viewer.overscan){
-                            d = data.BOUNDARY_OVERSCAN;
-                            var seg_width = data.SEG_SIZE.x;
-                            var seg_height = data.SEG_SIZE.y;
-                            for (var i=0; i<data.NUM_AMPS.x; i++){
-                                for (var j=0; j<data.NUM_AMPS.y; j++){
-                                    var x = i*seg_width + seg_width/2;
-                                    var y = j*seg_height + seg_height/2;
-                                    regions.push(['box', x, y, seg_width, seg_height, 0].join(' '));
-                                }
-                            }
-                        }
-                        for (var i = 0; i < d.length; i++) {
-                            var di = d[i];
-                            for (var j = 0; j < di.length; j++) {
-                                var dij = di[j];
-                                var height = dij['height'];
-                                var width = dij['width'];
-                                var x = dij['x'];
-                                var y = dij['y'];
-                                var content = ['box', x, y, width, height, 0].join(' ');
-                                regions.push(content);
-                            }
-                        }
-                        callback({'header': data, 'regions_ds9': regions});
-                        },
-                        function(data) {
-                            LSST.state.term.lsst_term('echo', 'There was a problem when fetching boundary information of FITS file.');
-                            LSST.state.term.lsst_term('echo', 'Please make sure all parameters were typed in correctly.');
-                        }
-                    );
-                };
-                read_boundary({},
-    				function(regions) { // Asynchronous
-                        viewer.header = regions;
-                        viewer.drawRegions(regions['regions_ds9'], 'Boundary', 'red');
-                        viewer.show_boundary = true;
-    				},
-    				viewer
-				);
-            }
-        }
-        else {
+        } else {
             LSST.state.term.lsst_term('echo', "Boundary of this viewer is already drawn.")
         }
-	},
+    },
 
-	show_box: function(cmd_args) {
-		if (!validateParams(cmd_args))
-		  return;
+    show_box: function(cmd_args) {
+        if (!validateParams(cmd_args))
+            return;
 
-		var boxID = cmd_args['box_id'];
+        var boxID = cmd_args['box_id'];
 
-		// A handle to the box
-		var box = LSST.state.boxes.get(boxID);
-		box.maximize();
-		box.html.draggable('option', 'handle', '.box-title');
+        // A handle to the box
+        var box = LSST.state.boxes.get(boxID);
+        box.maximize();
+        box.html.draggable('option', 'handle', '.box-title');
 
-		box.setFocus(true);
+        box.setFocus(true);
 
-		var toolbar = box.html.children('.LSST_TB-toolbar');
-		var max = jQuery(toolbar.children()[1]);
-		max.attr('src', 'js/toolbar/images/minimize_40x40.png');
-		max.data('onClick', cmds.hide_box);
-	},
+        var toolbar = box.html.children('.LSST_TB-toolbar');
+        var max = jQuery(toolbar.children()[1]);
+        max.attr('src', 'js/toolbar/images/minimize_40x40.png');
+        max.data('onClick', cmds.hide_box);
+    },
 
-	show_viewer : function(cmd_args) {
-		if (!validateParams(cmd_args))
-		  return;
-
-		var viewerID = cmd_args['viewer_id'];
-		LSST.state.viewers.get(viewerID).setFocus(true);
-	},
-
-	uv_freq: function(cmd_args) {
-		if (!validateParams(cmd_args))
-		  return;
+    show_viewer: function(cmd_args) {
+        if (!validateParams(cmd_args))
+            return;
 
         var viewerID = cmd_args['viewer_id'];
-    	LSST.state.uvControls.get(viewerID).setFrequency( cmd_args['time_in_millis'] );
-	},
+        LSST.state.viewers.get(viewerID).setFocus(true);
+    },
 
-	uv_load_new: function(cmd_args) {
-		if (!validateParams(cmd_args))
-		  return;
-
-		var viewerID = cmd_args['viewer_id'];
-      	LSST.state.uvControls.get(viewerID).loadNewImage();
-	},
-
-	uv_pause: function(cmd_args) {
-		if (!validateParams(cmd_args))
-		  return;
+    uv_freq: function(cmd_args) {
+        if (!validateParams(cmd_args))
+            return;
 
         var viewerID = cmd_args['viewer_id'];
-	  LSST.state.uvControls.get(viewerID).pause();
-	},
+        LSST.state.uvControls.get(viewerID).setFrequency(cmd_args['time_in_millis']);
+    },
 
-	uv_resume: function(cmd_args) {
-		if (!validateParams(cmd_args))
-		  return;
+    uv_load_new: function(cmd_args) {
+        if (!validateParams(cmd_args))
+            return;
 
         var viewerID = cmd_args['viewer_id'];
-    	LSST.state.uvControls.get(viewerID).resume();
-	},
+        LSST.state.uvControls.get(viewerID).loadNewImage();
+    },
 
-	uv_start : function(cmd_args) {
-		if (!validateParams(cmd_args))
-		  return;
+    uv_pause: function(cmd_args) {
+        if (!validateParams(cmd_args))
+            return;
 
-    	cmds.uv_resume(cmd_args);
-	},
+        var viewerID = cmd_args['viewer_id'];
+        LSST.state.uvControls.get(viewerID).pause();
+    },
 
-	uv_update: function(cmd_args) {
-		if (!validateParams(cmd_args))
-		  return;
+    uv_resume: function(cmd_args) {
+        if (!validateParams(cmd_args))
+            return;
 
-    	var viewerID = cmd_args['viewer_id'];
+        var viewerID = cmd_args['viewer_id'];
+        LSST.state.uvControls.get(viewerID).resume();
+    },
+
+    uv_start: function(cmd_args) {
+        if (!validateParams(cmd_args))
+            return;
+
+        cmds.uv_resume(cmd_args);
+    },
+
+    uv_update: function(cmd_args) {
+        if (!validateParams(cmd_args))
+            return;
+
+        var viewerID = cmd_args['viewer_id'];
         LSST.state.uvControls.get(viewerID).update();
-	}
+    }
 }
 
 
@@ -702,8 +668,7 @@ cmds = {
 */
 
 viewerCommandParameterForms = {
-	'VCAVG' :
-        jQuery(
+    'VCAVG': jQuery(
         ' \
         	<div class="viewer-command-params-entry"> \
             <span>Output Box:</span> \
@@ -711,8 +676,7 @@ viewerCommandParameterForms = {
           </div> \
         '),
 
-    'VCHOT' :
-        jQuery(
+    'VCHOT': jQuery(
         ' \
         	<div class="viewer-command-params-entry"> \
             <span>Threshold:</span> \
@@ -720,8 +684,7 @@ viewerCommandParameterForms = {
           </div> \
         '),
 
-	'VCCHART' :
-        jQuery(
+    'VCCHART': jQuery(
         ' \
         	<div class="viewer-command-params-entry"> \
             <span>Number of bins:</span> \
@@ -739,13 +702,13 @@ viewerCommandParameterForms = {
 }
 
 var viewerCommands = {
-	display_area_commands : function(data) {
-	    var viewerID = data.plotId;
+    display_area_commands: function(data) {
+        var viewerID = data.plotId;
 
-	    if (jQuery('.viewer-command-container').size() > 0)
-	        return;
+        if (jQuery('.viewer-command-container').size() > 0)
+            return;
 
-	    container = jQuery(' \
+        container = jQuery(' \
 		    <div class="viewer-command-container"> \
               <div class="viewer-command-left"> \
                 <ul class="viewer-command-commandlist"> \
@@ -760,31 +723,33 @@ var viewerCommands = {
                 <button id="viewer-command-execute">Execute Command</button> \
               </div> \
             </div> \
-            '
-	    );
+            ');
 
-	    var options = {
-	        toolbar : {
-	            desc : [
-	                new LSST_TB.ToolbarElement(
-	                    'close',
-	                     {
-				            onClick : function(c) { c.html.remove() },
-				            parameters : { html : container },
-			            }
-			        )
-			    ],
-			    options : {
-			        bShowOnHover : false
-			    }
-	        },
-	        html : container
-	    }
-	    popup = new LSST.UI.UIElement(options);
+        var options = {
+            toolbar: {
+                desc: [
+                    new LSST_TB.ToolbarElement(
+                        'close', {
+                            onClick: function(c) {
+                                c.html.remove()
+                            },
+                            parameters: {
+                                html: container
+                            },
+                        }
+                    )
+                ],
+                options: {
+                    bShowOnHover: false
+                }
+            },
+            html: container
+        }
+        popup = new LSST.UI.UIElement(options);
 
-	    jQuery('body').append(container);
+        jQuery('body').append(container);
 
-	    jQuery('.viewer-command-entry').click(function() {
+        jQuery('.viewer-command-entry').click(function() {
             var id = jQuery(this).attr('id')
 
             var form = jQuery('#viewer-command-params').empty()
@@ -809,5 +774,5 @@ var viewerCommands = {
 
             container.remove();
         });
-	}
+    }
 }

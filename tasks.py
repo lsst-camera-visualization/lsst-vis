@@ -1,9 +1,9 @@
+from task_scripts.noise import task as task_noise
 from task_scripts.graph_noise import task as task_graph_noise
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.abspath(__file__))+"/task_scripts")
 
-from task_scripts.second_moment import task as task_second_moment
 from task_scripts.averagePixel import task as task_average_pixel
 from task_scripts.boundary import task as task_boundary
 from task_scripts.fetchLatest import task as task_fetch_latest
@@ -13,10 +13,10 @@ from task_scripts.graph_proj import task as task_graph_proj
 
 # Dictionary mapping task names to functions
 _tasks = {} # DO NOT MODIFY THIS LINE (see generate_new_task.sh)
+_tasks["noise"] = task_noise
 _tasks["graph_noise"] = task_graph_noise
 _tasks["graph"] = task_graph
 _tasks["graph_proj"] = task_graph_proj
-_tasks["second_moment"] = task_second_moment
 _tasks["average"] = task_average_pixel
 _tasks["boundary"] = task_boundary
 _tasks["fetch_latest"] = task_fetch_latest

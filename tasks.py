@@ -1,3 +1,4 @@
+from task_scripts.graph_noise import task as task_graph_noise
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.abspath(__file__))+"/task_scripts")
@@ -12,6 +13,7 @@ from task_scripts.graph_proj import task as task_graph_proj
 
 # Dictionary mapping task names to functions
 _tasks = {} # DO NOT MODIFY THIS LINE (see generate_new_task.sh)
+_tasks["graph_noise"] = task_graph_noise
 _tasks["graph"] = task_graph
 _tasks["graph_proj"] = task_graph_proj
 _tasks["second_moment"] = task_second_moment

@@ -165,7 +165,7 @@ cmds = {
         viewer.clear_except_boundary();
 
         // Draw the region on the viewer
-        viewer.drawRegions([region.toDS9()], 'Average Pixel', 'white');
+        viewer.drawRegions([region.toDS9()], 'Average Pixel', 'yellow');
 
         var boxText = [
             'Processing average_pixel...'
@@ -422,7 +422,7 @@ cmds = {
         var plotID = viewerID;
 
         viewer.clear_except_boundary();
-        viewer.drawRegions([region.toDS9()], 'Hot Pixel Boundary', 'blue');
+        viewer.drawRegions([region.toDS9()], 'Hot Pixel Boundary', 'yellow');
 
         var region_backend = region.toBackendFormat();
         var param_backend = {

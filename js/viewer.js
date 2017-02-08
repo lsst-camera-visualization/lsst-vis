@@ -241,7 +241,7 @@ LSST.UI.Viewer.prototype._updateAmpInfo = function() {
     this.hoveredSeg.x = Math.floor(this.cursorPoint.x / width);
     this.hoveredSeg.y = num_y - 1 - Math.floor(this.cursorPoint.y / height);
 
-    if (this.hoveredSeg.y < 0 || this.hoveredSeg.x < 0 || this.hoveredSeg.y >= boundary.length || this.hoveredSeg.x >= boundary[0].length){
+    if (this.hoveredSeg.y < 0 || this.hoveredSeg.x < 0 || this.hoveredSeg.y >= boundary.length || this.hoveredSeg.x >= boundary[0].length) {
         //LSST.state.term.lsst_term('echo', 'Segment Error.');
         return;
     }
@@ -328,14 +328,19 @@ LSST.UI.Viewer.prototype.convertAmpToRect = function(regionName) {
         var boundary = header_info['BOUNDARY_OVERSCAN'];
         var num_y = header_info['NUM_AMPS']['y']; // Segments origin at top left. Need to flip the Y coordinate for segment coordinate.
 
-        seg.x = parseInt(regionName[match.index+4]);
-        seg.y = num_y - parseInt(regionName[match.index+3]) - 1;
+        seg.amp_x = parseInt(regionName[match.index + 4]);
+        seg.amp_y = parseInt(regionName[match.index + 3]);
+        seg.x = seg.amp_x;
+        seg.y = num_y - seg.amp_y - 1;
+
+		console.log(seg.amp_y);
+		console.log(seg.amp_x);
 
         var x1 = seg.x * width,
             y1 = seg.y * height,
             x2 = x1 + width - 1,
             y2 = y1 + height - 1;
-        if (!this.overscan){
+        if (!this.overscan) {
             width = header_info['SEG_DATASIZE']['x'];
             height = header_info['SEG_DATASIZE']['y'];
             boundary = header_info['BOUNDARY'];
@@ -349,45 +354,46 @@ LSST.UI.Viewer.prototype.convertAmpToRect = function(regionName) {
             var post_x = overscan_info['POST'];
             var over_y = overscan_info['OVER'];
 
-            if (/amp\d\doverscan$/.test(regionName)){
-                if (boundary[seg.y][seg.x]['reverse_slice']['y']) {
+            if (/amp\d\doverscan$/.test(regionName)) {
+                if (boundary[seg.amp_y][seg.amp_x]['reverse_slice']['y']) {
                     y2 = y2 - over_y;
                 } else {
                     y1 = y1 + over_y;
                 }
-            } else if (/amp\d\dpostscan$/.test(regionName)){
-                if (boundary[seg.y][seg.x]['reverse_slice']['y']) {
+            } else if (/amp\d\dpostscan$/.test(regionName)) {
+                if (boundary[seg.amp_y][seg.amp_x]['reverse_slice']['y']) {
                     y1 = y2 - over_y + 1;
                 } else {
                     y2 = y1 + over_y - 1;
                 }
-                if (boundary[seg.y][seg.x]['reverse_slice']['x']) {
+                if (boundary[seg.amp_y][seg.amp_x]['reverse_slice']['x']) {
                     x2 = x2 - post_x;
                 } else {
                     x1 = x1 + post_x;
                 }
-            } else if (/amp\d\dprescan$/.test(regionName)){
-                if (boundary[seg.y][seg.x]['reverse_slice']['y']) {
+            } else if (/amp\d\dprescan$/.test(regionName)) {
+                if (boundary[seg.amp_y][seg.amp_x]['reverse_slice']['y']) {
                     y1 = y2 - over_y + 1;
                 } else {
                     y2 = y1 + over_y - 1;
                 }
-                if (boundary[seg.y][seg.x]['reverse_slice']['x']) {
+                if (boundary[seg.amp_y][seg.amp_x]['reverse_slice']['x']) {
                     x1 = x2 - pre_x + 1;
                 } else {
                     x2 = x1 + pre_x - 1;
                 }
             } else if (/amp\d\ddata$/.test(regionName)) {
-                if (boundary[seg.y][seg.x]['reverse_slice']['y']) {
+                if (boundary[seg.amp_y][seg.amp_x]['reverse_slice']['y']) {
                     y1 = y2 - over_y + 1;
                 } else {
                     y2 = y1 + over_y - 1;
                 }
-                var temp_x = x2;
-                if (boundary[seg.y][seg.x]['reverse_slice']['x']) {
+                if (boundary[seg.amp_y][seg.amp_x]['reverse_slice']['x']) {
+                    var temp_x = x2;
                     x2 = temp_x - pre_x;
                     x1 = x2 - post_x + 1;
                 } else {
+                    var temp_x = x1;
                     x1 = temp_x + pre_x;
                     x2 = temp_x + post_x - 1;
                 }
@@ -396,7 +402,7 @@ LSST.UI.Viewer.prototype.convertAmpToRect = function(regionName) {
             }
         }
         return new LSST.UI.Rect(x1, y1, x2, y2);
-    } else{
+    } else {
         LSST.state.term.lsst_term('echo', 'Incorrect region name.');
     }
 }

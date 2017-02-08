@@ -101,17 +101,17 @@ var executeBackendFunction = function(nameOfTask, viewer, params, onFulfilled, o
 }
 
 function validateParams(cmd_args) {
-  if (cmd_args.viewer_id != undefined && !LSST.state.viewers.exists(cmd_args.viewer_id)) {
-	  LSST.state.term.lsst_term('echo', 'A viewer with the name \'' + cmd_args.viewer_id + '\' does not exist!');
-	  return false;
-  }
+    if (cmd_args.viewer_id != undefined && !LSST.state.viewers.exists(cmd_args.viewer_id)) {
+        LSST.state.term.lsst_term('echo', 'A viewer with the name \'' + cmd_args.viewer_id + '\' does not exist!');
+        return false;
+    }
 
-  if (cmd_args.box_id != undefined && !LSST.state.boxes.exists(cmd_args.box_id)) {
-		LSST.state.term.lsst_term('echo', 'A box with the name \'' + cmd_args.box_id + '\' does not exist!');
-    return false;
-  }
+    if (cmd_args.box_id != undefined && !LSST.state.boxes.exists(cmd_args.box_id)) {
+        LSST.state.term.lsst_term('echo', 'A box with the name \'' + cmd_args.box_id + '\' does not exist!');
+        return false;
+    }
 
-  return true;
+    return true;
 }
 
 var getRegion = function(region, viewer) {
@@ -119,19 +119,17 @@ var getRegion = function(region, viewer) {
 
     if (region === "sel") {
         result = viewer.convertAmpToRect(viewer.selectedAmp);
-    }
-    else if (typeof(region) == "string") {
+    } else if (typeof(region) == "string") {
         // If we are here, the region should be the name of an amp,
         //    so convert the name to an LSST.UI.Region
 
-    }
-    else if (Array.isArray(region)) {
+    } else if (Array.isArray(region)) {
         result = LSST.UI.Region.Parse(region)
     }
 
     // If we have an null region, echo invalidity to user
     if (result == null)
-       LSST.state.term.lsst_term("echo", "Please enter a valid region");
+        LSST.state.term.lsst_term("echo", "Please enter a valid region");
 
     return result;
 }
@@ -158,57 +156,58 @@ cmds = {
         if (region == null)
             return;
 
-		// Clear the box of any existing information
-		cmds.clear_box( { 'box_id' : boxID } );
+        // Clear the box of any existing information
+        cmds.clear_box({
+            'box_id': boxID
+        });
 
-		// Clear the viewer
-		viewer.clear_except_boundary();
+        // Clear the viewer
+        viewer.clear_except_boundary();
 
         // Draw the region on the viewer
-		viewer.drawRegions( [ region.toDS9() ], 'Average Pixel', 'blue');
+        viewer.drawRegions([region.toDS9()], 'Average Pixel', 'white');
 
-		var boxText = [
-			'Processing average_pixel...'
-		];
-		box.setText(boxText);
+        var boxText = [
+            'Processing average_pixel...'
+        ];
+        box.setText(boxText);
 
-		// Call average_pixel python task
-		var params = region.toBackendFormat();
+        // Call average_pixel python task
+        var params = region.toBackendFormat();
 
-		executeBackendFunction('average', viewer, params,
-			function(data) {
-				boxText = [
-					'average_pixel',
-					'Viewer: ' + viewerID,
-					[
-						'Region:'
-					].concat(region.toBoxText()),
-					':line-dashed:',
-					new LSST.UI.BoxText('Average Pixel Value', data['result'])
-				];
-				box.setText(boxText);
-			},
+        executeBackendFunction('average', viewer, params,
+            function(data) {
+                boxText = [
+                    'average_pixel',
+                    'Viewer: ' + viewerID, [
+                        'Region:'
+                    ].concat(region.toBoxText()),
+                    ':line-dashed:',
+                    new LSST.UI.BoxText('Average Pixel Value', data['result'])
+                ];
+                box.setText(boxText);
+            },
 
-			function(data) {
-				// Called when there was a problem with the promise function
-				boxText = [
-					'There was a problem with executing the average_pixel function',
-					'\n',
-					new LSST.UI.BoxText('User Input', userInput, false),
-					new LSST.UI.BoxText('Error', data, false)
-				];
+            function(data) {
+                // Called when there was a problem with the promise function
+                boxText = [
+                    'There was a problem with executing the average_pixel function',
+                    '\n',
+                    new LSST.UI.BoxText('User Input', userInput, false),
+                    new LSST.UI.BoxText('Error', data, false)
+                ];
 
-				box.setText(boxText);
-			}
-		);
-	},
+                box.setText(boxText);
+            }
+        );
+    },
 
-	chart: function(cmd_args) {
+    chart: function(cmd_args) {
         if (!validateParams(cmd_args))
-		    return;
+            return;
 
-		var viewerID = cmd_args.viewer_id;
-		var viewer = LSST.state.viewers.get(viewerID);
+        var viewerID = cmd_args.viewer_id;
+        var viewer = LSST.state.viewers.get(viewerID);
 
         // Get region, return if it is invalid
         var region = getRegion(cmd_args.region, viewer);
@@ -216,10 +215,10 @@ cmds = {
             return;
 
         var params = {
-            numBins : (cmd_args.num_bins == undefined) ? 10 : parseInt(cmd_args.num_bins),
-            min : (cmd_args.min == undefined) ? -1 : parseInt(cmd_args.min),
-            max : (cmd_args.max == undefined) ? -1 : parseInt(cmd_args.max),
-            region : region.toBackendFormat()
+            numBins: (cmd_args.num_bins == undefined) ? 10 : parseInt(cmd_args.num_bins),
+            min: (cmd_args.min == undefined) ? -1 : parseInt(cmd_args.min),
+            max: (cmd_args.max == undefined) ? -1 : parseInt(cmd_args.max),
+            region: region.toBackendFormat()
         }
         executeBackendFunction('chart', LSST.state.viewers.get(cmd_args.viewer_id), params,
             function(data) {
@@ -231,149 +230,48 @@ cmds = {
                 console.log("Failure: " + data);
             }
         );
-	},
+    },
 
-	clear_box: function(cmd_args) {
-		if (!validateParams(cmd_args))
-		  return;
+    clear_box: function(cmd_args) {
+        if (!validateParams(cmd_args))
+            return;
 
-		var boxID = cmd_args['box_id'];
-		var box = LSST.state.boxes.get(boxID);
-		box.clear();
-	},
+        var boxID = cmd_args['box_id'];
+        var box = LSST.state.boxes.get(boxID);
+        box.clear();
+    },
 
-	clear_viewer : function(cmd_args) {
-		if (!validateParams(cmd_args))
-		  return;
+    clear_viewer: function(cmd_args) {
+        if (!validateParams(cmd_args))
+            return;
 
-		var viewerID = cmd_args['viewer_id'];
-		var viewer = LSST.state.viewers.get(viewerID);
-		viewer.clear();
-	},
+        var viewerID = cmd_args['viewer_id'];
+        var viewer = LSST.state.viewers.get(viewerID);
+        viewer.clear();
+    },
 
-	create_box: function(cmd_args) {
-		var boxID = cmd_args['box_id'];
+    create_box: function(cmd_args) {
+        var boxID = cmd_args['box_id'];
 
         if (LSST.state.boxes.exists(boxID)) {
             LSST.state.term.lsst_term('echo', 'A box with the name \'' + boxID + '\' already exists!');
             return;
         }
 
-		var box = new LSST.UI.Box( { name : boxID } );
-		LSST.state.boxes.add(boxID, box);
+        var box = new LSST.UI.Box({
+            name: boxID
+        });
+        LSST.state.boxes.add(boxID, box);
 
-		if (LSST.state.boxes.size() == 1)
-		  cmds.default_box( { box_id : boxID } );
+        if (LSST.state.boxes.size() == 1)
+            cmds.default_box({
+                box_id: boxID
+            });
 
-		cmds.show_box( { 'box_id' : boxID } );
-	},
-
-	create_viewer: function(cmd_args) {
-		var viewerID = cmd_args['viewer_id'];
-	  var image = cmd_args['[image]'];
-
-	  if (LSST.state.viewers.exists(viewerID)) {
-		  LSST.state.term.lsst_term('echo', 'A viewer with the name \'' + viewerID + '\' already exists!');
-		  return;
-	  }
-
-		var viewer = new LSST.UI.Viewer( { name : viewerID, image : image } );
-		LSST.state.viewers.add(viewerID, viewer);
-
-		if (LSST.state.viewers.size() == 1)
-		  cmds.default_viewer( { viewer_id : viewerID } );
-
-		viewer.addExtension('Choose Command...', 'AREA_SELECT', viewerCommands.display_area_commands );
-
-		var uvControl = new LSST.UI.UV_Control(viewer, "http://172.17.0.1:8099/vis/checkImage");
-		LSST.state.uvControls.add(viewerID, uvControl);
-
-		cmds.show_viewer( { 'viewer_id' : viewerID } );
-	},
-
-	default_box : function(cmd_args) {
-	  var boxID = cmd_args.box_id;
-
-	  if (boxID === null || LSST.state.boxes.exists(boxID)) {
-	    LSST.state.defaults.box = boxID;
-	    LSST.state.term.lsst_term("setDefault", { param : "box_id", value : boxID } );
-	  }
-	  else {
-	    LSST.state.term.lsst_term("echo", "A box with that name does not exist!");
-	  }
-	},
-
-	default_viewer : function(cmd_args) {
-	  var viewerID = cmd_args.viewer_id;
-
-	  if (viewerID === null || LSST.state.viewers.exists(viewerID)) {
-	    LSST.state.defaults.viewer = viewerID;
-	    LSST.state.term.lsst_term("setDefault", { param : "viewer_id", value : viewerID } );
-	  }
-	  else {
-	    LSST.state.term.lsst_term("echo", "A viewer with that name does not exist!");
-	  }
-	},
-
-	delete_box: function(cmd_args) {
-		var boxID = cmd_args['box_id'];
-
-		if (LSST.state.boxes.exists(boxID)) {
-			LSST.state.boxes.get(boxID).destroy();
-			LSST.state.boxes.remove(boxID);
-
-			if (LSST.state.defaults.box == boxID) {
-			    if (LSST.state.boxes.size() > 0)
-			      cmds.default_box( { box_id : LSST.state.boxes.get() } );
-			    else
-			      cmds.default_box( { box_id : null } );
-			}
-
-			LSST.state.term.lsst_term("deleteParameterAuto", { param : 'box_id', value : boxID });
-		}
-		else {
-			LSST.state.term.lsst_term('echo', 'A box with the name \'' + boxID + '\' does not exist!');
-		}
-	},
-
-	delete_viewer : function(cmd_args) {
-	  var viewerID = cmd_args.viewer_id;
-
-	  if (LSST.state.viewers.exists(viewerID)) {
-	    var viewer = LSST.state.viewers.get(viewerID);
-	    viewer.destroy();
-	    LSST.state.viewers.remove(viewerID);
-
-	    if (LSST.state.defaults.viewer == viewerID) {
-			    if (LSST.state.viewers.size() > 0)
-			      cmds.default_viewer( { viewer_id : LSST.state.viewers.get() } );
-			    else
-			      cmds.default_viewer( { viewer_id : null } );
-			}
-
-	    LSST.state.term.lsst_term("deleteParameterAuto", { param : 'viewer_id', value : viewerID });
-	  }
-	  else {
-	    LSST.state.term.lsst_term("echo", "A viewer with the name '" + viewerID + "' does not exist!");
-	  }
-	},
-
-	hide_boundary: function(cmd_args) {
-		if (!validateParams(cmd_args))
-		  return;
-
-		var viewerID = cmd_args['viewer_id'];
-		var plotID = viewerID;
-		var regionID = plotID + '-boundary';
-        var viewer = LSST.state.viewers.get(viewerID);
-        if (viewer.show_boundary){
-            viewer.show_boundary = false;
-            viewer.clearLayer('Boundary');
-            LSST.state.term.lsst_term('echo', "Boundary Removed");
-        } else {
-            LSST.state.term.lsst_term('echo', "The boundary has not been drawn yet.");
-        }
-	},
+        cmds.show_box({
+            'box_id': boxID
+        });
+    },
 
     create_viewer: function(cmd_args) {
         var viewerID = cmd_args['viewer_id'];
@@ -397,13 +295,123 @@ cmds = {
 
         viewer.addExtension('Choose Command...', 'AREA_SELECT', viewerCommands.display_area_commands);
 
-		var viewerID = cmd_args['viewer_id'];
-		var viewer = LSST.state.viewers.get(viewerID);
+        var uvControl = new LSST.UI.UV_Control(viewer, "http://172.17.0.1:8099/vis/checkImage");
+        LSST.state.uvControls.add(viewerID, uvControl);
 
-		var threshold = 'max';
-		if (cmd_args['threshold']!=='max'){
-				threshold = parseInt(cmd_args['threshold']);
-		}
+        cmds.show_viewer({
+            'viewer_id': viewerID
+        });
+    },
+
+    default_box: function(cmd_args) {
+        var boxID = cmd_args.box_id;
+
+        if (boxID === null || LSST.state.boxes.exists(boxID)) {
+            LSST.state.defaults.box = boxID;
+            LSST.state.term.lsst_term("setDefault", {
+                param: "box_id",
+                value: boxID
+            });
+        } else {
+            LSST.state.term.lsst_term("echo", "A box with that name does not exist!");
+        }
+    },
+
+    default_viewer: function(cmd_args) {
+        var viewerID = cmd_args.viewer_id;
+
+        if (viewerID === null || LSST.state.viewers.exists(viewerID)) {
+            LSST.state.defaults.viewer = viewerID;
+            LSST.state.term.lsst_term("setDefault", {
+                param: "viewer_id",
+                value: viewerID
+            });
+        } else {
+            LSST.state.term.lsst_term("echo", "A viewer with that name does not exist!");
+        }
+    },
+
+    delete_box: function(cmd_args) {
+        var boxID = cmd_args['box_id'];
+
+        if (LSST.state.boxes.exists(boxID)) {
+            LSST.state.boxes.get(boxID).destroy();
+            LSST.state.boxes.remove(boxID);
+
+            if (LSST.state.defaults.box == boxID) {
+                if (LSST.state.boxes.size() > 0)
+                    cmds.default_box({
+                        box_id: LSST.state.boxes.get()
+                    });
+                else
+                    cmds.default_box({
+                        box_id: null
+                    });
+            }
+
+            LSST.state.term.lsst_term("deleteParameterAuto", {
+                param: 'box_id',
+                value: boxID
+            });
+        } else {
+            LSST.state.term.lsst_term('echo', 'A box with the name \'' + boxID + '\' does not exist!');
+        }
+    },
+
+    delete_viewer: function(cmd_args) {
+        var viewerID = cmd_args.viewer_id;
+
+        if (LSST.state.viewers.exists(viewerID)) {
+            var viewer = LSST.state.viewers.get(viewerID);
+            viewer.destroy();
+            LSST.state.viewers.remove(viewerID);
+
+            if (LSST.state.defaults.viewer == viewerID) {
+                if (LSST.state.viewers.size() > 0)
+                    cmds.default_viewer({
+                        viewer_id: LSST.state.viewers.get()
+                    });
+                else
+                    cmds.default_viewer({
+                        viewer_id: null
+                    });
+            }
+
+            LSST.state.term.lsst_term("deleteParameterAuto", {
+                param: 'viewer_id',
+                value: viewerID
+            });
+        } else {
+            LSST.state.term.lsst_term("echo", "A viewer with the name '" + viewerID + "' does not exist!");
+        }
+    },
+
+    hide_boundary: function(cmd_args) {
+        if (!validateParams(cmd_args))
+            return;
+
+        var viewerID = cmd_args['viewer_id'];
+        var plotID = viewerID;
+        var regionID = plotID + '-boundary';
+        var viewer = LSST.state.viewers.get(viewerID);
+        if (viewer.show_boundary) {
+            viewer.show_boundary = false;
+            viewer.clearLayer('Boundary');
+            LSST.state.term.lsst_term('echo', "Boundary Removed");
+        } else {
+            LSST.state.term.lsst_term('echo', "The boundary has not been drawn yet.");
+        }
+    },
+
+    hot_pixel: function(cmd_args) {
+
+        var viewerID = cmd_args['viewer_id'];
+        var viewer = LSST.state.viewers.get(viewerID);
+
+        var threshold = 'max';
+        if (cmd_args['threshold'] !== 'max') {
+            threshold = parseInt(cmd_args['threshold']);
+        }
 
         // Get region, return if it is invalid
         var region = getRegion(cmd_args.region, viewer);
@@ -433,7 +441,7 @@ cmds = {
                     regions.push(content);
                 }
                 viewer.drawRegions(regions, 'Hot Pixels', 'red');
-        },
+            },
             function(data) {
                 LSST.state.term.lsst_term('echo', 'There was a problem when fetching hot pixel information in the FITS file.');
                 LSST.state.term.lsst_term('echo', 'Please make sure all parameters were typed in correctly.');

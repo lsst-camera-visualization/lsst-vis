@@ -122,7 +122,7 @@ var getRegion = function(region, viewer) {
     } else if (typeof(region) == "string") {
         // If we are here, the region should be the name of an amp,
         //    so convert the name to an LSST.UI.Region
-
+        result = viewer.convertAmpToRect(region);
     } else if (Array.isArray(region)) {
         result = LSST.UI.Region.Parse(region)
     }

@@ -65,7 +65,9 @@ jQuery(document).ready(function() {
 
             examples: {
                 "region": [
-                    "(rect 1000 1200 3000 3200)"
+                    "(rect 1000 1200 3000 3200)",
+                    "sel",
+                    "amp06data"
                 ]
             }
 
@@ -118,7 +120,12 @@ var getRegion = function(region, viewer) {
     var result = null;
 
     if (region === "sel") {
-        result = viewer.convertAmpToRect(viewer.selectedAmp);
+        if (!viewer.selectedAmp) {
+            LSST.state.term.lsst_term("echo", "This viewer does not have a selected region.");
+            result = null;
+        }
+        else
+            result = viewer.convertAmpToRect(viewer.selectedAmp);
     } else if (typeof(region) == "string") {
         // If we are here, the region should be the name of an amp,
         //    so convert the name to an LSST.UI.Region

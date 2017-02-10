@@ -17,16 +17,6 @@ img:hover {
 
 
 
-
-#box-minimized-bar {
-	position: fixed;
-	right: 5px;
-	bottom: 1px;
-}
-
-
-
-
 #cmd_container {
 	width: 50%;
 	height: 300px;

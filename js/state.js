@@ -39,3 +39,19 @@ jQuery(document).ready(function() {
     jQuery("#version").text(data);
   });
 });
+
+
+// Disable Ctrl + S
+jQuery(window).keydown(
+    function(event) {
+    key = event.keyCode || event.which;
+
+    // Ctrl + S, select a region
+    if (key == 83 && event.ctrlKey) {
+        event.preventDefault();
+        return false;
+    }
+    
+    return true;
+}
+);

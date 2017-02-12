@@ -23,7 +23,7 @@ def get_region(imgHDUs):
 	seg_length = first_seg['NAXIS1']-1 # 544 for default image
 	seg_width = first_seg['NAXIS2']-1 # 2048 for default image
 	DATASEC = getCoord(first_seg['DATASEC']) # Assume 'DETSIZE' is same for all segments/amplifiers.
-	prescan = [0, DATASEC[0], 0, seg_width] # from 1 to prescan, 1 to seg_width 
+	prescan = [0, DATASEC[0], 0, seg_width] # from 1 to prescan, 1 to seg_width
 	postscan = [DATASEC[1], seg_length, 0, seg_width] # from postscan to seg_length, 1 to seg_width
 	upper = [DATASEC[0], DATASEC[1], DATASEC[3], seg_width] # upper overscan region, from prescan to postscan, upper to seg_width
 	return DATASEC
@@ -47,7 +47,7 @@ def get_average(filename):
 			upper_region = fitsdata[DATASEC[3]:seg_width, DATASEC[0]:DATASEC[1]].flatten()
 			pre_post = np.append(fitsdata[0:seg_width, 0:DATASEC[0]].flatten(), fitsdata[0:seg_length, DATASEC[1]:seg_length].flatten())
 			overscan = np.append(pre_post, upper_region)
-			noise[r-1] = np.sqrt(sp.moment(overscan, moment=2))
+			noise[r-1] = np.sqrt(sp.moment(overscan, 2))
 			#for i in range(0, 10):
 			#	for j in range(0, 2047):
 			#		pixel_sum += fitsdata[j, i]
@@ -61,4 +61,4 @@ def get_average(filename):
 if __name__ == "__main__":
     filename = "/home/yutong/firefly/backend/images/imageE2V.fits"
     header = get_average(filename)
-    print header
+    # print header

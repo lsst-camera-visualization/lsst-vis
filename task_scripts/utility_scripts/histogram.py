@@ -1,5 +1,6 @@
 from astropy.io import fits
 from utility_scripts.helper_functions import parseRegion_rect, circle_mask
+from utility_scripts.noise import getCoord
 from scipy.ndimage.filters import generic_filter as gf
 import numpy as np
 
@@ -49,6 +50,22 @@ def get_data(hist,_min, _max):
 		_bin = [[overflow_bins, _max + width, _max + 2*width]] # overflow bar
 		ret = np.concatenate((ret, _bin),axis=0)
 		return ret
+
+def hist_proj(filename, numBins):
+	with fits.open(filename) as fits_object:
+		hdulist = [elem.header for elem in fits_object if elem.__class__.__name__ == 'ImageHDU']
+		fits_data = fits_object[0].data #maybe change according to headers, first extension for now
+		first_seg = hdulist[0]
+		seg_length = first_seg['NAXIS1'] - 1
+		seg_width = first_seg['NAXIS2'] - 1
+		DATASEC = getCoord(first_seg['DATASEC'])
+		prescan = [0, DATASEC[0], 0, seg_width]
+		for i in range (0, seg_width):
+			for j in range (0, DATASEC[0]):
+				sum += fits_data[j, i]
+			ret.append(sum)
+		return get_data(np.histogram(ret, bins = numBins))
+
 
 
 def histogram(fits_object, region_type, value, numBins, _min, _max):

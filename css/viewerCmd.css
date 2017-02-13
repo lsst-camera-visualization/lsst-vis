@@ -75,6 +75,10 @@
     font-size: 150%;
 }
 
+.viewer-command-boxlist {
+    margin-left: 100px;
+}
+
 #viewer-command-execute {
   position: absolute;
   right: 5px;

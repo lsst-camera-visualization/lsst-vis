@@ -47,7 +47,23 @@ LSST.UI.ViewerCommandPanel = function(options) {
         var id = jQuery(this).attr('id');
 
         var form = jQuery('#viewer-command-params').empty();
-        form.append(LSST.UI.ViewerCommandPanel.parameterForms[id]);
+        var commandParamForm = LSST.UI.ViewerCommandPanel.parameterForms[id];
+        form.append(commandParamForm);
+
+        var boxlist = commandParamForm.children(".viewer-command-boxlist");
+        if (boxlist.size() > 0) {
+            boxlist.empty();
+            var c = false;
+            LSST.state.boxes.foreach(function(b) {
+                var elem;
+                if (!c)
+                    elem = "<input type='radio' name='box' value='" + b.name + "' checked> " + b.name + "<br>";
+                else
+                    elem = "<input type='radio' name='box' value='" + b.name + "'> " + b.name + "<br>";
+                boxlist.append(jQuery(elem));
+                c = true;
+            });
+        }
 
         LSST.state.currentViewerCommand = jQuery(this).data('cmd');
     });
@@ -60,6 +76,11 @@ LSST.UI.ViewerCommandPanel = function(options) {
         entries.children('input').each(function(idx, elem) {
             e = jQuery(elem);
             params[e.data('param-name')] = e.val();
+        });
+        entries.children('form').each(function(idx, elem) {
+            e = jQuery(elem);
+            var box =jQuery('input[name=box]:checked').val();
+            params["box_id"] = box;
         });
 
         params.viewer_id = this._ffData.plotId;
@@ -108,7 +129,7 @@ LSST.UI.ViewerCommandPanel.parameterForms = {
         ' \
         	<div class="viewer-command-params-entry"> \
             <span>Output Box:</span> \
-            <input type="text" data-param-name="box_id"/> \
+            <form class="viewer-command-boxlist" action="" data-param-name="box_id"> </form> \
           </div> \
         '),
 

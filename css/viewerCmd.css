@@ -18,7 +18,9 @@
 }
 
 #viewer-command-title {
+    font-size: 300%;
     text-align: center;
+    border-bottom: 2px solid #000;
 }
 
 #viewer-command-left {
@@ -63,12 +65,8 @@
     cursor: default;
 }
 
-#viewer-command-params-header {
-    text-align: center;
-    border-bottom: solid 2px #000;
-    font-size: 250%;
-    margin-bottom: 15px;
-    padding: 10px;
+#viewer-command-params {
+    padding: 5px;
 }
 
 .viewer-command-params-entry {

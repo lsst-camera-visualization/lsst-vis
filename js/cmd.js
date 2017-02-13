@@ -84,6 +84,10 @@ jQuery(document).ready(function() {
         console.log("Error loading commands.json: " + errorThrown);
     });
 
+
+    // Add the viewer command panel to the body
+    LSST.state.viewerCommandPanel = new LSST.UI.ViewerCommandPanel();
+
 });
 
 
@@ -673,79 +677,9 @@ cmds = {
 
 
 
-/*
- __      ___                           _____                                          _
- \ \    / (_)                         / ____|                                        | |
-  \ \  / / _  _____      _____ _ __  | |     ___  _ __ ___  _ __ ___   __ _ _ __   __| |___
-   \ \/ / | |/ _ \ \ /\ / / _ \ '__| | |    / _ \| '_ ` _ \| '_ ` _ \ / _` | '_ \ / _` / __|
-    \  /  | |  __/\ V  V /  __/ |    | |___| (_) | | | | | | | | | | | (_| | | | | (_| \__ \
-     \/   |_|\___| \_/\_/ \___|_|     \_____\___/|_| |_| |_|_| |_| |_|\__,_|_| |_|\__,_|___/
-*/
-
-viewerCommandParameterForms = {
-    'VCAVG': jQuery(
-        ' \
-        	<div class="viewer-command-params-entry"> \
-            <span>Output Box:</span> \
-            <input type="text" data-param-name="box_id"/> \
-          </div> \
-        '),
-
-    'VCHOT': jQuery(
-        ' \
-        	<div class="viewer-command-params-entry"> \
-            <span>Threshold:</span> \
-            <input type="text" data-param-name="threshold"/> \
-          </div> \
-        '),
-
-    'VCCHART': jQuery(
-        ' \
-        	<div class="viewer-command-params-entry"> \
-            <span>Number of bins:</span> \
-            <input type="text" size=3 data-param-name="num_bins" value="10"/> \
-          </div> \
-          <div class="viewer-command-params-entry"> \
-            <span>Min:</span> \
-            <input type="text" size=10 data-param-name="min" value="0"/> \
-          </div> \
-          <div class="viewer-command-params-entry"> \
-            <span>Max:</span> \
-            <input type="text" size=10 data-param-name="max" value="0"/> \
-          </div> \
-        ')
-}
 
 var viewerCommands = {
     display_area_commands: function(data) {
-        var viewerID = data.plotId;
-
-        jQuery('body').append(container);
-
-        jQuery('.viewer-command-entry').click(function() {
-            var id = jQuery(this).attr('id')
-
-            var form = jQuery('#viewer-command-params').empty()
-            form.append(viewerCommandParameterForms[id]);
-
-            LSST.state.currentViewerCommand = jQuery(this).data('cmd');
-        });
-
-        jQuery('#viewer-command-execute').click(function() {
-            var form = jQuery('#viewer-command-params');
-            var entries = form.children('.viewer-command-params-entry');
-            var params = {};
-            entries.children('input').each(function(idx, elem) {
-                e = jQuery(elem);
-                params[e.data('param-name')] = e.val();
-            });
-
-            params.viewer_id = viewerID;
-            params.region = new LSST.UI.Rect(data.ipt0.x, data.ipt0.y, data.ipt1.x, data.ipt1.y).toCmdLineArrayFormat();
-
-            cmds[LSST.state.currentViewerCommand](params);
-
-            container.remove();
-        });
+        LSST.state.viewerCommandPanel.show(data);
     }
 }

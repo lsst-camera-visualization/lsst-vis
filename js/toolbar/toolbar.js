@@ -232,8 +232,7 @@ jQuery.fn.lsst_toolbar = function(toolbarDesc, options) {
 
 	// Adding the margin height will remove bug where you miss going into the toolbar, thus hiding it.
 	setTimeout( function(elem) {
-			var h = toolbar.outerHeight(true);
-			toolbar.outerHeight(h + settings.margin);
+			toolbar.outerHeight(40 + settings.margin);
 
 			// When we enter the container, we should unhide the toolbar
 			if (settings.bShowOnHover)

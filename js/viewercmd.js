@@ -2,7 +2,10 @@ LSST.extend("LSST.UI");
 
 LSST.UI.ViewerCommandPanel = function(options) {
 
-    this.html = "<div id="viewer-command-container"> \
+    if (!options)
+        options = {}
+
+    this.html = jQuery('<div id="viewer-command-container"> \
       <div id="viewer-command-title">Region Command Entry</div> \
       <div id="viewer-command-left"> \
         <ul id="viewer-command-commandlist"> \
@@ -12,22 +15,20 @@ LSST.UI.ViewerCommandPanel = function(options) {
         </ul> \
       </div> \
       <div id="viewer-command-right"> \
-        <h1 id="viewer-command-params-header">Parameters</h1> \
         <div id="viewer-command-params"></div> \
         <button id="viewer-command-execute">Execute Command</button> \
       </div> \
-    </div>"
+    </div>');
+
+    jQuery("body").append(this.html);
 
     options.toolbar = {
         desc: [
             new LSST_TB.ToolbarElement(
                 'close', {
-                    onClick: function(c) {
-                        jQuery("#viewer-command-container").css("display", "none");
-                    },
-                    parameters: {
-                        html: container
-                    },
+                    onClick: function() {
+                        this.hide()
+                    }.bind(this),
                 }
             )
         ],
@@ -41,10 +42,97 @@ LSST.UI.ViewerCommandPanel = function(options) {
 		handle : "#viewer-command-title"
 	};
 
+
+    jQuery('.viewer-command-entry').click(function() {
+        var id = jQuery(this).attr('id');
+
+        var form = jQuery('#viewer-command-params').empty();
+        form.append(LSST.UI.ViewerCommandPanel.parameterForms[id]);
+
+        LSST.state.currentViewerCommand = jQuery(this).data('cmd');
+    });
+
+
+    jQuery('#viewer-command-execute').click(function() {
+        var form = jQuery('#viewer-command-params');
+        var entries = form.children('.viewer-command-params-entry');
+        var params = {};
+        entries.children('input').each(function(idx, elem) {
+            e = jQuery(elem);
+            params[e.data('param-name')] = e.val();
+        });
+
+        params.viewer_id = this._ffData.plotId;
+        params.region = new LSST.UI.Rect(this._ffData.ipt0.x, this._ffData.ipt0.y, this._ffData.ipt1.x, this._ffData.ipt1.y).toCmdLineArrayFormat();
+
+        cmds[LSST.state.currentViewerCommand](params);
+
+        this.hide();
+    }.bind(this));
+
+
 	// Init from UIElement
 	LSST.UI.UIElement.prototype._init.call(this, options);
+
+	this.focusOnClick(false);
 }
 
 
 // Inherit from LSST.UI.UIElement
 LSST.inherits(LSST.UI.ViewerCommandPanel, LSST.UI.UIElement);
+
+
+
+
+LSST.UI.ViewerCommandPanel.prototype.show = function(ffData) {
+    this.html.css("display", "block");
+    this._ffData = ffData;
+}
+
+LSST.UI.ViewerCommandPanel.prototype.hide = function() {
+    this.html.css("display", "none");
+}
+
+
+
+
+
+
+
+
+
+
+
+LSST.UI.ViewerCommandPanel.parameterForms = {
+    'VCAVG': jQuery(
+        ' \
+        	<div class="viewer-command-params-entry"> \
+            <span>Output Box:</span> \
+            <input type="text" data-param-name="box_id"/> \
+          </div> \
+        '),
+
+    'VCHOT': jQuery(
+        ' \
+        	<div class="viewer-command-params-entry"> \
+            <span>Threshold:</span> \
+            <input type="text" data-param-name="threshold"/> \
+          </div> \
+        '),
+
+    'VCCHART': jQuery(
+        ' \
+        	<div class="viewer-command-params-entry"> \
+            <span>Number of bins:</span> \
+            <input type="text" size=3 data-param-name="num_bins" value="10"/> \
+          </div> \
+          <div class="viewer-command-params-entry"> \
+            <span>Min:</span> \
+            <input type="text" size=10 data-param-name="min" value="0"/> \
+          </div> \
+          <div class="viewer-command-params-entry"> \
+            <span>Max:</span> \
+            <input type="text" size=10 data-param-name="max" value="0"/> \
+          </div> \
+        ')
+}

@@ -720,48 +720,6 @@ var viewerCommands = {
     display_area_commands: function(data) {
         var viewerID = data.plotId;
 
-        if (jQuery('.viewer-command-container').size() > 0)
-            return;
-
-        container = jQuery(' \
-		    <div class="viewer-command-container"> \
-              <div class="viewer-command-left"> \
-                <ul class="viewer-command-commandlist"> \
-                  <li class="viewer-command-entry" id="VCAVG" data-cmd="average_pixel">Average Pixel</li> \
-                  <li class="viewer-command-entry" id="VCHOT" data-cmd="hot_pixel">Hot Pixel</li> \
-                  <li class="viewer-command-entry" id="VCCHART" data-cmd="chart">Chart</li> \
-                </ul> \
-              </div> \
-              <div class="viewer-command-right"> \
-                <h1 class="viewer-command-params-header">Parameters</h1> \
-                <div id="viewer-command-params"></div> \
-                <button id="viewer-command-execute">Execute Command</button> \
-              </div> \
-            </div> \
-            ');
-
-        var options = {
-            toolbar: {
-                desc: [
-                    new LSST_TB.ToolbarElement(
-                        'close', {
-                            onClick: function(c) {
-                                c.html.remove()
-                            },
-                            parameters: {
-                                html: container
-                            },
-                        }
-                    )
-                ],
-                options: {
-                    bShowOnHover: false
-                }
-            },
-            html: container
-        }
-        popup = new LSST.UI.UIElement(options);
-
         jQuery('body').append(container);
 
         jQuery('.viewer-command-entry').click(function() {

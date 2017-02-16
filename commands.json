@@ -1,122 +1,122 @@
 {
 
-    "average_pixel box_id viewer_id region" : {
+    "average_pixel viewer_id box_id region" : {
 			"description" : "Calculates the average pixel value for the region.",
 			"doc_link" : "https://github.com/lsst-camera-visualization/frontend/wiki#average_pixel"
 		},
-		
+
 		"chart viewer_id region num_bins min max" : {
-		
+
 		},
-		
+
 		"clear_box box_id" : {
 			"description" : "Clears an information box.",
 			"doc_link" : "https://github.com/lsst-camera-visualization/frontend/wiki#clear_box"
 		},
-		
+
 		"clear_viewer viewer_id" : {
 		    "description" : "Clears a viewer.",
 		    "doc_link" : "https://github.com/lsst-camera-visualization/frontend/wiki#clear_viewer"
 		},
-		
+
 	  "create_box box_id" : {
 			"description" : "Creates a new box for displaying information.",
 			"doc_link" : "https://github.com/lsst-camera-visualization/frontend/wiki#create_box"
 		},
-		
+
 		"create_viewer viewer_id [image]" : {
 			"description" : "Creates a new viewer.",
 			"doc_link" : "https://github.com/lsst-camera-visualization/frontend/wiki#create_viewer"
 		},
-		
+
 		"default_box box_id" : {
 		  "description" : "Set the default box."
 		},
-		
+
 		"default_viewer viewer_id" : {
 		  "description" : "Set the default viewer."
 		},
-		
+
 		"delete_box box_id" : {
 			"description" : "Deletes an existing information box.",
 			"doc_link" : "https://github.com/lsst-camera-visualization/frontend/wiki#delete_box"
 		},
-		
+
 		"delete_viewer viewer_id" : {
 			"description" : "Deletes an existing viewer."
 		},
-		
+
 		"hide_box box_id" : {
 			"description" : "Hides an information box.",
 			"doc_link" : "https://github.com/lsst-camera-visualization/frontend/wiki#hide_box"
 		},
-		
+
 		"hide_boundary viewer_id" : {
 			"description" : "Hide the boudary of amplifiers in the specified viewer.",
 			"doc_link" : "https://github.com/lsst-camera-visualization/frontend/wiki#hide_boundary"
 		},
-		
+
 		"hot_pixel viewer_id threshold region" : {
 			"description" : "Calculates the hot pixels within the threshold for the region.",
 			"doc_link" : "https://github.com/lsst-camera-visualization/frontend/wiki#hot_pixel"
 		},
-		
+
 		"load_image viewer_id uri" : {
-		
+
 		},
-		
+
 		"maximize_terminal" : {
-		
+
 		},
-		
+
 		"minimize_terminal" : {
-		
-		},		
-		
+
+		},
+
 		"read_mouse viewer_id box_id" : {
 			"description" : "Tracks the mouse inside of the view \"viewer_id\" and displays the information in the box \"box_id\"."
 		},
-		
+
 		"show_boundary viewer_id" : {
 			"description" : "Show the boudary of amplifiers in the specified viewer.",
 			"doc_link" : "https://github.com/lsst-camera-visualization/frontend/wiki#show_boundary"
 		},
-		
+
 		"show_box box_id" : {
 			"description" : "Shows a hidden information box.",
 			"doc_link" : "https://github.com/lsst-camera-visualization/frontend/wiki#show_box"
 		},
-		
+
 		"show_viewer viewer_id" : {
 			"description" : "Maximizes a viewer and brings it to the front of the window.",
 			"doc_link" : "https://github.com/lsst-camera-visualization/frontend/wiki#show_viewer"
 		},
-		
+
 		"uv_freq viewer_id time_in_millis" : {
 			"description" : "Changes the frequency for checking for new images from the Rest Server.",
 			"doc_link" : "https://github.com/lsst-camera-visualization/frontend/wiki#uv_freq"
 		},
-		
+
 		"uv_load_new viewer_id" : {
 			"description" : "If in a paused LSST.state and there is a new image available, calling this command will load the new image without changing the LSST.state.",
 			"doc_link" : "https://github.com/lsst-camera-visualization/frontend/wiki#uv_load_new"
 		},
-		
+
 		"uv_pause viewer_id" : {
 			"description" : "Pauses the automatic retrieval of new images from the Rest Server.",
 			"doc_link" : "https://github.com/lsst-camera-visualization/frontend/wiki#uv_pause"
 		},
-		
+
 		"uv_resume viewer_id" : {
 			"description" : "Pauses the automatic retrieval of new images from the Rest Server.",
 			"doc_link" : "https://github.com/lsst-camera-visualization/frontend/wiki#uv_resume"
 		},
-		
+
 		"uv_start viewer_id" : {
 			"description" : "Begins the update viewer cycle for a viewer.",
 			"doc_link" : "https://github.com/lsst-camera-visualization/frontend/wiki#uv_start"
 		},
-		
+
 		"uv_update viewer_id" : {
 			"description" : "Updates a viewer immediately, bypassing the update_viewer_freq interval.",
 			"doc_link" : "https://github.com/lsst-camera-visualization/frontend/wikiuv_update"

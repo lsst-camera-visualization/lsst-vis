@@ -12,18 +12,29 @@ LSST.extend('LSST.state')
 
 1. Init of terminal
 2. Commands, as executed by the terminal
-3. Commands, as executed by the viewer toolbar
-
 */
 
 
 jQuery(document).ready(function() {
 
+    // Add the viewer command panel
+    LSST.state.viewerCommandPanel = new LSST.UI.ViewerCommandPanel();
+
     jQuery.getJSON("commands.json", function(data) {
         for (command in data) {
             if (data.hasOwnProperty(command)) {
-                var commandName = LSST_TERMINAL.Utility.SplitStringByWS(command)[0];
+                // [ commandName, params... ]
+                var split = LSST_TERMINAL.Utility.SplitStringByWS(command);
+                var commandName = split[0];
+                var params = split.slice(1);
+
+                // For the terminal
                 data[command].callback = cmds[commandName];
+
+                // For the viewer command panel
+                if (params.indexOf("region") != -1) {
+                    LSST.state.viewerCommandPanel.addCommand(commandName, params, cmds[commandName]);
+                }
             }
         }
 
@@ -83,11 +94,6 @@ jQuery(document).ready(function() {
     }).fail(function(jqXHR, textStatus, errorThrown) {
         console.log("Error loading commands.json: " + errorThrown);
     });
-
-
-    // Add the viewer command panel to the body
-    LSST.state.viewerCommandPanel = new LSST.UI.ViewerCommandPanel();
-
 });
 
 
@@ -420,7 +426,7 @@ cmds = {
         var viewer = LSST.state.viewers.get(viewerID);
 
         var threshold = 'max';
-        if (cmd_args['threshold'] !== 'max') {
+        if (cmd_args['threshold'] != 'max') {
             threshold = parseInt(cmd_args['threshold']);
         }
 
@@ -451,6 +457,7 @@ cmds = {
                     var content = ['circle', 'point', d[1], d[0]].join(' ');
                     regions.push(content);
                 }
+                console.log(regions);
                 viewer.drawRegions(regions, 'Hot Pixels', 'red');
             },
             function(data) {

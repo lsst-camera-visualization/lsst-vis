@@ -454,7 +454,7 @@ cmds = {
                 for (var i = 0; i < data.length; i++) {
                     var d = data[i];
                     // ds9 point format: (circle point x, y)
-                    var content = ['circle', 'point', d[1], d[0]].join(' ');
+                    var content = ['circle', 'point', d[0], d[1]].join(' ');
                     regions.push(content);
                 }
                 console.log(regions);

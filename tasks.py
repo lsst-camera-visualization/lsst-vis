@@ -1,8 +1,11 @@
-from task_scripts.noise import task as task_noise
-from task_scripts.graph_noise import task as task_graph_noise
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.abspath(__file__))+"/task_scripts")
+sys.path.append(os.path.dirname(os.path.abspath(__file__))+"/task_scripts/utility_scripts")
+sys.path.append(os.path.dirname(os.path.abspath(__file__))+"/task_scripts/FITS_Construct")
+from task_scripts.noise import task as task_noise
+from task_scripts.graph_noise import task as task_graph_noise
+
 
 from task_scripts.averagePixel import task as task_average_pixel
 from task_scripts.boundary import task as task_boundary

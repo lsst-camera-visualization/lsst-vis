@@ -17,7 +17,7 @@ def task(filename, task_params):
 				ret = "Region type is not recognized."
 			return {"data":ret.tolist()}, None
 	except Exception as e:
-		return ["Error when computing histogram."], None
+		return ["Error when computing histogram."], e
 # Testing
 if __name__ == "__main__":
 	filename = "http://web.ipac.caltech.edu/staff/roby/demo/wise-m51-band1.fits"

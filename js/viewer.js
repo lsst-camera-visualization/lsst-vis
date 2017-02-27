@@ -18,8 +18,38 @@ LSST.UI.Viewer = function(options) {
 	    <p class='viewer-title'>" + options.name + "</p> \
 	    <div id=" + options.name + " class='viewer-view'></div> \
 	    <div class='viewer-info'> \
-	      <div class='viewer-uv'> \
-	        <p class='viewer-uv-header'>Update Viewer Settings</p> \
+        <div class='viewer-cursorstats'> \
+	        <p class='viewer-info-header'>Cursor Stats</p> \
+          <div class='viewer-cursor-coords-container viewer-info-cursorstats-line'> \
+            <div class='viewer-cursor viewer-cursor-coords'> \
+              <span>Point: (</span> \
+              <span class='viewer-cursorX'></span> \
+              <span>, </span> \
+              <span class='viewer-cursorY'></span> \
+              <span>)</span> \
+            </div> \
+            <div class='viewer-seg viewer-cursor-coords viewer-info-cursorstats-line'> \
+              <span>Segment: (</span> \
+              <span class='viewer-segX'></span> \
+              <span>, </span> \
+              <span class='viewer-segY'></span> \
+              <span>)</span> \
+            </div> \
+          </div> \
+          <br/> \
+          <div class='viewer-regionNameContainer viewer-info-cursorstats-line'> \
+            <span>Region name: </span> \
+            <span class='viewer-regionName'></span> \
+          </div> \
+          <div class='viewer-info-cursorstats-line'> \
+            <span>Selected region: </span> \
+            <span class='viewer-regionSel'></span> \
+          </div> \
+          <p class='viewer-cursorstats-help'>(Shift + click: Select segment region)</p> \
+          <p class='viewer-cursorstats-help'>(Shift + dbl click: Select entire segment)</p> \
+        </div> \
+        <div class='viewer-uv'> \
+	        <p class='viewer-info-header'>Update Viewer Settings</p> \
           <input class='viewer-uv-button viewer-uv-pr' type='button' value='Resume' data-viewerID=" + options.name + "> \
           <input class='viewer-uv-button viewer-uv-un' type='button' value='There are no new images.' data-viewerID=" + options.name + " disabled> \
 	      </div> \
@@ -87,6 +117,25 @@ LSST.UI.Viewer = function(options) {
         this.header = regions;
         this.show_boundary = false;
     }.bind(this));
+
+
+    // Set click event on viewer image, for selecting a region
+    this.html.children("#" + this.name).click(
+        function(e) {
+            if (e.shiftKey) {
+              this.selectedAmp = this.cursorAmpName;
+            }
+        }.bind(this)
+    );
+
+    // Set click event on viewer image, for selecting a region
+    this.html.children("#" + this.name).dblclick(
+        function(e) {
+            if (e.shiftKey) {
+                this.selectedAmp = this.cursorAmpName.substr(0, 5);
+            }
+        }.bind(this)
+    );
 }
 
 // Inherit from LSST.UI.UIElement
@@ -210,6 +259,7 @@ LSST.UI.Viewer.prototype._cursorRead = function(action) {
 
             // Update hoveredSeg, cursorAmp
             this._updateAmpInfo();
+            this._displayAmpInfo();
 
             if (this._onCursorMoveCallback) {
                 this._onCursorMoveCallback(this.cursorPoint);
@@ -274,6 +324,21 @@ LSST.UI.Viewer.prototype._updateAmpInfo = function() {
         this.cursorAmpName += "data";
     }
 }
+
+
+LSST.UI.Viewer.prototype._displayAmpInfo = function() {
+  this.html.find(".viewer-cursorX").text(Math.trunc(this.cursorPoint.x));
+  this.html.find(".viewer-cursorY").text(Math.trunc(this.cursorPoint.y));
+
+  this.html.find(".viewer-segX").text(Math.trunc(this.hoveredSeg.x));
+  this.html.find(".viewer-segY").text(Math.trunc(this.hoveredSeg.y));
+
+  this.html.find(".viewer-regionName").text(this.cursorAmpName);
+
+  this.html.find(".viewer-regionSel").text(this.selectedAmp);
+}
+
+
 
 
 LSST.UI.Viewer.prototype.fetch_boundary = function(callback) {

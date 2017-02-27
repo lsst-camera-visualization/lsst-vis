@@ -9,7 +9,7 @@
 
     float: left;
     display: inline-block;
-    min-width: 700px;
+    min-width: 650px;
     overflow: hidden;
 
     padding: 5px 10px;
@@ -37,7 +37,7 @@
 .viewer-view {
     resize: both;
     overflow: auto;
-    height: 640px;
+    height: 610px;
     width: 100%;
 }
 
@@ -47,22 +47,56 @@
     overflow: auto;
 }
 
+.viewer-info > * {
+  float: left;
+  width: 48%;
+}
+
+.viewer-info * {
+  color: #fff;
+  font-size: 100%;
+  text-align: center;
+}
+
+.viewer-info-cursorstats-line {
+  padding-bottom: 1px;
+  margin-bottom: 3px;
+}
+
+.viewer-cursorstats-help {
+  color: #bbb;
+}
+
+.viewer-cursor {
+  float: left;
+}
+.viewer-seg {
+  float: right;
+}
+
+.viewer-cursor-coords:after {
+  content: " ";
+  clear: both;
+  display: block;
+}
+
+.viewer-regionNameContainer {
+  border-bottom: 1px solid #fff;
+}
+
 .viewer-uv {
   height: 100%;
 
   padding-left: 2%;
   padding-right: 2%;
-
-  font-size: 125%;
 }
 
-.viewer-uv-header {
+.viewer-info-header {
 	padding-top: 10px;
 	padding-bottom: 2px;
 	border-bottom: solid 2px #fff;
-	margin-bottom: 15px;
+	margin-bottom: 10px;
 
-  font-size: 150%;
 	text-align: center;
 	color: #fff;
 }
@@ -72,6 +106,7 @@
   margin-left: auto;
   margin-right: auto;
   margin-bottom: 4px;
-  
+
   font-size: 125%;
+  color: #000;
 }

@@ -219,7 +219,7 @@ cmds = {
         );
     },
 
-    chart: function(cmd_args) {
+    graph_pixel: function(cmd_args) {
         if (!validateParams(cmd_args))
             return;
 
@@ -237,7 +237,7 @@ cmds = {
             max: (cmd_args.max == undefined) ? -1 : parseInt(cmd_args.max),
             region: region.toBackendFormat()
         }
-        executeBackendFunction('chart', LSST.state.viewers.get(cmd_args.viewer_id), params,
+        executeBackendFunction('graph_pixel', LSST.state.viewers.get(cmd_args.viewer_id), params,
             function(data) {
                 var h = LSST.UI.Histogram.FromJSONString(data);
                 h.setFocus(true);

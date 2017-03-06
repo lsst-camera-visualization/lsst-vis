@@ -5,7 +5,7 @@
 			"doc_link" : "https://github.com/lsst-camera-visualization/frontend/wiki#average_pixel"
 		},
 
-		"chart viewer_id region num_bins min max" : {
+		"graph_pixel viewer_id region num_bins min max" : {
 
 		},
 

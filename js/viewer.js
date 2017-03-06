@@ -20,30 +20,23 @@ LSST.UI.Viewer = function(options) {
 	    <div class='viewer-info'> \
         <div class='viewer-cursorstats'> \
 	        <p class='viewer-info-header'>Cursor Stats</p> \
-          <div class='viewer-cursor-coords-container viewer-info-cursorstats-line'> \
-            <div class='viewer-cursor viewer-cursor-coords'> \
-              <span>Point: (</span> \
-              <span class='viewer-cursorX'></span> \
-              <span>, </span> \
-              <span class='viewer-cursorY'></span> \
-              <span>)</span> \
+          <div class='viewer-info-cursorstats-line'> \
+            <div class='viewer-cursor viewer-cursor-line1'> \
+              <span class='viewer-cursor-data'>(</span> \
+              <span class='viewer-cursor-data viewer-cursorX'></span> \
+              <span class='viewer-cursor-data'>, </span> \
+              <span class='viewer-cursor-data viewer-cursorY'></span> \
+              <span class='viewer-cursor-data'>)</span> \
             </div> \
-            <div class='viewer-seg viewer-cursor-coords viewer-info-cursorstats-line'> \
-              <span>Segment: (</span> \
-              <span class='viewer-segX'></span> \
-              <span>, </span> \
-              <span class='viewer-segY'></span> \
-              <span>)</span> \
+            <div class='viewer-regionName-container viewer-cursor-line1 viewer-info-cursorstats-line'> \
+              <span>Name: </span> \
+              <span class='viewer-cursor-data viewer-regionName'></span> \
             </div> \
           </div> \
           <br/> \
-          <div class='viewer-regionNameContainer viewer-info-cursorstats-line'> \
-            <span>Region name: </span> \
-            <span class='viewer-regionName'></span> \
-          </div> \
           <div class='viewer-info-cursorstats-line'> \
             <span>Selected region: </span> \
-            <span class='viewer-regionSel'></span> \
+            <span class='viewer-cursor-data viewer-regionSel'></span> \
           </div> \
           <p class='viewer-cursorstats-help'>(Shift + click: Select segment region)</p> \
           <p class='viewer-cursorstats-help'>(Shift + dbl click: Select entire segment)</p> \
@@ -135,6 +128,17 @@ LSST.UI.Viewer = function(options) {
                 this.selectedAmp = this.cursorAmpName.substr(0, 5);
             }
         }.bind(this)
+    );
+
+    // Set click event to bring up viewer command panel
+    this.html.find(".viewer-regionSel").click(
+      function(e) {
+        vcData = {
+          viewerID : this.name,
+          region : this.convertAmpToRect(this.selectedAmp)
+        }
+        LSST.state.viewerCommandPanel.show(vcData);
+      }.bind(this)
     );
 }
 

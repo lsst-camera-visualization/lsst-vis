@@ -687,6 +687,10 @@ cmds = {
 
 var viewerCommands = {
     display_area_commands: function(data) {
-        LSST.state.viewerCommandPanel.show(data);
+        vcData = {
+          viewerID : data.plotId,
+          region : LSST.UI.Region.Parse(data)
+        }
+        LSST.state.viewerCommandPanel.show(vcData);
     }
 }

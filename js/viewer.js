@@ -38,8 +38,11 @@ LSST.UI.Viewer = function(options) {
             <span>Selected region: </span> \
             <span class='viewer-cursor-data viewer-regionSel'></span> \
           </div> \
-          <p class='viewer-cursorstats-help'>(Shift + click: Select segment region)</p> \
-          <p class='viewer-cursorstats-help'>(Shift + dbl click: Select entire segment)</p> \
+          <div class=viewer-cursorstats-help-container> \
+            <p class='viewer-cursorstats-help'>(Shift + click: Select segment region)</p> \
+            <p class='viewer-cursorstats-help'>(Shift + dbl click: Select entire segment)</p> \
+            <p class='viewer-cursorstats-help'>(Click selected region to bring up command panel)</p> \
+          </div> \
         </div> \
         <div class='viewer-uv'> \
 	        <p class='viewer-info-header'>Update Viewer Settings</p> \

@@ -73,9 +73,6 @@
   text-align: center;
 }
 
-.viewer-regionSel {
-  cursor: pointer;
-}
 
 
 
@@ -86,6 +83,11 @@
 .viewer-info-cursorstats-line {
   padding-bottom: 1px;
   margin-bottom: 3px;
+}
+
+.viewer-cursorstats-help-container {
+  border-top: 1px solid #fff;
+  padding-top: 5px;
 }
 
 .viewer-cursorstats-help {
@@ -107,6 +109,10 @@
 
 .viewer-cursor-data {
   color: #FF1111;
+}
+
+.viewer-regionSel {
+  cursor: pointer;
 }
 
 

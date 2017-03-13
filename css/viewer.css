@@ -108,7 +108,11 @@
 }
 
 .viewer-cursor-data {
-  color: #FF1111;
+  color: #00BFFF;
+}
+
+.viewer-cursorstats-execute {
+  color: #000;
 }
 
 .viewer-regionSel {

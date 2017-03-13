@@ -41,7 +41,7 @@ LSST.UI.Viewer = function(options) {
           <div class=viewer-cursorstats-help-container> \
             <p class='viewer-cursorstats-help'>(Shift + click: Select segment region)</p> \
             <p class='viewer-cursorstats-help'>(Shift + dbl click: Select entire segment)</p> \
-            <p class='viewer-cursorstats-help'>(Click selected region to bring up command panel)</p> \
+            <input type='button' class='viewer-cursorstats-execute' value='Execute command over selected region'> \
           </div> \
         </div> \
         <div class='viewer-uv'> \
@@ -118,31 +118,29 @@ LSST.UI.Viewer = function(options) {
     // Set click event on viewer image, for selecting a region
     this.html.children("#" + this.name).click(
         function(e) {
-            if (e.shiftKey) {
-              this.selectedAmp = this.cursorAmpName;
-            }
+            if (e.shiftKey)
+              this._setSelectedRegion(this.cursorAmpName);
         }.bind(this)
     );
 
     // Set click event on viewer image, for selecting a region
     this.html.children("#" + this.name).dblclick(
         function(e) {
-            if (e.shiftKey) {
-                this.selectedAmp = this.cursorAmpName.substr(0, 5);
-            }
+            if (e.shiftKey)
+                this._setSelectedRegion(this.cursorAmpName.substr(0, 5));
         }.bind(this)
     );
 
     // Set click event to bring up viewer command panel
-    this.html.find(".viewer-regionSel").click(
-      function(e) {
-        vcData = {
-          viewerID : this.name,
-          region : this.convertAmpToRect(this.selectedAmp)
-        }
-        LSST.state.viewerCommandPanel.show(vcData);
-      }.bind(this)
-    );
+    this.html.find(".viewer-cursorstats-execute").click(this._executeOverSelected.bind(this));
+}
+
+LSST.UI.Viewer._data = {
+  selected : {
+    layerName : "Selected Amp",
+    color : "#00BFFF",
+    width : 2
+   }
 }
 
 // Inherit from LSST.UI.UIElement
@@ -158,10 +156,13 @@ LSST.UI.Viewer.prototype.destroy = function() {
 // Draws regions on the viewer.
 // @param regions - An array containing the ds9 regions to draw
 // @param layerName - The name describing the layer for these regions
-LSST.UI.Viewer.prototype.drawRegions = function(regions, layerName, color) {
+// @param color - The color to use
+// @param [opt] width - The width of the line to use
+LSST.UI.Viewer.prototype.drawRegions = function(regions, layerName, color, width = 1) {
     var regions_to_draw = [];
     for (var i = 0; i < regions.length; i++) {
-        regions_to_draw.push('image;' + regions[i] + ' # color=' + color);
+        r = 'image;' + regions[i] + ' # color=' + color + " width=" + width + ";";
+        regions_to_draw.push(r);
     }
 
     if (this._regionLayers.indexOf(layerName) == -1)
@@ -405,9 +406,6 @@ LSST.UI.Viewer.prototype.convertAmpToRect = function(regionName) {
         seg.x = seg.amp_x;
         seg.y = num_y - seg.amp_y - 1;
 
-		console.log(seg.amp_y);
-		console.log(seg.amp_x);
-
         var x1 = seg.x * width,
             y1 = seg.y * height,
             x2 = x1 + width - 1,
@@ -477,6 +475,29 @@ LSST.UI.Viewer.prototype.convertAmpToRect = function(regionName) {
     } else {
         LSST.state.term.lsst_term('echo', 'Incorrect region name.');
     }
+}
+
+LSST.UI.Viewer.prototype._setSelectedRegion = function(name) {
+    this.clearLayer(LSST.UI.Viewer._data.selected.layerName);
+    this.selectedAmp = name;
+    region = this.convertAmpToRect(this.selectedAmp);
+    this.drawRegions([region.toDS9()],
+                      LSST.UI.Viewer._data.selected.layerName,
+                      LSST.UI.Viewer._data.selected.color,
+                      LSST.UI.Viewer._data.selected.width);
+}
+
+LSST.UI.Viewer.prototype._executeOverSelected = function() {
+  if (!this.selectedAmp) {
+    LSST.state.term.lsst_term("error", "Must select a region first.");
+    return;
+  }
+
+  vcData = {
+    viewerID : this.name,
+    region : this.convertAmpToRect(this.selectedAmp)
+  }
+  LSST.state.viewerCommandPanel.show(vcData);
 }
 
 

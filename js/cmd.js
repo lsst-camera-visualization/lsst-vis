@@ -438,7 +438,7 @@ cmds = {
         var regionID = viewerID + '-hotpixel';
         var plotID = viewerID;
 
-        viewer.clear_except_boundary();
+        viewer.clearLayer("Hot Pixel Boundary");
         viewer.drawRegions([region.toDS9()], 'Hot Pixel Boundary', 'yellow');
 
         var region_backend = region.toBackendFormat();
@@ -457,7 +457,7 @@ cmds = {
                     var content = ['circle', 'point', d[0], d[1]].join(' ');
                     regions.push(content);
                 }
-                console.log(regions);
+
                 viewer.drawRegions(regions, 'Hot Pixels', 'red');
             },
             function(data) {

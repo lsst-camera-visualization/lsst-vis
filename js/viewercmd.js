@@ -58,7 +58,7 @@ LSST.inherits(LSST.UI.ViewerCommandPanel, LSST.UI.UIElement);
 
 LSST.UI.ViewerCommandPanel.prototype.show = function(ffData) {
     this.html.css("display", "block");
-    this._ffData = ffData;
+    this._data = ffData;
 
     this._populatePanel();
 }
@@ -175,8 +175,8 @@ LSST.UI.ViewerCommandPanel.prototype._executeCommand = function() {
         params["box_id"] = box;
     });
 
-    params.viewer_id = this._ffData.plotId;
-    params.region = new LSST.UI.Rect(this._ffData.ipt0.x, this._ffData.ipt0.y, this._ffData.ipt1.x, this._ffData.ipt1.y).toCmdLineArrayFormat();
+    params.viewer_id = this._data.viewerID;
+    params.region = this._data.region.toCmdLineArrayFormat();
 
     cb(params);
 

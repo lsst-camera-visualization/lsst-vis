@@ -484,6 +484,10 @@ var LSST_TERMINAL = {
   		getOption("terminalOutput").append(str);
   	}
 
+    var error = function(str) {
+      getOption("terminalOutput").append("ERROR: " + str + "\n");
+    }
+
   	var cmd_clearTerminalHistory = function(cmd_args) {
   		getOption("history").clear();
   		cmd_clear();
@@ -737,6 +741,9 @@ var LSST_TERMINAL = {
     if (typeof request === "string") {
       if (request === "echo") {
         echo(params);
+      }
+      else if (request === "error") {
+        error(params);
       }
       else if (request === "setVariable") {
         setVariable(params);

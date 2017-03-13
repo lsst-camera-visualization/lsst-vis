@@ -18,8 +18,34 @@ LSST.UI.Viewer = function(options) {
 	    <p class='viewer-title'>" + options.name + "</p> \
 	    <div id=" + options.name + " class='viewer-view'></div> \
 	    <div class='viewer-info'> \
-	      <div class='viewer-uv'> \
-	        <p class='viewer-uv-header'>Update Viewer Settings</p> \
+        <div class='viewer-cursorstats'> \
+	        <p class='viewer-info-header'>Cursor Stats</p> \
+          <div class='viewer-info-cursorstats-line'> \
+            <div class='viewer-cursor viewer-cursor-line1'> \
+              <span class='viewer-cursor-data'>(</span> \
+              <span class='viewer-cursor-data viewer-cursorX'></span> \
+              <span class='viewer-cursor-data'>, </span> \
+              <span class='viewer-cursor-data viewer-cursorY'></span> \
+              <span class='viewer-cursor-data'>)</span> \
+            </div> \
+            <div class='viewer-regionName-container viewer-cursor-line1 viewer-info-cursorstats-line'> \
+              <span>Name: </span> \
+              <span class='viewer-cursor-data viewer-regionName'></span> \
+            </div> \
+          </div> \
+          <br/> \
+          <div class='viewer-info-cursorstats-line'> \
+            <span>Selected region: </span> \
+            <span class='viewer-cursor-data viewer-regionSel'></span> \
+          </div> \
+          <div class=viewer-cursorstats-help-container> \
+            <p class='viewer-cursorstats-help'>(Shift + click: Select segment region)</p> \
+            <p class='viewer-cursorstats-help'>(Shift + dbl click: Select entire segment)</p> \
+            <input type='button' class='viewer-cursorstats-execute' value='Execute command over selected region'> \
+          </div> \
+        </div> \
+        <div class='viewer-uv'> \
+	        <p class='viewer-info-header'>Update Viewer Settings</p> \
           <input class='viewer-uv-button viewer-uv-pr' type='button' value='Resume' data-viewerID=" + options.name + "> \
           <input class='viewer-uv-button viewer-uv-un' type='button' value='There are no new images.' data-viewerID=" + options.name + " disabled> \
 	      </div> \
@@ -87,6 +113,34 @@ LSST.UI.Viewer = function(options) {
         this.header = regions;
         this.show_boundary = false;
     }.bind(this));
+
+
+    // Set click event on viewer image, for selecting a region
+    this.html.children("#" + this.name).click(
+        function(e) {
+            if (e.shiftKey)
+              this._setSelectedRegion(this.cursorAmpName);
+        }.bind(this)
+    );
+
+    // Set click event on viewer image, for selecting a region
+    this.html.children("#" + this.name).dblclick(
+        function(e) {
+            if (e.shiftKey)
+                this._setSelectedRegion(this.cursorAmpName.substr(0, 5));
+        }.bind(this)
+    );
+
+    // Set click event to bring up viewer command panel
+    this.html.find(".viewer-cursorstats-execute").click(this._executeOverSelected.bind(this));
+}
+
+LSST.UI.Viewer._data = {
+  selected : {
+    layerName : "Selected Amp",
+    color : "#00BFFF",
+    width : 2
+   }
 }
 
 // Inherit from LSST.UI.UIElement
@@ -102,10 +156,13 @@ LSST.UI.Viewer.prototype.destroy = function() {
 // Draws regions on the viewer.
 // @param regions - An array containing the ds9 regions to draw
 // @param layerName - The name describing the layer for these regions
-LSST.UI.Viewer.prototype.drawRegions = function(regions, layerName, color) {
+// @param color - The color to use
+// @param [opt] width - The width of the line to use
+LSST.UI.Viewer.prototype.drawRegions = function(regions, layerName, color, width = 1) {
     var regions_to_draw = [];
     for (var i = 0; i < regions.length; i++) {
-        regions_to_draw.push('image;' + regions[i] + ' # color=' + color);
+        r = 'image;' + regions[i] + ' # color=' + color + " width=" + width + ";";
+        regions_to_draw.push(r);
     }
 
     if (this._regionLayers.indexOf(layerName) == -1)
@@ -210,6 +267,7 @@ LSST.UI.Viewer.prototype._cursorRead = function(action) {
 
             // Update hoveredSeg, cursorAmp
             this._updateAmpInfo();
+            this._displayAmpInfo();
 
             if (this._onCursorMoveCallback) {
                 this._onCursorMoveCallback(this.cursorPoint);
@@ -276,6 +334,21 @@ LSST.UI.Viewer.prototype._updateAmpInfo = function() {
 }
 
 
+LSST.UI.Viewer.prototype._displayAmpInfo = function() {
+  this.html.find(".viewer-cursorX").text(Math.trunc(this.cursorPoint.x));
+  this.html.find(".viewer-cursorY").text(Math.trunc(this.cursorPoint.y));
+
+  this.html.find(".viewer-segX").text(Math.trunc(this.hoveredSeg.x));
+  this.html.find(".viewer-segY").text(Math.trunc(this.hoveredSeg.y));
+
+  this.html.find(".viewer-regionName").text(this.cursorAmpName);
+
+  this.html.find(".viewer-regionSel").text(this.selectedAmp);
+}
+
+
+
+
 LSST.UI.Viewer.prototype.fetch_boundary = function(callback) {
     executeBackendFunction('boundary', this, {},
         function(data) {
@@ -332,9 +405,6 @@ LSST.UI.Viewer.prototype.convertAmpToRect = function(regionName) {
         seg.amp_y = parseInt(regionName[match.index + 3]);
         seg.x = seg.amp_x;
         seg.y = num_y - seg.amp_y - 1;
-
-		console.log(seg.amp_y);
-		console.log(seg.amp_x);
 
         var x1 = seg.x * width,
             y1 = seg.y * height,
@@ -405,6 +475,29 @@ LSST.UI.Viewer.prototype.convertAmpToRect = function(regionName) {
     } else {
         LSST.state.term.lsst_term('echo', 'Incorrect region name.');
     }
+}
+
+LSST.UI.Viewer.prototype._setSelectedRegion = function(name) {
+    this.clearLayer(LSST.UI.Viewer._data.selected.layerName);
+    this.selectedAmp = name;
+    region = this.convertAmpToRect(this.selectedAmp);
+    this.drawRegions([region.toDS9()],
+                      LSST.UI.Viewer._data.selected.layerName,
+                      LSST.UI.Viewer._data.selected.color,
+                      LSST.UI.Viewer._data.selected.width);
+}
+
+LSST.UI.Viewer.prototype._executeOverSelected = function() {
+  if (!this.selectedAmp) {
+    LSST.state.term.lsst_term("error", "Must select a region first.");
+    return;
+  }
+
+  vcData = {
+    viewerID : this.name,
+    region : this.convertAmpToRect(this.selectedAmp)
+  }
+  LSST.state.viewerCommandPanel.show(vcData);
 }
 
 

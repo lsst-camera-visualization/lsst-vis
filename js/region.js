@@ -56,6 +56,10 @@ LSST.UI.Rect.Parse = function(rect) {
 	if (Array.isArray(rect) && rect.length == 5) {
 		return new LSST.UI.Rect(rect[1], rect[2], rect[3], rect[4]);
 	}
+  else {
+    // Create from Firefly region data
+    return new LSST.UI.Rect(rect.ipt0.x, rect.ipt0.y, rect.ipt1.x, rect.ipt1.y);
+  }
 }
 
 
@@ -118,6 +122,8 @@ LSST.UI.Region.Parse = function(region) {
 		else if (region[0] == 'circ')
 			return LSST.UI.Circ.Parse(region);
 	}
-	
+  else
+    return LSST.UI.Rect.Parse(region);
+
 	return null;
 }

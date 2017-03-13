@@ -118,8 +118,10 @@ LSST.UI.Viewer = function(options) {
     // Set click event on viewer image, for selecting a region
     this.html.children("#" + this.name).click(
         function(e) {
-            if (e.shiftKey)
-              this._setSelectedRegion(this.cursorAmpName);
+            if (e.shiftKey) {
+              setTimeout(function() { this._setSelectedRegion(this.cursorAmpName); }.bind(this), 100);
+              //this._setSelectedRegion(this.cursorAmpName);
+            }
         }.bind(this)
     );
 
@@ -127,7 +129,8 @@ LSST.UI.Viewer = function(options) {
     this.html.children("#" + this.name).dblclick(
         function(e) {
             if (e.shiftKey)
-                this._setSelectedRegion(this.cursorAmpName.substr(0, 5));
+                setTimeout(function() { this._setSelectedRegion(this.cursorAmpName.substr(0,5)); }.bind(this), 100);
+                //this._setSelectedRegion(this.cursorAmpName.substr(0, 5));
         }.bind(this)
     );
 

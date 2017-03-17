@@ -182,7 +182,8 @@ cmds = {
         viewer.clear_except_boundary();
 
         // Draw the region on the viewer
-        viewer.drawRegions([region.toDS9()], 'Average Pixel', 'yellow');
+        var color = '#ff6a00';
+        viewer.drawRegions([region.toDS9()], 'Average Pixel', color);
 
         var boxText = [
             'Processing average_pixel...'
@@ -437,9 +438,10 @@ cmds = {
 
         var regionID = viewerID + '-hotpixel';
         var plotID = viewerID;
+        var color = '#ff6a00';
 
         viewer.clearLayer("Hot Pixel Boundary");
-        viewer.drawRegions([region.toDS9()], 'Hot Pixel Boundary', 'yellow');
+        viewer.drawRegions([region.toDS9()], 'Hot Pixel Boundary', color);
 
         var region_backend = region.toBackendFormat();
         var param_backend = {
@@ -526,17 +528,6 @@ cmds = {
 
         LSST.state.term.lsst_term('echo', 'Boundaries of amplifiers shown by default. Use `hide_boundary` to hide it.');
 
-
-        // Set click event on viewer image, for selecting a region
-        viewer.html.children("#" + viewer.name).click(
-            function(e) {
-                if (e.shiftKey)
-                    viewer.selectedAmp = viewer.cursorAmpName;
-            }
-        );
-
-
-
         boxText = [
             'read_mouse',
             new LSST.UI.BoxText('Viewer', viewerID), [
@@ -586,14 +577,15 @@ cmds = {
         var plotID = viewerID; // ffview as a default
         var regionID = plotID + '-boundary';
         var viewer = LSST.state.viewers.get(viewerID);
+        var color = '#ff0000';
         if (!(viewer.show_boundary)) {
             if (viewer.header) {
-                viewer.drawRegions(viewer.header['regions_ds9'], 'Boundary', 'red');
+                viewer.drawRegions(viewer.header['regions_ds9'], 'Boundary', color);
                 viewer.show_boundary = true;
             } else {
                 viewer.fetch_boundary(function(regions) { // Asynchronous
                     viewer.header = regions;
-                    viewer.drawRegions(regions['regions_ds9'], 'Boundary', 'red');
+                    viewer.drawRegions(regions['regions_ds9'], 'Boundary', color);
                     viewer.show_boundary = true;
                 });
             }

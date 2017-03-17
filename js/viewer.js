@@ -119,8 +119,8 @@ LSST.UI.Viewer = function(options) {
     this.html.children("#" + this.name).click(
         function(e) {
             if (e.shiftKey) {
-              setTimeout(function() { this._setSelectedRegion(this.cursorAmpName); }.bind(this), 100);
-              //this._setSelectedRegion(this.cursorAmpName);
+            //   setTimeout(function() { this._setSelectedRegion(this.cursorAmpName); }.bind(this), 100);
+              this._setSelectedRegion(this.cursorAmpName);
             }
         }.bind(this)
     );
@@ -129,8 +129,8 @@ LSST.UI.Viewer = function(options) {
     this.html.children("#" + this.name).dblclick(
         function(e) {
             if (e.shiftKey)
-                setTimeout(function() { this._setSelectedRegion(this.cursorAmpName.substr(0,5)); }.bind(this), 100);
-                //this._setSelectedRegion(this.cursorAmpName.substr(0, 5));
+                // setTimeout(function() { this._setSelectedRegion(this.cursorAmpName.substr(0,5)); }.bind(this), 100);
+                this._setSelectedRegion(this.cursorAmpName.substr(0, 5));
         }.bind(this)
     );
 
@@ -402,30 +402,31 @@ LSST.UI.Viewer.prototype.convertAmpToRect = function(regionName) {
         var width = header_info['SEG_SIZE']['x'];
         var height = header_info['SEG_SIZE']['y'];
         var boundary = header_info['BOUNDARY_OVERSCAN'];
-        var num_y = header_info['NUM_AMPS']['y']; // Segments origin at top left. Need to flip the Y coordinate for segment coordinate.
+        var num_y = header_info['NUM_AMPS']['y'];
 
         seg.amp_x = parseInt(regionName[match.index + 4]);
         seg.amp_y = parseInt(regionName[match.index + 3]);
+
         seg.x = seg.amp_x;
-        seg.y = num_y - seg.amp_y - 1;
+        seg.y = num_y - seg.amp_y - 1; // Segments origin at top left. Need to flip the Y coordinate for segment coordinate.
 
         var x1 = seg.x * width,
             y1 = seg.y * height,
-            x2 = x1 + width - 1,
-            y2 = y1 + height - 1;
+            x2 = x1 + width,
+            y2 = y1 + height;
         if (!this.overscan) {
             width = header_info['SEG_DATASIZE']['x'];
             height = header_info['SEG_DATASIZE']['y'];
             boundary = header_info['BOUNDARY'];
             x1 = seg.x * width;
-            x2 = x1 + width - 1;
+            x2 = x1 + width;
             y1 = seg.y * height;
-            y2 = y1 + height - 1;
+            y2 = y1 + height;
         } else {
             var overscan_info = header_info['OVERSCAN'];
-            var pre_x = overscan_info['PRE'];
-            var post_x = overscan_info['POST'];
-            var over_y = overscan_info['OVER'];
+            var pre_x = overscan_info['PRE']; // Already inclusive
+            var post_x = overscan_info['POST']; // Minus 1 to be inclusive
+            var over_y = overscan_info['OVER']; // Already inclusive
 
             if (/amp\d\doverscan$/.test(regionName)) {
                 if (boundary[seg.amp_y][seg.amp_x]['reverse_slice']['y']) {
@@ -435,9 +436,9 @@ LSST.UI.Viewer.prototype.convertAmpToRect = function(regionName) {
                 }
             } else if (/amp\d\dpostscan$/.test(regionName)) {
                 if (boundary[seg.amp_y][seg.amp_x]['reverse_slice']['y']) {
-                    y1 = y2 - over_y + 1;
+                    y1 = y2 - over_y;
                 } else {
-                    y2 = y1 + over_y - 1;
+                    y2 = y1 + over_y;
                 }
                 if (boundary[seg.amp_y][seg.amp_x]['reverse_slice']['x']) {
                     x2 = x2 - post_x;
@@ -446,29 +447,27 @@ LSST.UI.Viewer.prototype.convertAmpToRect = function(regionName) {
                 }
             } else if (/amp\d\dprescan$/.test(regionName)) {
                 if (boundary[seg.amp_y][seg.amp_x]['reverse_slice']['y']) {
-                    y1 = y2 - over_y + 1;
+                    y1 = y2 - over_y;
                 } else {
-                    y2 = y1 + over_y - 1;
+                    y2 = y1 + over_y;
                 }
                 if (boundary[seg.amp_y][seg.amp_x]['reverse_slice']['x']) {
-                    x1 = x2 - pre_x + 1;
+                    x1 = x2 - pre_x;
                 } else {
-                    x2 = x1 + pre_x - 1;
+                    x2 = x1 + pre_x;
                 }
             } else if (/amp\d\ddata$/.test(regionName)) {
                 if (boundary[seg.amp_y][seg.amp_x]['reverse_slice']['y']) {
-                    y1 = y2 - over_y + 1;
+                    y1 = y2 - over_y;
                 } else {
-                    y2 = y1 + over_y - 1;
+                    y2 = y1 + over_y;
                 }
                 if (boundary[seg.amp_y][seg.amp_x]['reverse_slice']['x']) {
-                    var temp_x = x2;
-                    x2 = temp_x - pre_x;
-                    x1 = x2 - post_x + 1;
+                    x1 = x2 - post_x;
+                    x2 = x2 - pre_x;
                 } else {
-                    var temp_x = x1;
-                    x1 = temp_x + pre_x;
-                    x2 = temp_x + post_x - 1;
+                    x2 = x1 + post_x;
+                    x1 = x1 + pre_x;
                 }
             } else if (!(/amp\d\d$/.test(regionName))) {
                 LSST.state.term.lsst_term('echo', 'Incorrect region name.');
@@ -476,7 +475,7 @@ LSST.UI.Viewer.prototype.convertAmpToRect = function(regionName) {
         }
         return new LSST.UI.Rect(x1, y1, x2, y2);
     } else {
-        LSST.state.term.lsst_term('echo', 'Incorrect region name.');
+        LSST.state.term.lsst_term('echo', 'invalid region or region name.');
     }
 }
 

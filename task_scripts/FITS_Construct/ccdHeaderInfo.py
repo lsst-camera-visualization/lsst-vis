@@ -30,8 +30,8 @@ def _get_Header_Info(imgHDUs):
     DATASEC = getCoord(first_seg['DATASEC'])
     BIASSEC = getCoord(first_seg['BIASSEC'])
     overscan = max(DATASEC['start_Y'], DATASEC['end_Y']) + 1
-    prescan = min(DATASEC['start_X'], DATASEC['end_X']) + 1
-    postscan = min(BIASSEC['start_X'], BIASSEC['end_X']) + 1
+    prescan = min(DATASEC['start_X'], DATASEC['end_X'])
+    postscan = min(BIASSEC['start_X'], BIASSEC['end_X'])
     boundary = [[{} for x in range(num_X)] for y in range(num_Y)]
     boundary_overscan = [[{} for x in range(num_X)] for y in range(num_Y)]
     # Traverse the list of headers
@@ -57,14 +57,13 @@ def _get_Header_Info(imgHDUs):
         # Add correct offset for each segment.
         boundary[seg_Y_converted][seg_X]['EXTNAME'] = header['EXTNAME']
         boundary_overscan[seg_Y_converted][seg_X] ={
-                                                # NOTE: DS9 box region start from top left corner
                                                 'x':seg_X*seg_dimension[0] + seg_datadim[0]/2,
                                                 'y':seg_Y*seg_dimension[1] + seg_datadim[1]/2,
                                                 'width':seg_datadim[0],
                                                 'height':seg_datadim[1],
                                                 'EXTNAME':header['EXTNAME']
                                                 }
-        boundary_overscan[seg_Y_converted][seg_X]['x'] += seg_bias_Size[0] if is_Slice_Reverse['x'] else (min(seg_datasec['start_X'], seg_datasec['end_X']))
+        boundary_overscan[seg_Y_converted][seg_X]['x'] += seg_bias_Size[0] if is_Slice_Reverse['x'] else (min(seg_datasec['start_X'], seg_datasec['end_X'])) # Bug here.
         boundary_overscan[seg_Y_converted][seg_X]['y'] += (seg_dimension[1]-seg_datadim[1]) if is_Slice_Reverse['y'] else 0
         boundary[seg_Y_converted][seg_X]['index'] = boundary_overscan[seg_Y_converted][seg_X]['index'] = i
         boundary[seg_Y_converted][seg_X]['reverse_slice'] = boundary_overscan[seg_Y_converted][seg_X]['reverse_slice'] = is_Slice_Reverse

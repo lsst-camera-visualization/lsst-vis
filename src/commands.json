@@ -1,5 +1,10 @@
 [
     {
+        "commandName": "average_pixel",
+        "params": [ "viewer_id", "box_id", "region" ]
+    },
+
+    {
         "commandName": "create_box",
         "params": [ "box_id" ]
     },

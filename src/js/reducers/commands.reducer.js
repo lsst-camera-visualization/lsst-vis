@@ -2,7 +2,7 @@ import { Util } from "../util/Util";
 
 const initialState = {
     commands: [],
-    autoCompleteArray: new Util.AutoCompleteArray([], true)
+    autoCompleteArray: new Util.AutoCompleteArray([], false)
 }
 
 const commandsReducer = (state = initialState, action) => {

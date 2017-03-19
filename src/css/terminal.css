@@ -30,10 +30,19 @@
 .term-help-ctr {
   font-size: 150%;
   border-bottom: solid 2px #777;
-  color: #999;
+  color: #888;
   width: 100%;
   margin-bottom: 5px;
   padding: 10px 0px 3px 0px;
+}
+
+.term-help-command {
+    display: inline;
+    color: #888;
+}
+
+.term-help-highlight {
+    color: #FFF;
 }
 
 

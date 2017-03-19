@@ -108,3 +108,28 @@ test("AutoCompleteArray [AutoComplete]", () => {
     expect(a.autoComplete("")).toEqual({ auto: "a", bWhole: false, match: "asdfjkl;" });
     expect(a.autoComplete("average_pixel")).toEqual({ auto: "average_pixel", bWhole: true, match: "average_pixel" });
 })
+
+test("GetWordNumFromCaret", () => {
+    const sentence = "word0 word1 word2   word3";
+
+    expect(Util.GetWordNumFromCaret(sentence, 0)).toBe(0);
+    expect(Util.GetWordNumFromCaret(sentence, 1)).toBe(0);
+    expect(Util.GetWordNumFromCaret(sentence, 5)).toBe(0);
+    expect(Util.GetWordNumFromCaret(sentence, 6)).toBe(1);
+    expect(Util.GetWordNumFromCaret(sentence, sentence.length)).toBe(3);
+    expect(Util.GetWordNumFromCaret(sentence, 17)).toBe(2);
+    expect(Util.GetWordNumFromCaret(sentence, 18)).toBe(3);
+    expect(Util.GetWordNumFromCaret(sentence, 19)).toBe(3);
+    expect(Util.GetWordNumFromCaret(sentence, 20)).toBe(3);
+
+    const sentenceGroup = "word0 (p1 p2)  word3";
+    expect(Util.GetWordNumFromCaret(sentenceGroup, 6)).toBe(1);
+    expect(Util.GetWordNumFromCaret(sentenceGroup, 7)).toBe(1);
+    expect(Util.GetWordNumFromCaret(sentenceGroup, 9)).toBe(1);
+    expect(Util.GetWordNumFromCaret(sentenceGroup, 10)).toBe(1);
+    expect(Util.GetWordNumFromCaret(sentenceGroup, 12)).toBe(1);
+    expect(Util.GetWordNumFromCaret(sentenceGroup, 13)).toBe(1);
+    expect(Util.GetWordNumFromCaret(sentenceGroup, 14)).toBe(2);
+    expect(Util.GetWordNumFromCaret(sentenceGroup, 15)).toBe(2);
+    expect(Util.GetWordNumFromCaret(sentenceGroup, sentenceGroup.length)).toBe(2);
+});

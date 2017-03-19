@@ -65,6 +65,26 @@ export const Util = {
         };
     },
 
+    // Gets the the index of the caret position within the sentence.
+    // ie GetWordNumFromCaret("word1 word2 word3", 0) = 0 ("word1")
+    // ie GetWordNumFromCaret("word1 word2 word3", 9) = 1 ("word2")
+    GetWordNumFromCaret: (str, caretPos, groupBegin = "(", groupEnd = ")") => {
+        let count = 0;
+        let bInGroup = false;
+        for (let i = 1; i <= Math.min(caretPos, str.length); i++) {
+            if (str[i-1] == groupBegin)
+                bInGroup = true;
+            else if (str[i-1] == groupEnd)
+                bInGroup = false;
+
+            if (!bInGroup) {
+                if (str[i-1].match(/\s/) && i > 1 && str[i-2].match(/\S/))
+                    count++;
+            }
+        }
+        return count;
+    },
+
     IsEmptyString: str => {
         return str.match(/^\s*$/) ? true : false;
     },
@@ -113,5 +133,24 @@ export const Util = {
             }
         }
         return str1;
+    }
+}
+
+export const DOMUtil = {
+    // http://stackoverflow.com/questions/2897155/get-cursor-position-in-characters-within-a-text-input-field
+    GetCaretPos: field => {
+      let iCaretPos = 0;
+
+      // IE Support
+      if (document.selection) {
+        field.focus();
+        let oSel = document.selection.createRange();
+        oSel.moveStart('character', -field.value.length);
+        iCaretPos = oSel.text.length;
+      }
+      else if (field.selectionStart || field.selectionStart == '0')
+        iCaretPos = field.selectionStart;
+
+      return iCaretPos;
     }
 }

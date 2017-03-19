@@ -5,7 +5,8 @@ import { Util } from "../util/Util";
 
 const mapStateToProps = (state) => {
     return {
-        terminalHistory: state.terminalHistory
+        terminalHistory: state.terminalHistory,
+        commands: state.commands
     };
 }
 

@@ -3,14 +3,108 @@
         "commandName": "average_pixel",
         "params": [ "viewer_id", "box_id", "region" ]
     },
+    {
+        "commandName": "hot_pixel",
+        "params": [ "viewer_id", "threshold", "region" ]
+    },
+    {
+        "commandName": "graph_pixel",
+        "params": [ "viewer_id", "region", "num_bins", "min", "max" ]
+    },
 
+
+
+    {
+        "commandName": "set_default",
+        "params": [ "param", "new_default_value" ]
+    },
+
+
+
+
+
+
+    {
+        "commandName": "clear_box",
+        "params": [ "box_id" ]
+    },
     {
         "commandName": "create_box",
         "params": [ "box_id" ]
     },
-
     {
         "commandName": "delete_box",
         "params": [ "box_id" ]
+    },
+    {
+        "commandName": "hide_box",
+        "params": [ "box_id" ]
+    },
+    {
+        "commandName": "show_box",
+        "params": [ "box_id" ]
+    },
+
+
+
+
+
+    {
+        "commandName": "clear_viewer",
+        "params": [ "viewer_id" ]
+    },
+    {
+        "commandName": "create_viewer",
+        "params": [ "viewer_id" ]
+    },
+    {
+        "commandName": "delete_viewer",
+        "params": [ "viewer_id" ]
+    },
+    {
+        "commandName": "hide_boundary",
+        "params": [ "viewer_id" ]
+    },
+    {
+        "commandName": "load_image",
+        "params": [ "viewer_id", "url" ]
+    },
+    {
+        "commandName": "show_boundary",
+        "params": [ "viewer_id" ]
+    },
+    {
+        "commandName": "show_viewer",
+        "params": [ "viewer_id" ]
+    },
+
+
+
+
+
+    {
+        "commandName": "uv_freq",
+        "params": [ "viewer_id", "freq_in_millis"]
+    },
+    {
+        "commandName": "uv_loadnew",
+        "params": [ "viewer_id" ]
+    },
+    {
+        "commandName": "uv_pause",
+        "params": [ "viewer_id" ]
+    },
+    {
+        "commandName": "uv_resume",
+        "params": [ "viewer_id" ]
+    },
+    {
+        "commandName": "uv_start",
+        "params": [ "viewer_id" ]
+    },
+    {
+        "commandName": "uv_update",
+        "params": [ "viewer_id" ]
     }
+
 ]

@@ -1,0 +1,11 @@
+[
+    {
+        "commandName": "create_box",
+        "params": [ "box_id" ]
+    },
+
+    {
+        "commandName": "delete_box",
+        "params": [ "box_id" ]
+    }
+]

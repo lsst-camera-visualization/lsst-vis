@@ -1,0 +1,9 @@
+body {
+    background: #494949;
+}
+
+.cmdline-ctr {
+    position: fixed;
+    right: 5px;
+    bottom: 5px;
+}

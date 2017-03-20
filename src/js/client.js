@@ -6,7 +6,7 @@ import reducer from "./reducers";
 
 import { AppCtr } from "./containers/AppCtr";
 import { Util } from "./util/Util";
-import { addCommand } from "./actions/command.actions";
+import { addCommand, executeCommand } from "./actions/command.actions";
 
 let store = createStore(reducer);
 
@@ -18,6 +18,11 @@ Util.LoadJSONFromFile(
     data => { data.map( (command) => store.dispatch(addCommand(command)) ) },
     error => { console.log("Error: ", error); }
 )
+
+window.onFireflyLoaded = function() {
+    const action = { command: "create_viewer", params: [ "ffview" ]};
+    store.dispatch(executeCommand(action));
+}
 
 window.store = store;
 

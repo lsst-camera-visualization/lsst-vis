@@ -3,7 +3,8 @@ import App from "../components/App";
 
 const mapStateToProps = (state) => {
     return {
-        boxes: state.boxes
+        boxes: state.boxes,
+        viewers: state.viewers
     };
 }
 

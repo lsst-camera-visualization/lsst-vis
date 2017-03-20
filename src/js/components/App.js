@@ -2,11 +2,20 @@ import React from "react";
 
 import { TerminalCtr } from "../containers/TerminalCtr";
 import Box from "../components/Box";
+import Viewer from "../components/Viewer";
 
 export default class App extends React.Component {
-    createBoxes() {
-        if (this.props.boxes)
-            return <ul> { this.props.boxes.map( box => <Box key={box.id} name={box.id} /> ) } </ul>
+    createBox = id => {
+        return <Box key={id} name={id} />;
+    }
+
+    createViewer = id => {
+        return <Viewer key={id} name={id} />;
+    }
+
+    createUIElements = (elements, elemGen) => {
+        if (elements)
+            return <ul> { elements.map( e => elemGen(e.id) ) } </ul>
         else
             return null;
     }
@@ -14,7 +23,8 @@ export default class App extends React.Component {
     render() {
         return (
             <div>
-                { this.createBoxes() }
+                { this.createUIElements(this.props.boxes, this.createBox) }
+                { this.createUIElements(this.props.viewers, this.createViewer) }
                 <div className="cmdline-ctr" >
                     <TerminalCtr width={900} height={300} />
                 </div>

@@ -5,7 +5,7 @@ export default class Box extends React.Component {
     render() {
         return (
             <Draggable
-                defaultPosition={{x: 500, y: 100}}
+                defaultPosition={{x: 1000, y: 100}}
                 handle=".box-title" >
                 <div className="box-ctr">
                     <p className="box-title">{this.props.name}</p>

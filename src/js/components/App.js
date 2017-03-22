@@ -15,7 +15,7 @@ export default class App extends React.Component {
 
     createUIElements = (elements, elemGen) => {
         if (elements)
-            return <ul> { elements.map( e => elemGen(e.id) ) } </ul>
+            return <ul style={{position: "absolute"}}> { elements.map( e => elemGen(e.id) ) } </ul>
         else
             return null;
     }

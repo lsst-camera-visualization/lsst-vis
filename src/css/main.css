@@ -7,3 +7,35 @@ body {
     right: 5px;
     bottom: 5px;
 }
+
+.button {
+    display: block;
+    margin: 2px;
+    font-size: 125%;
+}
+
+.col-container {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+}
+
+.col-2 {
+
+}
+
+.col-separator-container {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+}
+
+.col-separator {
+    width: 2px;
+    height: 100%;
+
+    background-color: #FFF;
+}

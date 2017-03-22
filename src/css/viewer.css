@@ -1,3 +1,105 @@
 .viewer-ctr {
-    
+    display: inline-block;
+    min-width: 650px;
+    overflow: hidden;
+
+    padding: 5px 10px;
+    border: solid 4px #000;
+    border-radius: 10px;
+    box-shadow: 5px 5px 15px #000;
+
+    background: #696E6A;
+    background: -webkit-linear-gradient(#696E6A, #292929);
+    background: linear-gradient(#696E6A, #292929);
+}
+
+.viewer-title {
+    font-size: 250%;
+    text-align: center;
+
+    margin-bottom: 15px;
+    padding: 15px 0px 0px 0px;
+
+    border-bottom: 1px solid #000;
+}
+
+.viewer-imgViewer {
+    resize: both;
+    overflow: auto;
+    width: 100%;
+    height: 610px;
+}
+
+
+
+.viewer-info {
+    color: #FFF;
+    margin: 10px 5px 0px 5px;
+}
+
+.viewer-info-panel {
+    padding: 5px;
+    font-size: 125%;
+}
+
+.viewer-info-header {
+    font-size: 125%;
+    width: 100%;
+    border-bottom: 2px solid #FFF;
+    text-align: center;
+    margin-bottom: 10px;
+    padding-bottom: 3px;
+}
+
+
+.viewer-cursorPanel {
+
+}
+
+.viewer-cursorPanel-top-ctr {
+    padding-bottom: 3px;
+    border-bottom: 2px solid #FFF;
+    margin-bottom: 3px;
+}
+
+.viewer-cursorPanel-col {
+    text-align: center;
+}
+
+.viewer-cursorPanel-hovered {
+    text-align: center;
+}
+
+.viewer-cursorPanel-selected {
+    text-align: center;
+}
+
+.viewer-cursorPanel-bottom {
+    text-align: center;
+    color: #aaa;
+    margin-bottom: 1px;
+}
+
+.viewer-cursorPanel-execButton {
+    display: block;
+    margin: 2px auto;
+    font-size: 75%;
+}
+
+
+
+
+.viewer-uvPanel {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+            flex-direction: column;
+
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
 }

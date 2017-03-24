@@ -18,16 +18,14 @@ cat > ${FILENAME} << EOL
 
 
 
-import taskDef
-
 def task(task_params):
-	''' 
-	@author 
-	@param task_params - 
-	@return 
+	'''
+	@author
+	@param task_params -
+	@return
 	'''
 
-	
+
 EOL
 
 

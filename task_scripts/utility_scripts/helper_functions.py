@@ -18,7 +18,7 @@ def valid_boundary(boundary):
     return x_start, x_end, y_start, y_end
 
 def parseRegion_rect(region):
-    slicing = (slice(region['x1'],region['x2']), slice(region['y1'],region['y2']))
+    slicing = (slice(region['y1'],region['y2']), slice(region['x1'],region['x2']))
     return slicing
 
 # a,b is the coordinate (X, Y) of the circle origin.

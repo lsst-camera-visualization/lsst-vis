@@ -3,6 +3,7 @@ import six
 from astropy.io import fits
 from utility_scripts.helper_functions import parseRegion_rect
 
+
 def task(filename, task_params):
     ''' Return a hot pixel in the defined region.
     @author
@@ -25,9 +26,9 @@ def task(filename, task_params):
     region = hdulist[0].data
 
     try:
-        if (region_type=='rect'):
+        if (region_type == 'rect'):
             region_slice = parseRegion_rect(value)
-        elif (region_type=='all'):
+        elif (region_type == 'all'):
             region_slice = slice(None)
         else:
             return ['Input region type not supported.']
@@ -46,16 +47,24 @@ def task(filename, task_params):
         except Exception as e:
             return ["Error reading the input threshold."]
 
-    cols, rows = np.where(region>=threshold)
+    cols, rows = np.where(region >= threshold)
 
     num_points = 500  # Set to 500 so that at most it will return 1000 points
-    num_points = rows.size if num_points>rows.size else num_points
+    if num_points > rows.size:
+        num_points = rows.size
 
-    rows = rows[::rows.size//num_points]
-    cols = cols[::cols.size//num_points]
+    rows = rows[::rows.size // num_points]
+    cols = cols[::cols.size // num_points]
     l = np.zeros((rows.size, 2))
-    l[:,0] = cols + region_slice[0].start
-    l[:,1] = rows + region_slice[1].start
+    l[:, 1] = cols + region_slice[0].start
+    l[:, 0] = rows + region_slice[1].start
 
     hdulist.close()
     return l.tolist(), None
+
+if __name__ == "__main__":
+    threshold = 50
+    filename = 'http://web.ipac.caltech.edu/staff/roby/demo/wise-m51-band1.fits'
+    task_params = {"filename": filename, "threshold": threshold,
+                   "region": {"rect": [150, 150, 200, 200]}}
+    print(task(filename, task_params))

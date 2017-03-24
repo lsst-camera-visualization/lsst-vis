@@ -1,0 +1,37 @@
+
+.button {
+    display: block;
+    margin: 4px auto;
+}
+
+img {
+	opacity: 1.0;
+	filter: alpha(opacity=100); /* For IE8 and earlier */
+}
+
+img:hover {
+	opacity: 0.5;
+	filter: alpha(opacity=50); /* For IE8 and earlier */
+}
+
+
+
+
+#cmd_container {
+	width: 50%;
+	height: 300px;
+
+  position: fixed;
+  bottom: 5px;
+  right: 5px;
+
+  z-index: 999;
+}
+
+#cmd {
+	height: 100%;
+
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+}

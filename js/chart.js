@@ -1,109 +1,149 @@
+LSST.extend('LSST.UI');
 
-var draw_graph = function(canvas) {
-    var chart;
-    chart = nv.models.historicalBarChart();
-    chart
-        .margin({left: 100, bottom: 100})
-        .useInteractiveGuideline(true)
-        .duration(250)
-        ;
-    // chart sub-models (ie. xAxis, yAxis, etc) when accessed directly, return themselves, not the parent chart, so need to chain separately
-    chart.xAxis
-        .axisLabel("Time (s)")
-        .tickFormat(d3.format(',.1f'));
-    chart.yAxis
-        .axisLabel('Voltage (v)')
-        .tickFormat(d3.format(',.2f'));
-    chart.showXAxis(true);
-    // d3.select(svg_id)
-    canvas.append('svg')
-        .datum(sinData())
-        .transition()
-        .call(chart);
-    nv.utils.windowResize(chart.update);
-    chart.dispatch.on('stateChange', function(e) { nv.log('New State:', JSON.stringify(e)); });
-    return chart;
+// Represents a histogram.
+//
+// In order to create a new histogram, one should use one of the following functions (declared at the bottom of the page):
+//		- LSST.UI.Histogram.FromJSONFile
+//		- LSST.UI.Histogram.FromJSONString
+//		- LSST.UI.Histogram.FromObject
+LSST.UI.Histogram = function() {
+
+	this._desc = null;
+
+	options = {};
+	options.name = '_Chart' + LSST.UI.Histogram._count++;
+	// Creates the html of the chart
+	this.html = jQuery(
+		' \
+		<div class="chart"> \
+		  <p class="chart-title"> <span class="chart-title-text" contenteditable="true"></span> </p> \
+			<div id="' + options.name + '" class="chart-body"></div> \
+		</div> \
+		'
+	);
+	// Attach the html skeleton to the body
+	jQuery('body').append(this.html);
+
+	// Draggable settings
+	options.draggable = { 
+	  cancel : ".chart-title .chart-title-text"
+	};
+
+	// Resizable settings
+	options.resizable = {
+		stop : LSST.UI.Histogram.prototype.resize.bind(this),
+		handles : 'se'
+	};
+
+	// Toolbar settings
+	// Close button
+	var closeData = {
+		onClick : this.destroy.bind(this)
+	}
+	var toolbarDesc = [
+		new LSST_TB.ToolbarElement('close', closeData),
+	];
+	var toolbarOptions = {
+		// Only show toolbar when the user hovers over the box.
+		bShowOnHover : true,
+	};
+	options.toolbar = {
+		desc : toolbarDesc,
+		options : toolbarOptions
+	};
+
+	// Init from UIElement
+	LSST.UI.UIElement.prototype._init.call(this, options);
 }
-//Simple test data generators
-function sinAndCos() {
-    var sin = [],
-        cos = [];
-    for (var i = 0; i < 100; i++) {
-        sin.push({x: i, y: Math.sin(i/10)});
-        cos.push({x: i, y: .5 * Math.cos(i/10)});
-    }
-    return [
-        {values: sin, key: "Sine Wave", color: "#ff7f0e"},
-        {values: cos, key: "Cosine Wave", color: "#2ca02c"}
-    ];
+
+// Inherit from LSST.UI.UIElement
+LSST.inherits(LSST.UI.Histogram, LSST.UI.UIElement);
+
+LSST.UI.Histogram._count = 0;
+
+// Initializes this chart. Use the static LSST.UI.Histogram functions to create a histogram, do not use this function directly.
+// @param desc - An object describing the chart.
+//					  It will contain the following properties (* properties are required):
+//						title - The title of the chart, which is displayed to the user.
+//            xAxis - A label for the x axis.
+//						data* - The data that the chart will display.
+LSST.UI.Histogram.prototype.set = function(desc) {
+	this._desc = desc;
+
+  // Set the chart title
+	var title = 'Histogram';
+	if (desc.title)
+		title = desc.title;
+  this.html.find('.chart-title-text').text(title);
+
+  if (desc.xAxis == undefined)
+    desc.xAxis = "x-axis";
+		
+  var containerOffset = this.html.offset();
+  var chartOffset = jQuery('#' + this.name).offset();
+  var totalHeight = this.html.outerHeight();
+  var delta = chartOffset.top - containerOffset.top;
+
+	props = {
+		data : desc.data,
+		width: this.html.width(),
+		height: totalHeight - delta - parseInt(this.html.css('padding-bottom')),
+		logs: 'xy',
+		desc: desc.xAxis,
+		binColor: '#659cef'
+ 	};
+	firefly.util.renderDOM(this.name, firefly.ui.Histogram, props);
 }
-function sinData() {
-    var sin = [];
-    for (var i = 0; i < 100; i++) {
-        sin.push({x: i, y: Math.sin(i/10) * Math.random() * 100});
-    }
-    return [{
-        values: sin,
-        key: "Sine Wave",
-        color: "#ff7f0e"
-    }];
+
+LSST.UI.Histogram.prototype.resize = function() {
+	if (this._desc != null)
+		this.set(this._desc);
 }
 
+// Destroys this histogram.
+LSST.UI.Histogram.prototype.destroy = function() {
+	// Remove the html element from the page
+	this.html.remove();
+}
 
-historicalBarChart = [
-    {
-        key: "Cumulative Return",
-        values: [
-            {
-                "label" : "A" ,
-                "value" : 29.765957771107
-            } ,
-            {
-                "label" : "B" ,
-                "value" : 0
-            } ,
-            {
-                "label" : "C" ,
-                "value" : 32.807804682612
-            } ,
-            {
-                "label" : "D" ,
-                "value" : 196.45946739256
-            } ,
-            {
-                "label" : "E" ,
-                "value" : 0.19434030906893
-            } ,
-            {
-                "label" : "F" ,
-                "value" : 98.079782601442
-            } ,
-            {
-                "label" : "G" ,
-                "value" : 13.925743130903
-            } ,
-            {
-                "label" : "H" ,
-                "value" : 5.1387322875705
-            }
-        ]
-    }
-];
-var draw_graph2 = function(canvas) {
-    var chart = nv.models.discreteBarChart()
-        .x(function(d) { return d.label })
-        .y(function(d) { return d.value })
-        .staggerLabels(true)
-        //.staggerLabels(historicalBarChart[0].values.length > 8)
-        .showValues(true)
-        .duration(250)
-        ;
-    // d3.select('#chart2')
-    canvas.append('svg')
-        .datum(historicalBarChart)
-        .call(chart);
-    nv.utils.windowResize(chart.update);
-    return chart;
-};
+// Creates a histogram from a JSON file.
+// @param file - The JSON file representing this histogram. See LSST.UI.Histogram.FromObject for file formatting.
+// @return The newly created histogram.
+LSST.UI.Histogram.FromJSONFile = function(file) {
+	var h = new LSST.UI.Histogram();
+	var createHisto = function(data) {
+		console.log(data);
+		this.set(data);
+	}
+	var onFail = function(jqXHR, textStatus, errorThrown) {
+		h.html.children('.chart-body').text('Failed to load histogram data from file: ' + file);
+	}
 
-// nv.addGraph(function(){return draw_graph('#test1')});
+	jQuery.getJSON(file, createHisto.bind(h) )
+		.fail(onFail.bind(h));
+
+	return h;
+}
+
+// Creates a histogram from a JSON formatted string.
+// @param str - The JSON formatted string. See LSST.UI.Histogram.FromObject for file formatting.
+// @return The newly created histogram.
+LSST.UI.Histogram.FromJSONString = function(data) {
+	// NOTE: returned data from backend should already be a json file.
+	var h = new LSST.UI.Histogram();
+	h.set(data);
+	return h;
+}
+
+// Creates a histogram from an object, following the chart guidelines.
+// @param desc - An object describing the histogram.
+	//					  It will contain the following properties (* properties are required):
+  //						title - The title of the chart, which is displayed to the user.
+  //            xAxis - A label for the x axis.
+	//						data* - The data that the histogram will display. Check wiki for example link.
+// @return The newly created histogram.
+LSST.UI.Histogram.FromObject = function(desc) {
+	var h = new LSST.UI.Histogram();
+	h.set(desc);
+	return h;
+}

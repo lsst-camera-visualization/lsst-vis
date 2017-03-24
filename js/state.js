@@ -1,58 +1,57 @@
 
-var LSST = {
+LSST.state = {
+	// A list of boxes
+	boxes : new LSST.UI.UIElementList(),
 
-	UIElementList : function() {
+	// A list of viewers
+	viewers : new LSST.UI.UIElementList(),
 	
-		var elements = {};
-	
-		this.add = function(id, obj) {
-			elements[id.toLowerCase()] = obj;
-		}
-		
-		this.remove = function(id) {
-			delete elements[id.toLowerCase()];
-		}
-	
-		this.get = function(id) {
-			return elements[id.toLowerCase()];
-		}
-		
-		this.exists = function(id) {
-			return (id.toLowerCase() in elements);
-		}
-		
-	},
-	
-	state : {
-	
-		// A list of boxes
-		boxes : null,
-	
-		// A list of viewers
-		viewers : null,
-	
-		// A handle to the terminal
-		term : null,
-	
-	},
+	// A list of uv controls
+	uvControls : new LSST.UI.UIElementList(),
 
+	// A handle to the terminal
+	term : null,
+	
+	// Defaults for terminal
+	defaults : {
+	    viewer : null,
+	    box : null,
+	}
 };
 
 var onFireflyLoaded = function() {
-
-	// Create default viewer called 'ffview'
+  // Create default viewer and box
+  console.log("Creating ffview");
 	cmds.create_viewer( { 'viewer_id' : 'ffview' } );
+	console.log("Finished creating ffview");
+	console.log("Creating ffbox");
+	cmds.create_box({'box_id' : 'ffbox'});
+	console.log("Finished creating ffbox");
 };
 
+jQuery(window).bind('beforeunload', function(){
+  LSST.state.term.save();
+});
+
+jQuery(document).ready(function() {
+  // Set the version number
+  jQuery.get("version", function(data) {
+    jQuery("#version").text(data);
+  });
+});
 
 
-var currTopElement = null;
-var onChangeFocus = function() {
-	if (currTopElement)
-		currTopElement.css('z-index', 0);
+// Disable Ctrl + S
+jQuery(window).keydown(
+    function(event) {
+    key = event.keyCode || event.which;
 
-	var dom = jQuery(this);
-	dom.css('z-index', 1);
-	
-	currTopElement = dom;
+    // Ctrl + S, select a region
+    if (key == 83 && event.ctrlKey) {
+        event.preventDefault();
+        return false;
+    }
+    
+    return true;
 }
+);

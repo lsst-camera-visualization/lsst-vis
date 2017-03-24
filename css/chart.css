@@ -1,0 +1,23 @@
+
+.chart {
+	position: absolute;
+	right: 50px;
+	top: 50px;
+
+	width: 600px;
+	height: 400px;
+	
+	border: solid 2px #aaf;
+	padding: 10px;
+	background-color: #fff;	
+}
+
+.chart-title {
+  text-align: center;
+  font-size: 200%;
+  padding-bottom: 5px;
+}
+
+.chart-body {
+  
+}

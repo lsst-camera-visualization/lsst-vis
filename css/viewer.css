@@ -1,0 +1,145 @@
+.viewer {
+	position: absolute;
+	left: 25px;
+	top: 75px;
+
+    font-family: Tahoma, Geneva, Arial, sans-serif;
+    font-size: 1em;
+    color: #000;
+
+    float: left;
+    display: inline-block;
+    min-width: 650px;
+    overflow: hidden;
+
+    padding: 5px 10px;
+    border: solid 4px #000;
+    border-radius: 10px;
+    box-shadow: -5px 5px 15px grey;
+
+    background: #696E6A; /* For browsers that do not support gradients */
+    background: -webkit-linear-gradient(#696E6A, #292929); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(#696E6A, #292929); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(#696E6A, #292929); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(#696E6A, #292929); /* Standard syntax */
+}
+
+.viewer-title {
+    font-size: 2.5em;
+    text-align: center;
+
+    margin-bottom: 15px;
+    padding: 15px 0px 0px 0px;
+
+    border-bottom: 1px solid #000;
+}
+
+.viewer-view {
+    resize: both;
+    overflow: auto;
+    height: 610px;
+    width: 100%;
+}
+
+
+
+
+
+
+.viewer-info {
+    padding: 3px 5px 5px 5px;
+    margin-top: 10px;
+    overflow: auto;
+}
+
+.viewer-info-header {
+	padding-top: 10px;
+	padding-bottom: 2px;
+	border-bottom: solid 2px #fff;
+	margin-bottom: 10px;
+
+	text-align: center;
+	color: #fff;
+}
+
+.viewer-info > * {
+  float: left;
+  width: 48%;
+}
+
+.viewer-info * {
+  color: #fff;
+  font-size: 100%;
+  text-align: center;
+}
+
+
+
+
+
+
+
+
+.viewer-info-cursorstats-line {
+  padding-bottom: 1px;
+  margin-bottom: 3px;
+}
+
+.viewer-cursorstats-help-container {
+  border-top: 1px solid #fff;
+  padding-top: 5px;
+}
+
+.viewer-cursorstats-help {
+  color: #bbb;
+}
+
+.viewer-cursor {
+  float: left;
+}
+.viewer-regionName-container {
+  float: right;
+}
+
+.viewer-cursor-line1:after {
+  content: " ";
+  clear: both;
+  display: block;
+}
+
+.viewer-cursor-data {
+  color: #00BFFF;
+}
+
+.viewer-cursorstats-execute {
+  color: #000;
+}
+
+.viewer-regionSel {
+  cursor: pointer;
+}
+
+
+
+
+
+
+
+
+
+.viewer-uv {
+  height: 100%;
+
+  padding-left: 2%;
+  padding-right: 2%;
+}
+
+.viewer-uv-button {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 4px;
+
+  font-size: 125%;
+  color: #000;
+}

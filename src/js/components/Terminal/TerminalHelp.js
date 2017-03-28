@@ -26,8 +26,15 @@ export default class TerminalHelp extends React.Component {
         const split = Util.SplitStringByWS(str);
 
         const list = split.map((e, i) => {
-            if (i == index)
+            if (i === index) {
+                // We are highlighting a parameter
+                if (i > 0)
+                    this.props.onHighlightParameter(split[i]);
+                else
+                    this.props.onHighlightParameter(null);
+
                 return <span key={i} className={className}>{split[i]} </span>;
+            }
             else
                 return <span key={i}>{split[i]} </span>
         });

@@ -65,16 +65,25 @@ export default class Terminal extends React.Component {
         this.handleKeyUp();
     }
 
+    handleMove = (e, direction) => {
+        const entry = this.props.terminal[direction]();
+        e.target.value = entry;
+    }
+
     handleKeyDown = e => {
         const ENTER_CHAR_CODE = 13;
         const TAB_CHAR_CODE = 9;
+        const UP_CHAR_CODE = 38;
+        const DOWN_CHAR_CODE = 40;
 
-        if (e.charCode === ENTER_CHAR_CODE || e.keyCode === ENTER_CHAR_CODE) {
+        if (e.charCode === ENTER_CHAR_CODE || e.keyCode === ENTER_CHAR_CODE)
             this.handleEnter(e);
-        }
-        else if (e.charCode === TAB_CHAR_CODE || e.keyCode === TAB_CHAR_CODE) {
+        else if (e.charCode === TAB_CHAR_CODE || e.keyCode === TAB_CHAR_CODE)
             this.handleTab(e);
-        }
+        else if (e.charCode === UP_CHAR_CODE || e.keyCode === UP_CHAR_CODE)
+            this.handleMove(e, "up");
+        else if (e.charCode === DOWN_CHAR_CODE || e.keyCode === DOWN_CHAR_CODE)
+            this.handleMove(e, "down");
     }
 
     handleKeyUp = e => {

@@ -1,21 +1,22 @@
 import React from "react";
 
-import { TerminalCtr } from "../containers/TerminalCtr";
-import Box from "../components/Box";
-import Viewer from "../components/Viewer";
+import TerminalCtr from "../containers/Terminal.container";
+import BoxCtr from "../containers/Box.container";
+import ViewerCtr from "../containers/Viewer.container";
+import { Util } from "../util/Util";
 
 export default class App extends React.Component {
-    createBox = id => {
-        return <Box key={id} name={id} />;
+    createBox = e => {
+        return <BoxCtr key={e.id} id={e.id} />;
     }
 
-    createViewer = id => {
-        return <Viewer key={id} name={id} />;
+    createViewer = e => {
+        return <ViewerCtr key={e.id} id={e.id} />;
     }
 
     createUIElements = (elements, elemGen) => {
         if (elements)
-            return <ul style={{position: "absolute"}}> { elements.map( e => elemGen(e.id) ) } </ul>
+            return <ul style={{position: "absolute"}}> { Util.ObjectMap(elements, elemGen) } </ul>
         else
             return null;
     }

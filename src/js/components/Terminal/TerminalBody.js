@@ -4,7 +4,7 @@ export default class TerminalBody extends React.Component {
     createHistory = () => {
         return (
             <ul>
-                { this.props.terminalHistory.map(
+                { this.props.terminal.history.map(
                     (entry, i) =>
                         <li className="term-body-entry" key={i} >{"~> " + entry}</li>
                     )

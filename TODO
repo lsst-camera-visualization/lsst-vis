@@ -1,0 +1,6 @@
+- Update backend functions
+    - average_pixel should be renamed to average_pixel from average
+    - original_image_url in FireflyUtil
+    - parameters passed in from frontend need to be fixed
+        - average_pixel should become { region : {type, value} }
+        - image_url should be renamed _imageURL

@@ -1,15 +1,16 @@
 import React from "react";
-import Draggable from 'react-draggable';
+import Draggable from "react-draggable";
+import BoxBody from "./Box/BoxBody";
 
 export default class Box extends React.Component {
     render() {
+        const id = this.props.id;
         return (
             <Draggable
-                defaultPosition={{x: 1000, y: 100}}
                 handle=".box-title" >
                 <div className="box-ctr">
-                    <p className="box-title">{this.props.name}</p>
-                    <div className="box-body">{this.props.children}</div>
+                    <p className="box-title">{id}</p>
+                    <BoxBody text={this.props.boxes[id].text}/>
                 </div>
             </Draggable>
         );

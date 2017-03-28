@@ -1,6 +1,0 @@
-- Rename average pixel in backend
-- Change backend task params
-    - image_url should become _imageURL
-- Tab parameters
-- Terminal history
-    - And save it

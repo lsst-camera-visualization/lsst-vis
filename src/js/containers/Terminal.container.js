@@ -5,6 +5,8 @@ import { Util } from "../util/Util";
 
 const mapStateToProps = (state) => {
     return {
+        boxes: state.boxes,
+        viewers: state.viewers,
         terminal: state.terminal,
         commands: state.commands,
         commandDispatcher: state.commandDispatcher

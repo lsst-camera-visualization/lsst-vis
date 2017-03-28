@@ -9,7 +9,7 @@ Filesystem:
         css/ - CSS files
         js/ - JavaScript Files
             actions/ - Redux action creators
-            commands/ - Terminal command
+            commands/ - Terminal commands
             components/ - React components
             containers/ - Redux containers for React components
             reducers/ - Redux reducers

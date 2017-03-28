@@ -1,41 +1,29 @@
-
-
-const viewerExists = (state, id) => {
-    for (let i = 0; i < state.length; i++)
-        if (state[i].id == id)
-            return true;
-    return false;
-}
+import { ReducerUtil } from "../util/ReducerUtil";
+import { LSSTUtil } from "../util/LSSTUtil";
 
 const executeViewerCommand = (state, action) => {
     const id = action.payload.params[0];
     if (!id)
         return state;
 
-    const bExists = viewerExists(state, id);
-
+    const viewer = state[id];
     switch (action.payload.command) {
         case "create_viewer":
-            if (bExists)
+            if (viewer)
                 return state;
 
-            let newState = state.slice();
-            newState.push({id});
-            return newState;
+            return ReducerUtil.AddElement(state, id, new LSSTUtil.Viewer(id));
 
         case "delete_viewer":
-            if (bExists) {
-                let newState = state.slice();
-                newState.splice(newState.indexOf(id), 1);
-                return newState;
-            }
+            if (viewer)
+                return ReducerUtil.RemoveElement(state, id);
     }
 
     return state;
 }
 
 
-const viewerReducer = (state = [], action) => {
+const viewerReducer = (state = {}, action) => {
     switch (action.type) {
         case "EXECUTE_COMMAND":
             return executeViewerCommand(state, action);

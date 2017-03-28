@@ -1,0 +1,29 @@
+Extension types:
+    *.commands.js - Commands to be entered through the terminal
+    *.actions.js - Redux action creators
+    *.container.js - Redux containers for React components
+    *.reducer.js - Redux reducers
+
+Filesystem:
+    src/ - Source code
+        css/ - CSS files
+        js/ - JavaScript Files
+            actions/ - Redux action creators
+            commands/ - Terminal command
+            components/ - React components
+            containers/ - Redux containers for React components
+            reducers/ - Redux reducers
+            util/ - Utility files
+            client.js - Application entrance
+    client.min.js - Minified ES5 code that will run on the browser
+    commands.json - Terminal command descriptions
+    index.html - HTML file
+
+How to implement a new command:
+    1. Make action creator (*.actions.js)
+    2. Add command dispatcher (*.commands.js)
+    3. Add command entry to commandDispatcher.js
+    4. Implement command in reducer (*.reducer.js)
+
+To remove logger:
+    Set bUseLogger to false in client.js

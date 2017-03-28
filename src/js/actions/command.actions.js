@@ -1,17 +1,37 @@
 
 
-// payload = { command : String, params : map<String|Array<String>> }
-export const executeCommand = (payload) => {
+export const setCommandDispatcher = dispatcher => {
     return {
-        type: "EXECUTE_COMMAND",
-        payload
+        type: "SET_COMMAND_DISPATCHER",
+        dispatcher
     }
 }
 
-// payload = { commandName : String, params : Array<String> }
-export const addCommand = payload => {
+export const addCommand = (commandName, params) => {
     return {
         type: "ADD_COMMAND",
-        payload
+        payload: {
+            commandName,
+            params
+        }
+    }
+}
+
+export const addCommandToHistory = plainInput => {
+    return {
+        type: "ADD_COMMAND_TO_HISTORY",
+        payload: {
+            plainInput
+        }
+    }
+}
+
+export const executeCommand = (command, params) => {
+    return {
+        type: "EXECUTE_COMMAND",
+        payload: {
+            command,
+            params
+        }
     }
 }

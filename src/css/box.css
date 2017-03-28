@@ -6,6 +6,9 @@
     box-shadow: 5px 5px 15px #0D0D0D;
     min-width: 300px;
     min-height: 200px;
+    position: absolute;
+    left: 1000px;
+    top: 100px;
 }
 
 /*148DD9*/
@@ -14,4 +17,22 @@
     color: #FFFFFF;
     font-size: 250%;
     padding: 5px;
+}
+
+
+.box-body {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+            flex-direction: column;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+}
+
+.box-body > * {
+    font-size: 150%;
 }

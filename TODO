@@ -5,5 +5,4 @@
         - average_pixel should become { region : {type, value} }
         - image_url should be renamed _imageURL
 
-- Terminal parameter tabbing
-- Terminal history
+- Save state to history

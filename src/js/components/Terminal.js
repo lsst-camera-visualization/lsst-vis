@@ -39,17 +39,28 @@ export default class Terminal extends React.Component {
         e.preventDefault();
 
         const defaults = this.props.terminal.defaults;
+        const input = e.target.value;
         if (this._param === null) {
-            const ac = this.props.commands.autoCompleteArray.autoComplete(e.target.value);
+            // Entering the command name
+            const ac = this.props.commands.autoCompleteArray.autoComplete(input);
             if (ac.auto) {
                 e.target.value = ac.auto + (ac.bWhole ? " " : "");
             }
         }
-        else if (this._param in defaults) {
-            e.target.value += defaults[this._param] + " ";
+        else {
+            if (input.match(/\s$/)) {
+                if (this._param in defaults)
+                    e.target.value += defaults[this._param] + " ";
+            }
+            else if (this._param in this._autoParams) {
+                const curr = input.match(/\w+$/)[0];
+                const ac = this._autoParams[this._param].autoComplete(curr);
+                if (ac.auto)
+                    e.target.value += ac.auto.substr(curr.length) + " ";
+            }
         }
 
-        // Update caret pos and stuff
+        // Simulate a key press
         this.handleChange();
         this.handleKeyUp();
     }
@@ -77,6 +88,13 @@ export default class Terminal extends React.Component {
 
     handleHighlightParameter = param => {
         this._param = param;
+    }
+
+    componentWillUpdate() {
+        this._autoParams = {
+            box_id: new Util.AutoCompleteArray(Util.ObjectToArray(this.props.boxes)),
+            viewer_id: new Util.AutoCompleteArray(Util.ObjectToArray(this.props.viewers))
+        }
     }
 
     render() {

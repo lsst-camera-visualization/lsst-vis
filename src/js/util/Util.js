@@ -113,6 +113,16 @@ export const Util = {
         xhr.send();
     },
 
+    ObjectKeyMap: (object, f) => {
+        let array = [];
+        for (const key in object) {
+            if (object.hasOwnProperty(key)) {
+                array.push(f(key));
+            }
+        }
+        return array;
+    },
+
     ObjectMap: (object, f) => {
         let array = [];
         for (const key in object) {
@@ -121,6 +131,10 @@ export const Util = {
             }
         }
         return array;
+    },
+
+    ObjectToArray: object => {
+        return Util.ObjectKeyMap(object, key => key);
     },
 
     SplitStringByWS: str => {

@@ -5,6 +5,7 @@ Extension types:
     *.reducer.js - Redux reducers
 
 Filesystem:
+    __tests__/ - Test files
     src/ - Source code
         css/ - CSS files
         js/ - JavaScript Files

@@ -3,7 +3,7 @@ import { executeCommand, addCommandToHistory } from "../actions/command.actions"
 import Terminal from "../components/Terminal";
 import { Util } from "../util/Util";
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
     return {
         boxes: state.boxes,
         viewers: state.viewers,
@@ -13,7 +13,7 @@ const mapStateToProps = (state) => {
     };
 }
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
     return {
         onExecute: input => {
             dispatch(addCommandToHistory(input));

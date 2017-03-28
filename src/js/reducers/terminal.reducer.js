@@ -6,7 +6,7 @@ const terminalReducer = (state = initialState, action) => {
     switch (action.type) {
         case "ADD_COMMAND_TO_HISTORY":
             let newState = state.clone();
-            newState.history.push(action.payload.plainInput);
+            newState.addEntry(action.payload.plainInput);
             return newState;
 
         default:

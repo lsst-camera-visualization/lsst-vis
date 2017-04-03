@@ -51,11 +51,17 @@ export const LSSTUtil = {
             this.clearText();
         }
 
-        clearText() {
+        loadFromState = state => {
+            this.id = state.id;
+            this.clearText();
+            return this;
+        }
+
+        clearText = () => {
             this.text = [];
         }
 
-        setText(text) {
+        setText = text => {
             this.text.push(text);
         }
     },
@@ -75,9 +81,18 @@ export const LSSTUtil = {
         constructor(history = [], defaults = {}) {
             this.history = history;
             this.defaults = defaults;
-            this.index = this.history.length - 1;
-            this._MAXLENGTH = 3;
+            this.index = this.history.length;
+            this._MAXLENGTH = 50;
         }
+
+        loadFromState = state => {
+            this.history = state.history.slice();
+            this.defaults = Object.assign({...state.defaults}, {});
+            this.index = state.index;
+            this._MAXLENGTH = 50;
+            return this;
+        }
+
 
         clone = () => {
             let c = new LSSTUtil.Terminal();
@@ -96,7 +111,7 @@ export const LSSTUtil = {
             const length = this.history.length;
             if (length > this._MAXLENGTH)
                 this.history = this.history.slice(length - this._MAXLENGTH, length);
-            
+
             this.index = this.history.length;
         }
 

@@ -20,6 +20,7 @@ export const Util = {
         return alpha;
     },
 
+    // Provides auto complete capability to an array.
     AutoCompleteArray: class {
         constructor(arr, allowEmptyMatch = false) {
             this._arr = Util.AlphabetizeArray(arr);
@@ -66,6 +67,7 @@ export const Util = {
         };
     },
 
+    // foreach loop utility for arrays.
     Foreach: (array, f) => {
         for (let i = 0; i < array.length; i++) {
             f(array[i], i);
@@ -92,10 +94,12 @@ export const Util = {
         return count;
     },
 
+    // Returns true for strings with length 0, or only containing whitespace.
     IsEmptyString: str => {
         return str.match(/^\s*$/) ? true : false;
     },
 
+    // Loads JSON data from a file.
     LoadJSONFromFile: (path, success, error) => {
         let xhr = new XMLHttpRequest();
         xhr.onreadystatechange = () => {
@@ -113,6 +117,7 @@ export const Util = {
         xhr.send();
     },
 
+    // Foreach utility for the keys of an object.
     ObjectKeyMap: (object, f) => {
         let array = [];
         for (const key in object) {
@@ -123,6 +128,7 @@ export const Util = {
         return array;
     },
 
+    // Foreach utility for the values of an object.
     ObjectMap: (object, f) => {
         let array = [];
         for (const key in object) {
@@ -133,14 +139,17 @@ export const Util = {
         return array;
     },
 
+    // Creates an array out of the keys of the object (no guaranteed ordering).
     ObjectToArray: object => {
         return Util.ObjectKeyMap(object, key => key);
     },
 
+    // Splits a string by whitespace characters.
     SplitStringByWS: str => {
         return str.match(/\S+/g) || [];
     },
 
+    // Splits a string by groups (whitespace or between $begin$ and $end$).
     SplitStringByGroup: (str, begin = "(", end = ")") => {
         const rSplitWhole = new RegExp("(\\" + begin + ".*?\\" + end + ")|\\S+", "g");
         const rSplitGroup = new RegExp("\\" + begin + "|\\" + end, "g");
@@ -154,6 +163,8 @@ export const Util = {
                 });
     },
 
+    // Returns the closest match to both strings.
+    // ie: StringSimilarity("avereeee", "average") = "aver"
     StringSimilarity: (str1, str2) => {
         for (var i = 0; i < str1.length; i++) {
             const start = str1.substr(0, i + 1);
@@ -168,20 +179,45 @@ export const Util = {
 }
 
 export const DOMUtil = {
+    // Gets the caret position of an input field.
     // http://stackoverflow.com/questions/2897155/get-cursor-position-in-characters-within-a-text-input-field
     GetCaretPos: field => {
-      let iCaretPos = 0;
+        let iCaretPos = 0;
 
-      // IE Support
-      if (document.selection) {
-        field.focus();
-        let oSel = document.selection.createRange();
-        oSel.moveStart('character', -field.value.length);
-        iCaretPos = oSel.text.length;
-      }
-      else if (field.selectionStart || field.selectionStart === '0')
-        iCaretPos = field.selectionStart;
+        // IE Support
+        if (document.selection) {
+            field.focus();
+            let oSel = document.selection.createRange();
+            oSel.moveStart('character', -field.value.length);
+            iCaretPos = oSel.text.length;
+        }
+        else if (field.selectionStart || field.selectionStart === 0)
+            iCaretPos = field.selectionStart;
 
-      return iCaretPos;
+        return iCaretPos;
+    },
+
+    // Sets the caret position of an input field.
+    // http://stackoverflow.com/questions/512528/set-keyboard-caret-position-in-html-textbox
+    SetCaretPos: (field, caretPos) => {
+        // Uses a 0 second timer because we must wait for the input dom to render the new text.
+        window.setTimeout( () => {
+            if (field !== null) {
+                if (field.createTextRange) {
+                    let range = field.createTextRange();
+                    range.move('character', caretPos);
+                    range.select();
+                }
+                else {
+                    if (field.setSelectionRange) {
+                        field.focus();
+                        field.setSelectionRange(caretPos, caretPos);
+                    }
+                    else
+                        field.focus();
+                }
+            }
+        },
+        0);
     }
 }

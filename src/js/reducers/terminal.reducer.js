@@ -1,6 +1,7 @@
 import { LSSTUtil } from "../util/LSSTUtil";
 
-const initialState = new LSSTUtil.Terminal([], { viewer_id: "ffview", box_id: "ffbox" });
+const lastState = JSON.parse(localStorage.getItem("state")).terminal;
+const initialState = new LSSTUtil.Terminal().loadFromState(lastState);
 
 const terminalReducer = (state = initialState, action) => {
     switch (action.type) {

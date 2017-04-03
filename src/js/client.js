@@ -22,6 +22,11 @@ const store = createStore(
   applyMiddleware(...middleware)
 )
 
+// Save the state to local storage on any change
+store.subscribe( () => {
+    localStorage.setItem("state", JSON.stringify(store.getState()));
+});
+
 const app = document.getElementById("app");
 
 // Load commands

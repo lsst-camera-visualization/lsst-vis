@@ -37,7 +37,6 @@ const commands = {
 
 
 
-
 const initialState = {
     "ffbox": new LSSTUtil.Box("ffbox")
 }

@@ -2,6 +2,7 @@ import React from "react";
 
 import TerminalHelp from "./Terminal/TerminalHelp";
 import TerminalBody from "./Terminal/TerminalBody";
+import TerminalInput from "./Terminal/TerminalInput";
 import { Util, DOMUtil } from "../util/Util";
 import { LSSTUtil } from "../util/LSSTUtil";
 
@@ -13,13 +14,22 @@ export default class Terminal extends React.Component {
         };
     }
 
+    // Sets a ref to the input DOM
+    setInput = input => {
+        this.input = input;
+    }
+
+    // On mouse click handler
     handleClick = () => {
+        // Put focus on the input when we click anywhere on the terminal
         this.input.focus();
     }
 
-    handleEnter = e => {
-        if (!Util.IsEmptyString(e.target.value)) {
-            const input = e.target.value;
+
+
+    // Execute command handler
+    handleEnter = input => {
+        if (!Util.IsEmptyString(input)) {
             this.props.onExecute(input);
 
             let groups = Util.SplitStringByGroup(input);
@@ -30,11 +40,11 @@ export default class Terminal extends React.Component {
             this.props.commandDispatcher.dispatch(command, params);
 
             // Clear the user input
-            e.target.value = "";
             this.setState({input: ""});
         }
     }
 
+    // Autocomplete handler
     handleTab = e => {
         e.preventDefault();
 
@@ -61,40 +71,48 @@ export default class Terminal extends React.Component {
         }
 
         // Simulate a key press
-        this.handleChange();
-        this.handleKeyUp();
+        this.handleChange(e);
+        this.handleKeyUp(e);
     }
 
+
+
+    // Terminal history handler
+    // Direction must be "up" or "down"
     handleMove = (e, direction) => {
+        e.persist();
+
+        // Update the input with the correct entry from the terminal history.
         const entry = this.props.terminal[direction]();
         e.target.value = entry;
+        DOMUtil.SetCaretPos(this.input, entry.length);
     }
 
+
+    // Key down handler
     handleKeyDown = e => {
-        const ENTER_CHAR_CODE = 13;
-        const TAB_CHAR_CODE = 9;
         const UP_CHAR_CODE = 38;
         const DOWN_CHAR_CODE = 40;
 
-        if (e.charCode === ENTER_CHAR_CODE || e.keyCode === ENTER_CHAR_CODE)
-            this.handleEnter(e);
-        else if (e.charCode === TAB_CHAR_CODE || e.keyCode === TAB_CHAR_CODE)
-            this.handleTab(e);
-        else if (e.charCode === UP_CHAR_CODE || e.keyCode === UP_CHAR_CODE)
+        if (e.charCode === UP_CHAR_CODE || e.keyCode === UP_CHAR_CODE)
             this.handleMove(e, "up");
         else if (e.charCode === DOWN_CHAR_CODE || e.keyCode === DOWN_CHAR_CODE)
             this.handleMove(e, "down");
     }
 
+    // Key up handler
     handleKeyUp = e => {
-        this.setState({ caretPos: DOMUtil.GetCaretPos(this.input) });
+        this.setState({ caretPos: DOMUtil.GetCaretPos(e.target) });
     }
 
+    // Input change handler
     handleChange = e => {
         // Save the user input
-        this.setState({input: this.input.value});
+        this.setState({input: e.target.value});
     }
 
+
+    // Highlight help parameter handler
     handleHighlightParameter = param => {
         this._param = param;
     }
@@ -120,15 +138,13 @@ export default class Terminal extends React.Component {
                     input={this.state.input}
                     caretPos={this.state.caretPos} />
                 <TerminalBody terminal={this.props.terminal}/>
-                <input
-                    className="term-input-input"
-                    ref={ input => this.input = input }
-                    placeholder="Enter command here"
+                <TerminalInput
+                    onChange={this.handleChange}
                     onKeyDown={this.handleKeyDown}
                     onKeyUp={this.handleKeyUp}
-                    onChange={this.handleChange}
-                    autoFocus
-                />
+                    onEnter={this.handleEnter}
+                    onTab={this.handleTab}
+                    setInput={this.setInput} />
             </div>
         );
     }

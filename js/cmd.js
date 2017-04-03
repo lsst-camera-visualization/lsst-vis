@@ -79,6 +79,11 @@ jQuery(document).ready(function() {
                     "(rect 1000 1200 3000 3200)",
                     "sel",
                     "amp06data"
+                ],
+                "[scale]": [
+                    "(Default value: lin)",
+                    "log : (For logarithmic scaling)",
+                    "lin : (For linear scaling)"
                 ]
             }
 
@@ -239,6 +244,10 @@ cmds = {
         }
         executeBackendFunction('graph_pixel', LSST.state.viewers.get(cmd_args.viewer_id), params,
             function(data) {
+                data.scale = {
+                    x: (cmd_args["[scale]"] === "log") ? "log" : "lin",
+                    y: "lin"
+                }
                 var h = LSST.UI.Histogram.FromJSONString(data);
                 h.setFocus(true);
             },

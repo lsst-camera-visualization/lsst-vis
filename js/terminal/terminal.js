@@ -649,7 +649,7 @@ var LSST_TERMINAL = {
 	      examplesDOM.append(jQuery("<p>").text("Examples for " + currParam + " parameter:"));
 	      for (var i = 0; i < currExamples.length; i++) {
 	        var e = currExamples[i];
-	        examplesDOM.append(jQuery("<p>").text(e));
+	        examplesDOM.append(jQuery("<p>").text("- " + e));
 	      }
 	      var height = examplesDOM.outerHeight(true);
 	      var offset = getOption("terminalHelpDOM").children(".cmd_highlight").offset();

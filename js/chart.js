@@ -25,7 +25,7 @@ LSST.UI.Histogram = function() {
 	jQuery('body').append(this.html);
 
 	// Draggable settings
-	options.draggable = { 
+	options.draggable = {
 	  cancel : ".chart-title .chart-title-text"
 	};
 
@@ -78,7 +78,7 @@ LSST.UI.Histogram.prototype.set = function(desc) {
 
   if (desc.xAxis == undefined)
     desc.xAxis = "x-axis";
-		
+
   var containerOffset = this.html.offset();
   var chartOffset = jQuery('#' + this.name).offset();
   var totalHeight = this.html.outerHeight();
@@ -88,10 +88,16 @@ LSST.UI.Histogram.prototype.set = function(desc) {
 		data : desc.data,
 		width: this.html.width(),
 		height: totalHeight - delta - parseInt(this.html.css('padding-bottom')),
-		logs: 'xy',
 		desc: desc.xAxis,
+        logs: "",
 		binColor: '#659cef'
  	};
+    if (desc.scale.x === "log")
+        props.logs += "x";
+    if (desc.scale.y === "log")
+        props.logs += "y";
+    if (props.logs === "")
+        delete props.logs;
 	firefly.util.renderDOM(this.name, firefly.ui.Histogram, props);
 }
 

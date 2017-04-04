@@ -1,35 +1,52 @@
 import { ReducerUtil } from "../util/ReducerUtil";
 import { LSSTUtil } from "../util/LSSTUtil";
+import { FireflyUtil } from "../util/FireflyUtil";
 
-const executeViewerCommand = (state, action) => {
-    const id = action.payload.params[0];
-    if (!id)
-        return state;
 
-    const viewer = state[id];
-    switch (action.payload.command) {
-        case "create_viewer":
-            if (viewer)
-                return state;
+// Viewer commands
+const commands = {
+    "CREATE_VIEWER": (state, action) => {
+        if (action.id in state)
+            return state;
+        return ReducerUtil.AddElement(state, action.id, new LSSTUtil.Viewer(action.id));
+    },
 
-            return ReducerUtil.AddElement(state, id, new LSSTUtil.Viewer(id));
+    "DELETE_VIEWER": (state, action) => {
+        if (!(action.id in state))
+            return state;
+        return ReducerUtil.RemoveElement(state, action.id);
+    },
 
-        case "delete_viewer":
-            if (viewer)
-                return ReducerUtil.RemoveElement(state, id);
-    }
+    "DRAW_REGIONS": (state, action) => {
+        if (!(action.id in state))
+            return state;
+        const regions = action.regions.map( r => r.toDS9() );
+        FireflyUtil.DrawRegions(action.id, action.layer, regions, action.opts);
+        return Object.assign({...state}, {});
+    },
 
-    return state;
+    "DRAW_DS9REGIONS": (state, action) => {
+        if (!(action.id in state))
+            return state;
+        FireflyUtil.DrawRegions(action.id, action.layer, action.regions, action.opts);
+        return Object.assign({...state}, {});
+    },
+
+    "CLEAR_REGION": (state, action) => {
+        if (!(action.id in state))
+            return state;
+        FireflyUtil.ClearRegion(action.id, action.layer);
+        return Object.assign({...state}, {});
+    },
 }
 
 
+
+// Viewer reducer function
 const viewerReducer = (state = {}, action) => {
-    switch (action.type) {
-        case "EXECUTE_COMMAND":
-            return executeViewerCommand(state, action);
-        default:
-            return state;
-    }
+    if (action.type in commands)
+        return commands[action.type](state, action);
+    return state;
 }
 
 export default viewerReducer;

@@ -23,7 +23,8 @@ export default class Viewer extends React.Component {
 
         return (
             <Draggable
-                defaultPosition={{x: 100, y: 50}} >
+                defaultPosition={{x: 100, y: 50}}
+                cancel=".viewer-imgViewer" >
                 <div className="viewer-ctr">
                     <p className="viewer-title">{id}</p>
                     <ViewerImageViewer e={this.props.viewers[id]} />

@@ -1,5 +1,6 @@
 import * as BoxCommands from "./box.commands";
 import averagePixel from "./averagePixel";
+import hotPixel from "./hotPixel";
 
 // Maps command names to functions
 const commands = {
@@ -7,7 +8,8 @@ const commands = {
     "delete_box": BoxCommands.deleteBox,
     "clear_box": BoxCommands.clearBoxText,
 
-    "average_pixel": averagePixel
+    "average_pixel": averagePixel,
+    "hot_pixel": hotPixel
 };
 
 export default class CommandDispatcher {

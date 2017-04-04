@@ -7,7 +7,9 @@ import reducer from "./reducers";
 
 import AppCtr from "./containers/App.container";
 import { Util } from "./util/Util";
-import { addCommand, executeCommand, setCommandDispatcher } from "./actions/command.actions";
+
+import { addCommand, setCommandDispatcher } from "./actions/command.actions";
+import { createViewer } from "./actions/viewer.actions";
 import CommandDispatcher from "./commands/commandDispatcher";
 
 
@@ -37,7 +39,7 @@ Util.LoadJSONFromFile(
 );
 
 window.onFireflyLoaded = function() {
-    store.dispatch(executeCommand("create_viewer", ["ffview"]));
+    store.dispatch(createViewer("ffview"));
 }
 
 store.dispatch(setCommandDispatcher(new CommandDispatcher(store)));

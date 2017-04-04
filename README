@@ -22,7 +22,7 @@ Filesystem:
 
 How to implement a new command:
     1. Make action creator (*.actions.js)
-    2. Add command dispatcher (*.commands.js)
+    2. Add command implementation (/commands)
     3. Add command entry to commandDispatcher.js
     4. Implement command in reducer (*.reducer.js)
 

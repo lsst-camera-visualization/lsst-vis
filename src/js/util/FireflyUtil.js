@@ -7,20 +7,20 @@ export const FireflyUtil = {
         firefly.action.dispatchDeleteRegionLayer(layer, plotID);
     },
 
-    // Draws DS9 regions on a viewer
-    DrawRegions: (plotID, layer, regions, options) => {
+    // Draws regions on a viewer
+    DrawRegions: (plotID, layer, regions, options = {}) => {
         // Default values for options
         options = Object.assign({
-            color: "white",
-            width: 1
+            color: "blue",
+            width: 3
         }, options);
 
-        // Creates the DS9 regions
-        const regionsToDraw = regions.map( r =>
-            "image; " + r + " # color=" + options.color + " width=" + options.width + ";"
-        );
+        const prefix = "image; ";
+        const optString = " #color=" + options.color + " width=" + options.width;
 
-        firefly.action.dispatchCreateRegionLayer(layer, layer, null, regionsToDraw, plotID);
+        // Creates the DS9 regions
+        const ds9regions = regions.map( r => prefix + r + optString );
+        firefly.action.dispatchCreateRegionLayer(layer, layer, null, ds9regions, plotID);
     },
 
     // Loads an image into the plot id

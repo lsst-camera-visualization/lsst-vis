@@ -1,18 +1,6 @@
 import React from "react";
 
 export const ReactUtil = {
-    // Props: { empty : Bool }
-    Separator: class extends React.Component {
-        render() {
-            if (this.props.empty)
-                return (<div></div>);
-
-            return <div class="col-separator"></div>;
-        }
-    },
-
-    // Props: { width : Integer, left : React element, right : React element,
-    //          separator : Boolean, className : String }
     // A 2 column React component.
     // Props:
     //    width : Integer - The width of the left column, or null for 50%.
@@ -46,5 +34,15 @@ export const ReactUtil = {
                 </div>
             );
         }
-    }
+    },
+
+    // Props: { empty : Bool }
+    Separator: class extends React.Component {
+        render() {
+            if (this.props.empty)
+                return (<div></div>);
+
+            return <div class="col-separator"></div>;
+        }
+    },
 }

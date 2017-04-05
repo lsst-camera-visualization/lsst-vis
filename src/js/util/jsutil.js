@@ -1,7 +1,5 @@
 
-
-
-export const Util = {
+export const JSUtil = {
     // Returns an alphabetized version of the array. Does not change the original array.
     AlphabetizeArray: array => {
         let alpha = array.slice();
@@ -23,12 +21,12 @@ export const Util = {
     // Provides auto complete capability to an array.
     AutoCompleteArray: class {
         constructor(arr, allowEmptyMatch = false) {
-            this._arr = Util.AlphabetizeArray(arr);
+            this._arr = JSUtil.AlphabetizeArray(arr);
             this._allowEmptyMatch = allowEmptyMatch;
         }
 
         clone() {
-            let a = new Util.AutoCompleteArray([], this._allowEmptyMatch);
+            let a = new JSUtil.AutoCompleteArray([], this._allowEmptyMatch);
             a._arr = this._arr.slice();
             return a;
         }
@@ -50,7 +48,7 @@ export const Util = {
                     const next = this._arr[i + 1];
 
                     if (next && next.match(regex))
-                        return { auto : Util.StringSimilarity(curr, next), match : curr, bWhole : false }
+                        return { auto : JSUtil.StringSimilarity(curr, next), match : curr, bWhole : false }
                     else
                         return { auto : curr, match : curr, bWhole : true }
                 }
@@ -62,7 +60,7 @@ export const Util = {
             // Could probably do better...
             if (this._arr.indexOf(key) === -1) {
                 this._arr.push(key);
-                this._arr = Util.AlphabetizeArray(this._arr);
+                this._arr = JSUtil.AlphabetizeArray(this._arr);
             }
         };
     },
@@ -141,7 +139,7 @@ export const Util = {
 
     // Creates an array out of the keys of the object (no guaranteed ordering).
     ObjectToArray: object => {
-        return Util.ObjectKeyMap(object, key => key);
+        return JSUtil.ObjectKeyMap(object, key => key);
     },
 
     // Splits a string by whitespace characters.
@@ -158,7 +156,7 @@ export const Util = {
             return [];
         return result.map( v => {
                     if (v.match(/\s+/g))
-                        return Util.SplitStringByWS(v.replace(rSplitGroup, ""));
+                        return JSUtil.SplitStringByWS(v.replace(rSplitGroup, ""));
                     return v;
                 });
     },

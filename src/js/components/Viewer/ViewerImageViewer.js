@@ -1,5 +1,5 @@
 import React from "react";
-import { FireflyUtil } from "../../util/FireflyUtil";
+import { FireflyUtil } from "../../util/firefly";
 
 export default class ViewerImageViewer extends React.Component {
     constructor() {

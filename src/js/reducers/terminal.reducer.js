@@ -1,7 +1,7 @@
-import { LSSTUtil } from "../util/LSSTUtil";
+import { Terminal } from "../util/terminal";
 
 const lastState = JSON.parse(localStorage.getItem("state")).terminal;
-const initialState = new LSSTUtil.Terminal().loadFromState(lastState);
+const initialState = new Terminal().loadFromState(lastState);
 
 const terminalReducer = (state = initialState, action) => {
     switch (action.type) {

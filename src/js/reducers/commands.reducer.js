@@ -1,8 +1,8 @@
-import { Util } from "../util/Util";
+import { JSUtil } from "../util/jsutil";
 
 const initialState = {
     commands: [],
-    autoCompleteArray: new Util.AutoCompleteArray([], false)
+    autoCompleteArray: new JSUtil.AutoCompleteArray([], false)
 }
 
 const commandsReducer = (state = initialState, action) => {

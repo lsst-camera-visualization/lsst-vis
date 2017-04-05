@@ -53,7 +53,7 @@ const commands = {
             return state;
 
         let newState = Object.assign({...state});
-        newState[action.id].header = actions.header;
+        newState[action.id].header = action.header;
         return newState;
     },
 
@@ -65,7 +65,16 @@ const commands = {
         newState[action.id].cursorPoint = {
             x: Math.trunc(action.pos.x),
             y: Math.trunc(action.pos.y)
-        }
+        };
+        return newState;
+    },
+
+    "UPDATE_HOVERED_AMPNAME": (state, action) => {
+        if (!(action.id in state))
+            return state;
+
+        let newState = Object.assign({...state});
+        newState[action.id].hoveredAmpName = action.name;
         return newState;
     }
 }

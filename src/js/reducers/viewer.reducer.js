@@ -1,6 +1,6 @@
 import { ReducerUtil } from "../util/reducer";
 import { Viewer } from "../util/viewer";
-import { FireflyUtil } from "../util/firefly";
+import { ClearRegion, DrawRegions } from "../util/firefly";
 
 
 // Viewer commands
@@ -28,18 +28,36 @@ const commands = {
         if (!(action.id in state))
             return state;
         const regions = action.regions.map( r => r.toDS9() );
-        FireflyUtil.DrawRegions(action.id, action.layer, regions, action.opts);
+        DrawRegions(action.id, action.layer, regions, action.opts);
         return Object.assign({...state}, {});
     },
 
     "DRAW_DS9REGIONS": (state, action) => {
         if (!(action.id in state))
             return state;
-        FireflyUtil.DrawRegions(action.id, action.layer, action.regions, action.opts);
+        DrawRegions(action.id, action.layer, action.regions, action.opts);
         return Object.assign({...state}, {});
     },
 
-    "UPDATE_CURSORPOS": (state, action) => {
+    "SET_BOUNDARY_REGIONS": (state, action) => {
+        if (!(action.id in state))
+            return state;
+
+        let newState = Object.assign({...state});
+        newState[action.id].boundaryRegions = action.regions;
+        return newState;
+    },
+
+    "SET_HEADER_DATA": (state, action) => {
+        if (!(action.id in state))
+            return state;
+
+        let newState = Object.assign({...state});
+        newState[action.id].header = actions.header;
+        return newState;
+    },
+
+    "UPDATE_CURSOR_POS": (state, action) => {
         if (!(action.id in state) || !action.pos)
             return state;
 

@@ -1,7 +1,22 @@
-import { Util } from "./Util";
 
 // Firefly interface
 export const FireflyUtil = {
+    AddActionListener: (type, f) => {
+        firefly.util.addActionListener(firefly.action.type[type], f);
+    },
+
+    AddExtension: (id, title, type, f) => {
+        const ext = {
+            id: title,
+            plotId: id,
+            title: title,
+            extType: type,
+            callback: f
+        };
+
+        firefly.util.image.extensionAdd(ext);
+    },
+
     // Clears a region layer on a viewer
     ClearRegion: (plotID, layer) => {
         firefly.action.dispatchDeleteRegionLayer(layer, plotID);

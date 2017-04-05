@@ -1,7 +1,6 @@
 import { connect } from "react-redux";
 import { executeCommand, addCommandToHistory } from "../actions/command.actions";
 import Terminal from "../components/Terminal";
-import { Util } from "../util/Util";
 
 const mapStateToProps = state => {
     return {
@@ -9,7 +8,6 @@ const mapStateToProps = state => {
         viewers: state.viewers,
         terminal: state.terminal,
         commands: state.commands,
-        commandDispatcher: state.commandDispatcher
     };
 }
 

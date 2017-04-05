@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Util } from "../../util/Util";
+import { JSUtil } from "../../util/jsutil";
 
 export default class TerminalHelp extends React.Component {
     constructor() {
@@ -10,7 +10,7 @@ export default class TerminalHelp extends React.Component {
 
     getHelpString = () => {
         const trimmed = this.props.input.trim();
-        const split = Util.SplitStringByWS(trimmed);
+        const split = JSUtil.SplitStringByWS(trimmed);
 
         if (trimmed != "") {
             const ac = this.props.commands.autoCompleteArray.autoComplete(split[0]);
@@ -23,7 +23,7 @@ export default class TerminalHelp extends React.Component {
     }
 
     highlightString = (str, index, className) => {
-        const split = Util.SplitStringByWS(str);
+        const split = JSUtil.SplitStringByWS(str);
 
         const list = split.map((e, i) => {
             if (i === index) {
@@ -44,7 +44,7 @@ export default class TerminalHelp extends React.Component {
     render() {
         let helpString = this.getHelpString();
         if (helpString.bMatch) {
-            const caretIndex = Util.GetWordNumFromCaret(this.props.input, this.props.caretPos);
+            const caretIndex = JSUtil.GetWordNumFromCaret(this.props.input, this.props.caretPos);
             helpString = this.highlightString(helpString.str, caretIndex, "term-help-highlight");
         }
         else

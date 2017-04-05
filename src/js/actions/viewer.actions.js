@@ -56,3 +56,12 @@ export const clearLayer = (id, layer) => {
         layer
     }
 }
+
+// Updates the cursor coordinates for a viewer
+export const updateCursorPos = (id, pos) => {
+    return {
+        type: "UPDATE_CURSORPOS",
+        id,
+        pos
+    }
+}

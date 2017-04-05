@@ -1,12 +1,13 @@
 import React from "react";
 
-import { ReactUtil } from "../../util/ReactUtil";
+import { ReactUtil } from "../../util/react";
 
 export default class ViewerCursorPanel extends React.Component {
     render() {
+        const coords = "(" + this.props.cursorPoint.x + ", " + this.props.cursorPoint.y + ")";
         const hovered = (
             <div className="viewer-cursorPanel-col">
-                <p>(x,y)</p>
+                <p>{coords}</p>
                 <p>name</p>
             </div>
         );

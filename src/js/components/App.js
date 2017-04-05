@@ -3,7 +3,7 @@ import React from "react";
 import TerminalCtr from "../containers/Terminal.container";
 import BoxCtr from "../containers/Box.container";
 import ViewerCtr from "../containers/Viewer.container";
-import { Util } from "../util/Util";
+import { JSUtil } from "../util/jsutil";
 
 export default class App extends React.Component {
     createBox = e => {
@@ -16,7 +16,7 @@ export default class App extends React.Component {
 
     createUIElements = (elements, elemGen) => {
         if (elements)
-            return <ul style={{position: "absolute"}}> { Util.ObjectMap(elements, elemGen) } </ul>
+            return <ul style={{position: "absolute"}}> { JSUtil.ObjectMap(elements, elemGen) } </ul>
         else
             return null;
     }

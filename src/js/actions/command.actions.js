@@ -1,12 +1,3 @@
-
-
-export const setCommandDispatcher = dispatcher => {
-    return {
-        type: "SET_COMMAND_DISPATCHER",
-        dispatcher
-    }
-}
-
 export const addCommand = (commandName, params) => {
     return {
         type: "ADD_COMMAND",

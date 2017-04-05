@@ -40,11 +40,14 @@ const commands = {
     },
 
     "UPDATE_CURSORPOS": (state, action) => {
-        if (!(action.id in state))
+        if (!(action.id in state) || !action.pos)
             return state;
 
         let newState = Object.assign({...state});
-        newState[action.id].cursorPoint = action.pos;
+        newState[action.id].cursorPoint = {
+            x: Math.trunc(action.pos.x),
+            y: Math.trunc(action.pos.y)
+        }
         return newState;
     }
 }

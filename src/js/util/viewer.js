@@ -1,4 +1,6 @@
 import { FireflyUtil } from "./firefly";
+import store from "../store";
+import { updateCursorPos } from "../actions/viewer.actions";
 
 export class Viewer {
     constructor(id, image = "http://localhost:8080/static/images/imageE2V_untrimmed.fits") {
@@ -15,13 +17,8 @@ export class Viewer {
     }
 
     onCursorMove = action => {
-        console.log(action);
         const imgPt = action.payload.readoutItems.imagePt;
-        if (imgPt) {
-            this.cursorPoint = {
-                x: imgPt.value.x,
-                y: imgPt.value.y
-            }
-        }
+        if (imgPt)
+            store.dispatch(updateCursorPos(this.id, imgPt.value));
     }
 }

@@ -1,5 +1,5 @@
 import React from "react";
-import { FireflyUtil } from "../../util/firefly";
+import { LoadImage } from "../../util/firefly";
 
 export default class ViewerImageViewer extends React.Component {
     constructor() {
@@ -9,7 +9,7 @@ export default class ViewerImageViewer extends React.Component {
 
     loadImage = imageURL => {
         if (this._imageURL !== imageURL) {
-            FireflyUtil.LoadImage(this.props.e.id, imageURL);
+            LoadImage(this.props.e.id, imageURL);
             this._imageURL = imageURL;
         }
     }

@@ -1,4 +1,14 @@
 
+
+// Clears a layer on the viewer
+export const clearLayer = (id, layer) => {
+    return {
+        type: "CLEAR_LAYER",
+        id,
+        layer
+    }
+}
+
 // Creates a viewer
 export const createViewer = id => {
     return {
@@ -48,19 +58,27 @@ export const drawDS9Regions = (id, layer, regions, opts) => {
     }
 }
 
-// Clears a layer on the viewer
-export const clearLayer = (id, layer) => {
+// Sets the image's boundary regions
+export const setBoundaryRegions = (id, regions) => {
     return {
-        type: "CLEAR_LAYER",
+        type: "SET_BOUNDARY_REGIONS",
         id,
-        layer
+        regions
+    }
+}
+
+// Sets the image's header data
+export const setHeaderData = (id, header) => {
+    return {
+        type: "SET_HEADER_DATA",
+        header
     }
 }
 
 // Updates the cursor coordinates for a viewer
 export const updateCursorPos = (id, pos) => {
     return {
-        type: "UPDATE_CURSORPOS",
+        type: "UPDATE_CURSOR_POS",
         id,
         pos
     }

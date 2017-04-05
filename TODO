@@ -4,3 +4,4 @@
     - parameters passed in from frontend need to be fixed
         - average_pixel should become { region : {type, value} }
         - image_url should be renamed _imageURL
+- How to check for overscan (probably not based on filename)

@@ -1,58 +1,56 @@
-
 // Firefly interface
-export const FireflyUtil = {
-    AddActionListener: (type, f) => {
-        firefly.util.addActionListener(firefly.action.type[type], f);
-    },
 
-    AddExtension: (id, title, type, f) => {
-        const ext = {
-            id: title,
-            plotId: id,
-            title: title,
-            extType: type,
-            callback: f
-        };
+export const AddActionListener = (type, f) => {
+    firefly.util.addActionListener(firefly.action.type[type], f);
+}
 
-        firefly.util.image.extensionAdd(ext);
-    },
+export const AddExtension = (id, title, type, f) => {
+    const ext = {
+        id: title,
+        plotId: id,
+        title: title,
+        extType: type,
+        callback: f
+    };
 
-    // Clears a region layer on a viewer
-    ClearRegion: (plotID, layer) => {
-        firefly.action.dispatchDeleteRegionLayer(layer, plotID);
-    },
+    firefly.util.image.extensionAdd(ext);
+}
 
-    // Draws regions on a viewer
-    DrawRegions: (plotID, layer, regions, options = {}) => {
-        // Default values for options
-        options = Object.assign({
-            color: "blue",
-            width: 3
-        }, options);
+// Clears a region layer on a viewer
+export const ClearRegion = (plotID, layer) => {
+    firefly.action.dispatchDeleteRegionLayer(layer, plotID);
+}
 
-        const prefix = "image; ";
-        const optString = " #color=" + options.color + " width=" + options.width;
+// Draws regions on a viewer
+export const DrawRegions = (plotID, layer, regions, options = {}) => {
+    // Default values for options
+    options = Object.assign({
+        color: "blue",
+        width: 3
+    }, options);
 
-        // Creates the DS9 regions
-        const ds9regions = regions.map( r => prefix + r + optString );
-        firefly.action.dispatchCreateRegionLayer(layer, layer, null, ds9regions, plotID);
-    },
+    const prefix = "image; ";
+    const optString = " #color=" + options.color + " width=" + options.width;
 
-    // Loads an image into the plot id
-    LoadImage: (plotID, imageURL) => {
-        firefly.showImage(plotID, {
-            plotId: plotID,
-            URL: imageURL,
-            Title: "Title: " + imageURL,
-            ZoomType: "TO_WIDTH",
-            ZoomToWidth: '100%'
-        });
-    },
+    // Creates the DS9 regions
+    const ds9regions = regions.map( r => prefix + r + optString );
+    firefly.action.dispatchCreateRegionLayer(layer, layer, null, ds9regions, plotID);
+}
 
-    // Launches a backend task
-    LaunchTask: (taskName, params, viewer) => {
-        params.image_url = (taskName === "boundary") ? viewer.original_image_url : viewer.image;
+// Loads an image into the plot id
+export const LoadImage = (plotID, imageURL) => {
+    firefly.showImage(plotID, {
+        plotId: plotID,
+        URL: imageURL,
+        Title: "Title: " + imageURL,
+        ZoomType: "TO_WIDTH",
+        ZoomToWidth: '100%'
+    });
+}
 
-        return firefly.getJsonFromTask('python', taskName, params);
-    },
+// Launches a backend task
+export const LaunchTask = (taskName, params, viewer) => {
+    params.image_url = (taskName === "boundary") ? viewer.original_image_url : viewer.image;
+
+    return firefly.getJsonFromTask('python', taskName, params);
 }

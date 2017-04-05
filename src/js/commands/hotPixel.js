@@ -1,4 +1,4 @@
-import { FireflyUtil } from "../util/firefly";
+import { LaunchTask } from "../util/firefly";
 import { ParseRegion } from "../util/region";
 import { drawDS9Regions, clearLayer } from "../actions/viewer.actions.js";
 
@@ -32,6 +32,6 @@ export default (params) => {
         store.dispatch(drawDS9Regions(viewerID, layer, ds9Regions, opts));
     }
 
-    FireflyUtil.LaunchTask("hot_pixel", backendParameters, viewer)
+    LaunchTask("hot_pixel", backendParameters, viewer)
         .then( onSuccess, error => console.log("Error: ", error) )
 }

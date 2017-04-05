@@ -1,4 +1,4 @@
-import { FireflyUtil } from "../util/firefly";
+import { LaunchTask } from "../util/firefly";
 import { ParseRegion } from "../util/region";
 import { clearBoxText, setBoxText } from "../actions/box.actions.js";
 import { drawRegion, clearLayer } from "../actions/viewer.actions.js";
@@ -25,6 +25,6 @@ export default (params) => {
         store.dispatch(setBoxText(params.box_id, [data.result]));
     }
 
-    FireflyUtil.LaunchTask("average", backendParameters, viewer)
+    LaunchTask("average", backendParameters, viewer)
         .then( onSuccess, error => console.log("Error: ", error) )
 }

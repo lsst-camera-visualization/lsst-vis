@@ -1,14 +1,21 @@
-import { ReducerUtil } from "../util/ReducerUtil";
-import { LSSTUtil } from "../util/LSSTUtil";
-import { FireflyUtil } from "../util/FireflyUtil";
+import { ReducerUtil } from "../util/reducer";
+import { Viewer } from "../util/viewer";
+import { FireflyUtil } from "../util/firefly";
 
 
 // Viewer commands
 const commands = {
+    "CLEAR_REGION": (state, action) => {
+        if (!(action.id in state))
+            return state;
+        FireflyUtil.ClearRegion(action.id, action.layer);
+        return Object.assign({...state}, {});
+    },
+
     "CREATE_VIEWER": (state, action) => {
         if (action.id in state)
             return state;
-        return ReducerUtil.AddElement(state, action.id, new LSSTUtil.Viewer(action.id));
+        return ReducerUtil.AddElement(state, action.id, new Viewer(action.id));
     },
 
     "DELETE_VIEWER": (state, action) => {
@@ -32,12 +39,14 @@ const commands = {
         return Object.assign({...state}, {});
     },
 
-    "CLEAR_REGION": (state, action) => {
+    "UPDATE_CURSORPOS": (state, action) => {
         if (!(action.id in state))
             return state;
-        FireflyUtil.ClearRegion(action.id, action.layer);
-        return Object.assign({...state}, {});
-    },
+
+        let newState = Object.assign({...state});
+        newState[action.id].cursorPoint = action.pos;
+        return newState;
+    }
 }
 
 

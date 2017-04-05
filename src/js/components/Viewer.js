@@ -4,7 +4,7 @@ import Draggable from 'react-draggable';
 import ViewerImageViewer from "./Viewer/ViewerImageViewer";
 import ViewerUVPanel from "./Viewer/ViewerUVPanel";
 import ViewerCursorPanel from "./Viewer/ViewerCursorPanel";
-import { ReactUtil } from "../util/ReactUtil";
+import { ReactUtil } from "../util/react";
 
 export default class Viewer extends React.Component {
     constructor() {
@@ -17,8 +17,9 @@ export default class Viewer extends React.Component {
 
     render() {
         const id = this.props.id;
+        const e = this.props.viewers[id];
 
-        const left = <ViewerCursorPanel />
+        const left = <ViewerCursorPanel cursorPoint={e.cursorPoint} />
         const right = <ViewerUVPanel />;
 
         return (
@@ -27,7 +28,7 @@ export default class Viewer extends React.Component {
                 cancel=".viewer-imgViewer" >
                 <div className="viewer-ctr">
                     <p className="viewer-title">{id}</p>
-                    <ViewerImageViewer e={this.props.viewers[id]} />
+                    <ViewerImageViewer e={e} />
                     <ReactUtil.Col2
                         className="viewer-info"
                         width="50%"

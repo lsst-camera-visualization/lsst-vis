@@ -1,12 +1,14 @@
-import { FireflyUtil } from "../util/FireflyUtil";
-import { LSSTUtil } from "../util/LSSTUtil";
+import { FireflyUtil } from "../util/firefly";
+import { ParseRegion } from "../util/region";
 import { drawDS9Regions, clearLayer } from "../actions/viewer.actions.js";
 
+import store from "../store";
+
 // { viewer_id, box_id, region }
-export default (params, store) => {
+export default (params) => {
     const viewerID = params.viewer_id;
     const viewer = store.getState().viewers[viewerID];
-    const region = LSSTUtil.Region.Parse(params.region);
+    const region = ParseRegion(params.region);
     const threshold = (params.threshold === "max") ? "max" : parseInt(params.threshold);
 
     // The parameters to pass to the backend

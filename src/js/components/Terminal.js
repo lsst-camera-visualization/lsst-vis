@@ -3,8 +3,9 @@ import React from "react";
 import TerminalHelp from "./Terminal/TerminalHelp";
 import TerminalBody from "./Terminal/TerminalBody";
 import TerminalInput from "./Terminal/TerminalInput";
-import { Util, DOMUtil } from "../util/Util";
-import { LSSTUtil } from "../util/LSSTUtil";
+import { JSUtil, DOMUtil } from "../util/jsutil";
+import { Util } from "../util/util";
+import commandDispatcher from "../commands/commandDispatcher";
 
 export default class Terminal extends React.Component {
     constructor() {
@@ -29,15 +30,15 @@ export default class Terminal extends React.Component {
 
     // Execute command handler
     handleEnter = input => {
-        if (!Util.IsEmptyString(input)) {
+        if (!JSUtil.IsEmptyString(input)) {
             this.props.onExecute(input);
 
-            let groups = Util.SplitStringByGroup(input);
+            let groups = JSUtil.SplitStringByGroup(input);
             const command = groups.shift();
 
             // Convert array into dictionary of parameters
-            const params = LSSTUtil.MapParamsToNames(groups, this.props.commands.commands[command]);
-            this.props.commandDispatcher.dispatch(command, params);
+            const params = Util.MapParamsToNames(groups, this.props.commands.commands[command]);
+            commandDispatcher.dispatch(command, params);
 
             // Clear the user input
             this.setState({input: ""});
@@ -119,8 +120,8 @@ export default class Terminal extends React.Component {
 
     componentWillUpdate() {
         this._autoParams = {
-            box_id: new Util.AutoCompleteArray(Util.ObjectToArray(this.props.boxes)),
-            viewer_id: new Util.AutoCompleteArray(Util.ObjectToArray(this.props.viewers))
+            box_id: new JSUtil.AutoCompleteArray(JSUtil.ObjectToArray(this.props.boxes)),
+            viewer_id: new JSUtil.AutoCompleteArray(JSUtil.ObjectToArray(this.props.viewers))
         }
     }
 

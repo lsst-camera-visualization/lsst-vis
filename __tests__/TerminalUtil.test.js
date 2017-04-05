@@ -1,4 +1,4 @@
-import { Util } from "../src/js/util/Util";
+import { JSUtil } from "../src/js/util/jsutil";
 
 const RandomWord = () => {
     return Math.random().toString(36).substr(2, 10);
@@ -23,64 +23,64 @@ const IsAlphabetical = array => {
 
 
 test("SplitStringByWS [Edge Cases]", () => {
-    expect(Util.SplitStringByWS("")).toEqual([]);
+    expect(JSUtil.SplitStringByWS("")).toEqual([]);
 
     const w = RandomWord();
-    expect(Util.SplitStringByWS(w)).toEqual([w]);
+    expect(JSUtil.SplitStringByWS(w)).toEqual([w]);
 });
 test("SplitStringByWS [Random x100]", () => {
     for (let i = 0; i < 100; i++) {
         const str = RandomSentence();
-        const split = Util.SplitStringByWS(str);
+        const split = JSUtil.SplitStringByWS(str);
         expect(split.join(" ")).toEqual(str);
     }
 });
 
 test("SplitStringByGroup", () => {
-    expect(Util.SplitStringByGroup("p1", "(", ")")).toEqual(["p1"]);
-    expect(Util.SplitStringByGroup("p1 (g1 g2)", "(", ")")).toEqual(["p1", ["g1", "g2"]]);
-    expect(Util.SplitStringByGroup("p1 (g1 g2) p3", "(", ")")).toEqual(
+    expect(JSUtil.SplitStringByGroup("p1", "(", ")")).toEqual(["p1"]);
+    expect(JSUtil.SplitStringByGroup("p1 (g1 g2)", "(", ")")).toEqual(["p1", ["g1", "g2"]]);
+    expect(JSUtil.SplitStringByGroup("p1 (g1 g2) p3", "(", ")")).toEqual(
             ["p1", ["g1", "g2"], "p3"]);
-    expect(Util.SplitStringByGroup("(g1 g2)", "(", ")")).toEqual(
+    expect(JSUtil.SplitStringByGroup("(g1 g2)", "(", ")")).toEqual(
             [["g1", "g2"]]);
-    expect(Util.SplitStringByGroup("(g1 g2) p3", "(", ")")).toEqual(
+    expect(JSUtil.SplitStringByGroup("(g1 g2) p3", "(", ")")).toEqual(
             [["g1", "g2"], "p3"]);
-    expect(Util.SplitStringByGroup("p1 (g1 g2) (gg1 gg2)", "(", ")")).toEqual(
+    expect(JSUtil.SplitStringByGroup("p1 (g1 g2) (gg1 gg2)", "(", ")")).toEqual(
             ["p1", ["g1", "g2"], ["gg1", "gg2"]]);
-    expect(Util.SplitStringByGroup("p1 ( g1 g2 )", "(", ")")).toEqual(
+    expect(JSUtil.SplitStringByGroup("p1 ( g1 g2 )", "(", ")")).toEqual(
             ["p1", ["g1", "g2"]]);
-    expect(Util.SplitStringByGroup("p1 (g1 g2 )", "(", ")")).toEqual(
+    expect(JSUtil.SplitStringByGroup("p1 (g1 g2 )", "(", ")")).toEqual(
             ["p1", ["g1", "g2"]]);
-    expect(Util.SplitStringByGroup("p1 ( g1 g2)", "(", ")")).toEqual(
+    expect(JSUtil.SplitStringByGroup("p1 ( g1 g2)", "(", ")")).toEqual(
             ["p1", ["g1", "g2"]]);
-    expect(Util.SplitStringByGroup("", "(", ")")).toEqual([]);
-    expect(Util.SplitStringByGroup(" ", "(", ")")).toEqual([]);
-    expect(Util.SplitStringByGroup("      ", "(", ")")).toEqual([]);
+    expect(JSUtil.SplitStringByGroup("", "(", ")")).toEqual([]);
+    expect(JSUtil.SplitStringByGroup(" ", "(", ")")).toEqual([]);
+    expect(JSUtil.SplitStringByGroup("      ", "(", ")")).toEqual([]);
 });
 
 test("AlphabetizeArray", () => {
-    expect(Util.AlphabetizeArray(["a", "b", "c", "d"])).toEqual(["a", "b", "c", "d"]);
-    expect(Util.AlphabetizeArray(["d", "c", "b", "a"])).toEqual(["a", "b", "c", "d"]);
-    expect(Util.AlphabetizeArray(["daa", "dbd", "d", "dd"])).toEqual(["d", "daa", "dbd", "dd"]);
-    expect(Util.AlphabetizeArray([])).toEqual([]);
-    expect(Util.AlphabetizeArray(["c"])).toEqual(["c"]);
-    expect(Util.AlphabetizeArray(["", "a"])).toEqual(["", "a"]);
-    expect(Util.AlphabetizeArray(["a", ""])).toEqual(["", "a"]);
+    expect(JSUtil.AlphabetizeArray(["a", "b", "c", "d"])).toEqual(["a", "b", "c", "d"]);
+    expect(JSUtil.AlphabetizeArray(["d", "c", "b", "a"])).toEqual(["a", "b", "c", "d"]);
+    expect(JSUtil.AlphabetizeArray(["daa", "dbd", "d", "dd"])).toEqual(["d", "daa", "dbd", "dd"]);
+    expect(JSJSUtil.AlphabetizeArray([])).toEqual([]);
+    expect(JSUtil.AlphabetizeArray(["c"])).toEqual(["c"]);
+    expect(JSUtil.AlphabetizeArray(["", "a"])).toEqual(["", "a"]);
+    expect(JSUtil.AlphabetizeArray(["a", ""])).toEqual(["", "a"]);
 });
 
 test("StringSimilarity", () => {
-    expect(Util.StringSimilarity("abcd", "abcdef")).toEqual("abcd");
-    expect(Util.StringSimilarity("a", "abcdef")).toEqual("a");
-    expect(Util.StringSimilarity("", "abcdef")).toEqual("");
-    expect(Util.StringSimilarity("create_box", "create_viewer")).toEqual("create_");
-    expect(Util.StringSimilarity("asdf", "")).toEqual("");
+    expect(JSUtil.StringSimilarity("abcd", "abcdef")).toEqual("abcd");
+    expect(JSUtil.StringSimilarity("a", "abcdef")).toEqual("a");
+    expect(JSUtil.StringSimilarity("", "abcdef")).toEqual("");
+    expect(JSUtil.StringSimilarity("create_box", "create_viewer")).toEqual("create_");
+    expect(JSUtil.StringSimilarity("asdf", "")).toEqual("");
 });
 
 test("AutoCompleteArray [Construction]", () => {
-    let a = new Util.AutoCompleteArray(["create_viewer", "average_pixel", "create_box", "asdfjkl;"], true);
+    let a = new JSUtil.AutoCompleteArray(["create_viewer", "average_pixel", "create_box", "asdfjkl;"], true);
     expect(a.getArray()).toEqual(["asdfjkl;", "average_pixel", "create_box", "create_viewer"]);
 
-    expect(new Util.AutoCompleteArray([]).getArray()).toEqual([]);
+    expect(new JSUtil.AutoCompleteArray([]).getArray()).toEqual([]);
 
     let aCopy = a.clone();
     expect(aCopy.getArray()).toEqual(a.getArray());
@@ -88,20 +88,20 @@ test("AutoCompleteArray [Construction]", () => {
     expect(IsAlphabetical(aCopy.getArray())).toBe(true);
 });
 test("AutoCompleteArray [Insert]", () => {
-    let a = new Util.AutoCompleteArray([], true);
+    let a = new JSUtil.AutoCompleteArray([], true);
     for (let i = 0; i < 10; i++) {
         a.insert(RandomWord());
     }
     expect(IsAlphabetical(a.getArray())).toBe(true);
 
-    let b = new Util.AutoCompleteArray(["asdf", "qwer"], true);
+    let b = new JSUtil.AutoCompleteArray(["asdf", "qwer"], true);
     for (let i = 0; i < 100; i++) {
         b.insert(RandomWord());
     }
     expect(IsAlphabetical(b.getArray())).toBe(true);
 })
 test("AutoCompleteArray [AutoComplete]", () => {
-    let a = new Util.AutoCompleteArray(["create_viewer", "average_pixel", "create_box", "asdfjkl;"], true);
+    let a = new JSUtil.AutoCompleteArray(["create_viewer", "average_pixel", "create_box", "asdfjkl;"], true);
     expect(a.autoComplete("c")).toEqual({ auto: "create_", bWhole: false, match: "create_box" });
     expect(a.autoComplete("crea")).toEqual({ auto: "create_", bWhole: false, match: "create_box" });
     expect(a.autoComplete("create_")).toEqual({ auto: "create_", bWhole: false, match: "create_box" });
@@ -112,24 +112,24 @@ test("AutoCompleteArray [AutoComplete]", () => {
 test("GetWordNumFromCaret", () => {
     const sentence = "word0 word1 word2   word3";
 
-    expect(Util.GetWordNumFromCaret(sentence, 0)).toBe(0);
-    expect(Util.GetWordNumFromCaret(sentence, 1)).toBe(0);
-    expect(Util.GetWordNumFromCaret(sentence, 5)).toBe(0);
-    expect(Util.GetWordNumFromCaret(sentence, 6)).toBe(1);
-    expect(Util.GetWordNumFromCaret(sentence, sentence.length)).toBe(3);
-    expect(Util.GetWordNumFromCaret(sentence, 17)).toBe(2);
-    expect(Util.GetWordNumFromCaret(sentence, 18)).toBe(3);
-    expect(Util.GetWordNumFromCaret(sentence, 19)).toBe(3);
-    expect(Util.GetWordNumFromCaret(sentence, 20)).toBe(3);
+    expect(JSUtil.GetWordNumFromCaret(sentence, 0)).toBe(0);
+    expect(JSUtil.GetWordNumFromCaret(sentence, 1)).toBe(0);
+    expect(JSUtil.GetWordNumFromCaret(sentence, 5)).toBe(0);
+    expect(JSUtil.GetWordNumFromCaret(sentence, 6)).toBe(1);
+    expect(JSUtil.GetWordNumFromCaret(sentence, sentence.length)).toBe(3);
+    expect(JSUtil.GetWordNumFromCaret(sentence, 17)).toBe(2);
+    expect(JSUtil.GetWordNumFromCaret(sentence, 18)).toBe(3);
+    expect(JSUtil.GetWordNumFromCaret(sentence, 19)).toBe(3);
+    expect(JSUtil.GetWordNumFromCaret(sentence, 20)).toBe(3);
 
     const sentenceGroup = "word0 (p1 p2)  word3";
-    expect(Util.GetWordNumFromCaret(sentenceGroup, 6)).toBe(1);
-    expect(Util.GetWordNumFromCaret(sentenceGroup, 7)).toBe(1);
-    expect(Util.GetWordNumFromCaret(sentenceGroup, 9)).toBe(1);
-    expect(Util.GetWordNumFromCaret(sentenceGroup, 10)).toBe(1);
-    expect(Util.GetWordNumFromCaret(sentenceGroup, 12)).toBe(1);
-    expect(Util.GetWordNumFromCaret(sentenceGroup, 13)).toBe(1);
-    expect(Util.GetWordNumFromCaret(sentenceGroup, 14)).toBe(2);
-    expect(Util.GetWordNumFromCaret(sentenceGroup, 15)).toBe(2);
-    expect(Util.GetWordNumFromCaret(sentenceGroup, sentenceGroup.length)).toBe(2);
+    expect(JSUtil.GetWordNumFromCaret(sentenceGroup, 6)).toBe(1);
+    expect(JSUtil.GetWordNumFromCaret(sentenceGroup, 7)).toBe(1);
+    expect(JSUtil.GetWordNumFromCaret(sentenceGroup, 9)).toBe(1);
+    expect(JSUtil.GetWordNumFromCaret(sentenceGroup, 10)).toBe(1);
+    expect(JSUtil.GetWordNumFromCaret(sentenceGroup, 12)).toBe(1);
+    expect(JSUtil.GetWordNumFromCaret(sentenceGroup, 13)).toBe(1);
+    expect(JSUtil.GetWordNumFromCaret(sentenceGroup, 14)).toBe(2);
+    expect(JSUtil.GetWordNumFromCaret(sentenceGroup, 15)).toBe(2);
+    expect(JSUtil.GetWordNumFromCaret(sentenceGroup, sentenceGroup.length)).toBe(2);
 });

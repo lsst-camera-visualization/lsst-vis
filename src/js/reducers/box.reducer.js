@@ -1,12 +1,12 @@
-import { ReducerUtil } from "../util/ReducerUtil";
-import { LSSTUtil } from "../util/LSSTUtil";
+import { ReducerUtil } from "../util/reducer";
+import { Box } from "../util/box";
 
 
 const commands = {
     "CREATE_BOX": (state, action) => {
         if (action.id in state)
             return state;
-        return ReducerUtil.AddElement(state, action.id, new LSSTUtil.Box(action.id));
+        return ReducerUtil.AddElement(state, action.id, new Box(action.id));
     },
 
     "DELETE_BOX": (state, action) => {
@@ -38,7 +38,7 @@ const commands = {
 
 
 const initialState = {
-    "ffbox": new LSSTUtil.Box("ffbox")
+    "ffbox": new Box("ffbox")
 }
 
 const boxReducer = (state = initialState, action) => {

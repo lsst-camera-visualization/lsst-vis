@@ -10,18 +10,14 @@ import commandsReducer from "./commands.reducer";
 //      boxes: A list of all the LSSTUtil.Box's created
 //      viewers: A list of all the LSSTUtil.Viewer's created
 //      commands: A list of the valid commands that can be entered by the user in the terminal
-//      commandDispatcher: A dispatcher for the UI manipulation and image analysis commands
 // }
 
 const initialState = {
-    
+
 };
 
 const reducer = (state = initialState, action) => {
     let newState = Object.assign({...state}, {});
-
-    if (action.type === "SET_COMMAND_DISPATCHER")
-        newState.commandDispatcher = action.dispatcher;
 
     newState.terminal = terminalReducer(state.terminal, action);
     newState.boxes = boxReducer(state.boxes, action);

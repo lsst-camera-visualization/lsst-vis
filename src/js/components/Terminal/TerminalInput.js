@@ -1,11 +1,11 @@
 import React from "react";
 
-import { Util } from "../../util/Util";
+import { JSUtil } from "../../util/jsutil";
 
 export default class TerminalInput extends React.Component {
     // Enter key handler
     handleEnter = e => {
-        if (!Util.IsEmptyString(e.target.value)) {
+        if (!JSUtil.IsEmptyString(e.target.value)) {
             const input = e.target.value;
             this.props.onEnter(input);
 

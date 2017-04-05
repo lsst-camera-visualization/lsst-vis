@@ -12,12 +12,10 @@ const commands = {
     "hot_pixel": hotPixel
 };
 
-export default class CommandDispatcher {
-    constructor(store) {
-        this._store = store;
-    }
-
+class CommandDispatcher {
     dispatch = (command, params) => {
-        commands[command](params, this._store);
+        commands[command](params);
     }
 }
+
+export default new CommandDispatcher();

@@ -71,6 +71,7 @@ export const setBoundaryRegions = (id, regions) => {
 export const setHeaderData = (id, header) => {
     return {
         type: "SET_HEADER_DATA",
+        id,
         header
     }
 }
@@ -81,5 +82,13 @@ export const updateCursorPos = (id, pos) => {
         type: "UPDATE_CURSOR_POS",
         id,
         pos
+    }
+}
+
+export const updateHoveredAmpName = (id, name) => {
+    return {
+        type: "UPDATE_HOVERED_AMPNAME",
+        id,
+        name
     }
 }

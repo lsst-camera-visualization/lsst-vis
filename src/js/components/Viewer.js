@@ -19,7 +19,9 @@ export default class Viewer extends React.Component {
         const id = this.props.id;
         const e = this.props.viewers[id];
 
-        const left = <ViewerCursorPanel cursorPoint={e.cursorPoint} />
+        const left = <ViewerCursorPanel
+                        cursorPoint={e.cursorPoint}
+                        hoveredAmpName={e.hoveredAmpName} />
         const right = <ViewerUVPanel />;
 
         return (

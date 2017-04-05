@@ -8,7 +8,7 @@ export default class ViewerCursorPanel extends React.Component {
         const hovered = (
             <div className="viewer-cursorPanel-col">
                 <p>{coords}</p>
-                <p>name</p>
+                <p>{this.props.hoveredAmpName}</p>
             </div>
         );
 

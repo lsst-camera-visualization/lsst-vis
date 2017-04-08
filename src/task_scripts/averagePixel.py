@@ -1,5 +1,5 @@
 import numpy as np
-from astropy.io import fits
+from util.image import Image
 from util.region import Region
 
 def task(filename, task_params):
@@ -9,19 +9,12 @@ def task(filename, task_params):
     @param task_params - Region to calculate mean value on. Currently support `rect` and `circle` regions.
     @return Mean value of the results or Error info.
     '''
+    with Image(filename) as img:
+        # Create the region object
+        regionType, regionValue = taskParams["region"]["type"], taskParams["region"]["value"]
+        region = Region(regionType, regionValue)
 
-    # Open the fits file
-    hdulist = fits.open(filename)
-    imageData = hdulist[0].data
-
-    # Create the region object
-    regionType, regionValue = taskParams["region"]["type"], taskParams["region"]["value"]
-    region = Region(regionType, regionValue)
-
-    # Call np.mean over the region in the image data
-    averageValue = region.execute(imageData, np.mean)
-
-    # Clean up
-    hdulist.close()
+        # Call np.mean over the region in the image data
+        averageValue = region.execute(imageData, np.mean)
 
     return { "result": averageValue }, None

@@ -1,4 +1,3 @@
-# Utility functions for parsing regions
 from scipy.ndimage.filters import generic_filter
 
 # Creates a rectangular slice

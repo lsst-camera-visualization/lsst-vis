@@ -1,5 +1,3 @@
-import json
-
 # Transforms the histogram data from what Numpy returns to what Firefly expects.
 # Firefly data should be an array of [binValue, binMin, binMax].
 # Seperates the hist values from underfow and overflow by one empty bin

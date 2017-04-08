@@ -1,7 +1,21 @@
 import numpy as np
 from astropy.io import fits
 from utility_scripts.helper_functions import parseRegion_rect, circle_mask
-from scipy.ndimage.filters import generic_filter as gf
+
+# a,b is the coordinate (X, Y) of the circle origin.
+def _CreateCircularMask(region_orig, region_circ):
+    # TODO: double check the order of row and column.
+    a, b, radius = region_circ['center_x'], region_circ['center_y'], region_circ['radius']
+    ny, nx = region_orig.shape
+    y, x = np.ogrid[-b:ny-b, -a:nx-a]
+    mask = y*y + x*x <= radius*radius
+    circle = np.zeros((ny,nx))
+    circle[mask] = 1
+    return circle
+
+
+
+
 
 def task(filename, task_params):
     ''' Simple task calculating average value in a region. Boundary assumes the expected format being sent in.

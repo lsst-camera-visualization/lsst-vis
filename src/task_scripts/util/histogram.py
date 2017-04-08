@@ -8,7 +8,7 @@ def NumpyToFireflyHist(hist):
 
     fireflyHist = []
     # Loop through main histogram
-    for v,i in zip(vals,range(len(vals)):
+    for v,i in zip(vals, range(len(vals))):
         fireflyHist.append([float(v), float(binEdges[i]), float(binEdges[i+1])])
 
     return fireflyHist

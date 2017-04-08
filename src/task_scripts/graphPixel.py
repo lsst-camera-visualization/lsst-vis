@@ -31,7 +31,7 @@ def task(filename, taskParams):
         o = region.execute(img, overflow)
 
         fireflyHist = NumpyToFireflyHist(h)
-        underflow = NumpyToFireflyHist(u)
-        overflow = NumpyToFireflyHist(o)
+        underflow = [ [ float(u[0]), minValue - float(h[1][1] - h[1][0]) , minValue ] ]
+        overflow  = [ [ float(o[0]), maxValue, maxValue + float(h[1][1] - h[1][0]) ] ]
 
-    return { "data": fireflyHist, "underflow": underflow, "overflow": overflow }, None
+    return { "main": fireflyHist, "underflow": underflow, "overflow": overflow }, None

@@ -196,10 +196,13 @@ cmds = {
         box.setText(boxText);
 
         // Call average_pixel python task
-        var params = region.toBackendFormat();
+        var params = {
+            "region": region.toBackendFormat()
+        }
 
         executeBackendFunction('average', viewer, params,
             function(data) {
+                console.log(data);
                 boxText = [
                     'average_pixel',
                     'Viewer: ' + viewerID, [
@@ -238,7 +241,7 @@ cmds = {
             return;
 
         var params = {
-            numBins: (cmd_args.num_bins == undefined) ? 10 : parseInt(cmd_args.num_bins),
+            bins: (cmd_args.num_bins == undefined) ? 10 : parseInt(cmd_args.num_bins),
             min: (cmd_args.min == undefined) ? -1 : parseInt(cmd_args.min),
             max: (cmd_args.max == undefined) ? -1 : parseInt(cmd_args.max),
             region: region.toBackendFormat()
@@ -249,6 +252,25 @@ cmds = {
                     x: (cmd_args["[scale]"] === "log") ? "log" : "lin",
                     y: "lin"
                 }
+                data.series = [
+                    {
+                        data: data.main,
+                        binColor: "#659cef",
+                        name: "Main"
+                    },
+                    {
+                        data: data.underflow,
+                        binColor: "#CB3515",
+                        name: "Underflow"
+                    },
+                    {
+                        data: data.overflow,
+                        binColor: "#CB3515",
+                        name: "Overflow"
+                    }
+                ];
+                data.xAxis = "Pixel Value";
+
                 var h = LSST.UI.Histogram.FromJSONString(data);
                 h.setFocus(true);
             },

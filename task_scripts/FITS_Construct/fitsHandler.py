@@ -32,10 +32,12 @@ class fitsHandler(object):
         '''
         pass
 
-    def getImageData(self):
+    def getImageData(self, extensionPosition=""):
         '''Retrive the image data as a two dimensional array.
         @author Wei Ren
-        @param None
-        @return A 2-D array of pixel values
+        @param index (optional) - speicify the "position" of an extension if
+                                it's multi-extension FITS. On single-extension
+                                FITS this argument is ignored.
+        @return A 2-D numpy array of pixel values
         '''
         pass

@@ -14,7 +14,8 @@ def task(filename, task_params):
         regionType, regionValue = taskParams["region"]["type"], taskParams["region"]["value"]
         region = Region(regionType, regionValue)
 
-        # Call np.mean over the region in the image data
-        averageValue = region.execute(img, np.mean)
+        def secondMoment(data):
+            return np.stats.moment(data, moment=2)
+        noise = region.execute(img, secondMoment)
 
-    return { "result": averageValue }, None
+    return { "result": str(noise) }, None

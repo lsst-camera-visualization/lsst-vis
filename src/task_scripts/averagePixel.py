@@ -9,7 +9,6 @@ def task(filename, taskParams):
     @param task_params - Region to calculate mean value on. Currently support `rect` and `circle` regions.
     @return Mean value of the results or Error info.
     '''
-    averageValue = 0
     with Image(filename) as img:
         # Create the region object
         regionType, regionValue = taskParams["region"]["type"], taskParams["region"]["value"]

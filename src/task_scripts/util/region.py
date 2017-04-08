@@ -2,8 +2,8 @@ from scipy.ndimage.filters import generic_filter
 
 # Creates a rectangular slice
 def _CreateRectangularSlice(value):
-    ySlice = slice(self._value["y1"], self._value["y2"])
-    xSlice = slice(self._value["x1"], self._value["x2"])
+    ySlice = slice(value["y1"], value["y2"])
+    xSlice = slice(value["x1"], value["x2"])
     return (ySlice, xSlice)
 
 # Creates a mask with a circular shape, ie a value of 1 inside the circle,
@@ -23,26 +23,26 @@ def _CreateCircularMask(imageData, circ):
 
 
 class Region:
-    def __init__(type, value):
+    def __init__(self, type, value):
         if type == "rect":
-            self._exec = executeRect
+            self._exec = self._executeRect
             self._rectSlice = _CreateRectangularSlice(value)
-        else
-            self._exec = executeCircle
+        else:
+            self._exec = self._executeCircle
             self._value = value
 
         self._value = value
 
     # Executes f over the circular region
-    def executeCircle(imageData, f):
+    def _executeCircle(self, imageData, f):
         mask = _CreateCircularMask(imageData, self._value)
         return generic_filter(imageData, f, footprint=mask)
 
     # Executes f over the rectangular region
-    def executeRect(imageData, f):
+    def _executeRect(self, imageData, f):
         roi = imageData[self._rectSlice]
         return f(roi)
 
     # Executes f over the region
-    def execute(imageData, f):
+    def execute(self, imageData, f):
         return self._exec(imageData, f)

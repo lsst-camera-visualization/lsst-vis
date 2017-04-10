@@ -9,19 +9,19 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__))+"/task_scripts/FITS_C
 #from task_scripts.graph_noise import task as task_graph_noise
 from task_scripts.averagePixel import task as task_average_pixel
 #from task_scripts.boundary import task as task_boundary
-#from task_scripts.hotPixel import task as task_hot_pixel
-#from task_scripts.graph_pixel import task as task_graph_pixel
+from task_scripts.hotPixel import task as task_hot_pixel
+from task_scripts.graphPixel import task as task_graph_pixel
 #from task_scripts.graph_proj import task as task_graph_proj
 
 # Dictionary mapping task names to functions
 _tasks = {} # DO NOT MODIFY THIS LINE (see generate_new_task.sh)
 #_tasks["noise"] = task_noise
 #_tasks["graph_noise"] = task_graph_noise
-#_tasks["graph_pixel"] = task_graph_pixel
+_tasks["graph_pixel"] = task_graph_pixel
 #_tasks["graph_proj"] = task_graph_proj
-_tasks["average"] = task_average_pixel
+_tasks["average_pixel"] = task_average_pixel
 #_tasks["boundary"] = task_boundary
-#_tasks["hot_pixel"] = task_hot_pixel
+_tasks["hot_pixel"] = task_hot_pixel
 
 # Return the parameter without any modification. For test and debug purpose.
 def _taskNotFound(param):

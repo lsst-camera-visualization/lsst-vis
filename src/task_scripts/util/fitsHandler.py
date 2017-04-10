@@ -7,25 +7,37 @@ class fitsHandler(object):
 
     def __init__(self, imageName):
         self.imageName = imageName;
+        self.image = None
 
     def __enter__(self):
-        self.image = fits.open(self.imageName)
+        try:
+            self.image = fits.open(self.imageName)
+        except Exception as e:
+            print("Cannot open the FITS file.")
+            raise
 
     def __exit__(self):
-        self.image.close()
+        try:
+            self.image.close()
+        except AttributeError as e: # Ignore if there is no image
+            pass
+        except Exception as e:
+            raise
 
-    def getHeader(self):
-        '''Retrive the header information from FITS file
+    def getHeader(self, withOverscan=False):
+        '''Retrive the header information from FITS file.
         @author Wei Ren
         @param None
-        @return Dictionary of FITS header keyword and values.
+        @return A dictionary of FITS header keyword and values.
         '''
         pass
 
-    def getImageData(self):
-        '''Retrive the image data as a two dimensional array
+    def getImageData(self, extensionPosition=""):
+        '''Retrive the image data as a two dimensional array.
         @author Wei Ren
-        @param None
-        @return A 2-D array of pixel values
+        @param index (optional) - speicify the "position" of an extension if
+                                it's multi-extension FITS. On single-extension
+                                FITS this argument is ignored.
+        @return A 2-D numpy array of pixel values.
         '''
         pass

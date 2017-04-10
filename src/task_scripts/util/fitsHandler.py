@@ -61,6 +61,26 @@ class fitsHandler(object):
                 return elem
         return None
 
+    def __convertHeaderRange(detsizeString):
+    '''Convert the boundary coordincates from string(as in the header) to values. It's assumed to be a rectangular region (2-dimensional).
+
+    NOTE: slicing are inclusive in the header value.
+
+    @author Wei Ren
+    @param String of FITS header value representing boundary or dimension.
+    @return Dictionary containing X and Y boundaries.
+    '''
+        re.split('[,:]', detsizeString[1:-1]) # strip the square bracket before spliting.
+        coord_list = detsizeString.split(',')
+        coord_list[0] = coord_list[0].split('[')[1].split(':')
+        coord_list[1] = coord_list[1].split(']')[0].split(':')
+        coord_list = [[int(value) for value in elem] for elem in coord_list]
+        return {'start_X'   :coord_list[0][0]-1,
+                'start_Y'   :coord_list[1][0]-1,
+                'end_X'     :coord_list[0][1]-1,
+                'end_Y'     :coord_list[1][1]-1
+            }
+
     def getHeader(self):
         '''Retrive the header information from FITS file. The information is
         stored as python dictionary.
@@ -68,10 +88,14 @@ class fitsHandler(object):
         @param None
         @return A dictionary of FITS header keyword and values.
         '''
-        pass
+        # Use the first segment to determine the dimension
+        tempHeader = ((self.imageHDUs)[0]).header
+        segDimension = {"x": tempHeader["NAXIS1"],
+                        "y": tempHeader["NAXIS2"]}
+        imageDimension =
 
     def getHeaderJSON(self):
-        '''Retrive the header information in JSON format. It is useful for
+        '''Retrive the header information in JSON format. It is used in
         the communication of frontend and backend.
         @author Wei Ren
         @param

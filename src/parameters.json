@@ -1,0 +1,5 @@
+{
+    "viewer_id": "The ID of the viewer to use",
+    "box_id": "The ID of the box to use",
+    "region": "A valid region - rect, circ, amp, or sel"
+}

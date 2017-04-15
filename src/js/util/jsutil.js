@@ -106,21 +106,20 @@ export const JSUtil = {
     },
 
     // Loads JSON data from a file.
-    LoadJSONFromFile: (path, success, error) => {
-        let xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = () => {
-            if (xhr.readyState === XMLHttpRequest.DONE) {
-                if (xhr.status === 200) {
-                    if (success)
-                        success(JSON.parse(xhr.responseText));
-                } else {
-                    if (error)
-                        error(xhr);
+    LoadJSONFromFile: (path) => {
+        return new Promise((resolve, reject) => {
+            let xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = () => {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200)
+                        resolve(JSON.parse(xhr.responseText));
+                    else
+                        reject(xhr);
                 }
-            }
-        };
-        xhr.open("GET", path, true);
-        xhr.send();
+            };
+            xhr.open("GET", path, true);
+            xhr.send();
+        });
     },
 
     // Foreach utility for the keys of an object.

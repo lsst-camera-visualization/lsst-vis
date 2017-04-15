@@ -15,8 +15,14 @@ export default class ViewerSelectedPanel extends React.Component {
 
         const help =
             (<div>
-                <p><span className="viewer-selectedPanel-label">Shift + click</span>: Select amplifier region</p>
-                <p><span className="viewer-selectedPanel-label">Shift + dbl click</span>: Select entire amp</p>
+                <ReactUtil.LVPair
+                    label="Shift + click"
+                    value="Select amplifier region"
+                    labelClass="viewer-info-label" />
+                <ReactUtil.LVPair
+                    label="Shift + dbl click"
+                    value="Select entire amp"
+                    labelClass="viewer-info-label" />
             </div>);
 
 

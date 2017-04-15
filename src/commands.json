@@ -11,7 +11,10 @@
         "commandName": "graph_pixel",
         "params": [ "viewer_id", "region", "num_bins", "min", "max" ]
     },
-
+    {
+        "commandName": "noise",
+        "params": [ "viewer_id", "box_id", "region" ]
+    },
 
 
     {

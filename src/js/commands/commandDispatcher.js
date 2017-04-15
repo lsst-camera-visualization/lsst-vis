@@ -2,6 +2,7 @@ import * as BoxCommands from "./box.commands";
 import * as ViewerCommands from "./viewer.commands";
 import averagePixel from "./averagePixel";
 import hotPixel from "./hotPixel";
+import noise from "./noise";
 
 // Maps command names to functions
 const commands = {
@@ -14,7 +15,8 @@ const commands = {
     "show_boundary": ViewerCommands.showBoundary,
 
     "average_pixel": averagePixel,
-    "hot_pixel": hotPixel
+    "hot_pixel": hotPixel,
+    "noise": noise
 };
 
 class CommandDispatcher {

@@ -9,8 +9,9 @@ export class Rectangle {
     }
 
     toDS9() {
-        const width  = this._x2 - this._x1;
-        const height = this._y2 - this._y1;
+        // Add one because we want to include the max boundaries
+        const width  = this._x2 - this._x1 + 1;
+        const height = this._y2 - this._y1 + 1;
         return ['box', this._x1 + (width / 2.), this._y1 + (height / 2.), width, height, 0].join(' ');
     }
 

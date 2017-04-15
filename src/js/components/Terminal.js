@@ -91,6 +91,9 @@ export default class Terminal extends React.Component {
         const entry = this.props.terminal[direction]();
         e.target.value = entry;
         DOMUtil.SetCaretPos(this.input, entry.length);
+
+        // Simulate a key press to update the help string
+        this.handleChange(e);
     }
 
 

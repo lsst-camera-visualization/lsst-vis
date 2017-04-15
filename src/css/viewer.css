@@ -53,38 +53,8 @@
 
 
 .viewer-cursorPanel {
-
-}
-
-.viewer-cursorPanel-top-ctr {
-    padding-bottom: 3px;
-    border-bottom: 1px dashed #FFF;
-    margin-bottom: 3px;
-}
-
-.viewer-cursorPanel-col {
     text-align: center;
 }
-
-.viewer-cursorPanel-sel-ctr {
-    text-align: center;
-    padding-bottom: 2px;
-    border-bottom: 2px solid #FFF;
-    margin-bottom: 3px;
-}
-
-.viewer-cursorPanel-bottom {
-    text-align: center;
-    color: #aaa;
-    margin-bottom: 1px;
-}
-
-.viewer-cursorPanel-execButton {
-    display: block;
-    margin: 2px auto;
-    font-size: 75%;
-}
-
 
 
 
@@ -101,4 +71,28 @@
     -webkit-box-align: center;
         -ms-flex-align: center;
             align-items: center;
+}
+
+
+
+
+.viewer-selectedPanel {
+    color: #BBC6D7;
+    text-align: center;
+    font-size: 125%;
+    background: #283854;
+    border: solid 1px #FFF;
+    padding-top: 7px;
+    padding-bottom: 5px;
+}
+
+.viewer-selectedPanel-execButton {
+    display: block;
+    margin: 2px auto;
+    font-size: 80%;
+    vertical-align: middle;
+}
+
+.viewer-selectedPanel-label {
+    text-decoration: underline;
 }

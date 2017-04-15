@@ -4,6 +4,7 @@ import Draggable from 'react-draggable';
 import ViewerImageViewer from "./Viewer/ViewerImageViewer";
 import ViewerUVPanel from "./Viewer/ViewerUVPanel";
 import ViewerCursorPanel from "./Viewer/ViewerCursorPanel";
+import ViewerSelectedPanel from "./Viewer/ViewerSelectedPanel";
 import { ReactUtil } from "../util/react";
 
 export default class Viewer extends React.Component {
@@ -19,11 +20,11 @@ export default class Viewer extends React.Component {
         const id = this.props.id;
         const e = this.props.viewers[id];
 
-        const left = <ViewerCursorPanel
+        const cursorPanel = <ViewerCursorPanel
                         cursorPoint={e.cursorPoint}
                         pixelValue={e.pixelValue}
                         hoveredAmpName={e.hoveredAmpName} />
-        const right = <ViewerUVPanel />;
+        const uvPanel = <ViewerUVPanel />;
 
         return (
             <Draggable
@@ -35,9 +36,10 @@ export default class Viewer extends React.Component {
                     <ReactUtil.Col2
                         className="viewer-info"
                         width="50%"
-                        left={left}
-                        right={right}
+                        left={cursorPanel}
+                        right={uvPanel}
                         separator={true} />
+                    <ViewerSelectedPanel />
                 </div>
             </Draggable>
         );

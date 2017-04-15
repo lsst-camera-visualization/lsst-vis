@@ -29,7 +29,7 @@ def _taskNotFound(filename, params):
 
 # Handler to pass the correct filename and parameters for backend scripts.
 def params_handler(params):
-    filename = params['image_url']
+    filename = params["_imageURL"]
     return (filename, params)
 
 def execute_task(task_name, task_params):

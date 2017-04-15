@@ -37,6 +37,26 @@ export const DrawRegions = (plotID, layer, regions, options = {}) => {
     firefly.action.dispatchCreateRegionLayer(layer, layer, null, ds9regions, plotID);
 }
 
+export const DrawHistogram = (plotID, data, width, height, options = {}) => {
+    // Default values for options
+    options = Object.assign({
+        xaxis: "X-Axis Label",
+        logs: ""
+    })
+
+    let props = {
+        series: data,
+        width,
+        height,
+        desc: options.xaxis
+    };
+
+    if (options.logs !== "")
+        props.logs = options.logs;
+
+    firefly.util.renderDOM(plotID, firefly.ui.Histogram, props);
+}
+
 // Loads an image into the plot id
 export const LoadImage = (plotID, imageURL) => {
     firefly.showImage(plotID, {

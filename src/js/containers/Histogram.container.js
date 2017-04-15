@@ -1,16 +1,14 @@
 import { connect } from "react-redux"
-import App from "../components/App";
+import Histogram from "../components/Histogram";
 
 const mapStateToProps = state => {
     return {
-        boxes: state.boxes,
-        viewers: state.viewers,
         histograms: state.histograms
     };
 }
 
-const AppCtr = connect(
+const HistogramCtr = connect(
     mapStateToProps
-)(App);
+)(Histogram);
 
-export default AppCtr;
+export default HistogramCtr;

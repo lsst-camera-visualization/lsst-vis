@@ -9,7 +9,7 @@
     },
     {
         "commandName": "graph_pixel",
-        "params": [ "viewer_id", "region", "num_bins", "min", "max" ]
+        "params": [ "viewer_id", "region", "num_bins", "min", "max", "[scale]" ]
     },
     {
         "commandName": "noise",

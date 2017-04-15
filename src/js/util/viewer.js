@@ -1,5 +1,5 @@
 import { AddActionListener } from "./firefly";
-import { drawDS9Regions, updateCursorPos, updateHoveredAmpName } from "../actions/viewer.actions";
+import * as ViewerActions from "../actions/viewer.actions";
 import loadBoundary from "../commands/loadBoundary";
 
 import store from "../store";
@@ -86,10 +86,18 @@ export class Viewer {
     onCursorMove = action => {
         const imgPt = action.payload.readoutItems.imagePt;
         if (imgPt)
-            store.dispatch(updateCursorPos(this.id, imgPt.value));
+            store.dispatch(ViewerActions.updateCursorPos(this.id, imgPt.value));
 
-        const name = this.calculateHoveredAmpName();
+        let value = "";
+        if (action.payload.hasValues) {
+            const v = action.payload.readoutItems.nobandFlux.value;
+            if (v !== undefined)
+                value = v;
+        }
+        store.dispatch(ViewerActions.updatePixelValue(this.id, value));
+
+        const name = null;//this.calculateHoveredAmpName();
         if (name)
-            store.dispatch(updateHoveredAmpName(this.id, name));
+            store.dispatch(ViewerActions.updateHoveredAmpName(this.id, name));
     }
 }

@@ -76,6 +76,16 @@ const commands = {
         let newState = Object.assign({...state});
         newState[action.id].hoveredAmpName = action.name;
         return newState;
+    },
+
+    "UPDATE_PIXEL_VALUE": (state, action) => {
+        if (!(action.id in state))
+            return state;
+
+        let newState = Object.assign({...state});
+        newState[action.id].pixelValue = action.value;
+        console.log(action.value);
+        return newState;
     }
 }
 

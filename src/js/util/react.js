@@ -7,6 +7,7 @@ export const ReactUtil = {
     //    left : React Component - The component to put in the left column.
     //    right : React Component - The component to put in the right column.
     //    separator : Boolean - Should we put a separator bar in between the columns?
+    //    separatorWidth : Integer - The width of the separator, if necessary.
     //    className : String - The class name to apply to the container.
     Col2: class extends React.Component {
         render() {
@@ -25,7 +26,9 @@ export const ReactUtil = {
                     </div>
 
                     <div className="col-separator-container">
-                        <ReactUtil.Separator empty={!this.props.separator} />
+                        <ReactUtil.Separator
+                            empty={!this.props.separator}
+                            width={this.props.separatorWidth} />
                     </div>
 
                     <div className="col-2" style={rightStyle}>
@@ -42,7 +45,12 @@ export const ReactUtil = {
             if (this.props.empty)
                 return (<div></div>);
 
-            return <div class="col-separator"></div>;
+            const w = this.props.width;
+            const style = {
+                width: (w) ? (w + "px") : "2px"
+            };
+
+            return <div style={style} class="col-separator"></div>;
         }
     },
 }

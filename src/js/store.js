@@ -3,7 +3,7 @@ import logger from 'redux-logger'
 import reducer from "./reducers";
 
 import { JSUtil } from "./util/jsutil";
-import { addCommand, setCommandDispatcher } from "./actions/command.actions";
+import { addCommand, addParameterDesc, setCommandDispatcher } from "./actions/command.actions";
 import CommandDispatcher from "./commands/commandDispatcher";
 
 const middleware = [];
@@ -22,11 +22,29 @@ store.subscribe( () => {
     localStorage.setItem("state", JSON.stringify(store.getState()));
 });
 
-// Load commands
-JSUtil.LoadJSONFromFile(
-    "../commands.json",
-    data => { data.map( c => store.dispatch(addCommand(c.commandName, c.params)) ) },
-    error => { console.log("Error: ", error); }
-);
+// Loads the commands
+const loadCommands = () => {
+    console.log("Loading commands");
+    return JSUtil.LoadJSONFromFile("../commands.json")
+        .then(data =>
+            data.map( c => store.dispatch(addCommand(c.commandName, c.params, c.desc)))
+        );
+}
+
+// Loads the parameter descriptions
+const loadParameters = () => {
+    console.log("Loading parameters");
+    return JSUtil.LoadJSONFromFile("../parameters.json")
+        .then(data =>
+            JSUtil.ObjectKeyMap(data, d => store.dispatch(addParameterDesc(d, data[d])))
+        );
+}
+
+loadCommands()
+    .then(loadParameters)
+    .catch(error => console.log(error));
+
+
+window.store = store;
 
 export default store;

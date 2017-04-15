@@ -1,10 +1,17 @@
-export const addCommand = (commandName, params) => {
+export const addCommand = (commandName, params, desc) => {
     return {
         type: "ADD_COMMAND",
-        payload: {
-            commandName,
-            params
-        }
+        commandName,
+        params,
+        desc
+    }
+}
+
+export const addParameterDesc = (parameter, desc) => {
+    return {
+        type: "ADD_PARAMETER_DESC",
+        parameter,
+        desc
     }
 }
 

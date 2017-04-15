@@ -84,7 +84,6 @@ const commands = {
 
         let newState = Object.assign({...state});
         newState[action.id].pixelValue = action.value;
-        console.log(action.value);
         return newState;
     }
 }

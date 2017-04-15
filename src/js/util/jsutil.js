@@ -97,6 +97,14 @@ export const JSUtil = {
         return str.match(/^\s*$/) ? true : false;
     },
 
+    IsEmptyObject: object => {
+        for (const key in object) {
+            if (object.hasOwnProperty(key))
+                return false;
+        }
+        return true;
+    },
+
     // Loads JSON data from a file.
     LoadJSONFromFile: (path, success, error) => {
         let xhr = new XMLHttpRequest();

@@ -12,7 +12,7 @@ export class Viewer {
 
         this.cursorPoint = { x: 0, y: 0 };
 
-        loadBoundary(this).then( () => {
+        /*loadBoundary(this).then( () => {
             const regions = this.boundaryRegions;
             const opts = {
                 color: "red",
@@ -20,7 +20,7 @@ export class Viewer {
             };
             // Draw the boundary regions
             store.dispatch(drawDS9Regions(this.id, "BOUNDARY", regions, opts));
-        });
+        });*/
 
         AddActionListener("READOUT_DATA", this.onCursorMove);
     }

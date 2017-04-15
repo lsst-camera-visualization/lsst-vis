@@ -15,8 +15,17 @@ export default class TerminalHelp extends React.Component {
         if (trimmed != "") {
             const ac = this.props.commands.autoCompleteArray.autoComplete(split[0]);
 
-            if (ac.match)
-                return {str: ac.match + " " + this.props.commands.commands[ac.match].join(" "), bMatch: true};
+            if (ac.match) {
+                // Make sure we have a valid command if we're not typing it anymore
+                const bCheckCommand = (split.length > 1 || this.props.input.match(/\s$/));
+
+                // More readable version: !bCheckCommand || (bCheckCommand && ac.bWhole)
+                if (!bCheckCommand || ac.bWhole)
+                    return {
+                        str: ac.match + " " + this.props.commands.commands[ac.match].join(" "),
+                        bMatch: true
+                    };
+            }
         }
 
         return {str: this._defaultHelpString, bMatch: false};

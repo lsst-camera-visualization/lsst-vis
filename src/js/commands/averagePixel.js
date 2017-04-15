@@ -12,19 +12,20 @@ export default (params) => {
 
     // The parameters to pass to the backend
     const backendParameters = {
-        ...region.toBackendFormat()
+        region: region.toBackendFormat()
     }
 
     const onSuccess = data => {
         // Reset the viewer regions
-        store.dispatch(clearLayer(params.viewer_id, "AVERAGE_PIXEL"));
-        store.dispatch(drawRegion(params.viewer_id, "AVERAGE_PIXEL", region));
+        const regionLayer = "AVERAGE_PIXEL";
+        store.dispatch(clearLayer(params.viewer_id, regionLayer));
+        store.dispatch(drawRegion(params.viewer_id, regionLayer, region));
 
         // Draw output result to box
         store.dispatch(clearBoxText(params.box_id));
         store.dispatch(setBoxText(params.box_id, [data.result]));
     }
 
-    LaunchTask("average", backendParameters, viewer)
+    LaunchTask("average_pixel", backendParameters, viewer)
         .then( onSuccess, error => console.log("Error: ", error) )
 }

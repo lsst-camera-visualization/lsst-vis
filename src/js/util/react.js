@@ -39,6 +39,32 @@ export const ReactUtil = {
         }
     },
 
+    // A React component for label/value pairs.
+    // Props:
+    //    label : String - The label.
+    //    value : String - The value.
+    //    containerClass : String - The class for the container, if necessary.
+    //    labelClass : String - The class for the label, if necessary.
+    //    valueClass : String - The class for the value, if necessary.
+    LVPair: class extends React.Component {
+        render() {
+            // Default values for props
+            const opts = Object.assign({
+                containerClass: "",
+                labelClass: "",
+                valueClass: ""
+            }, this.props);
+
+            return (
+                <div className={opts.containerClass}>
+                    <span className={opts.labelClass}>{this.props.label}</span>
+                    <span>: </span>
+                    <span className={opts.valueClass}>{this.props.value}</span>
+                </div>
+            );
+        }
+    },
+
     // Props: { empty : Bool }
     Separator: class extends React.Component {
         render() {

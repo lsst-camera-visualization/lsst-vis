@@ -39,10 +39,6 @@ class Region:
         roi = imageData[rectSlice]
         return f(roi)
 
-    # Executes f over the region
-    # imageData - An array containing the image data.
-    # fRect, fCirc - The functions to be
-    # If fCirc is None, or not specified, fRect is used for both region types.
     def execute(self, imageData, fRect, fCirc = None):
         """
         Executes a function over a region of an image.

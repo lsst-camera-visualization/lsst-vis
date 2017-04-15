@@ -18,11 +18,10 @@ export default params => {
     }
 
     const onSuccess = data => {
-        const layer = "HOT_PIXEL";
-        console.log(data);
 
         // Reset the viewer regions
-        store.dispatch(clearLayer(viewerID, layer));
+        const regionLayer = "HOT_PIXEL";
+        store.dispatch(clearLayer(viewerID, regionLayer));
 
         const ds9Regions = data.hotPixels.map( d => ["circle", "point", d.x, d.y].join(" "));
         const opts = {
@@ -30,7 +29,7 @@ export default params => {
         }
 
         // Draw the hot pixels
-        store.dispatch(drawDS9Regions(viewerID, layer, ds9Regions, opts));
+        store.dispatch(drawDS9Regions(viewerID, regionLayer, ds9Regions, opts));
     }
 
     LaunchTask("hot_pixel", backendParameters, viewer)

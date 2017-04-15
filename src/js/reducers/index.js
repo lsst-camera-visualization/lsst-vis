@@ -2,6 +2,7 @@ import { combineReducers } from "redux";
 import terminalReducer from "./terminal.reducer";
 import boxReducer from "./box.reducer";
 import viewerReducer from "./viewer.reducer";
+import histogramReducer from "./histogram.reducer";
 import commandsReducer from "./commands.reducer";
 
 // State:
@@ -9,6 +10,7 @@ import commandsReducer from "./commands.reducer";
 //      terminal: A LSSTUtil.Terminal object, containing all terminal data
 //      boxes: A list of all the LSSTUtil.Box's created
 //      viewers: A list of all the LSSTUtil.Viewer's created
+//      histograms: A list of all the LSSTUtil.Histograms created
 //      commands: A list of the valid commands that can be entered by the user in the terminal
 // }
 
@@ -22,6 +24,7 @@ const reducer = (state = initialState, action) => {
     newState.terminal = terminalReducer(state.terminal, action);
     newState.boxes = boxReducer(state.boxes, action);
     newState.viewers = viewerReducer(state.viewers, action);
+    newState.histograms = histogramReducer(state.histograms, action);
     newState.commands = commandsReducer(state.commands, action);
 
     return newState;

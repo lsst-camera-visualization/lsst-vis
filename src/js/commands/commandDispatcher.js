@@ -1,6 +1,7 @@
 import * as BoxCommands from "./box.commands";
 import * as ViewerCommands from "./viewer.commands";
 import averagePixel from "./averagePixel";
+import graphPixel from "./graphPixel";
 import hotPixel from "./hotPixel";
 import noise from "./noise";
 
@@ -15,6 +16,7 @@ const commands = {
     "show_boundary": ViewerCommands.showBoundary,
 
     "average_pixel": averagePixel,
+    "graph_pixel": graphPixel,
     "hot_pixel": hotPixel,
     "noise": noise
 };

@@ -92,3 +92,12 @@ export const updateHoveredAmpName = (id, name) => {
         name
     }
 }
+
+// Updates the pixel value of where the cursor is
+export const updatePixelValue = (id, value) => {
+    return {
+        type: "UPDATE_PIXEL_VALUE",
+        id,
+        value
+    }
+}

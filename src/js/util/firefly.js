@@ -62,7 +62,7 @@ export const LoadImage = (plotID, imageURL) => {
     firefly.showImage(plotID, {
         plotId: plotID,
         URL: imageURL,
-        Title: "Title: " + imageURL,
+        Title: imageURL,
         ZoomType: "TO_WIDTH",
         ZoomToWidth: '100%'
     });

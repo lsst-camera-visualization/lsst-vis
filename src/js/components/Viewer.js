@@ -21,6 +21,7 @@ export default class Viewer extends React.Component {
 
         const left = <ViewerCursorPanel
                         cursorPoint={e.cursorPoint}
+                        pixelValue={e.pixelValue}
                         hoveredAmpName={e.hoveredAmpName} />
         const right = <ViewerUVPanel />;
 

@@ -58,7 +58,7 @@
 
 .viewer-cursorPanel-top-ctr {
     padding-bottom: 3px;
-    border-bottom: 2px solid #FFF;
+    border-bottom: 1px dashed #FFF;
     margin-bottom: 3px;
 }
 
@@ -66,12 +66,11 @@
     text-align: center;
 }
 
-.viewer-cursorPanel-hovered {
+.viewer-cursorPanel-sel-ctr {
     text-align: center;
-}
-
-.viewer-cursorPanel-selected {
-    text-align: center;
+    padding-bottom: 2px;
+    border-bottom: 2px solid #FFF;
+    margin-bottom: 3px;
 }
 
 .viewer-cursorPanel-bottom {

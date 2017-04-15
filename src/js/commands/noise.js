@@ -19,7 +19,10 @@ export default (params) => {
         // Reset the viewer regions
         const regionLayer = "NOISE";
         store.dispatch(clearLayer(params.viewer_id, regionLayer));
-        store.dispatch(drawRegion(params.viewer_id, regionLayer, region));
+        const regionOpts = {
+            color: "#33AA33"
+        };
+        store.dispatch(drawRegion(params.viewer_id, regionLayer, region, regionOpts));
 
         // Draw output result to box
         store.dispatch(clearBoxText(params.box_id));

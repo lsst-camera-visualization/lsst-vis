@@ -30,13 +30,13 @@ export default class Terminal extends React.Component {
 
     // Execute command handler
     handleEnter = input => {
-        console.log(this.props);
         if (!JSUtil.IsEmptyString(input)) {
             this.props.onExecute(input);
 
             let groups = JSUtil.SplitStringByGroup(input);
             const command = groups.shift();
 
+            // Make sure command exists
             if (!(command in this.props.commands.commands))
                 return;
 

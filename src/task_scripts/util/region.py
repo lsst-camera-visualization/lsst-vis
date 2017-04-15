@@ -2,8 +2,9 @@ from scipy.ndimage.filters import generic_filter
 
 # Creates a rectangular slice
 def _CreateRectangularSlice(value):
-    ySlice = slice(value["y1"], value["y2"])
-    xSlice = slice(value["x1"], value["x2"])
+    # Add 1 to include the right and bottom edges
+    ySlice = slice(value["y1"], value["y2"] + 1)
+    xSlice = slice(value["x1"], value["x2"] + 1)
     return (ySlice, xSlice)
 
 # Creates a mask with a circular shape, ie a value of 1 inside the circle,
@@ -24,13 +25,7 @@ def _CreateCircularMask(imageData, circ):
 
 class Region:
     def __init__(self, type, value):
-        if type == "rect":
-            self._exec = self._executeRect
-            self._rectSlice = _CreateRectangularSlice(value)
-        else:
-            self._exec = self._executeCircle
-            self._value = value
-
+        self._type = type
         self._value = value
 
     # Executes f over the circular region
@@ -40,9 +35,21 @@ class Region:
 
     # Executes f over the rectangular region
     def _executeRect(self, imageData, f):
-        roi = imageData[self._rectSlice]
+        rectSlice = _CreateRectangularSlice(self._value)
+        roi = imageData[rectSlice]
         return f(roi)
 
     # Executes f over the region
-    def execute(self, imageData, f):
-        return self._exec(imageData, f)
+    # imageData - An array containing the image data.
+    # fRect, fCirc - The functions to be
+    # If fCirc is None, or not specified, fRect is used for both region types.
+    def execute(self, imageData, fRect, fCirc = None):
+        """
+        Executes a function over a region of an image.
+        :param imageData: An array containing the image data.
+        :param fRect, fCirc: The functions to be executed over rectangular and circular regions, respectively. If fCirc is not specified or is None, fRect will be used for both.
+        """
+        if self._type == "rect":
+            return self._executeRect(imageData, fRect)
+        elif self._type == "circ":
+            return self._executeCircle(imageData, fCirc if fCirc != None else fRect)

@@ -24,11 +24,11 @@ _tasks["average_pixel"] = task_average_pixel
 _tasks["hot_pixel"] = task_hot_pixel
 
 # Return the parameter without any modification. For test and debug purpose.
-def _taskNotFound(param):
-    return ({"result": "Test function or wrong function call!"}, None)
+def _taskNotFound(filename, params):
+    return (None, "BAD_TASK_NAME")
 
 # Handler to pass the correct filename and parameters for backend scripts.
-def params_handler(task_name, params):
+def params_handler(params):
     filename = params['image_url']
     return (filename, params)
 
@@ -47,7 +47,7 @@ def execute_task(task_name, task_params):
         task = _taskNotFound
 
     # returns result, error
-    return task(*(params_handler(task_name, task_params)))
+    return task(*(params_handler(task_params)))
 
 
 

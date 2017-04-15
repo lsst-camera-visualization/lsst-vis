@@ -1,14 +1,14 @@
 import { ReducerUtil } from "../util/reducer";
 import { Viewer } from "../util/viewer";
-import { ClearRegion, DrawRegions } from "../util/firefly";
+import { ClearLayer, DrawRegions } from "../util/firefly";
 
 
 // Viewer commands
 const commands = {
-    "CLEAR_REGION": (state, action) => {
+    "CLEAR_LAYER": (state, action) => {
         if (!(action.id in state))
             return state;
-        FireflyUtil.ClearRegion(action.id, action.layer);
+        ClearLayer(action.id, action.layer);
         return Object.assign({...state}, {});
     },
 

@@ -19,6 +19,7 @@ Filesystem:
             store.js - The Redux store
     client.min.js - Minified ES5 code that will run on the browser
     commands.json - Terminal command descriptions
+    parameters.json - Terminal parameter descriptions
     index.html - HTML file
 
 How to implement a new command:

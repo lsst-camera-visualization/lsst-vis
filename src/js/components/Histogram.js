@@ -30,9 +30,6 @@ export default class Histogram extends React.Component {
 
         const width = this.ctrRef.clientWidth - lrPadding;
         const height = this.ctrRef.clientHeight - tbPadding - titleHeight;
-        console.log(this.ctrRef.clientHeight);
-        console.log(tbPadding);
-        console.log(titleHeight);
         DrawHistogram(id, h.data, width, height, h.opts);
     }
 

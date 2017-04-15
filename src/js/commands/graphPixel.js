@@ -22,7 +22,10 @@ export default (params) => {
         // Reset the viewer regions
         const regionLayer = "GRAPH_PIXEL";
         store.dispatch(clearLayer(params.viewer_id, regionLayer));
-        store.dispatch(drawRegion(params.viewer_id, regionLayer, region));
+        const regionOpts = {
+            color: "darkorange"
+        };
+        store.dispatch(drawRegion(params.viewer_id, regionLayer, region, regionOpts));
 
         // Create output histogram
         const histoData = [

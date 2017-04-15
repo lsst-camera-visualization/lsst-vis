@@ -19,7 +19,10 @@ export default (params) => {
         // Reset the viewer regions
         const regionLayer = "AVERAGE_PIXEL";
         store.dispatch(clearLayer(params.viewer_id, regionLayer));
-        store.dispatch(drawRegion(params.viewer_id, regionLayer, region));
+        const regionOpts = {
+            color: "blue"
+        };
+        store.dispatch(drawRegion(params.viewer_id, regionLayer, region, regionOpts));
 
         // Draw output result to box
         store.dispatch(clearBoxText(params.box_id));

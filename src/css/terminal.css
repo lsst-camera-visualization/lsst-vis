@@ -29,16 +29,38 @@
 
 .term-help-ctr {
   font-size: 150%;
-  border-bottom: solid 2px #777;
   color: #888;
   width: 100%;
+  border-bottom: solid 1px #AAA;
   margin-bottom: 5px;
   padding: 10px 0px 3px 0px;
+}
+
+.term-help-info-ctr {
+    background: #555;
+    border-radius: 5px;
+    margin-top: 3px;
+    border-top: dotted 1px #AAA;
+    padding-top: 3px;
+    margin-bottom: 3px;
+    box-shadow: 5px 5px 15px #222;
+}
+
+.term-help-desc {
+    color: #DDD;
+}
+
+.term-help-param {
+    color: #DDD;
 }
 
 .term-help-command {
     display: inline;
     color: #888;
+}
+
+.term-help-descHeader {
+    color: #AAF;
 }
 
 .term-help-highlight {

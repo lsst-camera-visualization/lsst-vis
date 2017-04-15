@@ -33,7 +33,7 @@ export default class App extends React.Component {
                 { this.createUIElements(this.props.viewers, this.createViewer) }
                 { this.createUIElements(this.props.histograms, this.createHistogram) }
                 <div className="cmdline-ctr" >
-                    <TerminalCtr width={900} height={300} />
+                    <TerminalCtr width={900} height={400} />
                 </div>
             </div>
         );

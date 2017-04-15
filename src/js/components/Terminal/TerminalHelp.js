@@ -5,10 +5,10 @@ import { JSUtil } from "../../util/jsutil";
 export default class TerminalHelp extends React.Component {
     constructor() {
         super();
-        this._defaultHelpString = "Command line interface: Type help for more info";
+        this.defaultHelpString = "Command line interface: Type help for more info";
     }
 
-    getHelpString = () => {
+    getCurrentCommandInfo = () => {
         const trimmed = this.props.input.trim();
         const split = JSUtil.SplitStringByWS(trimmed);
 
@@ -20,15 +20,17 @@ export default class TerminalHelp extends React.Component {
                 const bCheckCommand = (split.length > 1 || this.props.input.match(/\s$/));
 
                 // More readable version: !bCheckCommand || (bCheckCommand && ac.bWhole)
-                if (!bCheckCommand || ac.bWhole)
+                if (!bCheckCommand || ac.bWhole) {
+                    const command = this.props.commands.commands[ac.match];
                     return {
-                        str: ac.match + " " + this.props.commands.commands[ac.match].join(" "),
-                        bMatch: true
+                        str: ac.match + " " + command.params.join(" "),
+                        desc: command.desc,
                     };
+                }
             }
         }
 
-        return {str: this._defaultHelpString, bMatch: false};
+        return null;
     }
 
     highlightString = (str, index, className) => {
@@ -37,10 +39,14 @@ export default class TerminalHelp extends React.Component {
         const list = split.map((e, i) => {
             if (i === index) {
                 // We are highlighting a parameter
-                if (i > 0)
+                if (i > 0) {
                     this.props.onHighlightParameter(split[i]);
-                else
+                    this.currParam = split[i];
+                }
+                else {
                     this.props.onHighlightParameter(null);
+                    this.currParam = null;
+                }
 
                 return <span key={i} className={className}>{split[i]} </span>;
             }
@@ -51,17 +57,46 @@ export default class TerminalHelp extends React.Component {
     }
 
     render() {
-        let helpString = this.getHelpString();
-        if (helpString.bMatch) {
+        const info = this.getCurrentCommandInfo();
+
+        let helpString = null;
+        let descHeader, desc = null;
+        let paramHeader, paramDesc = null;
+
+        if (info) {
+            // Valid command
             const caretIndex = JSUtil.GetWordNumFromCaret(this.props.input, this.props.caretPos);
-            helpString = this.highlightString(helpString.str, caretIndex, "term-help-highlight");
+            helpString = this.highlightString(info.str, caretIndex, "term-help-highlight");
+
+            descHeader = "Command Description: ";
+            desc = info.desc;
+
+            const parameterDescs = this.props.commands.parameters;
+            if (this.currParam && parameterDescs && this.currParam in parameterDescs) {
+                paramHeader = this.currParam + ": ";
+                paramDesc = parameterDescs[this.currParam];
+            }
         }
-        else
-            helpString = <p>{helpString.str}</p>;
+        else {
+            // Invalid command
+            helpString = <p>{this.defaultHelpString}</p>;
+            descHeader = desc = null;
+            paramHeader = paramDesc = null;
+        }
 
         return(
             <div className="term-help-ctr">
                 <div>{helpString}</div>
+                <div className="term-help-info-ctr">
+                    <div className="term-help-desc">
+                        <span className="term-help-descHeader">{descHeader}</span>
+                        <span>{desc}</span>
+                    </div>
+                    <div className="term-help-param">
+                        <span className="term-help-descHeader">{paramHeader}</span>
+                        <span>{paramDesc}</span>
+                    </div>
+                </div>
             </div>
         );
     }

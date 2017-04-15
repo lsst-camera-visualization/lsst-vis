@@ -16,6 +16,7 @@ Filesystem:
             reducers/ - Redux reducers
             util/ - Utility files
             client.js - Application entrance
+            store.js - The Redux store
     client.min.js - Minified ES5 code that will run on the browser
     commands.json - Terminal command descriptions
     index.html - HTML file

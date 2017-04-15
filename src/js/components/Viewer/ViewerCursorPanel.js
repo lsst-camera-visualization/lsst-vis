@@ -9,15 +9,18 @@ export default class ViewerCursorPanel extends React.Component {
         return (
             <div className="viewer-info-panel viewer-cursorPanel">
                 <p className="viewer-info-header">Cursor Stats</p>
-                <span>Image Coordinates: </span>
-                <span>{coords}</span>
-                <br/>
-                <span>Pixel Value: </span>
-                <span>{this.props.pixelValue}</span>
-                <br/>
-                <span>Hovered Segment: </span>
-                <span>{this.props.hoveredAmpName}</span>
-                <br/>
+                <ReactUtil.LVPair
+                    label="Image Coordinates"
+                    value={coords}
+                    labelClass="viewer-info-label" />
+                <ReactUtil.LVPair
+                    label="Pixel Value"
+                    value={this.props.pixelValue}
+                    labelClass="viewer-info-label" />
+                <ReactUtil.LVPair
+                    label="Hovered Segment"
+                    value={this.props.hoveredAmpName}
+                    labelClass="viewer-info-label" />
             </div>
         );
     }

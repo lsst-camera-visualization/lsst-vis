@@ -26,7 +26,6 @@ const commandsReducer = (state = initialState, action) => {
             let p = Object.assign({...state.parameters}, {[action.parameter]: action.desc});
             let newState = Object.assign({...state}, {});
             newState.parameters = p;
-            console.log("newState: ", newState);
             return newState;
         }
 

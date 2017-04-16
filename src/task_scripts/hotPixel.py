@@ -1,8 +1,4 @@
 import numpy as np
-import six
-from astropy.io import fits
-from utility_scripts.helper_functions import parseRegion_rect
-
 from util.image import Image
 from util.region import Region
 
@@ -14,20 +10,32 @@ def task(filename, taskParams):
     @return
     '''
     threshold = taskParams["threshold"]
-    region = Region(taskParams["region"]["type"], taskParams["region"]["value"])
+    regionParam = taskParams["region"]
+    region = Region(regionParam["type"], regionParam["value"])
 
     with Image(filename) as img:
         threshold = np.max(img) if threshold == "max" else float(threshold)
-        cols, rows = np.where(img >= threshold)
-        numPoints = min(500, rows.size)
 
-        ## Fix this, use new region class
-        rows = rows[::rows.size // numPoints]
-        cols = cols[::cols.size // numPoints]
-        l = np.zeros((rows.size, 2))
-        l[:, 1] = cols + region._rectSlice[0].start
-        l[:, 0] = rows + region._rectSlice[1].start
-        return l.tolist(), None
+        # For a rectangular region
+        def findHotPixelsRect(data):
+            hotPixels = []
+            max = 500
+            x,y = regionParam["value"]["x1"], regionParam["value"]["y1"]
+            for index, value in np.ndenumerate(data):
+                # If it breaks the threshold, add it to the list, but offset the location
+                #    to match the location
+                if value >= threshold:
+                    hotPixels.append({"x":index[0]+x, "y":index[1]+y})
+                # Max number of hot pixels
+                if len(hotPixels) > max-1:
+                    break
+            return { "hotPixels": hotPixels }, None
+
+        # For a circular region
+        def findHotPixelsCirc(data):
+            pass
+
+        return region.execute(img, findHotPixelsRect, findHotPixelsCirc)
 
     return {"error:", "Error reading image file"}
 

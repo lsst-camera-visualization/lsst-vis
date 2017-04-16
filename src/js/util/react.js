@@ -79,4 +79,18 @@ export const ReactUtil = {
             return <div style={style} class="col-separator"></div>;
         }
     },
+
+    Toolbar: class extends React.Component {
+        render() {
+            return (
+                <div className={this.props.className}>
+                    <img
+                        className="toolbar-close-button"
+                        src="./images/close_40x40.png"
+                        onClick={this.props.onClose} />
+                    {this.props.children}
+                </div>
+            );
+        }
+    },
 }

@@ -39,3 +39,12 @@ body {
 
     background-color: #FFF;
 }
+
+
+
+.toolbar-close-button {
+    color: #000;
+    position: absolute;
+    right: 3px;
+    top: 3px;
+}

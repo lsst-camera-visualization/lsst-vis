@@ -1,12 +1,20 @@
 import { LaunchTask } from "../util/firefly";
 import { ParseRegion } from "../util/region";
-import { createHistogram, drawHistogram } from "../actions/histogram.actions.js";
-import { drawRegion, clearLayer } from "../actions/viewer.actions.js";
+import { createHistogram, drawHistogram } from "../actions/histogram.actions";
+import { drawRegion, clearLayer } from "../actions/viewer.actions";
+import { validateParameters } from "../util/command";
+import { addErrorToHistory } from "../actions/terminal.actions";
 
 import store from "../store";
 
 // { viewer_id, region, num_bins, min, max, [scale] }
 export default (params) => {
+    const valid = validateParameters(params, store.getState());
+    if (valid !== null) {
+        store.dispatch(addErrorToHistory("Bad parameter - " + valid));
+        return;
+    }
+
     const viewer = store.getState().viewers[params.viewer_id];
     const region = ParseRegion(params.region);
 

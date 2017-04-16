@@ -9,6 +9,8 @@
 - Check for invalid parameters
 - Fix default parameters when its closed
 - Invalid commands entered
+- Comment stuff
+- Graph pixel axis label
 
 
 - Create super class for UI elements?

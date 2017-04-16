@@ -3,7 +3,7 @@ import logger from 'redux-logger'
 import reducer from "./reducers";
 
 import { JSUtil } from "./util/jsutil";
-import { addCommand, addParameterDesc, setCommandDispatcher } from "./actions/command.actions";
+import { addCommand, addParameterDesc, setCommandDispatcher } from "./actions/terminal.actions";
 import CommandDispatcher from "./commands/commandDispatcher";
 
 // Load Redux middleware

@@ -58,7 +58,7 @@ export default class Terminal extends React.Component {
         const input = e.target.value;
         if (this._param === null) {
             // Entering the command name
-            const ac = this.props.commands.autoCompleteArray.autoComplete(input);
+            const ac = this.props.terminal.autoCompleteArray.autoComplete(input);
             if (ac.auto) {
                 e.target.value = ac.auto + (ac.bWhole ? " " : "");
             }
@@ -143,6 +143,7 @@ export default class Terminal extends React.Component {
             <div className="term-ctr" style={style} onClick={this.handleClick}>
                 <TerminalHelp
                     commands={this.props.commands}
+                    terminal={this.props.terminal}
                     onHighlightParameter={this.handleHighlightParameter}
                     input={this.state.input}
                     caretPos={this.state.caretPos} />

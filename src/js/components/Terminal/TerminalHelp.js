@@ -13,7 +13,7 @@ export default class TerminalHelp extends React.Component {
         const split = JSUtil.SplitStringByWS(trimmed);
 
         if (trimmed != "") {
-            const ac = this.props.commands.autoCompleteArray.autoComplete(split[0]);
+            const ac = this.props.terminal.autoCompleteArray.autoComplete(split[0]);
 
             if (ac.match) {
                 // Make sure we have a valid command if we're not typing it anymore
@@ -71,7 +71,7 @@ export default class TerminalHelp extends React.Component {
             descHeader = "Command Description: ";
             desc = info.desc;
 
-            const parameterDescs = this.props.commands.parameters;
+            const parameterDescs = this.props.terminal.parameterDescs;
             if (this.currParam && parameterDescs && this.currParam in parameterDescs) {
                 paramHeader = this.currParam + ": ";
                 paramDesc = parameterDescs[this.currParam];

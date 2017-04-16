@@ -1,5 +1,5 @@
 import { connect } from "react-redux";
-import { executeCommand, addCommandToHistory } from "../actions/command.actions";
+import { executeCommand, addCommandToHistory } from "../actions/terminal.actions";
 import Terminal from "../components/Terminal";
 
 const mapStateToProps = state => {

@@ -33,3 +33,11 @@ export const executeCommand = (command, params) => {
         }
     }
 }
+
+export const setDefault = (parameter_id, value) => {
+    return {
+        type: "SET_DEFAULT",
+        parameter_id,
+        value
+    }
+}

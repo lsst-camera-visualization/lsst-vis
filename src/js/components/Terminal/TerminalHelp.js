@@ -21,7 +21,7 @@ export default class TerminalHelp extends React.Component {
 
                 // More readable version: !bCheckCommand || (bCheckCommand && ac.bWhole)
                 if (!bCheckCommand || ac.bWhole) {
-                    const command = this.props.commands.commands[ac.match];
+                    const command = this.props.commands[ac.match];
                     return {
                         str: ac.match + " " + command.params.join(" "),
                         desc: command.desc,

@@ -7,3 +7,10 @@ export const createHistogram = (data, opts) => {
         opts
     }
 }
+
+export const deleteHistogram = id => {
+    return {
+        type: "DELETE_HISTOGRAM",
+        id
+    }
+}

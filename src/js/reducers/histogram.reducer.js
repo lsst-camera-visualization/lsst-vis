@@ -8,7 +8,13 @@ const commands = {
         const id = "_histogramID" + _numHistograms++;
         const h = new Histogram(id, action.data, action.opts);
         return ReducerUtil.AddElement(state, id, h);
-    }
+    },
+
+    "DELETE_HISTOGRAM": (state, action) => {
+        if (!(action.id in state))
+            return state;
+        return ReducerUtil.RemoveElement(state, action.id);
+    },
 }
 
 

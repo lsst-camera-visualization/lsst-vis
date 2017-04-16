@@ -1,15 +1,26 @@
 import { ReducerUtil } from "../util/reducer";
 import { Viewer } from "../util/viewer";
-import { ClearLayer, DrawRegions } from "../util/firefly";
-
 
 // Viewer commands
 const commands = {
     "CLEAR_LAYER": (state, action) => {
         if (!(action.id in state))
             return state;
-        ClearLayer(action.id, action.layer);
-        return Object.assign({...state}, {});
+
+        let newState = Object.assign({...state}, {});
+        newState[action.id].removeLayer(action.layer);
+
+        return newState;
+    },
+
+    "CLEAR_VIEWER": (state, action) => {
+        if (!(action.id in state))
+            return state;
+
+        let newState = Object.assign({...state}, {});
+        newState[action.id].removeAllLayers();
+
+        return newState;
     },
 
     "CREATE_VIEWER": (state, action) => {
@@ -27,15 +38,22 @@ const commands = {
     "DRAW_REGIONS": (state, action) => {
         if (!(action.id in state))
             return state;
+
+        let newState = Object.assign({...state}, {});
+
         const regions = action.regions.map( r => r.toDS9() );
-        DrawRegions(action.id, action.layer, regions, action.opts);
-        return Object.assign({...state}, {});
+        newState[action.id].drawRegions(action.layer, regions, action.opts);
+
+        return newState;
     },
 
     "DRAW_DS9REGIONS": (state, action) => {
         if (!(action.id in state))
             return state;
-        DrawRegions(action.id, action.layer, action.regions, action.opts);
+
+        let newState = Object.assign({...state}, {});
+        newState[action.id].drawRegions(action.layer, action.regions, action.opts);
+
         return Object.assign({...state}, {});
     },
 

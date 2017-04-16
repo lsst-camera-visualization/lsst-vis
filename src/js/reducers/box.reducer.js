@@ -24,6 +24,15 @@ const commands = {
         return newState;
     },
 
+    "HIDE_BOX": (state, action) => {
+        if (!(action.id in state))
+            return state;
+
+        let newState = Object.assign({...state}, {});
+        newState[action.id].minimize();
+        return newState;
+    },
+
     "SET_BOXTEXT": (state, action) => {
         if (!(action.id in state))
             return state;
@@ -31,7 +40,16 @@ const commands = {
         let newState = Object.assign({...state}, {});
         newState[action.id].setText(action.text);
         return newState;
-    }
+    },
+
+    "SHOW_BOX": (state, action) => {
+        if (!(action.id in state))
+            return state;
+
+        let newState = Object.assign({...state}, {});
+        newState[action.id].maximize();
+        return newState;
+    },
 }
 
 

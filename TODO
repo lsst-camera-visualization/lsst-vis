@@ -1,12 +1,20 @@
 - Update backend functions
     - original_image_url in FireflyUtil.LaunchTask
 - How to check for overscan (probably not based on filename)
-- CommandPanel: actually get selected region
-- Update viewer implementation
-- New UV UI
-- Create ViewerInfoPanel (Container for all 3 panels)
+
+
 - Output errors on the terminal
 - Restoring previous state
 - Finish implementing all commands
 - Check for invalid parameters
+- Fix default parameters when its closed
+- Invalid commands entered
+
+
 - Create super class for UI elements?
+- Create ViewerInfoPanel (Container for all 3 panels) ?
+
+
+- CommandPanel: actually get selected region
+- Update viewer implementation
+- New UV UI

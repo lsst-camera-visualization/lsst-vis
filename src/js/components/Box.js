@@ -12,15 +12,18 @@ export default class Box extends React.Component {
 
     render() {
         const id = this.props.id;
+        const ctrClassName = (this.props.boxes[id].bMini) ? "box-ctr-mini" : "";
         return (
             <Draggable
                 handle=".box-title"
                 onStart={this.handleStart} >
-                <div className="box-ctr" >
+                <div className={"box-ctr " + ctrClassName} >
                     <ReactUtil.Toolbar
                         onClose={this.handleClose}>
                         <p className="box-title">{id}</p>
-                        <BoxBody text={this.props.boxes[id].text} />
+                        <BoxBody
+                            text={this.props.boxes[id].text}
+                            minimize={this.props.boxes[id].bMini} />
                     </ReactUtil.Toolbar>
                 </div>
             </Draggable>

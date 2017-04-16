@@ -10,6 +10,8 @@ const commands = {
     "create_box": BoxCommands.createBox,
     "delete_box": BoxCommands.deleteBox,
     "clear_box": BoxCommands.clearBoxText,
+    "hide_box": BoxCommands.hideBox,
+    "show_box": BoxCommands.showBox,
 
     "create_viewer": ViewerCommands.createViewer,
     "delete_viewer": ViewerCommands.deleteViewer,

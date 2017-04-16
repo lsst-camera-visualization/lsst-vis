@@ -50,7 +50,7 @@ export class Viewer {
         DrawRegions(this.id, layer, regions, opts);
     }
 
-    setImage = image => {
+    loadImage = image => {
         this.image = image;
     }
 

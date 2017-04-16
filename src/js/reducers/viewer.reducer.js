@@ -54,7 +54,17 @@ const commands = {
         let newState = Object.assign({...state}, {});
         newState[action.id].drawRegions(action.layer, action.regions, action.opts);
 
-        return Object.assign({...state}, {});
+        return newState;
+    },
+
+    "LOAD_IMAGE": (state, action) => {
+        if (!(action.id in state))
+            return state;
+
+        let newState = Object.assign({...state}, {});
+        newState[action.id].loadImage(action.url);
+
+        return newState;
     },
 
     "SET_BOUNDARY_REGIONS": (state, action) => {

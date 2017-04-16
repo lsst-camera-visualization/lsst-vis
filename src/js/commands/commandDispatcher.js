@@ -16,6 +16,7 @@ const commands = {
     "create_viewer": ViewerCommands.createViewer,
     "delete_viewer": ViewerCommands.deleteViewer,
     "show_boundary": ViewerCommands.showBoundary,
+    "clear_viewer": ViewerCommands.clearViewer,
 
     "average_pixel": averagePixel,
     "graph_pixel": graphPixel,

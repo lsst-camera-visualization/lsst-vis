@@ -1,4 +1,6 @@
 import * as ViewerActions from "../actions/viewer.actions";
+import { setDefault } from "../actions/terminal.actions";
+import { JSUtil } from "../util/jsutil";
 
 import store from "../store";
 
@@ -8,10 +10,18 @@ export const clearViewer = params => {
 
 export const createViewer = params => {
     store.dispatch(ViewerActions.createViewer(params.viewer_id));
+
+    // If we are the only viewer, we automatically become the default
+    if (JSUtil.ObjectToArray(store.getState().viewers).length === 1)
+        store.dispatch(setDefault("viewer_id", params.viewer_id));
 }
 
 export const deleteViewer = params => {
     store.dispatch(ViewerActions.deleteViewer(params.viewer_id));
+
+    // If we were the last viewer, reset the default
+    if (JSUtil.ObjectToArray(store.getState().viewers).length === 0)
+        store.dispatch(setDefault("viewer_id", ""));
 }
 
 export const loadImage = params => {

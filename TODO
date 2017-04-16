@@ -6,8 +6,6 @@
 - Restoring previous state
 - Fix default parameters when its closed
 - Comment stuff
-- Make things LV pairs
-- Graph scaling
 
 
 - Create super class for UI elements?

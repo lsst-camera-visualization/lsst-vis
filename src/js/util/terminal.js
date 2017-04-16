@@ -90,7 +90,10 @@ export class Terminal {
     }
 
     setDefault = (parameter_id, value) => {
-        this.defaults[parameter_id] = value;
+        if (value)
+            this.defaults[parameter_id] = value;
+        else
+            delete this.defaults[parameter_id];
     }
 
     setParameterDesc = (parameter, desc) => {

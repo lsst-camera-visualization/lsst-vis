@@ -6,12 +6,14 @@ const commands = {
     "CREATE_BOX": (state, action) => {
         if (action.id in state)
             return state;
+
         return ReducerUtil.AddElement(state, action.id, new Box(action.id));
     },
 
     "DELETE_BOX": (state, action) => {
         if (!(action.id in state))
             return state;
+
         return ReducerUtil.RemoveElement(state, action.id);
     },
 

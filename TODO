@@ -5,5 +5,7 @@
 - CommandPanel: actually get selected region
 - Update viewer implementation
 - New UV UI
-- Fix border ordering (CSS)
 - Create ViewerInfoPanel (Container for all 3 panels)
+- Output errors on the terminal
+- Restoring previous state
+- Finish implementing all commands

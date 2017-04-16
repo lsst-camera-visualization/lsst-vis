@@ -4,7 +4,6 @@
 
 
 - Restoring previous state
-- Check for invalid parameters
 - Fix default parameters when its closed
 - Comment stuff
 - Make things LV pairs

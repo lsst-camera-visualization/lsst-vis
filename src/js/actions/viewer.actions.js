@@ -65,6 +65,14 @@ export const drawDS9Regions = (id, layer, regions, opts) => {
     }
 }
 
+export const loadImage = (id, url) => {
+    return {
+        type: "LOAD_IMAGE",
+        id,
+        url
+    }
+}
+
 // Sets the image's boundary regions
 export const setBoundaryRegions = (id, regions) => {
     return {

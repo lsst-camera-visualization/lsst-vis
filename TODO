@@ -7,10 +7,8 @@
 - Restoring previous state
 - Check for invalid parameters
 - Fix default parameters when its closed
-- Invalid commands entered
 - Comment stuff
 - Make things LV pairs
-- Noise output
 
 
 - Create super class for UI elements?

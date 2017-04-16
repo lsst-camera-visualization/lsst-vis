@@ -30,7 +30,8 @@ const commands = {
 
 class CommandDispatcher {
     dispatch = (command, params) => {
-        commands[command](params);
+        if (command in commands)
+            commands[command](params);
     }
 }
 

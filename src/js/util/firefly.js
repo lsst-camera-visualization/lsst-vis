@@ -42,7 +42,7 @@ export const DrawHistogram = (plotID, data, width, height, options = {}) => {
     options = Object.assign({
         xaxis: "X-Axis Label",
         logs: ""
-    })
+    }, options);
 
     let props = {
         series: data,

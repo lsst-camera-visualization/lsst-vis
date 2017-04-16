@@ -5,7 +5,7 @@ import { JSUtil } from "../../util/jsutil";
 export default class TerminalHelp extends React.Component {
     constructor() {
         super();
-        this.defaultHelpString = "Command line interface: Type help for more info";
+        this.defaultHelpString = "Command line interface";
     }
 
     getCurrentCommandInfo = () => {

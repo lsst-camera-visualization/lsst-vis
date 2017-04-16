@@ -14,6 +14,10 @@ export const deleteViewer = params => {
     store.dispatch(ViewerActions.deleteViewer(params.viewer_id));
 }
 
+export const loadImage = params => {
+    store.dispatch(ViewerActions.loadImage(params.viewer_id, params.url));
+}
+
 export const showBoundary = params => {
     const viewerID = params.viewer_id;
     const viewers = store.getState().viewers;

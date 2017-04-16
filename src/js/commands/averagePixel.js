@@ -9,11 +9,11 @@ import store from "../store";
 export default (params) => {
     const viewer = store.getState().viewers[params.viewer_id];
     const region = ParseRegion(params.region);
-    
+
     // The parameters to pass to the backend
     const backendParameters = {
         region: region.toBackendFormat()
-    }
+    };
 
     const onSuccess = data => {
         // Reset the viewer regions
@@ -26,7 +26,14 @@ export default (params) => {
 
         // Draw output result to box
         store.dispatch(clearBoxText(params.box_id));
-        store.dispatch(setBoxText(params.box_id, [data.result]));
+        const boxOutput = [
+            "Average Pixel",
+            ["Viewer", params.viewer_id],
+            ["Region", region.toString()],
+            ":line-dashed:",
+            ["Average pixel value", data.result]
+        ];
+        store.dispatch(setBoxText(params.box_id, boxOutput));
     }
 
     LaunchTask("average_pixel", backendParameters, viewer)

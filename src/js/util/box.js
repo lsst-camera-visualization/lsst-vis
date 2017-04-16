@@ -17,7 +17,7 @@ export class Box {
     }
 
     setText = text => {
-        this.text.push(text);
+        this.text = text;
     }
 
     minimize = () => {

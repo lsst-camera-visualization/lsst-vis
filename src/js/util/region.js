@@ -8,6 +8,10 @@ export class Rectangle {
         this._y2 = Math.trunc(Math.max(y1, y2));
     }
 
+    toString() {
+        return ["rect", this._x1, this._y1, this._x2, this._y2].join(" ");
+    }
+
     toDS9() {
         // Add one because we want to include the max boundaries
         const width  = this._x2 - this._x1 + 1;

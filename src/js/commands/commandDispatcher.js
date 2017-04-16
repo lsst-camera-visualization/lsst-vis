@@ -1,5 +1,6 @@
 import * as BoxCommands from "./box.commands";
 import * as ViewerCommands from "./viewer.commands";
+import * as TerminalCommands from "./terminal.commands";
 import averagePixel from "./averagePixel";
 import graphPixel from "./graphPixel";
 import hotPixel from "./hotPixel";
@@ -22,7 +23,9 @@ const commands = {
     "average_pixel": averagePixel,
     "graph_pixel": graphPixel,
     "hot_pixel": hotPixel,
-    "noise": noise
+    "noise": noise,
+
+    "set_default": TerminalCommands.setDefault,
 };
 
 class CommandDispatcher {

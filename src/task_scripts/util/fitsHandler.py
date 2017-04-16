@@ -71,9 +71,6 @@ class fitsHandler(object):
     @return Dictionary containing X and Y boundaries.
     '''
         re.split('[,:]', detsizeString[1:-1]) # strip the square bracket before spliting.
-        coord_list = detsizeString.split(',')
-        coord_list[0] = coord_list[0].split('[')[1].split(':')
-        coord_list[1] = coord_list[1].split(']')[0].split(':')
         coord_list = [[int(value) for value in elem] for elem in coord_list]
         return {'start_X'   :coord_list[0][0]-1,
                 'start_Y'   :coord_list[1][0]-1,

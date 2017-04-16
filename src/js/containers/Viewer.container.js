@@ -1,5 +1,6 @@
 import { connect } from "react-redux"
 import Viewer from "../components/Viewer";
+import { openCommandPanel } from "../actions/commandPanel.actions";
 
 const mapStateToProps = state => {
     return {
@@ -7,8 +8,17 @@ const mapStateToProps = state => {
     };
 }
 
+const mapDispatchToProps = dispatch => {
+    return {
+        onExecuteOverSelected: id => {
+            dispatch(openCommandPanel(id));
+        }
+    }
+}
+
 const ViewerCtr = connect(
-    mapStateToProps
+    mapStateToProps,
+    mapDispatchToProps
 )(Viewer);
 
 export default ViewerCtr;

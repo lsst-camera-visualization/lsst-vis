@@ -4,6 +4,7 @@ import boxReducer from "./box.reducer";
 import viewerReducer from "./viewer.reducer";
 import histogramReducer from "./histogram.reducer";
 import commandsReducer from "./commands.reducer";
+import commandPanelReducer from "./commandPanel.reducer";
 
 // State:
 // {
@@ -12,6 +13,8 @@ import commandsReducer from "./commands.reducer";
 //      viewers: A list of all the LSSTUtil.Viewer's created
 //      histograms: A list of all the LSSTUtil.Histograms created
 //      commands: A list of the valid commands that can be entered by the user in the terminal
+//      commandPanel: Describes the command panel state.
+//                  { show : Boolean, viewerID : String }
 // }
 
 const initialState = {
@@ -26,6 +29,7 @@ const reducer = (state = initialState, action) => {
     newState.viewers = viewerReducer(state.viewers, action);
     newState.histograms = histogramReducer(state.histograms, action);
     newState.commands = commandsReducer(state.commands, action);
+    newState.commandPanel = commandPanelReducer(state.commandPanel, action);
 
     return newState;
 }

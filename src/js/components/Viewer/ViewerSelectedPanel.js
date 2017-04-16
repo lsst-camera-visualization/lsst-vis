@@ -10,7 +10,8 @@ export default class ViewerSelectedPanel extends React.Component {
                 <input
                     className="viewer-selectedPanel-execButton"
                     type="button"
-                    value="Execute command over selected region" />
+                    value="Execute command over selected region"
+                    onClick={this.props.onClick} />
             </div>);
 
         const help =

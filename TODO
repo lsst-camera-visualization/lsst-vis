@@ -1,3 +1,9 @@
 - Update backend functions
     - original_image_url in FireflyUtil.LaunchTask
 - How to check for overscan (probably not based on filename)
+- Closing stuff from UI
+- UI for executing commands
+- Update viewer implementation
+- New UV UI
+- Fix border ordering (CSS)
+- Create ViewerInfoPanel (Container for all 3 panels)

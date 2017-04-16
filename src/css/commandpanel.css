@@ -6,7 +6,7 @@
     width: 800px;
     height: 500px;
     background: #283854;
-    border: solid 2px #FFF;
+    border: 2px solid #FFF;
     box-shadow: 5px 5px 15px #000;
 
     display: -webkit-box;
@@ -33,21 +33,21 @@
 .cmdpanel-button-selected {
     background: #444;
     color: #FFF;
-    border: solid 1px #FFF;
+    border: 1px solid #FFF;
 }
 
 .cmdpanel-title {
     text-align: center;
     color: #FFF;
     font-size: 250%;
-    border-bottom: solid 2px #FFF;
+    border-bottom: 2px solid #FFF;
 }
 
 .cmdpanel-body {
     -webkit-box-flex: 1;
         -ms-flex: 1;
             flex: 1;
-    border-bottom: solid 1px #FFF;
+    border-bottom: 1px solid #FFF;
 }
 
 .cmdpanel-execute-ctr {

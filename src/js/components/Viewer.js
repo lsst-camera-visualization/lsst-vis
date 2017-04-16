@@ -16,6 +16,10 @@ export default class Viewer extends React.Component {
         }
     }
 
+    handleExecuteOverSelected = e => {
+        this.props.onExecuteOverSelected(this.props.id);
+    }
+
     render() {
         const id = this.props.id;
         const e = this.props.viewers[id];
@@ -39,7 +43,8 @@ export default class Viewer extends React.Component {
                         left={cursorPanel}
                         right={uvPanel}
                         separator={true} />
-                    <ViewerSelectedPanel />
+                    <ViewerSelectedPanel
+                        onClick={this.handleExecuteOverSelected} />
                 </div>
             </Draggable>
         );

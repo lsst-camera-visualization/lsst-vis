@@ -4,6 +4,7 @@ import TerminalCtr from "../containers/Terminal.container";
 import BoxCtr from "../containers/Box.container";
 import ViewerCtr from "../containers/Viewer.container";
 import HistogramCtr from "../containers/Histogram.container";
+import CommandPanelCtr from "../containers/CommandPanel.container";
 import { JSUtil } from "../util/jsutil";
 
 export default class App extends React.Component {
@@ -35,6 +36,9 @@ export default class App extends React.Component {
                 <div className="cmdline-ctr" >
                     <TerminalCtr width={900} height={400} />
                 </div>
+                <CommandPanelCtr
+                    hide={!this.props.commandPanel.show}
+                    viewerID={this.props.commandPanel.viewerID} />
             </div>
         );
     }

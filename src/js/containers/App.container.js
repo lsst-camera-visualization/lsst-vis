@@ -5,7 +5,8 @@ const mapStateToProps = state => {
     return {
         boxes: state.boxes,
         viewers: state.viewers,
-        histograms: state.histograms
+        histograms: state.histograms,
+        commandPanel: state.commandPanel
     };
 }
 

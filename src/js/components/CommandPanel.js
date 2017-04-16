@@ -46,7 +46,7 @@ export default class CommandPanel extends React.Component {
             display: (this.props.hide) ? "none" : ""
         };
 
-        const commands = this.props.commands.commands;
+        const commands = this.props.commands;
 
         const commandsContainer =
             <CommandPanelCommands

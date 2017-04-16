@@ -43,20 +43,20 @@ export const ReactUtil = {
     // Props:
     //    label : String - The label.
     //    value : String - The value.
-    //    containerClass : String - The class for the container, if necessary.
+    //    className : String - The class for the container, if necessary.
     //    labelClass : String - The class for the label, if necessary.
     //    valueClass : String - The class for the value, if necessary.
     LVPair: class extends React.Component {
         render() {
             // Default values for props
             const opts = Object.assign({
-                containerClass: "",
+                className: "",
                 labelClass: "",
                 valueClass: ""
             }, this.props);
 
             return (
-                <div className={opts.containerClass}>
+                <div className={opts.className}>
                     <span className={opts.labelClass}>{this.props.label}</span>
                     <span>: </span>
                     <span className={opts.valueClass}>{this.props.value}</span>

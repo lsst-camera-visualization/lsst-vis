@@ -1,0 +1,98 @@
+.cmdpanel-ctr {
+    position: absolute;
+    left: 50px;
+    top: 50px;
+
+    width: 800px;
+    height: 500px;
+    background: #283854;
+    border: solid 2px #FFF;
+    box-shadow: 5px 5px 15px #000;
+
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+            flex-direction: column;
+
+    padding-top: 10px;
+}
+
+
+
+.cmdpanel-button {
+    display: block;
+    margin: 0px auto 5px auto;
+    width: 100%;
+    font-size: 125%;
+    padding: 2px;
+}
+
+.cmdpanel-button-selected {
+    background: #444;
+    color: #FFF;
+    border: solid 1px #FFF;
+}
+
+.cmdpanel-title {
+    text-align: center;
+    color: #FFF;
+    font-size: 250%;
+    border-bottom: solid 2px #FFF;
+}
+
+.cmdpanel-body {
+    -webkit-box-flex: 1;
+        -ms-flex: 1;
+            flex: 1;
+    border-bottom: solid 1px #FFF;
+}
+
+.cmdpanel-execute-ctr {
+    padding: 0px 5px;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: row;
+            flex-direction: row;
+}
+
+.cmdpanel-execute {
+    background: #000;
+    color: #FFF;
+    margin-top: 5px;
+    padding: 10px;
+}
+
+.cmdpanel-cancel {
+    background: #700;
+    color: #FFF;
+    margin-top: 5px;
+    margin-left: 5px;
+    width: 25%;
+}
+
+.cmdpanel-commands-ctr {
+    padding: 5px;
+}
+
+.cmdpanel-parameters-ctr {
+    padding: 10px;
+    font-size: 150%;
+}
+
+.cmdpanel-parameters-element {
+    margin-bottom: 10px;
+}
+
+.cmdpanel-parameters-label {
+    color: #FFF;
+}
+
+.cmdpanel-parameters-input {
+    font-size: 100%;
+}

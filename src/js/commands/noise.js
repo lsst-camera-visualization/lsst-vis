@@ -26,7 +26,14 @@ export default (params) => {
 
         // Draw output result to box
         store.dispatch(clearBoxText(params.box_id));
-        store.dispatch(setBoxText(params.box_id, ["Noise: ", data.noise]));
+        const boxOutput = [
+            "Noise",
+            ["Viewer", params.viewer_id],
+            ["Region", region.toString()],
+            ":line-dashed:",
+            ["Noise", data.noise]
+        ];
+        store.dispatch(setBoxText(params.box_id, boxOutput));
     }
 
     LaunchTask("noise", backendParameters, viewer)

@@ -3,7 +3,6 @@
 - How to check for overscan (probably not based on filename)
 
 
-- Output errors on the terminal
 - Restoring previous state
 - Check for invalid parameters
 - Fix default parameters when its closed

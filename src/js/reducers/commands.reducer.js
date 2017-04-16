@@ -1,20 +1,18 @@
 import { JSUtil } from "../util/jsutil";
 
-const initialState = {
-    commands: []
-}
+// List of all the commands
+const initialState = {};
 
 const commandsReducer = (state = initialState, action) => {
     switch (action.type) {
         case "ADD_COMMAND": {
-            let newState = {};
-            const newCommand = {
-                [action.commandName]: {
-                    params: action.params,
-                    desc: action.desc
-                }
+            let newState = Object.assign({...state}, {});
+
+            newState[action.commandName] = {
+                params: action.params,
+                desc: action.desc
             };
-            newState.commands = Object.assign({...state.commands}, newCommand);
+
             return newState;
         }
 

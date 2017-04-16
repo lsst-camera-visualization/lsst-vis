@@ -16,8 +16,9 @@ export default class BoxBody extends React.Component {
     }
 
     render() {
+        const className = (this.props.minimize) ? "box-body-mini" : "box-body";
         return (
-            <div className="box-body">
+            <div className={className}>
                 {this.createBody(this.props.text)}
             </div>
         );

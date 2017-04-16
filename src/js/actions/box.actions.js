@@ -28,3 +28,17 @@ export const setBoxText = (id, text) => {
         text
     }
 }
+
+export const hideBox = id => {
+    return {
+        type: "HIDE_BOX",
+        id
+    }
+}
+
+export const showBox = id => {
+    return {
+        type: "SHOW_BOX",
+        id
+    }
+}

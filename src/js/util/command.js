@@ -1,15 +1,27 @@
 import { JSUtil } from "./jsutil";
 
 const parameterValidators = {
-    viewer_id: (parameter, state) => {
-        if (!(parameter in state.viewers))
-            return "Invalid viewer ID!";
-        return null;
-    },
-
     box_id: (parameter, state) => {
         if (!(parameter in state.boxes))
             return "Invalid box ID!";
+        return null;
+    },
+
+    scale: (parameter, state) => {
+        if (parameter !== "log" && parameter !== "lin")
+            return "Invalid scaling, try 'lin' or 'log'";
+        return null;
+    },
+
+    "[scale]": (parameter, state) => {
+        if (parameter !== undefined)
+            return parameterValidators.scale(parameter, state);
+        return null;
+    },
+
+    viewer_id: (parameter, state) => {
+        if (!(parameter in state.viewers))
+            return "Invalid viewer ID!";
         return null;
     },
 }

@@ -1,5 +1,7 @@
 {
     "viewer_id": "The ID of the viewer to use",
     "box_id": "The ID of the box to use",
-    "region": "A valid region - rect, circ, amp, or sel"
+    "region": "A valid region - rect, circ, amp, or sel",
+    "num_bins": "The number of bins to use for the histogram (for values in the valid range)",
+    "[scale]": "The axis scaling type - lin (for linear) or log (for logarithmic)"
 }

@@ -37,8 +37,10 @@ export default class Terminal extends React.Component {
             const command = groups.shift();
 
             // Make sure command exists
-            if (!(command in this.props.commands))
+            if (!(command in this.props.commands)) {
+                this.props.displayInvalidCommandMessage();
                 return;
+            }
 
             // Convert array into dictionary of parameters
             const params = Util.MapParamsToNames(groups, this.props.commands[command].params);

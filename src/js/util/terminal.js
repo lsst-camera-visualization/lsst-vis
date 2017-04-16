@@ -14,7 +14,6 @@ export class Terminal {
         me.history = other.history.slice();
         me.defaults = Object.assign({...other.defaults}, {});
         me.parameterDescs = Object.assign({...other.parameterDescs}, {});
-        me.index = other.index;
         me._MAXLENGTH = other._MAXLENGTH;
 
         return me;
@@ -22,6 +21,8 @@ export class Terminal {
 
     loadFromState = state => {
         this._copy(this, state);
+        this.history = state.history.filter(d => d.type !== "ERROR");
+        this.index = this.history.length;
         return this;
     }
 
@@ -29,18 +30,41 @@ export class Terminal {
     clone = () => {
         let c = this._copy(new Terminal(), this);
         c.autoCompleteArray = this.autoCompleteArray.clone();
+        c.index = this.index;
         return c;
     }
 
-    addEntry = entry => {
-        if (entry !== this.history[this.history.length - 1])
-            this.history.push(entry);
+    findLastMessage = index => {
+        for (let i = index; i >= 0; i--) {
+            if (this.history[i].type === "COMMAND") {
+                return {
+                    msg: this.history[i].msg,
+                    index: i
+                };
+            }
+        }
+    }
 
+    trimHistory = () => {
         const length = this.history.length;
         if (length > this._MAXLENGTH)
             this.history = this.history.slice(length - this._MAXLENGTH, length);
 
         this.index = this.history.length;
+    }
+
+    addEntry = entry => {
+        if (this.history.length === 0 ||
+                entry !== this.findLastMessage(this.history.length - 1).msg)
+            this.history.push({ msg: entry, type: "COMMAND" });
+
+        this.trimHistory();
+    }
+
+    addError = error => {
+        this.history.push({ msg: error, type: "ERROR" });
+
+        this.trimHistory();
     }
 
     addCommand = command => {
@@ -60,7 +84,9 @@ export class Terminal {
     getEntry = () => {
         if (this.index >= this.history.length)
             return "";
-        return this.history[this.index];
+        const last = this.findLastMessage(this.index);
+        this.index = last.index;
+        return last.msg;
     }
 
     setDefault = (parameter_id, value) => {

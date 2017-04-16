@@ -24,6 +24,13 @@ export const addCommandToHistory = plainInput => {
     }
 }
 
+export const addErrorToHistory = error => {
+    return {
+        type: "ADD_ERROR_TO_HISTORY",
+        error
+    }
+}
+
 export const executeCommand = (command, params) => {
     return {
         type: "EXECUTE_COMMAND",

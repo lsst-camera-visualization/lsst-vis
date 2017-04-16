@@ -1,5 +1,6 @@
 import { connect } from "react-redux";
-import { executeCommand, addCommandToHistory } from "../actions/terminal.actions";
+import { executeCommand, addCommandToHistory, addErrorToHistory }
+    from "../actions/terminal.actions";
 import Terminal from "../components/Terminal";
 
 const mapStateToProps = state => {
@@ -15,6 +16,10 @@ const mapDispatchToProps = dispatch => {
     return {
         onExecute: input => {
             dispatch(addCommandToHistory(input));
+        },
+
+        displayInvalidCommandMessage: () => {
+            dispatch(addErrorToHistory("Invalid command entered!"));
         }
     }
 }

@@ -21,6 +21,12 @@ const commands = {
         return newState;
     },
 
+    "ADD_ERROR_TO_HISTORY": (state, action) => {
+        let newState = state.clone();
+        newState.addError(action.error);
+        return newState;
+    },
+
     "ADD_PARAMETER_DESC": (state, action) => {
         let newState = state.clone();
         newState.setParameterDesc(action.parameter, action.desc);

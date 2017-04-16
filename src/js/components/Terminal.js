@@ -41,7 +41,8 @@ export default class Terminal extends React.Component {
                 return;
 
             // Convert array into dictionary of parameters
-            const params = Util.MapParamsToNames(groups, this.props.commands.commands[command]);
+            const params = Util.MapParamsToNames(groups, this.props.commands.commands[command].params);
+
             commandDispatcher.dispatch(command, params);
 
             // Clear the user input

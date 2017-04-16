@@ -1,6 +1,8 @@
 import { AddActionListener } from "./firefly";
 import * as ViewerActions from "../actions/viewer.actions";
 import loadBoundary from "../commands/loadBoundary";
+import { ClearLayer, DrawRegions } from "../util/firefly";
+import { JSUtil } from "../util/jsutil";
 
 import store from "../store";
 
@@ -9,6 +11,7 @@ export class Viewer {
         this.id = id;
         this.image = image;
         this.original_image_url = "http://localhost:8080/static/images/imageE2V.fits";
+        this.layers = [];
 
         this.cursorPoint = { x: 0, y: 0 };
 
@@ -23,6 +26,28 @@ export class Viewer {
         });*/
 
         AddActionListener("READOUT_DATA", this.onCursorMove);
+    }
+
+    removeLayer = layer => {
+        const idx = this.layers.indexOf(layer);
+        if (idx !== -1) {
+            ClearLayer(this.id, layer);
+            this.layers.splice(idx, 1);
+        }
+    }
+
+    removeAllLayers = () => {
+        JSUtil.Foreach(this.layers, layer => {
+            ClearLayer(this.id, layer);
+        });
+        this.layers = [];
+    }
+
+    drawRegions = (layer, regions, opts) => {
+        if (this.layers.indexOf(layer) === -1)
+            this.layers.push(layer);
+
+        DrawRegions(this.id, layer, regions, opts);
     }
 
     setImage = image => {

@@ -9,6 +9,13 @@ export const clearLayer = (id, layer) => {
     }
 }
 
+export const clearViewer = id => {
+    return {
+        type: "CLEAR_VIEWER",
+        id
+    }
+}
+
 // Creates a viewer
 export const createViewer = id => {
     return {

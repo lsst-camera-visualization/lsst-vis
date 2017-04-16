@@ -1,6 +1,7 @@
 import React from "react";
 import Draggable from "react-draggable";
 import { DrawHistogram } from "../util/firefly";
+import { ReactUtil } from "../util/react";
 
 export default class Histogram extends React.Component {
     setCtrRef = ctr => {
@@ -9,6 +10,10 @@ export default class Histogram extends React.Component {
 
     setTitleRef = title => {
         this.titleRef = title;
+    }
+
+    handleClose = () => {
+        this.props.onClose(this.props.id);
     }
 
     componentDidMount() {
@@ -40,12 +45,15 @@ export default class Histogram extends React.Component {
             <Draggable
                 handle=".histo-title" >
                 <div id={id + "-ctr"} className="histo-ctr" ref={ this.setCtrRef }>
-                    <p
-                        className="histo-title"
-                        ref={ this.setTitleRef }>
-                        {this.props.histograms[id].opts.title}
-                    </p>
-                    <div id={id} className="histo-body"></div>
+                    <ReactUtil.Toolbar
+                        onClose={this.handleClose}>
+                        <p
+                            className="histo-title"
+                            ref={ this.setTitleRef }>
+                            {this.props.histograms[id].opts.title}
+                        </p>
+                        <div id={id} className="histo-body"></div>
+                    </ReactUtil.Toolbar>
                 </div>
             </Draggable>
         );

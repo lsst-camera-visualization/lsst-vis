@@ -6,6 +6,7 @@ import ViewerUVPanel from "./Viewer/ViewerUVPanel";
 import ViewerCursorPanel from "./Viewer/ViewerCursorPanel";
 import ViewerSelectedPanel from "./Viewer/ViewerSelectedPanel";
 import { ReactUtil } from "../util/react";
+import commandDispatcher from "../commands/commandDispatcher";
 
 export default class Viewer extends React.Component {
     constructor() {
@@ -18,6 +19,10 @@ export default class Viewer extends React.Component {
 
     handleExecuteOverSelected = e => {
         this.props.onExecuteOverSelected(this.props.id);
+    }
+
+    handleClose = () => {
+        commandDispatcher.dispatch("delete_viewer", { viewer_id: this.props.id });
     }
 
     render() {
@@ -35,16 +40,19 @@ export default class Viewer extends React.Component {
                 defaultPosition={{x: 100, y: 50}}
                 cancel=".viewer-imgViewer" >
                 <div className="viewer-ctr">
-                    <p className="viewer-title">{id}</p>
-                    <ViewerImageViewer e={e} />
-                    <ReactUtil.Col2
-                        className="viewer-info"
-                        width="50%"
-                        left={cursorPanel}
-                        right={uvPanel}
-                        separator={true} />
-                    <ViewerSelectedPanel
-                        onClick={this.handleExecuteOverSelected} />
+                    <ReactUtil.Toolbar
+                        onClose={this.handleClose}>
+                        <p className="viewer-title">{id}</p>
+                        <ViewerImageViewer e={e} />
+                        <ReactUtil.Col2
+                            className="viewer-info"
+                            width="50%"
+                            left={cursorPanel}
+                            right={uvPanel}
+                            separator={true} />
+                        <ViewerSelectedPanel
+                            onClick={this.handleExecuteOverSelected} />
+                    </ReactUtil.Toolbar>
                 </div>
             </Draggable>
         );

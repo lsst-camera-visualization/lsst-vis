@@ -6,6 +6,7 @@ import commandDispatcher from "../commands/commandDispatcher";
 import BoxBody from "./Box/BoxBody";
 
 export default class Box extends React.Component {
+    // Handles closing the box
     handleClose = () => {
         commandDispatcher.dispatch("delete_box", { box_id: this.props.id });
     }

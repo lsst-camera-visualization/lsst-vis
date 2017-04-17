@@ -1,6 +1,7 @@
 import React from "react";
 
 export default class TerminalBody extends React.Component {
+    // Generator function for a single terminal entry (command or error)
     createEntry = (entry, i) => {
         switch (entry.type) {
             case "COMMAND": {
@@ -16,11 +17,13 @@ export default class TerminalBody extends React.Component {
         }
     }
 
+    // Creates the list of the terminal history
     createHistory = () => {
         return <ul>{this.props.terminal.history.map(this.createEntry)}</ul>
     }
 
     componentDidUpdate() {
+        // When we type a new command, scroll to the bottom of the history
         this.bodyElem.scrollTop = this.bodyElem.scrollHeight;
     }
 

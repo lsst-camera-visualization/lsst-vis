@@ -16,6 +16,7 @@ export default class CommandPanel extends React.Component {
         this.parameters = {};
     }
 
+    // Handles a click on one of the command buttons
     handleClick = e => {
         this.setState({
             selected: e.target.value
@@ -23,6 +24,7 @@ export default class CommandPanel extends React.Component {
         this.parameters = {};
     }
 
+    // Handles a click on the execute command button
     handleExecute = e => {
         const command = this.state.selected;
         let params = Object.assign({...this.parameters}, {});
@@ -33,10 +35,13 @@ export default class CommandPanel extends React.Component {
         this.props.close();
     }
 
+    // Handles a click on the cancel button
     handleCancel = e => {
+        // Closes the command panel window
         this.props.close();
     }
 
+    // Sets the value for one of the parameters
     setParam = (parameter, value) => {
         this.parameters[parameter] = value;
     }

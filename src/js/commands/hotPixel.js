@@ -6,7 +6,7 @@ import { addErrorToHistory } from "../actions/terminal.actions";
 
 import store from "../store";
 
-// { viewer_id, box_id, region }
+// { viewer_id, threshold, region }
 export default params => {
     const valid = validateParameters(params, store.getState());
     if (valid !== null) {
@@ -26,7 +26,6 @@ export default params => {
     }
 
     const onSuccess = data => {
-
         // Reset the viewer regions
         const regionLayer = "HOT_PIXEL";
         store.dispatch(clearLayer(viewerID, regionLayer));

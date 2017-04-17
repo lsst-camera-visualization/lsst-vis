@@ -4,10 +4,12 @@ import { JSUtil } from "../util/jsutil";
 
 import store from "../store";
 
+// Clears all region layers on a viewer
 export const clearViewer = params => {
     store.dispatch(ViewerActions.clearViewer(params.viewer_id));
 }
 
+// Creates a viewer and updates the default value for "viewer_id" if necessary
 export const createViewer = params => {
     store.dispatch(ViewerActions.createViewer(params.viewer_id));
 
@@ -16,6 +18,7 @@ export const createViewer = params => {
         store.dispatch(setDefault("viewer_id", params.viewer_id));
 }
 
+// Deletes a viewer and updates the default value for "viewer_id" if necessary
 export const deleteViewer = params => {
     store.dispatch(ViewerActions.deleteViewer(params.viewer_id));
 
@@ -24,10 +27,12 @@ export const deleteViewer = params => {
         store.dispatch(setDefault("viewer_id", ""));
 }
 
+// Loads a new image into a viewer
 export const loadImage = params => {
     store.dispatch(ViewerActions.loadImage(params.viewer_id, params.url));
 }
 
+// Displays the boundary regions on a viewer
 export const showBoundary = params => {
     const viewerID = params.viewer_id;
     const viewers = store.getState().viewers;

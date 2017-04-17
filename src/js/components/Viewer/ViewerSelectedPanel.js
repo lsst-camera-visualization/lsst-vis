@@ -4,6 +4,7 @@ import { ReactUtil } from "../../util/react";
 
 export default class ViewerSelectedPanel extends React.Component {
     render() {
+        // Selected region info
         const info =
             (<div>
                 <span>Selected Region: selected</span>
@@ -14,6 +15,7 @@ export default class ViewerSelectedPanel extends React.Component {
                     onClick={this.props.onClick} />
             </div>);
 
+        // Help text
         const help =
             (<div>
                 <ReactUtil.LVPair

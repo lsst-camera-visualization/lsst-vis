@@ -10,6 +10,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
+        // On click handler for the "execute command over selected" button
         onExecuteOverSelected: id => {
             dispatch(openCommandPanel(id));
         }

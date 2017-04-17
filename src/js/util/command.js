@@ -1,5 +1,6 @@
 import { JSUtil } from "./jsutil";
 
+// Validates parameters based on their value
 const parameterValidators = {
     box_id: (parameter, state) => {
         if (!(parameter in state.boxes))
@@ -26,6 +27,7 @@ const parameterValidators = {
     },
 }
 
+// Used to validate the user entered parameters for a task
 export const validateParameters = (parameters, state) => {
     // Loop through each parameter, and validate if necessary
     for (const p in parameters) {

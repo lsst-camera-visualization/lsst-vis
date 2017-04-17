@@ -7,6 +7,7 @@ export default class ViewerImageViewer extends React.Component {
         this._imageURL = null;
     }
 
+    // Loads a new image into the viewer
     loadImage = imageURL => {
         if (this._imageURL !== imageURL) {
             LoadImage(this.props.e.id, imageURL);

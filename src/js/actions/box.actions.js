@@ -1,5 +1,5 @@
 
-
+// Creates a box
 export const createBox = id => {
     return {
         type: "CREATE_BOX",
@@ -7,6 +7,7 @@ export const createBox = id => {
     }
 }
 
+// Deletes a box
 export const deleteBox = id => {
     return {
         type: "DELETE_BOX",
@@ -14,6 +15,7 @@ export const deleteBox = id => {
     }
 }
 
+// Clears the text in the box body
 export const clearBoxText = id => {
     return {
         type: "CLEAR_BOXTEXT",
@@ -21,6 +23,9 @@ export const clearBoxText = id => {
     }
 }
 
+// Sets the text in the box body
+// @text should be an array, each entry is a new line
+// See BoxBody.js for possible inputs
 export const setBoxText = (id, text) => {
     return {
         type: "SET_BOXTEXT",
@@ -29,6 +34,7 @@ export const setBoxText = (id, text) => {
     }
 }
 
+// Minimizes a box to its title bar
 export const hideBox = id => {
     return {
         type: "HIDE_BOX",
@@ -36,6 +42,7 @@ export const hideBox = id => {
     }
 }
 
+// Maximizes a box from its title bar
 export const showBox = id => {
     return {
         type: "SHOW_BOX",

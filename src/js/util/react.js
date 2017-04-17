@@ -80,6 +80,9 @@ export const ReactUtil = {
         }
     },
 
+    // A React component for a toolbar on a UI element.
+    // Props:
+    //      onClose : Function - The handler function for closing this element
     Toolbar: class extends React.Component {
         render() {
             return (

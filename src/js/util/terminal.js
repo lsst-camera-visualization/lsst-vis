@@ -10,6 +10,7 @@ export class Terminal {
         this.autoCompleteArray = new JSUtil.AutoCompleteArray([], false);
     }
 
+    // Helper copy function
     _copy = (me, other) => {
         me.history = other.history.slice();
         me.defaults = Object.assign({...other.defaults}, {});
@@ -19,6 +20,7 @@ export class Terminal {
         return me;
     }
 
+    // Loads the terminal from the previous state
     loadFromState = state => {
         this._copy(this, state);
         this.history = state.history.filter(d => d.type !== "ERROR");
@@ -26,7 +28,7 @@ export class Terminal {
         return this;
     }
 
-
+    // Clones this terminal into a new terminal object
     clone = () => {
         let c = this._copy(new Terminal(), this);
         c.autoCompleteArray = this.autoCompleteArray.clone();
@@ -34,6 +36,8 @@ export class Terminal {
         return c;
     }
 
+    // Finds the last COMMAND message
+    // Returns the message and the index
     findLastMessage = index => {
         for (let i = index; i >= 0; i--) {
             if (this.history[i].type === "COMMAND") {
@@ -45,6 +49,7 @@ export class Terminal {
         }
     }
 
+    // Trims the history to only have MAXLENGTH entries
     trimHistory = () => {
         const length = this.history.length;
         if (length > this._MAXLENGTH)
@@ -53,6 +58,7 @@ export class Terminal {
         this.index = this.history.length;
     }
 
+    // Adds a new entry to the history
     addEntry = entry => {
         if (this.history.length === 0 ||
                 entry !== this.findLastMessage(this.history.length - 1).msg)
@@ -61,26 +67,31 @@ export class Terminal {
         this.trimHistory();
     }
 
+    // Adds a new error message to the history
     addError = error => {
         this.history.push({ msg: error, type: "ERROR" });
 
         this.trimHistory();
     }
 
+    // Adds a command for this terminal to use
     addCommand = command => {
         this.autoCompleteArray.insert(command);
     }
 
+    // Moves the history index up
     up = () => {
         this.index = Math.max(0, this.index - 1);
         return this.getEntry();
     }
 
+    // Moves the history index down
     down = () => {
         this.index = Math.min(this.history.length, this.index + 1);
         return this.getEntry();
     }
 
+    // Gets the current history entry
     getEntry = () => {
         if (this.index >= this.history.length)
             return "";
@@ -89,6 +100,7 @@ export class Terminal {
         return last.msg;
     }
 
+    // Sets the default value for a parameter
     setDefault = (parameter_id, value) => {
         if (value)
             this.defaults[parameter_id] = value;
@@ -96,6 +108,7 @@ export class Terminal {
             delete this.defaults[parameter_id];
     }
 
+    // Sets a description for a parameter
     setParameterDesc = (parameter, desc) => {
         this.parameterDescs[parameter] = desc;
     }

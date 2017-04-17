@@ -11,6 +11,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
+        // On click handler for closing the command panel
         close: () => {
             dispatch(closeCommandPanel());
         }

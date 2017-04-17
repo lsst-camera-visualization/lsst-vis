@@ -4,6 +4,7 @@ import { ReactUtil } from "../../util/react";
 
 export default class ViewerCursorPanel extends React.Component {
     render() {
+        // Pretty print of the coordinates
         const coords = "(" + this.props.cursorPoint.x + ", " + this.props.cursorPoint.y + ")";
 
         return (

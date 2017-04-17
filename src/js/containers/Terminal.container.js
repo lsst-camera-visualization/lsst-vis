@@ -14,10 +14,12 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
+        // Handler for executing a command
         onExecute: input => {
             dispatch(addCommandToHistory(input));
         },
 
+        // Displays an error message for invalid commands
         displayInvalidCommandMessage: () => {
             dispatch(addErrorToHistory("Invalid command entered!"));
         }

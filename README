@@ -32,3 +32,18 @@ How to implement a new command:
 
 To remove logger:
     Set bUseLogger to false in client.js
+
+
+
+
+HOW TO INSTALL:
+1. Git pull origin master
+2. Run the command `npm install`
+3. (For developement) Run `npm run build`
+4. Add a rule to the tomcat server.xml file
+    <Context docBase="/path/to/frontend/src/" path="static/" />
+
+TO RUN:
+1. Restart tomcat server (only if you just updated server.xml)
+2. Go to localhost:8080/static
+

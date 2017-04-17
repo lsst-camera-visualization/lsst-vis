@@ -9,6 +9,7 @@ export const clearLayer = (id, layer) => {
     }
 }
 
+// Clears a region layers on the viewer
 export const clearViewer = id => {
     return {
         type: "CLEAR_VIEWER",
@@ -65,6 +66,7 @@ export const drawDS9Regions = (id, layer, regions, opts) => {
     }
 }
 
+// Loads a new image into a viewer
 export const loadImage = (id, url) => {
     return {
         type: "LOAD_IMAGE",
@@ -100,6 +102,7 @@ export const updateCursorPos = (id, pos) => {
     }
 }
 
+// Update the hovered amp name for a viewer
 export const updateHoveredAmpName = (id, name) => {
     return {
         type: "UPDATE_HOVERED_AMPNAME",

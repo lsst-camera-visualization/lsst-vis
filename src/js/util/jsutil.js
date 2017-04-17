@@ -97,6 +97,7 @@ export const JSUtil = {
         return str.match(/^\s*$/) ? true : false;
     },
 
+    // Tests the object to see if it is empty (has no own properties)
     IsEmptyObject: object => {
         for (const key in object) {
             if (object.hasOwnProperty(key))

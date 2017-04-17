@@ -45,6 +45,7 @@ export default class Terminal extends React.Component {
             // Convert array into dictionary of parameters
             const params = Util.MapParamsToNames(groups, this.props.commands[command].params);
 
+            // Dispatch the command
             commandDispatcher.dispatch(command, params);
 
             // Clear the user input
@@ -67,10 +68,12 @@ export default class Terminal extends React.Component {
         }
         else {
             if (input.match(/\s$/)) {
+                // Handle default values, because so far we have nothing for this parameter
                 if (this._param in defaults)
                     e.target.value += defaults[this._param] + " ";
             }
             else if (this._param in this._autoParams) {
+                // Handle auto completing the parameter value
                 const curr = input.match(/\w+$/)[0];
                 const ac = this._autoParams[this._param].autoComplete(curr);
                 if (ac.auto)
@@ -129,6 +132,7 @@ export default class Terminal extends React.Component {
     }
 
     componentWillUpdate() {
+        // Set the parameter auto's for boxes and viewers
         this._autoParams = {
             box_id: new JSUtil.AutoCompleteArray(JSUtil.ObjectToArray(this.props.boxes)),
             viewer_id: new JSUtil.AutoCompleteArray(JSUtil.ObjectToArray(this.props.viewers))

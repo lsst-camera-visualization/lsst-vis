@@ -17,10 +17,12 @@ export default class Viewer extends React.Component {
         }
     }
 
+    // On click handler for executing command over selected region
     handleExecuteOverSelected = e => {
         this.props.onExecuteOverSelected(this.props.id);
     }
 
+    // On click handler for closing the viewer
     handleClose = () => {
         commandDispatcher.dispatch("delete_viewer", { viewer_id: this.props.id });
     }

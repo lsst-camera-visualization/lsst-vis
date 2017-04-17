@@ -1,9 +1,11 @@
 // Firefly interface
 
+// Adds an action listener to a viewer
 export const AddActionListener = (type, f) => {
     firefly.util.addActionListener(firefly.action.type[type], f);
 }
 
+// Adds an extension to a viewer
 export const AddExtension = (id, title, type, f) => {
     const ext = {
         id: title,
@@ -37,6 +39,7 @@ export const DrawRegions = (plotID, layer, regions, options = {}) => {
     firefly.action.dispatchCreateRegionLayer(layer, layer, null, ds9regions, plotID);
 }
 
+// Draws a firefly histogram
 export const DrawHistogram = (plotID, data, width, height, options = {}) => {
     // Default values for options
     options = Object.assign({

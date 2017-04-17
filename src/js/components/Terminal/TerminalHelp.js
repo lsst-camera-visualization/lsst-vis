@@ -8,6 +8,7 @@ export default class TerminalHelp extends React.Component {
         this.defaultHelpString = "Command line interface";
     }
 
+    // Gets the description info for the command we are typing
     getCurrentCommandInfo = () => {
         const trimmed = this.props.input.trim();
         const split = JSUtil.SplitStringByWS(trimmed);

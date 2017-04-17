@@ -4,11 +4,10 @@
 
 
 - Restoring previous state
-- Fix default parameters when its closed
 - Comment stuff
 
 
-- Create super class for UI elements?
+- Create ui element react component
 - Create ViewerInfoPanel (Container for all 3 panels) ?
 
 

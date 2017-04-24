@@ -76,15 +76,6 @@ const commands = {
         return newState;
     },
 
-    "SET_HEADER_DATA": (state, action) => {
-        if (!(action.id in state))
-            return state;
-
-        let newState = Object.assign({...state});
-        newState[action.id].header = action.header;
-        return newState;
-    },
-
     "UPDATE_CURSOR_POS": (state, action) => {
         if (!(action.id in state) || !action.pos)
             return state;
@@ -102,7 +93,11 @@ const commands = {
             return state;
 
         let newState = Object.assign({...state});
-        newState[action.id].hoveredAmpName = action.name;
+        newState[action.id].hovered = {
+            name: action.name,
+            hwregion: action.hwregion
+        };
+        
         return newState;
     },
 

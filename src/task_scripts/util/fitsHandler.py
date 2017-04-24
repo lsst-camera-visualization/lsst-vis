@@ -57,7 +57,7 @@ class fitsHandler(object):
             print("Cannot open the FITS file.")
             raise
 
-    def __exit__(self):
+    def __exit__(self, exc_type, exc_val, exc_tb):
         try:
             self.hduList.close()
         except AttributeError as e: # Ignore if there is no image

@@ -27,12 +27,12 @@ store.subscribe( () => {
 
 // If we are in production and using client.min.js, the commands and parameters files will
 //    be at the current direction, not the parent.
-const rootPath = (process.env.NODE_ENV !== "production") ? ".." : ".";
+const dataPath = ((process.env.NODE_ENV !== "production") ? ".." : ".") + "/data";
 
 // Loads the commands
 const loadCommands = () => {
     console.log("Loading commands");
-    return JSUtil.LoadJSONFromFile(rootPath + "/commands.json")
+    return JSUtil.LoadJSONFromFile(dataPath + "/commands.json")
         .then(data =>
             data.map( c => store.dispatch(addCommand(c.commandName, c.params, c.desc)))
         );
@@ -41,7 +41,7 @@ const loadCommands = () => {
 // Loads the parameter descriptions
 const loadParameters = () => {
     console.log("Loading parameters");
-    return JSUtil.LoadJSONFromFile(rootPath + "/parameters.json")
+    return JSUtil.LoadJSONFromFile(dataPath + "/parameters.json")
         .then(data =>
             JSUtil.ObjectKeyMap(data, d => store.dispatch(addParameterDesc(d, data[d])))
         );

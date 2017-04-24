@@ -84,14 +84,6 @@ export const setBoundaryRegions = (id, regions) => {
     }
 }
 
-// Sets the image's header data
-export const setHeaderData = (id, header) => {
-    return {
-        type: "SET_HEADER_DATA",
-        id,
-        header
-    }
-}
 
 // Updates the cursor coordinates for a viewer
 export const updateCursorPos = (id, pos) => {
@@ -103,11 +95,12 @@ export const updateCursorPos = (id, pos) => {
 }
 
 // Update the hovered amp name for a viewer
-export const updateHoveredAmpName = (id, name) => {
+export const updateHoveredAmpName = (id, name, hwregion) => {
     return {
         type: "UPDATE_HOVERED_AMPNAME",
         id,
-        name
+        name,
+        hwregion
     }
 }
 

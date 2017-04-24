@@ -37,7 +37,7 @@ class fitsHandler:
     '''
 
     def __init__(self, imageName):
-        self.imageName = imageName;
+        self.imageName = imageName
         self.hduList = None
         self.imageHDUs = None
         self.isMulti = None
@@ -56,7 +56,8 @@ class fitsHandler:
         except Exception as e:
             print("Cannot open the FITS file.")
             raise
-
+        return self
+        
     def __exit__(self, exc_type, exc_val, exc_tb):
         try:
             self.hduList.close()

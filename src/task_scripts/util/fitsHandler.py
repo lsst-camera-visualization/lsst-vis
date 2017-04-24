@@ -10,7 +10,7 @@ def _convertHeaderRange(detsizeString):
     @param String of FITS header value representing boundary or dimension.
     @return Dictionary containing X and Y boundaries.
     '''
-    re.split('[,:]', detsizeString[1:-1]) # strip the square bracket before spliting.
+    coord_list = re.split('[,:]', detsizeString[1:-1]) # strip the square bracket before spliting.
     coord_list = [[int(value) for value in elem] for elem in coord_list]
     return {"x1" : coord_list[0][0]-1,
             "x2" : coord_list[0][1]-1,
@@ -57,7 +57,7 @@ class fitsHandler:
             print("Cannot open the FITS file.")
             raise
         return self
-        
+
     def __exit__(self, exc_type, exc_val, exc_tb):
         try:
             self.hduList.close()

@@ -17,7 +17,7 @@ def _convertHeaderRange(detsizeString):
             "y1" : coord_list[1][0]-1,
             "y2" : coord_list[1][1]-1}
 
-class fitsHandler(object):
+class fitsHandler:
     '''A class for dealing with FITS images in python. It provides
     wrapper functions to get FITS header information and image data.
 

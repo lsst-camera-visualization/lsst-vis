@@ -12,3 +12,6 @@ def task(filename, task_params):
         headerInfo = fitsImage.getHeader()
 
     return headerInfo, None
+
+if __name__ == '__main__':
+    print(task("/home/wei/lsst/lsst_firefly/backend/images/imageE2V.fits", {}))

@@ -6,11 +6,19 @@ import { JSUtil } from "../util/jsutil";
 
 import store from "../store";
 
+const defaultImage = (process.env.NODE_ENV !== "production") ?
+    "http://localhost:8080/static/images/imageE2V_untrimmed.fits" :
+    "http://lsst.cs.illinois.edu/static/images/imageE2V_untrimmed.fits";
+
+const defaultImageTrimmed = (process.env.NODE_ENV !== "production") ?
+    "http://localhost:8080/static/images/imageE2V.fits" :
+    "http://lsst.cs.illinois.edu/static/images/imageE2V.fits";
+
 export class Viewer {
-    constructor(id, image = "http://localhost:8080/static/images/imageE2V_untrimmed.fits") {
+    constructor(id, image = defaultImage) {
         this.id = id;
         this.image = image;
-        this.original_image_url = "http://localhost:8080/static/images/imageE2V.fits";
+        this.original_image_url = defaultImageTrimmed;
         this.layers = [];
 
         this.cursorPoint = { x: 0, y: 0 };

@@ -3,35 +3,34 @@ import os
 sys.path.append(os.path.dirname(os.path.abspath(__file__))+"/task_scripts")
 sys.path.append(os.path.dirname(os.path.abspath(__file__))+"/task_scripts/utility_scripts")
 sys.path.append(os.path.dirname(os.path.abspath(__file__))+"/task_scripts/FITS_Construct")
+
+
 from task_scripts.noise import task as task_noise
-from task_scripts.graph_noise import task as task_graph_noise
-
-
+#from task_scripts.graph_noise import task as task_graph_noise
 from task_scripts.averagePixel import task as task_average_pixel
 from task_scripts.boundary import task as task_boundary
-from task_scripts.fetchLatest import task as task_fetch_latest
 from task_scripts.hotPixel import task as task_hot_pixel
-from task_scripts.graph_pixel import task as task_graph_pixel
-from task_scripts.graph_proj import task as task_graph_proj
+from task_scripts.graphPixel import task as task_graph_pixel
+#from task_scripts.graph_proj import task as task_graph_proj
 
 # Dictionary mapping task names to functions
 _tasks = {} # DO NOT MODIFY THIS LINE (see generate_new_task.sh)
 _tasks["noise"] = task_noise
-_tasks["graph_noise"] = task_graph_noise
+#_tasks["graph_noise"] = task_graph_noise
 _tasks["graph_pixel"] = task_graph_pixel
-_tasks["graph_proj"] = task_graph_proj
-_tasks["average"] = task_average_pixel
+#_tasks["graph_proj"] = task_graph_proj
+_tasks["average_pixel"] = task_average_pixel
 _tasks["boundary"] = task_boundary
-_tasks["fetch_latest"] = task_fetch_latest
 _tasks["hot_pixel"] = task_hot_pixel
 
 # Return the parameter without any modification. For test and debug purpose.
-def _taskNotFound(param):
-    return ({"result": "Test function or wrong function call!"}, None)
+def _taskNotFound(filename, params):
+    return (None, "BAD_TASK_NAME")
 
 # Handler to pass the correct filename and parameters for backend scripts.
-def params_handler(task_name, params):
-    filename = params['image_url']
+def params_handler(params):
+    filename = params["_imageURL"]
+    # TODO: Check valid filename (maybe?)
     return (filename, params)
 
 def execute_task(task_name, task_params):
@@ -49,7 +48,7 @@ def execute_task(task_name, task_params):
         task = _taskNotFound
 
     # returns result, error
-    return task(*(params_handler(task_name, task_params)))
+    return task(*(params_handler(task_params)))
 
 
 

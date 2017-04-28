@@ -60,8 +60,8 @@ export class Terminal {
 
     // Adds a new entry to the history
     addEntry = entry => {
-        if (this.history.length === 0 ||
-                entry !== this.findLastMessage(this.history.length - 1).msg)
+        const last = this.findLastMessage(this.history.length - 1);
+        if (this.history.length === 0 || (last && entry !== last.msg))
             this.history.push({ msg: entry, type: "COMMAND" });
 
         this.trimHistory();
@@ -96,8 +96,11 @@ export class Terminal {
         if (this.index >= this.history.length)
             return "";
         const last = this.findLastMessage(this.index);
-        this.index = last.index;
-        return last.msg;
+        if (last) {
+            this.index = last.index;
+            return last.msg;
+        }
+        return "";
     }
 
     // Sets the default value for a parameter

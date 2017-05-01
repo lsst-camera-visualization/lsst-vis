@@ -13,6 +13,36 @@ const commands = {
         if (!(action.id in state))
             return state;
         return ReducerUtil.RemoveElement(state, action.id);
+    },
+
+    "UV_INTERVAL": (state, action) => {
+        if (!(action.id in state))
+            return state;
+
+        let newState = Object.assign({...state}, {});
+        newState[action.id].setInterval(action.interval);
+
+        return newState;
+    },
+
+    "UV_PAUSE": (state, action) => {
+        if (!(action.id in state))
+            return state;
+
+        let newState = Object.assign({...state}, {});
+        newState[action.id].pause();
+
+        return newState;
+    },
+
+    "UV_RESUME": (state, action) => {
+        if (!(action.id in state))
+            return state;
+
+        let newState = Object.assign({...state}, {});
+        newState[action.id].resume();
+
+        return newState;
     }
 }
 

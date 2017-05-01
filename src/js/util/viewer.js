@@ -134,3 +134,41 @@ export class Viewer {
             store.dispatch(ViewerActions.updateHoveredAmpName(this.id, name));
     }
 }
+
+
+export class UVController {
+    constructor(viewerID, imageRepo) {
+        this._viewer = viewerID;
+        this._imageRepo = imageRepo;
+
+        this.setInterval(3000);
+
+        this.pause();
+        this.resume();
+    }
+
+    destroy() {
+        clearInterval(this._timerID);
+    }
+
+    query = () => {
+        // TODO: Query image repository and do stuff with the data
+        console.log("query");
+    }
+
+    setInterval(newInterval) {
+        this._interval = newInterval;
+
+        this._timerID = setInterval(this.query, this._interval);
+    }
+
+    pause() {
+        this._bPaused = true;
+        this.destroy();
+    }
+
+    resume() {
+        this._bPaused = false;
+        this.setInterval(this._interval);
+    }
+}

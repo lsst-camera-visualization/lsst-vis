@@ -155,8 +155,9 @@ export class UVController {
     }
 
     setInterval(newInterval) {
-        this._interval = newInterval;
+        this.destroy();
 
+        this._interval = newInterval;
         this._timerID = setInterval(this.query, this._interval);
     }
 

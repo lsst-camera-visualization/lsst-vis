@@ -10,7 +10,7 @@
 5. Check out the [lastest backend code](https://github.com/lsst-camera-visualization/backend).
 6. Edit the app.prop so that python backend script now points to 
 <pre>
-   /path/to/backend/<b>src</b>/dispatcher.py
+    /path/to/backend/<b>src</b>/dispatcher.py
 </pre>
 
 ## To Run:

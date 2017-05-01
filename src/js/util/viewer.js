@@ -142,9 +142,7 @@ export class UVController {
         this._imageRepo = imageRepo;
 
         this.setInterval(3000);
-
         this.pause();
-        this.resume();
     }
 
     destroy() {

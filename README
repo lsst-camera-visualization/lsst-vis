@@ -25,7 +25,7 @@ Filesystem:
 How to implement a new command:
     1. Add command description into commands.json
     2*. Make action creator (*.actions.js)
-    3. Add command implementation (/commands)
+    3. Add command implementation (*.commands.js)
     4. Add command entry to commandDispatcher.js
     5*. Implement command in reducer (*.reducer.js)
     * - Not for backend tasks
@@ -46,4 +46,3 @@ HOW TO INSTALL:
 TO RUN:
 1. Restart tomcat server (only if you just updated server.xml)
 2. Go to localhost:8080/static
-

@@ -1,4 +1,5 @@
 # How to update from old frontend
+Before updating, check out the [README](https://github.com/lsst-camera-visualization/lsst_firefly#lsst-firefly) for deployment if haven't done so.
 ## Update to latest code
 1. Pull the lastest frontend code `git pull origin master`
 2. Run the command `npm install`

@@ -11,14 +11,14 @@ then
 fi
 
 TASKNAME=$1
-FILENAME="task_scripts/$TASKNAME.py"
-TASKS_FILENAME="tasks.py"
+FILENAME="src/task_scripts/$TASKNAME.py"
+TASKS_FILENAME="src/tasks.py"
 
 cat > ${FILENAME} << EOL
 
 
 
-def task(task_params):
+def task(filename, taskParams):
 	'''
 	@author
 	@param task_params -

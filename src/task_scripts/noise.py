@@ -16,7 +16,6 @@ def task(filename, taskParams):
         region = Region(regionType, regionValue)
 
         def secondMoment(data):
-            result["data"] = [ [float(data[0,0]) ] ]
             return scipy.stats.moment(data, moment=2, axis=None)
         sm = region.execute(img, secondMoment)
         result["noise"] = str(sm**(0.5))

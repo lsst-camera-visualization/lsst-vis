@@ -18,7 +18,7 @@ cat > ${FILENAME} << EOL
 
 
 
-def task(task_params):
+def task(filename, taskParams):
 	'''
 	@author
 	@param task_params -

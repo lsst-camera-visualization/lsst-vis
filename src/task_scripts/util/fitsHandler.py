@@ -11,11 +11,11 @@ def _convertHeaderRange(detsizeString):
     @return Dictionary containing X and Y boundaries.
     '''
     coord_list = re.split('[,:]', detsizeString[1:-1]) # strip the square bracket before spliting.
-    coord_list = [[int(value) for value in elem] for elem in coord_list]
-    return {"x1" : coord_list[0][0]-1,
-            "x2" : coord_list[0][1]-1,
-            "y1" : coord_list[1][0]-1,
-            "y2" : coord_list[1][1]-1}
+    print(coord_list)
+    return {"x1" : int(coord_list[0])-1,
+            "x2" : int(coord_list[1])-1,
+            "y1" : int(coord_list[2])-1,
+            "y2" : int(coord_list[3])-1}
 
 class fitsHandler:
     '''A class for dealing with FITS images in python. It provides
@@ -95,6 +95,10 @@ class fitsHandler:
                     "y1": region["y1"] + yOffset,
                     "y2": region["y2"] + yOffset}
 
+        def _format(region):
+            # Amplifier boundary should always be "rect"
+            return {"type": "rect", "data": region}
+
         # Use the first segment to determine the dimension
         tempHeader = ((self.imageHDUs)[0]).header
         segDim = {"x": tempHeader["NAXIS1"], "y": tempHeader["NAXIS2"]}
@@ -119,11 +123,11 @@ class fitsHandler:
                             "y1": ampPrescan["y2"] + 1, "y2": yStart + ampDim["y"] - 1}
             ampInfo = {}
             ampInfo["name"] = header["EXTNAME"]
-            ampInfo["data"] = _addOffset(ampDataSection, xStart, yStart)
-            ampInfo["pre"] = _addOffset(ampPrescan, xStart, yStart)
-            ampInfo["post"] = _addOffset(ampPostscan, xStart, yStart)
-            ampInfo["over"] = _addOffset(ampOverscan, xStart, yStart)
-            ampInfo["all"] = ampSection
+            ampInfo["data"] = _format(_addOffset(ampDataSection, xStart, yStart))
+            ampInfo["pre"] = _format(_addOffset(ampPrescan, xStart, yStart))
+            ampInfo["post"] = _format(_addOffset(ampPostscan, xStart, yStart))
+            ampInfo["over"] = _format(_addOffset(ampOverscan, xStart, yStart))
+            ampInfo["all"] = _format(ampSection)
             boundaryArray.append(ampInfo)
 
         return {"type": "CCD-OVERSCAN",

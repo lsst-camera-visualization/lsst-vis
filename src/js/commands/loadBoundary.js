@@ -52,7 +52,7 @@ export default viewer => {
             const regions = parsers[data.type](data.data);
             console.log(regions);
 
-            store.dispach(setBoundaryRegions(regions));
+            store.dispatch(setBoundaryRegions(regions));
         }
         else {
             console.log("ERROR: INVALID BOUNDARY REGION TYPE");

@@ -1,4 +1,3 @@
-from task_scripts.graphProj import task as task_graphProj
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.abspath(__file__))+"/task_scripts")
@@ -9,6 +8,7 @@ from task_scripts.noise import task as task_noise
 from task_scripts.averagePixel import task as task_average_pixel
 from task_scripts.boundary import task as task_boundary
 from task_scripts.hotPixel import task as task_hot_pixel
+from task_scripts.graphProj import task as task_graphProj
 from task_scripts.graphPixel import task as task_graph_pixel
 
 # Dictionary mapping task names to functions

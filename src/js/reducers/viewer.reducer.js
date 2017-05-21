@@ -97,7 +97,7 @@ const commands = {
             name: action.name,
             hwregion: action.hwregion
         };
-        
+
         return newState;
     },
 

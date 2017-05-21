@@ -61,7 +61,7 @@ export const ParseRegion = region => {
 export const ParseBackendRegion = region => {
     switch (region.type) {
         case "rect": {
-            const desc = region.value;
+            const desc = region.data;
             return new Rectangle(desc.x1, desc.y1, desc.x2, desc.y2);
         }
 

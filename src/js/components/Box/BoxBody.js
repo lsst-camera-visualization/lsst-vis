@@ -37,7 +37,7 @@ export default class BoxBody extends React.Component {
             return this.createLVPair(e, i);
         }
         else if (e.match(/^:.*:$/g)) {
-            return createSpecialLine(e, i);
+            return this.createSpecialLine(e, i);
         }
         else {
             // Normal text

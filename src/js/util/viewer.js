@@ -36,7 +36,9 @@ export class Viewer {
                 const b = this.boundaryRegions[i];
                 regions = regions.concat(b.toDS9());
             }
-            store.dispatch(drawDS9Regions(this.id, "BOUNDARY", regions, opts));
+
+            const a = ViewerActions.drawDS9Regions(this.id, "BOUNDARY", regions, opts);
+            store.dispatch(a);
         });
 
         AddActionListener("READOUT_DATA", this.onCursorMove);

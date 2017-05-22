@@ -71,6 +71,9 @@ export class Viewer {
     }
 
     calculateHoveredAmpName = () => {
+        if (!this.boundaryRegions)
+            return null;
+            
         for (let i = 0; i < this.boundaryRegions.length; i++) {
             const b = this.boundaryRegions[i];
             const displayName = b.contains(this.cursorPoint);

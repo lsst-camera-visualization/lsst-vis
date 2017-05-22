@@ -13,5 +13,6 @@ def task(filename, task_params):
 
     return headerInfo, None
 
+# Test/debug
 if __name__ == '__main__':
     print(task("/home/wei/lsst/lsst_firefly/backend/images/imageE2V.fits", {}))

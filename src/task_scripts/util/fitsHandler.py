@@ -109,13 +109,14 @@ class fitsHandler:
         for amp in self.imageHDUs:
             header = amp.header
             ampDataSection = _convertHeaderRange(header["DATASEC"])
+            ampDetSec = _convertHeaderRange(header["DETSEC"])
             ampPostscan = _convertHeaderRange(header["BIASSEC"])
             ampPrescan = _convertHeaderRange(header["DATASEC"])
             ampPrescan["x2"] = min(ampPrescan["x1"], ampPrescan["x2"]) - 1
             ampPrescan["x1"] = 0
 
-            ampX = (ampDataSection["x1"] - 1) // ampDim["x"]
-            ampY = (ampDataSection["y1"] - 1) // ampDim["y"]
+            ampX = (ampDetSec["x1"]) // ampDim["x"]
+            ampY = (ampDetSec["y1"]) // ampDim["y"]
             xStart, yStart = ampX*segDim["x"], ampY*segDim["y"]
             ampSection = {"x1": xStart, "x2": xStart + ampDim["x"] - 1,
                             "y1": yStart, "y2": yStart + ampDim["y"] - 1}

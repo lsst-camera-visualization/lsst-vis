@@ -34,7 +34,7 @@ export default class Viewer extends React.Component {
         const cursorPanel = <ViewerCursorPanel
                         cursorPoint={e.cursorPoint}
                         pixelValue={e.pixelValue}
-                        hoveredAmpName={e.hoveredAmpName} />
+                        hovered={e.hovered} />
         const uvPanel = <ViewerUVPanel />;
 
         return (

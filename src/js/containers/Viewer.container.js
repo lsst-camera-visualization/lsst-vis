@@ -1,5 +1,6 @@
 import { connect } from "react-redux"
 import Viewer from "../components/Viewer";
+import { selectRegion } from "../actions/viewer.actions";
 import { openCommandPanel } from "../actions/commandPanel.actions";
 
 const mapStateToProps = state => {
@@ -10,9 +11,13 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
+        onSelectRegion: (id, region) => {
+            dispatch(selectRegion(id, region));
+        },
+
         // On click handler for the "execute command over selected" button
-        onExecuteOverSelected: id => {
-            dispatch(openCommandPanel(id));
+        onExecuteOverSelected: (id, region) => {
+            dispatch(openCommandPanel(id, region));
         }
     }
 }

@@ -19,12 +19,28 @@ export default class Viewer extends React.Component {
 
     // On click handler for executing command over selected region
     handleExecuteOverSelected = e => {
-        this.props.onExecuteOverSelected(this.props.id);
+        const viewer = this.props.viewers[this.props.id];
+        const sel = viewer.selectedRegion;
+        const region = sel.hwregion.select(sel.name);
+        this.props.onExecuteOverSelected(this.props.id, region);
     }
 
     // On click handler for closing the viewer
     handleClose = () => {
         commandDispatcher.dispatch("delete_viewer", { viewer_id: this.props.id });
+    }
+
+    handleSelectRegion = (e) => {
+        if (e.shiftKey)
+            this.props.onSelectRegion(this.props.id, this.props.viewers[this.props.id].hovered);
+    }
+
+    handleSelectRegionWhole = (e) => {
+        if (e.shiftKey) {
+            let hovered = this.props.viewers[this.props.id].hovered;
+            hovered.name = hovered.name.split(/-/)[0];
+            this.props.onSelectRegion(this.props.id, hovered);
+        }
     }
 
     render() {
@@ -34,7 +50,7 @@ export default class Viewer extends React.Component {
         const cursorPanel = <ViewerCursorPanel
                         cursorPoint={e.cursorPoint}
                         pixelValue={e.pixelValue}
-                        hoveredAmpName={e.hoveredAmpName} />
+                        hovered={e.hovered} />
         const uvPanel = <ViewerUVPanel />;
 
         return (
@@ -45,7 +61,10 @@ export default class Viewer extends React.Component {
                     <ReactUtil.Toolbar
                         onClose={this.handleClose}>
                         <p className="viewer-title">{id}</p>
-                        <ViewerImageViewer e={e} />
+                        <ViewerImageViewer
+                            e={e}
+                            onClick={this.handleSelectRegion}
+                            onDblClick={this.handleSelectRegionWhole} />
                         <ReactUtil.Col2
                             className="viewer-info"
                             width="50%"
@@ -53,6 +72,7 @@ export default class Viewer extends React.Component {
                             right={uvPanel}
                             separator={true} />
                         <ViewerSelectedPanel
+                            selectedRegion={e.selectedRegion}
                             onClick={this.handleExecuteOverSelected} />
                     </ReactUtil.Toolbar>
                 </div>

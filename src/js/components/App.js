@@ -42,7 +42,8 @@ export default class App extends React.Component {
                 </div>
                 <CommandPanelCtr
                     hide={!this.props.commandPanel.show}
-                    viewerID={this.props.commandPanel.viewerID} />
+                    viewerID={this.props.commandPanel.viewerID}
+                    region={this.props.commandPanel.region} />
             </div>
         );
     }

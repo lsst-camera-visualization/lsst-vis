@@ -76,6 +76,15 @@ const commands = {
         return newState;
     },
 
+    "SELECT_REGION": (state, action) => {
+        if (!(action.id in state))
+            return state;
+
+        let newState = Object.assign({...state});
+        newState[action.id].selectedRegion = action.region;
+        return newState;
+    },
+
     "UPDATE_CURSOR_POS": (state, action) => {
         if (!(action.id in state) || !action.pos)
             return state;

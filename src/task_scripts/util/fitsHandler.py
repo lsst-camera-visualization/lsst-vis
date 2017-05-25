@@ -95,6 +95,20 @@ class fitsHandler:
                     "y1": region["y1"] + yOffset,
                     "y2": region["y2"] + yOffset}
 
+        def _reverseX(region, segDim):
+            # TODO: Add a flag for x or y axis
+            return {"x1": segDim["x"] - region["x1"] - 1,
+                    "x2": segDim["x"] - region["x2"] - 1,
+                    "y1": region["y1"],
+                    "y2": region["y2"]}
+
+        def _reverseY(region, segDim):
+            # TODO: Add a flag for x or y axis
+            return {"x1": region["x1"],
+                    "x2": region["x2"],
+                    "y1": segDim["y"] - region["y1"] - 1,
+                    "y2": segDim["y"] - region["y2"] - 1}
+
         def _format(region):
             # Amplifier boundary should always be "rect"
             return {"type": "rect", "data": region}
@@ -114,21 +128,36 @@ class fitsHandler:
             ampPrescan = _convertHeaderRange(header["DATASEC"])
             ampPrescan["x2"] = min(ampPrescan["x1"], ampPrescan["x2"]) - 1
             ampPrescan["x1"] = 0
+            ampOverscan = {"x1": 0, "x2": segDim["x"] - 1,
+                            "y1": max(ampPrescan["y1"], ampPrescan["y2"]) + 1,
+                            "y2": segDim["y"] - 1}
 
             ampX = (ampDetSec["x1"]) // ampDim["x"]
             ampY = (ampDetSec["y1"]) // ampDim["y"]
             xStart, yStart = ampX*segDim["x"], ampY*segDim["y"]
-            ampSection = {"x1": xStart, "x2": xStart + ampDim["x"] - 1,
-                            "y1": yStart, "y2": yStart + ampDim["y"] - 1}
-            ampOverscan = {"x1": xStart, "x2": xStart + ampDim["x"] - 1,
-                            "y1": ampPrescan["y2"] + 1, "y2": yStart + ampDim["y"] - 1}
+            ampSection = {"x1": xStart, "x2": xStart + segDim["x"] - 1,
+                            "y1": yStart, "y2": yStart + segDim["y"] - 1}
+
+            # Calculate the correct boundary
+            if ampDetSec["x1"] > ampDetSec["x2"]:
+                ampPrescan = _reverseX(ampPrescan, segDim)
+                ampDataSection = _reverseX(ampDataSection, segDim)
+                ampPostscan = _reverseX(ampPostscan, segDim)
+
+            if ampDetSec["y1"] > ampDetSec["y2"]:
+                ampPrescan = _reverseY(ampPrescan, segDim)
+                ampDataSection = _reverseY(ampDataSection, segDim)
+                ampPostscan = _reverseY(ampPostscan, segDim)
+                ampOverscan = _reverseY(ampOverscan, segDim)
+
+            # ampInfo will be returned (packed into an array)
             ampInfo = {}
             ampInfo["name"] = header["EXTNAME"]
+            ampInfo["all"] = _format(ampSection)
             ampInfo["data"] = _format(_addOffset(ampDataSection, xStart, yStart))
             ampInfo["pre"] = _format(_addOffset(ampPrescan, xStart, yStart))
             ampInfo["post"] = _format(_addOffset(ampPostscan, xStart, yStart))
             ampInfo["over"] = _format(_addOffset(ampOverscan, xStart, yStart))
-            ampInfo["all"] = _format(ampSection)
             boundaryArray.append(ampInfo)
 
         return {"type": "CCD-OVERSCAN",

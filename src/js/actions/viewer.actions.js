@@ -84,6 +84,14 @@ export const setBoundaryRegions = (id, regions) => {
     }
 }
 
+export const selectRegion = (id, region) => {
+    return {
+        type: "SELECT_REGION",
+        id,
+        region
+    }
+}
+
 
 // Updates the cursor coordinates for a viewer
 export const updateCursorPos = (id, pos) => {

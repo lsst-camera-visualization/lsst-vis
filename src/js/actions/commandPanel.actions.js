@@ -1,9 +1,10 @@
 
 // Opens the command panel, and sets the viewer to work on
-export const openCommandPanel = viewerID => {
+export const openCommandPanel = (viewerID, region) => {
     return {
         type: "OPEN_COMMANDPANEL",
-        viewerID
+        viewerID,
+        region
     }
 }
 

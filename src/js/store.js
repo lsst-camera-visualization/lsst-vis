@@ -32,7 +32,7 @@ const dataPath = ((process.env.NODE_ENV !== "production") ? ".." : ".") + "/data
 // Loads the commands
 const loadCommands = () => {
     console.log("Loading commands");
-    return JSUtil.LoadJSONFromFile(dataPath + "/commands.json")
+    return JSUtil.LoadJSONFromPath(dataPath + "/commands.json")
         .then(data =>
             data.map( c => store.dispatch(addCommand(c.commandName, c.params, c.desc)))
         );
@@ -41,7 +41,7 @@ const loadCommands = () => {
 // Loads the parameter descriptions
 const loadParameters = () => {
     console.log("Loading parameters");
-    return JSUtil.LoadJSONFromFile(dataPath + "/parameters.json")
+    return JSUtil.LoadJSONFromPath(dataPath + "/parameters.json")
         .then(data =>
             JSUtil.ObjectKeyMap(data, d => store.dispatch(addParameterDesc(d, data[d])))
         );

@@ -1,5 +1,5 @@
 import { ReducerUtil } from "../util/reducer";
-import { UVController } from "../util/viewer";
+import { UVController } from "../ui/viewer";
 
 // UVController commands
 const commands = {

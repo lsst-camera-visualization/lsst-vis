@@ -1,5 +1,5 @@
 import { ReducerUtil } from "../util/reducer";
-import { Viewer } from "../util/viewer";
+import { Viewer } from "../ui/viewer";
 
 // Viewer commands
 const commands = {

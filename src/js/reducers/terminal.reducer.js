@@ -1,4 +1,4 @@
-import { Terminal } from "../util/terminal";
+import { Terminal } from "../ui/terminal";
 import { JSUtil } from "../util/jsutil";
 
 const lastState = JSON.parse(localStorage.getItem("state"));

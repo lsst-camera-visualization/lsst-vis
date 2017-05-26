@@ -1,5 +1,6 @@
 import * as BoxCommands from "./box.commands";
 import * as ViewerCommands from "./viewer.commands";
+import * as UVCommands from "./uv.commands";
 import * as TerminalCommands from "./terminal.commands";
 import averagePixel from "./averagePixel";
 import graphPixel from "./graphPixel";
@@ -20,6 +21,10 @@ const commands = {
     "show_boundary": ViewerCommands.showBoundary,
     "clear_viewer": ViewerCommands.clearViewer,
     "load_image": ViewerCommands.loadImage,
+
+    "uv_interval": UVCommands.setInterval,
+    "uv_pause": UVCommands.pause,
+    "uv_resume": UVCommands.resume,
 
     "average_pixel": averagePixel,
     "graph_pixel": graphPixel,

@@ -6,7 +6,9 @@ export const ReducerUtil = {
 
     // Removes an element from the UI element list
     RemoveElement: (state, id) => {
-        let newState = Object.assign({...state},{});
+        let newState = Object.assign({...state}, {});
+        if (newState[id].destroy)
+            newState[id].destroy();
         delete newState[id];
         return newState;
     }

@@ -50,8 +50,10 @@ export default class Viewer extends React.Component {
         const cursorPanel = <ViewerCursorPanel
                         cursorPoint={e.cursorPoint}
                         pixelValue={e.pixelValue}
-                        hovered={e.hovered} />
-        const uvPanel = <ViewerUVPanel />;
+                        hoveredAmpName={e.hoveredAmpName} />
+        const uvPanel = <ViewerUVPanel
+                            onPause={this.props.onUVPause.bind(this, id)}
+                            onResume={this.props.onUVResume.bind(this, id)} />;
 
         return (
             <Draggable

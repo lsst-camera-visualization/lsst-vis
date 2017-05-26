@@ -105,7 +105,7 @@
 
     {
         "commandName": "uv_interval",
-        "params": [ "viewer_id", "interval_in_millis"],
+        "params": [ "viewer_id", "interval_in_ms"],
         "desc": "Updates the UV interval for a viewer"
     },
     {

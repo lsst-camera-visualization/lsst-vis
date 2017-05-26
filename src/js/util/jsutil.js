@@ -106,8 +106,24 @@ export const JSUtil = {
         return true;
     },
 
+    LoadFileContents: (path) => {
+        return new Promise((resolve, reject) => {
+            let xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = () => {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200)
+                        resolve(xhr.responseText);
+                    else
+                        reject(xhr);
+                }
+            };
+            xhr.open("GET", path, true);
+            xhr.send();
+        });
+    },
+
     // Loads JSON data from a file.
-    LoadJSONFromFile: (path) => {
+    LoadJSONFromPath: (path) => {
         return new Promise((resolve, reject) => {
             let xhr = new XMLHttpRequest();
             xhr.onreadystatechange = () => {

@@ -4,6 +4,7 @@ import * as UVCommands from "./uv.commands";
 import * as TerminalCommands from "./terminal.commands";
 import averagePixel from "./averagePixel";
 import graphPixel from "./graphPixel";
+import graphProj from "./graphProj";
 import hotPixel from "./hotPixel";
 import noise from "./noise";
 
@@ -27,6 +28,7 @@ const commands = {
 
     "average_pixel": averagePixel,
     "graph_pixel": graphPixel,
+    "graph_proj": graphProj,
     "hot_pixel": hotPixel,
     "noise": noise,
 

@@ -25,7 +25,12 @@ export default class ViewerImageViewer extends React.Component {
 
     render() {
         return (
-            <div id={this.props.e.id} className="viewer-imgViewer"></div>
+            <div
+                id={this.props.e.id}
+                className="viewer-imgViewer"
+                onClick={this.props.onClick}
+                onDoubleClick={this.props.onDblClick} >
+            </div>
         );
     }
 }

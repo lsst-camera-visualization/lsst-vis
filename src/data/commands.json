@@ -15,6 +15,11 @@
         "desc": "Histograms the pixel values in a region"
     },
     {
+        "commandName": "graph_proj",
+        "params": [ "viewer_id", "region", "rowsperbin" ],
+        "desc": "Histograms the average pixel value in a row"
+    },
+    {
         "commandName": "noise",
         "params": [ "viewer_id", "box_id", "region" ],
         "desc": "Calculates the pixel noise in a region"

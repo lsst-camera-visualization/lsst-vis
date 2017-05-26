@@ -76,12 +76,12 @@ const commands = {
         return newState;
     },
 
-    "SET_HEADER_DATA": (state, action) => {
+    "SELECT_REGION": (state, action) => {
         if (!(action.id in state))
             return state;
 
         let newState = Object.assign({...state});
-        newState[action.id].header = action.header;
+        newState[action.id].selectedRegion = action.region;
         return newState;
     },
 
@@ -102,7 +102,11 @@ const commands = {
             return state;
 
         let newState = Object.assign({...state});
-        newState[action.id].hoveredAmpName = action.name;
+        newState[action.id].hovered = {
+            name: action.name,
+            hwregion: action.hwregion
+        };
+
         return newState;
     },
 

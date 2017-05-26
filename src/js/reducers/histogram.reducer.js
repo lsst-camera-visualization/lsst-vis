@@ -1,5 +1,5 @@
 import { ReducerUtil } from "../util/reducer";
-import { Histogram } from "../util/histogram";
+import { Histogram } from "../ui/histogram";
 
 let _numHistograms = 0;
 

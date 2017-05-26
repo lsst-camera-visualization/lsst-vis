@@ -1,4 +1,4 @@
-import { AddActionListener } from "./firefly";
+import { AddActionListener } from "../util/firefly";
 import * as ViewerActions from "../actions/viewer.actions";
 import loadBoundary from "../commands/loadBoundary";
 import { ClearLayer, DrawRegions } from "../util/firefly";
@@ -13,6 +13,24 @@ const defaultImage = (process.env.NODE_ENV !== "production") ?
 const defaultImageTrimmed = (process.env.NODE_ENV !== "production") ?
     "http://localhost:8080/static/images/imageE2V.fits" :
     "http://lsst.cs.illinois.edu/static/images/imageE2V.fits";
+
+
+let imageRepo = null;
+JSUtil.LoadFileContents("settings.ini")
+    .then(data => {
+        const entries = data.match(/[^\r\n]+/g);
+        const keys = {
+            "imagerepo": (value) => imageRepo = value,
+        };
+
+        entries.map(e => {
+            let key, value;
+            [key, value] = e.split(/=/);
+            if (key in keys)
+                keys[key](value);
+        });
+    })
+    .catch(error => null);
 
 export class Viewer {
     constructor(id, image = defaultImage) {
@@ -102,5 +120,48 @@ export class Viewer {
         const amp = this.calculateHoveredAmpName();
         if (amp)
             store.dispatch(ViewerActions.updateHoveredAmpName(this.id, amp.name, amp.hwregion));
+    }
+}
+
+
+export class UVController {
+    constructor(viewerID, imageRepo) {
+        this._viewer = viewerID;
+        this._imageRepo = imageRepo;
+
+        this.setInterval(3000);
+        this.pause();
+    }
+
+    destroy() {
+        clearInterval(this._timerID);
+    }
+
+    query = () => {
+        if (imageRepo) {
+            JSUtil.LoadJSONFromPath(imageRepo)
+                .then(data => {
+                    const imageURL = "";
+                    store.dispatch(ViewerActions.loadImage(this._viewer, imageURL));
+                })
+                .catch(error => null);
+        }
+    }
+
+    setInterval(newInterval) {
+        this.destroy();
+
+        this._interval = newInterval;
+        this._timerID = setInterval(this.query, this._interval);
+    }
+
+    pause() {
+        this._bPaused = true;
+        this.destroy();
+    }
+
+    resume() {
+        this._bPaused = false;
+        this.setInterval(this._interval);
     }
 }

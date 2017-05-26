@@ -1,70 +1,58 @@
 import { ReducerUtil } from "../util/reducer";
-import { Box } from "../ui/box";
+import { UVController } from "../ui/viewer";
 
-
+// UVController commands
 const commands = {
-    "CREATE_BOX": (state, action) => {
+    "CREATE_VIEWER": (state, action) => {
         if (action.id in state)
             return state;
-
-        return ReducerUtil.AddElement(state, action.id, new Box(action.id));
+        return ReducerUtil.AddElement(state, action.id, new UVController(action.id));
     },
 
-    "DELETE_BOX": (state, action) => {
+    "DELETE_VIEWER": (state, action) => {
         if (!(action.id in state))
             return state;
-
         return ReducerUtil.RemoveElement(state, action.id);
     },
 
-    "CLEAR_BOXTEXT": (state, action) => {
+    "UV_INTERVAL": (state, action) => {
         if (!(action.id in state))
             return state;
 
         let newState = Object.assign({...state}, {});
-        newState[action.id].clearText();
+        newState[action.id].setInterval(action.interval);
+
         return newState;
     },
 
-    "HIDE_BOX": (state, action) => {
+    "UV_PAUSE": (state, action) => {
         if (!(action.id in state))
             return state;
 
         let newState = Object.assign({...state}, {});
-        newState[action.id].minimize();
+        newState[action.id].pause();
+
         return newState;
     },
 
-    "SET_BOXTEXT": (state, action) => {
+    "UV_RESUME": (state, action) => {
         if (!(action.id in state))
             return state;
 
         let newState = Object.assign({...state}, {});
-        newState[action.id].setText(action.text);
-        return newState;
-    },
+        newState[action.id].resume();
 
-    "SHOW_BOX": (state, action) => {
-        if (!(action.id in state))
-            return state;
-
-        let newState = Object.assign({...state}, {});
-        newState[action.id].maximize();
         return newState;
-    },
+    }
 }
 
 
 
-
-const initialState = {
-    "ffbox": new Box("ffbox")
-}
-
-const boxReducer = (state = initialState, action) => {
+// UVController reducer function
+const uvReducer = (state = {}, action) => {
     if (action.type in commands)
         return commands[action.type](state, action);
     return state;
 }
 
-export default boxReducer;
+export default uvReducer;

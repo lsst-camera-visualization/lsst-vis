@@ -29,7 +29,7 @@ export default class CommandPanel extends React.Component {
         const command = this.state.selected;
         let params = Object.assign({...this.parameters}, {});
         params.viewer_id = this.props.viewerID;
-        params.region = "rect 1000 1000 3000 3000".match(/\S+/g);
+        params.region = this.props.region;
         commandDispatcher.dispatch(command, params);
 
         this.props.close();

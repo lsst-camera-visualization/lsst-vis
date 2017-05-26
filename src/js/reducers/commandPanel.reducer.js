@@ -1,6 +1,7 @@
 const initialState = {
-    hide: true,
-    viewerID: ""
+    show: false,
+    viewerID: "",
+    region: ""
 }
 
 const commandPanelReducer = (state = initialState, action) => {
@@ -8,14 +9,16 @@ const commandPanelReducer = (state = initialState, action) => {
         case "OPEN_COMMANDPANEL": {
             return Object.assign({...state}, {
                 show: true,
-                viewerID: action.viewerID
+                viewerID: action.viewerID,
+                region: action.region
             });
         }
 
         case "CLOSE_COMMANDPANEL": {
             return Object.assign({...state}, {
                 show: false,
-                viewerID: ""
+                viewerID: "",
+                region: ""
             });
         }
 

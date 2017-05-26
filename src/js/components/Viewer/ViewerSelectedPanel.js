@@ -4,10 +4,13 @@ import { ReactUtil } from "../../util/react";
 
 export default class ViewerSelectedPanel extends React.Component {
     render() {
+        const selectedRegionName = this.props.selectedRegion ? this.props.selectedRegion.name : "";
         // Selected region info
         const info =
             (<div>
-                <span>Selected Region: selected</span>
+                <span className="viewer-selectedPanel-selected">
+                    {"Selected Region: " + selectedRegionName}
+                </span>
                 <input
                     className="viewer-selectedPanel-execButton"
                     type="button"

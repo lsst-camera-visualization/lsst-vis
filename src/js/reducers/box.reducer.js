@@ -1,5 +1,5 @@
 import { ReducerUtil } from "../util/reducer";
-import { Box } from "../util/box";
+import { Box } from "../ui/box";
 
 
 const commands = {

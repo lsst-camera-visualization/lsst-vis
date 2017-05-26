@@ -1,4 +1,4 @@
-import { AddActionListener } from "./firefly";
+import { AddActionListener } from "../util/firefly";
 import * as ViewerActions from "../actions/viewer.actions";
 import loadBoundary from "../commands/loadBoundary";
 import { ClearLayer, DrawRegions } from "../util/firefly";

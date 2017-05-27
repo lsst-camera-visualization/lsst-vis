@@ -55,7 +55,8 @@ export default (params) => {
         ];
         const opts = {
             title: "Graph Pixel: " + params.viewer_id,
-            xaxis: "Pixel Value"
+            xaxis: "Pixel Value",
+            logs: (params["[scale]"] === "log") ? "y" : undefined
         }
         store.dispatch(createHistogram(histoData, opts));
     }

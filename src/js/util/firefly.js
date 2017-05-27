@@ -51,12 +51,14 @@ export const DrawHistogram = (plotID, data, width, height, options = {}) => {
         series: data,
         width,
         height,
-        desc: options.xaxis
+        desc: options.xaxis,
     };
 
+    console.log(options);
     if (options.logs !== "")
         props.logs = options.logs;
-
+    console.log(props);
+    
     firefly.util.renderDOM(plotID, firefly.ui.Histogram, props);
 }
 

@@ -1,5 +1,4 @@
 import { LaunchTask } from "../util/firefly";
-import { ParseRegion } from "../util/region";
 import { clearBoxText, setBoxText } from "../actions/box.actions";
 import { drawRegion, clearLayer } from "../actions/viewer.actions";
 import { validateParameters } from "../util/command";
@@ -16,8 +15,7 @@ export default (params) => {
     }
 
     const viewer = store.getState().viewers[params.viewer_id];
-    const region = ParseRegion(params.region) ||
-                    ((typeof params.region === "object") ? params.region : null);
+    const region = params.region;
 
     // The parameters to pass to the backend
     const backendParameters = {

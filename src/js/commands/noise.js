@@ -16,7 +16,7 @@ export default (params) => {
     }
 
     const viewer = store.getState().viewers[params.viewer_id];
-    const region = ParseRegion(params.region);
+    const region = params.region;
 
     // The parameters to pass to the backend
     const backendParameters = {

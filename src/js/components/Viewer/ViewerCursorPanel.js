@@ -6,7 +6,6 @@ export default class ViewerCursorPanel extends React.Component {
     render() {
         // Pretty print of the coordinates
         const coords = "(" + this.props.cursorPoint.x + ", " + this.props.cursorPoint.y + ")";
-        const hoveredName = this.props.hovered ? this.props.hovered.name : null;
 
         return (
             <div className="viewer-info-panel viewer-cursorPanel">
@@ -21,7 +20,7 @@ export default class ViewerCursorPanel extends React.Component {
                     labelClass="viewer-info-label" />
                 <ReactUtil.LVPair
                     label="Hovered Segment"
-                    value={hoveredName}
+                    value={this.props.hoveredName}
                     labelClass="viewer-info-label" />
             </div>
         );

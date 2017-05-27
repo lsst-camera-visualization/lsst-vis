@@ -8,6 +8,9 @@ import graphProj from "./graphProj";
 import hotPixel from "./hotPixel";
 import noise from "./noise";
 
+import { ParseRegion } from "../util/region";
+import store from "../store";
+
 // Maps command names to functions
 const commands = {
     "create_box": BoxCommands.createBox,
@@ -35,10 +38,45 @@ const commands = {
     "set_default": TerminalCommands.setDefault,
 };
 
+const fixRegion = (viewerID, region) => {
+    const parsed = ParseRegion(region);
+    const viewer = store.getState().viewers[viewerID];
+
+    if (!parsed) {
+        if (typeof region === "object")
+            return region;
+        else if (region === "sel") {
+            const selected = viewer.selectedRegion;
+            return selected.hwregion.select(selected.name);
+        }
+        else if (typeof region === "string") {
+            for (let i = 0; i < viewer.boundaryRegions.length; i++) {
+                const r = viewer.boundaryRegions[i];
+                if (r.test(region))
+                    return r.select(region);
+            }
+        }
+        else
+            return null;
+    }
+    else
+        return parsed;
+}
+
 class CommandDispatcher {
     dispatch = (command, params) => {
-        if (command in commands)
+        if (command in commands) {
+            // Update the region command if necessary
+            if ("region" in params) {
+                params.region = fixRegion(params.viewer_id, params.region);
+                if (!params.region) {
+                    console.log("INVALID REGION");
+                    return;
+                }
+            }
+
             commands[command](params);
+        }
     }
 }
 

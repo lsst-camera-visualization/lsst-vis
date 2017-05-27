@@ -47,10 +47,12 @@ export default class Viewer extends React.Component {
         const id = this.props.id;
         const e = this.props.viewers[id];
 
+        const hoveredName = e.hovered ? e.hovered.name : "";
+
         const cursorPanel = <ViewerCursorPanel
-                        cursorPoint={e.cursorPoint}
-                        pixelValue={e.pixelValue}
-                        hoveredAmpName={e.hoveredAmpName} />
+                                cursorPoint={e.cursorPoint}
+                                pixelValue={e.pixelValue}
+                                hoveredName={hoveredName} />
         const uvPanel = <ViewerUVPanel
                             onPause={this.props.onUVPause.bind(this, id)}
                             onResume={this.props.onUVResume.bind(this, id)} />;

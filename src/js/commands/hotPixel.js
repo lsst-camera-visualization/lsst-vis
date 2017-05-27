@@ -16,7 +16,7 @@ export default params => {
 
     const viewerID = params.viewer_id;
     const viewer = store.getState().viewers[viewerID];
-    const region = ParseRegion(params.region);
+    const region = params.region;
     const threshold = (params.threshold === "max") ? "max" : parseInt(params.threshold);
 
     // The parameters to pass to the backend

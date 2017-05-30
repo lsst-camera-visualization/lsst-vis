@@ -1,5 +1,6 @@
 import React from "react";
 
+import Rnd from "react-rnd";
 import TerminalHelp from "./Terminal/TerminalHelp";
 import TerminalBody from "./Terminal/TerminalBody";
 import TerminalInput from "./Terminal/TerminalInput";

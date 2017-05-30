@@ -1,8 +1,10 @@
-import { AddActionListener } from "../util/firefly";
+import { AddActionListener, AddExtension } from "../util/firefly";
 import * as ViewerActions from "../actions/viewer.actions";
 import loadBoundary from "../commands/loadBoundary";
 import { ClearLayer, DrawRegions } from "../util/firefly";
 import { JSUtil } from "../util/jsutil";
+import { openCommandPanel } from "../actions/commandPanel.actions";
+import { Rectangle } from "../util/region";
 
 import store from "../store";
 
@@ -60,6 +62,8 @@ export class Viewer {
         });
 
         AddActionListener("READOUT_DATA", this.onCursorMove);
+
+        AddExtension(id, "Choose command", "AREA_SELECT", this.onChooseCommand);
     }
 
     removeLayer = layer => {
@@ -91,7 +95,7 @@ export class Viewer {
     calculateHoveredAmpName = () => {
         if (!this.boundaryRegions)
             return null;
-            
+
         for (let i = 0; i < this.boundaryRegions.length; i++) {
             const b = this.boundaryRegions[i];
             const displayName = b.contains(this.cursorPoint);
@@ -120,6 +124,12 @@ export class Viewer {
         const amp = this.calculateHoveredAmpName();
         if (amp)
             store.dispatch(ViewerActions.updateHoveredAmpName(this.id, amp.name, amp.hwregion));
+    }
+
+    // Firefly callback function
+    onChooseCommand = action => {
+        const r = new Rectangle(action.ipt0.x, action.ipt0.y, action.ipt1.x, action.ipt1.y);
+        store.dispatch(openCommandPanel(this.id, r));
     }
 }
 

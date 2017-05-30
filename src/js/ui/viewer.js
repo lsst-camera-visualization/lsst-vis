@@ -151,7 +151,7 @@ export class UVController {
         if (imageRepo) {
             JSUtil.LoadJSONFromPath(imageRepo)
                 .then(data => {
-                    const imageURL = "";
+                    const imageURL = data.uri;
                     store.dispatch(ViewerActions.loadImage(this._viewer, imageURL));
                 })
                 .catch(error => null);

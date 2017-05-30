@@ -58,7 +58,7 @@ export const DrawHistogram = (plotID, data, width, height, options = {}) => {
     if (options.logs !== "")
         props.logs = options.logs;
     console.log(props);
-    
+
     firefly.util.renderDOM(plotID, firefly.ui.Histogram, props);
 }
 
@@ -76,6 +76,5 @@ export const LoadImage = (plotID, imageURL) => {
 // Launches a backend task
 export const LaunchTask = (taskName, params, viewer) => {
     params._imageURL = (taskName === "boundary") ? viewer.original_image_url : viewer.image;
-
     return firefly.getJsonFromTask("python", taskName, params);
 }

@@ -13,6 +13,10 @@ export class CCD {
         this.regions = regions;
     }
 
+    test(name) {
+        return this.name === name.split(/-/)[0];
+    }
+
     contains(p) {
         if (this.regions.data.contains(p.x, p.y))
             return this.name;

@@ -1,6 +1,6 @@
 import { LaunchTask } from "../util/firefly";
 import { ParseRegion } from "../util/region";
-import { drawDS9Regions, clearLayer } from "../actions/viewer.actions";
+import { drawDS9Regions, drawRegion, clearLayer } from "../actions/viewer.actions";
 import { validateParameters } from "../util/command";
 import { addErrorToHistory } from "../actions/terminal.actions";
 
@@ -28,14 +28,20 @@ export default params => {
     const onSuccess = data => {
         // Reset the viewer regions
         const regionLayer = "HOT_PIXEL";
+        const regionBoundaryLayer = regionLayer + "_BOUNDARY";
         store.dispatch(clearLayer(viewerID, regionLayer));
+        store.dispatch(clearLayer(viewerID, regionBoundaryLayer));
 
         const ds9Regions = data.hotPixels.map( d => ["circle", "point", d.x, d.y].join(" "));
         const opts = {
             color: "red"
-        }
+        };
+        const regionOpts = {
+            color: "blue"
+        };
 
         // Draw the hot pixels
+        store.dispatch(drawRegion(viewerID, regionBoundaryLayer, region, regionOpts));
         store.dispatch(drawDS9Regions(viewerID, regionLayer, ds9Regions, opts));
     }
 

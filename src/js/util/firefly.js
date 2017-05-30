@@ -76,6 +76,5 @@ export const LoadImage = (plotID, imageURL) => {
 // Launches a backend task
 export const LaunchTask = (taskName, params, viewer) => {
     params._imageURL = (taskName === "boundary") ? viewer.original_image_url : viewer.image;
-    console.log(params);
     return firefly.getJsonFromTask("python", taskName, params);
 }

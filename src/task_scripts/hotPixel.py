@@ -14,7 +14,8 @@ def task(filename, taskParams):
     region = Region(regionParam["type"], regionParam["value"])
 
     with Image(filename) as img:
-        threshold = np.max(img) if threshold == "max" else float(threshold)
+        maxOfRegion = region.execute(img, np.max)
+        threshold = maxOfRegion if threshold == "max" else float(threshold)
 
         # For a rectangular region
         def findHotPixelsRect(data):
@@ -25,7 +26,7 @@ def task(filename, taskParams):
                 # If it breaks the threshold, add it to the list, but offset the location
                 #    to match the location
                 if value >= threshold:
-                    hotPixels.append({"x":index[0]+x, "y":index[1]+y})
+                    hotPixels.append({"x":index[1]+x, "y":index[0]+y})
                 # Max number of hot pixels
                 if len(hotPixels) > max-1:
                     break

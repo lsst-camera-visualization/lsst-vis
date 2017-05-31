@@ -32,9 +32,10 @@ export default params => {
         store.dispatch(clearLayer(viewerID, regionLayer));
         store.dispatch(clearLayer(viewerID, regionBoundaryLayer));
 
-        const ds9Regions = data.hotPixels.map( d => ["circle", "point", d.x, d.y].join(" "));
+        const ds9Regions = data.hotPixels.map( d => ["circle", d.x+0.5, d.y+0.5, 0.5].join(" "));
         const opts = {
-            color: "red"
+            color: "red",
+            width: 2
         };
         const regionOpts = {
             color: "blue"

@@ -133,7 +133,8 @@ export class Viewer {
     }
 }
 
-
+// Update viewer controller
+// Querys an image repository and updates the target viewer's image, if necessary
 export class UVController {
     constructor(viewerID, imageRepo) {
         this._viewer = viewerID;
@@ -163,6 +164,11 @@ export class UVController {
 
         this._interval = newInterval;
         this._timerID = setInterval(this.query, this._interval);
+    }
+
+    reset() {
+        if (!this._bPaused)
+            this.setInterval(this._interval);
     }
 
     pause() {

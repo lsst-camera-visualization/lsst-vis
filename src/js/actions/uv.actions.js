@@ -20,3 +20,10 @@ export const resumeUV = id => {
         id
     }
 }
+
+export const updateUV = id => {
+    return {
+        type: "UV_UPDATE",
+        id
+    }
+}

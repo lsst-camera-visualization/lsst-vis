@@ -13,3 +13,7 @@ export const pause = params => {
 export const resume = params => {
     store.dispatch(UVActions.resumeUV(params.viewer_id));
 }
+
+export const update = params => {
+    store.dispatch(UVActions.updateUV(params.viewer_id));
+}

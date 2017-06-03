@@ -131,7 +131,7 @@
     {
         "commandName": "uv_update",
         "params": [ "viewer_id" ],
-        "desc": "Queries the image repository for new images, outside of the automatic interval"
+        "desc": "Queries the image repository for new images"
     }
 
 ]

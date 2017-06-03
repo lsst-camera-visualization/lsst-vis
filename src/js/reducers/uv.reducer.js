@@ -43,6 +43,17 @@ const commands = {
         newState[action.id].resume();
 
         return newState;
+    },
+
+    "UV_UPDATE": (state, action) => {
+        if (!(action.id in state))
+            return state;
+
+        let newState = Object.assign({...state}, {});
+        newState[action.id].query();
+        newState[action.id].reset();
+
+        return newState;
     }
 }
 

@@ -28,6 +28,7 @@ const commands = {
     "uv_interval": UVCommands.setInterval,
     "uv_pause": UVCommands.pause,
     "uv_resume": UVCommands.resume,
+    "uv_update": UVCommands.update,
 
     "average_pixel": averagePixel,
     "graph_pixel": graphPixel,

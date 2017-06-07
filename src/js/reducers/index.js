@@ -6,6 +6,7 @@ import uvReducer from "./uv.reducer";
 import histogramReducer from "./histogram.reducer";
 import commandsReducer from "./commands.reducer";
 import commandPanelReducer from "./commandPanel.reducer";
+import settingsReducer from "./settings.reducer";
 
 // State:
 // {
@@ -17,6 +18,7 @@ import commandPanelReducer from "./commandPanel.reducer";
 //      commands: A list of the valid commands that can be entered by the user in the terminal
 //      commandPanel: Describes the command panel state.
 //                  { show : Boolean, viewerID : String }
+//      settings: Application settings
 // }
 
 const initialState = {
@@ -33,6 +35,7 @@ const reducer = (state = initialState, action) => {
     newState.histograms = histogramReducer(state.histograms, action);
     newState.commands = commandsReducer(state.commands, action);
     newState.commandPanel = commandPanelReducer(state.commandPanel, action);
+    newState.settings = settingsReducer(state.settings, action);
 
     return newState;
 }

@@ -32,6 +32,11 @@
         "params": [ "parameter_id", "new_default_value" ],
         "desc": "Sets a parameter's default value"
     },
+    {
+        "commandName": "set_setting",
+        "params": [ "setting_name", "new_value" ],
+        "desc": "Changes a setting's value"
+    },
 
 
 

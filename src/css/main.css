@@ -2,6 +2,14 @@ body {
     background: #494949;
 }
 
+#table {
+    display: block;
+    width: 1000px;
+    height: 750px;
+    
+    background: #494949;
+}
+
 .cmdline-ctr {
     position: fixed;
     right: 5px;

@@ -10,6 +10,11 @@
         "desc": "Finds any pixels which exceed the threshold"
     },
     {
+        "commandName": "graph_noise",
+        "params": [ "viewer_id" ],
+        "desc": "Graphs the noise for each sensor"
+    },
+    {
         "commandName": "graph_pixel",
         "params": [ "viewer_id", "region", "num_bins", "min", "max", "[scale]" ],
         "desc": "Histograms the pixel values in a region"

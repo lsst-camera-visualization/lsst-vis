@@ -1,7 +1,9 @@
 
 const commands = {
     "EXTEND_SETTINGS": (state, action) => {
-        return Object.assign({...state}, {...action.settings});
+        let newState = Object.assign({...state}, {...action.settings});
+        localStorage.setItem("settings", JSON.stringify(newState));
+        return newState;
     },
 }
 

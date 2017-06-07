@@ -5,6 +5,7 @@ import reducer from "./reducers";
 import { JSUtil } from "./util/jsutil";
 import { addCommand, addParameterDesc, setCommandDispatcher } from "./actions/terminal.actions";
 import CommandDispatcher from "./commands/commandDispatcher";
+import { extendSettings } from "./actions/misc.actions";
 
 // Load Redux middleware
 const middleware = [];
@@ -51,7 +52,29 @@ loadCommands()
     .then(loadParameters)
     .catch(error => console.log(error));
 
+// Load the default settings
+JSUtil.LoadFileContents("settings.ini")
+    .then(data => {
+        const entries = data.match(/[^\r\n]+/g);
+        let settings = {};
 
-window.store = store;
+        entries.map(e => {
+            let key, value;
+            [key, value] = e.split(/=/);
+            settings[key] = value;
+
+            const stored = localStorage.getItem(key);
+            if (stored)
+                settings[key] = stored;
+        });
+
+        store.dispatch(extendSettings(settings));
+    })
+    .catch(error => null);
+
+
+// For debugging
+if (process.env.NODE_ENV !== "production")
+    window.store = store;
 
 export default store;

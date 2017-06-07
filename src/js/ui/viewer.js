@@ -16,24 +16,6 @@ const defaultImageTrimmed = (process.env.NODE_ENV !== "production") ?
     "http://localhost:8080/static/images/imageE2V.fits" :
     "http://lsst.cs.illinois.edu/static/images/imageE2V.fits";
 
-
-let imageRepo = null;
-JSUtil.LoadFileContents("settings.ini")
-    .then(data => {
-        const entries = data.match(/[^\r\n]+/g);
-        const keys = {
-            "imagerepo": (value) => imageRepo = value,
-        };
-
-        entries.map(e => {
-            let key, value;
-            [key, value] = e.split(/=/);
-            if (key in keys)
-                keys[key](value);
-        });
-    })
-    .catch(error => null);
-
 export class Viewer {
     constructor(id, image = defaultImage) {
         this.id = id;
@@ -149,6 +131,7 @@ export class UVController {
     }
 
     query = () => {
+        const imageRepo = store.getState().settings.imagerepo;
         if (imageRepo) {
             JSUtil.LoadJSONFromPath(imageRepo)
                 .then(data => {

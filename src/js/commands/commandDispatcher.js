@@ -2,6 +2,7 @@ import * as BoxCommands from "./box.commands";
 import * as ViewerCommands from "./viewer.commands";
 import * as UVCommands from "./uv.commands";
 import * as TerminalCommands from "./terminal.commands";
+import * as MiscCommands from "./misc.commands";
 import averagePixel from "./averagePixel";
 import graphPixel from "./graphPixel";
 import graphProj from "./graphProj";
@@ -37,6 +38,7 @@ const commands = {
     "noise": noise,
 
     "set_default": TerminalCommands.setDefault,
+    "set_setting": MiscCommands.setSetting
 };
 
 const fixRegion = (viewerID, region) => {

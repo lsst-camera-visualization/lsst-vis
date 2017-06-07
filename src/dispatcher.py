@@ -1,4 +1,5 @@
 import json
+import csv
 import os
 import sys
 sys.path.append(os.path.dirname(os.path.abspath(__file__))+"/task_scripts")
@@ -34,11 +35,18 @@ try:
 except Exception as e:
     result = {"error": str(e)}
 
+fileext = ".json"
+if "_type" in taskParams:
+    fileext = taskParams["_type"];
 
-(fd, outfile) = tempfile.mkstemp(suffix=".json", prefix=options.task, dir=options.outdir)
+(fd, outfile) = tempfile.mkstemp(suffix=fileext, prefix=options.task, dir=options.outdir)
 f = os.fdopen(fd, "w")
 
-json.dump(result, f)
+if fileext == ".json":
+    json.dump(result, f)
+elif fileext == ".csv":
+    for row in result["data"]:
+        f.write(row + "\n")
 
 print(options.separator)
 if error:

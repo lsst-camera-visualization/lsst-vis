@@ -58,13 +58,19 @@ JSUtil.LoadFileContents("settings.ini")
         const entries = data.match(/[^\r\n]+/g);
         let settings = { _defaults: {} };
 
+        let savedSettings = localStorage.getItem("settings");
+        if (savedSettings)
+            savedSettings = JSON.parse(savedSettings);
+        else
+            savedSettings = {};
+
         entries.map(e => {
             let key, value;
             [key, value] = e.split(/=/);
             settings[key] = value;
             settings._defaults[key] = value;
 
-            const stored = localStorage.getItem(key);
+            const stored = savedSettings[key];
             if (stored)
                 settings[key] = stored;
         });

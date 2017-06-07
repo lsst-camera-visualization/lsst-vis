@@ -56,12 +56,13 @@ loadCommands()
 JSUtil.LoadFileContents("settings.ini")
     .then(data => {
         const entries = data.match(/[^\r\n]+/g);
-        let settings = {};
+        let settings = { _defaults: {} };
 
         entries.map(e => {
             let key, value;
             [key, value] = e.split(/=/);
             settings[key] = value;
+            settings._defaults[key] = value;
 
             const stored = localStorage.getItem(key);
             if (stored)

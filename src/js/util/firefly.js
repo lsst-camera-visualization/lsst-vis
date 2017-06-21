@@ -78,3 +78,23 @@ export const LaunchTask = (taskName, params, viewer) => {
     params._imageURL = (taskName === "boundary") ? viewer.original_image_url : viewer.image;
     return firefly.getJsonFromTask("python", taskName, params);
 }
+
+export const LaunchTableTask = (taskName, params, viewer) => {
+    params._imageURL = (taskName === "boundary") ? viewer.original_image_url : viewer.image;
+    params._type = ".csv";
+
+    const tblReq = firefly.util.table.makeTblRequest(
+        "TableFromExternalTask",
+        taskName + " - " + viewer.id,
+        {
+            launcher: 'python',
+            task: taskName,
+            taskParams: params
+        },
+        {
+            pageSize: 30
+        }
+    );
+
+    firefly.showTable("table", tblReq);
+}

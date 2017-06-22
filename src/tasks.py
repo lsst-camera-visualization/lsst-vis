@@ -8,11 +8,13 @@ from task_scripts.noise import task as task_noise
 from task_scripts.averagePixel import task as task_average_pixel
 from task_scripts.boundary import task as task_boundary
 from task_scripts.hotPixel import task as task_hot_pixel
+from task_scripts.graphNoise import task as task_graphNoise
 from task_scripts.graphProj import task as task_graphProj
 from task_scripts.graphPixel import task as task_graph_pixel
 
 # Dictionary mapping task names to functions
 _tasks = {} # DO NOT MODIFY THIS LINE (see generate_new_task.sh)
+_tasks["graphNoise"] = task_graphNoise
 _tasks["graphProj"] = task_graphProj
 _tasks["noise"] = task_noise
 _tasks["graph_pixel"] = task_graph_pixel

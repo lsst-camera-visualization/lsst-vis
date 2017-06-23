@@ -69,7 +69,7 @@ export const LoadImage = (plotID, imageURL) => {
         URL: imageURL,
         Title: imageURL,
         ZoomType: "TO_WIDTH",
-        ZoomToWidth: '100%'
+        ZoomToWidth: "100%"
     });
 }
 
@@ -87,9 +87,9 @@ export const LaunchTableTask = (taskName, params, viewer) => {
         "TableFromExternalTask",
         taskName + " - " + viewer.id,
         {
-            launcher: 'python',
-            task: taskName,
-            taskParams: params
+            "launcher": "python",
+            "task": taskName,
+            "taskParams": params
         },
         {
             pageSize: 30

@@ -55,4 +55,5 @@ if error:
     sys.exit(1)
 else:
     status = {"outfile": outfile}
+    echo_debug = "echo " + outfile + " > /home/wei/lsst/lsst_firefly/backend/debug_file"
     print(json.dumps(status))

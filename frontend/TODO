@@ -1,0 +1,18 @@
+- Update backend functions
+    - original_image_url in FireflyUtil.LaunchTask
+- How to check for overscan (probably not based on filename)
+
+
+- Restoring previous state
+- Comment stuff
+- graph scaling
+- addActionListener for multiple viewers ?
+
+
+- Create ui element react component
+- Create ViewerInfoPanel (Container for all 3 panels) ?
+
+
+- CommandPanel: actually get selected region
+- Update viewer implementation
+- New UV UI

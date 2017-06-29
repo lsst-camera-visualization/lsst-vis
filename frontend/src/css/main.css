@@ -1,0 +1,64 @@
+body {
+    background: #494949;
+}
+
+#table {
+    display: block;
+    width: 1000px;
+    height: 750px;
+    
+    background: #494949;
+}
+
+.cmdline-ctr {
+    position: fixed;
+    right: 5px;
+    bottom: 5px;
+}
+
+.button {
+    display: block;
+    margin: 2px;
+    font-size: 125%;
+}
+
+.inline-button {
+    display: inline-block;
+    margin: 2px;
+    font-size: 125%;
+}
+
+.col-container {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+}
+
+.col-2 {
+
+}
+
+.col-separator-container {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+}
+
+.col-separator {
+    width: 2px;
+    height: 100%;
+
+    background-color: #FFF;
+}
+
+
+
+.toolbar-close-button {
+    color: #000;
+    position: absolute;
+    right: 3px;
+    top: 3px;
+}

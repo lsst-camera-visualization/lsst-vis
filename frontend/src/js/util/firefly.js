@@ -64,13 +64,26 @@ export const DrawHistogram = (plotID, data, width, height, options = {}) => {
 
 // Loads an image into the plot id
 export const LoadImage = (plotID, imageURL) => {
-    firefly.showImage(plotID, {
-        plotId: plotID,
-        URL: imageURL,
-        Title: imageURL,
-        ZoomType: "TO_WIDTH",
-        ZoomToWidth: "100%"
-    });
+    var urlPattern = /^((http|https|ftp):\/\/)/;
+    if (urlPattern.test(imageURL)){
+        // Remote image
+        firefly.showImage(plotID, {
+            plotId: plotID,
+            URL: imageURL,
+            Title: imageURL,
+            ZoomType: "TO_WIDTH",
+            ZoomToWidth: "100%"
+        });
+    } else {
+        // Otherwise we'll assume the image is located at local disk
+        firefly.showImage(plotID, {
+            plotId: plotID,
+            File: imageURL,
+            Title: imageURL,
+            ZoomType: "TO_WIDTH",
+            ZoomToWidth: "100%"
+        });
+    }
 }
 
 // Launches a backend task

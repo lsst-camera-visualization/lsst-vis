@@ -2,22 +2,6 @@ from astropy.io import fits
 import re
 import copy
 
-def _convertHeaderRange(detsizeString):
-    '''Convert the boundary coordinates from string(as in the header) to values. It's assumed to be a rectangular region (2-dimensional).
-
-    NOTE: slicing are inclusive in the header value.
-
-    @author Wei Ren
-    @param String of FITS header value representing boundary or dimension.
-    @return Dictionary containing X and Y boundaries.
-    '''
-    coord_list = re.split('[,:]', detsizeString[1:-1]) # strip the square bracket before spliting.
-    print(coord_list)
-    return {"x1" : int(coord_list[0])-1,
-            "x2" : int(coord_list[1])-1,
-            "y1" : int(coord_list[2])-1,
-            "y2" : int(coord_list[3])-1}
-
 class fitsHandler:
     '''A class for dealing with FITS images in python. It provides
     wrapper functions to get FITS header information and image data.
@@ -38,6 +22,15 @@ class fitsHandler:
     HDU stands for Header/Data Units (HDUs).
     @author - Wei Ren
     '''
+
+    # Constants for the hardware configuration
+    # LSST nomenclature (i.e RijSijAij)
+    A_X_NUM = 8
+    A_Y_NUM = 2
+    S_X_NUM = 3
+    S_Y_NUM = 3
+    R_X_NUM = 5
+    R_Y_NUM = 5
 
     def __init__(self, imageName):
         self.imageName = imageName
@@ -108,11 +101,51 @@ class fitsHandler:
         @param - None
         @return - Python dictionary of header informations
         '''
-        prefix = "HIERARCH {} {} SEGMENT".format(R_YX, S_YX)
-        tempSeg = "00"
+        tempSegYX = "00"
+        prefix = "HIERARCH {} {} SEGMENT {} ".format(R_YX, S_YX, tempSegYX)
         header = self.header
-        segDim = {"x": header[prefix + tempSeg + " NAXIS1"],
-                    "y": header[prefix + tempSeg + NAXIS2]}
+        segDim = {"x": header[prefix + "NAXIS1"],
+                    "y": header[prefix + "NAXIS2"]}
+        ccdImageDim = self.__rangeToDim(self.__convertRange(header[prefix + "DETSIZE"]))
+        ampDim = self.__rangeToDim(self.__convertRange(header[prefix + "DETSEC"]))
+
+        ccdBoundary = []
+        for ampX in range(self.A_X_NUM):
+            for ampY in range(self.A_Y_NUM):
+                segYX = str(ampX)+str(ampY)
+                prefix = "HIERARCH {} {} SEGMENT {} ".format(R_YX, S_YX, segYX)
+                ampDataSec = self.__convertRange(header[prefix + "DATASEC"])
+                ampDetSec = self.__convertRange(header[prefix + "DETSEC"])
+                ampPostscan = self.__convertRange(header[prefix + "BIASSEC"])
+                ampPrescan = copy.deepcopy(ampDataSec)
+                ampPrescan["x1"] = 0
+                ampPrescan["x2"] = min(ampDataSec["x1"], ampDataSec["x2"]) - 1
+                ampOverscan = {"x1": 0, "x2": segDim["x"] - 1}
+                ampOverscan["y1"] = max(ampPrescan["y1"], ampPrescan["y2"]) + 1
+                ampOverscan["y2"] = segDim["y"] - 1
+
+                xStart, yStart = ampX * segDim["x"], ampY * segDim["y"]
+                ampAll = {"x1": xStart, "x2": xStart + segDim["x"] - 1,
+                            "y1": yStart, "y2": yStart + segDim["y"] - 1}
+
+                xReverse = ampDetSec["x1"] > ampDetSec["x2"]
+                yReverse = ampDetSec["y1"] > ampDetSec["y2"]
+                ampPrescan = self.__rangeComplement(ampPrescan, segDim, x=xReverse, y=yReverse)
+                ampDataSec = self.__rangeComplement(ampDataSec, segDim, x=xReverse, y=yReverse)
+                ampPostscan = self.__rangeComplement(ampPostscan, segDim, x=xReverse, y=yReverse)
+                ampOverscan = self.__rangeComplement(ampOverscan, segDim, x=False, y=yReverse)
+
+                ampInfo = {}
+                ampInfo["name"] = header[prefix + "EXTNAME"]
+                ampInfo["all"] = self.__formatRect(ampAll)
+                ampInfo["data"] = self.__formatRectOffset(ampDataSec, xStart, yStart)
+                ampInfo["pre"] = self.__formatRectOffset(ampPrescan, xStart, yStart)
+                ampInfo["post"] = self.__formatRectOffset(ampPostscan, xStart, yStart)
+                ampInfo["over"] = self.__formatRectOffset(ampOverscan, xStart, yStart)
+                ccdBoundary.append(ampInfo)
+
+        ccdType = "CCD-OVERSCAN" if self.overscan else "CCD"
+        return {"type": ccdType, "data": ccdBoundary}
 
     def getRaftHeaderJSON(self):
         '''Retrive the header information on a raft-level FITS.
@@ -167,98 +200,35 @@ class fitsHandler:
             newRegion["y2"] -= (segDim["y"] - 1)
         return newRegion
 
-
     def __formatRect(self, region):
-        ''' Private helper function to convert a region into Rect (used in frontend).
+        ''' Private helper function to convert a region into Rect obejct.
         @param: region - range in 2D (dictionary with keys: x1, x2, y1, y2)
         @return: Rect
         '''
         return {"type": "rect", "data": region}
 
-    def getHeader(self):
-        '''Retrive the header information from FITS file. The information is
-        stored as python dictionary.
-        @author Wei Ren
-        @param - None
-        @return - A dictionary of FITS header keyword and values.
+    def __formatRectOffset(self, region, xOffset, yOffset):
+        ''' Private helper function to convert a region into Rect with offset.
+        @param: region - range in 2D (dictionary with keys: x1, x2, y1, y2)
+        @return: Rect
         '''
-        def _convertRangeToDim(region):
-            return {"x": 1 + abs(region["x2"]-region["x1"]),
-                    "y": 1 + abs(region["y2"]-region["y1"])}
+        region = self.__addOffset(region, xOffset, yOffset)
+        return {"type": "rect", "data": region}
 
-        def _addOffset(region, xOffset, yOffset):
-            return {"x1": region["x1"] + xOffset,
-                    "x2": region["x2"] + xOffset,
-                    "y1": region["y1"] + yOffset,
-                    "y2": region["y2"] + yOffset}
+    def __convertRange(sliceString):
+        '''Convert the boundary coordinates from string(as in the header) to values. It's assumed to be a rectangular region (2-dimensional).
 
-        def _reverseX(region, segDim):
-            # TODO: Add a flag for x or y axis
-            return {"x1": segDim["x"] - region["x1"] - 1,
-                    "x2": segDim["x"] - region["x2"] - 1,
-                    "y1": region["y1"],
-                    "y2": region["y2"]}
+        NOTE: slicing are inclusive in the header value.
 
-        def _reverseY(region, segDim):
-            # TODO: Add a flag for x or y axis
-            return {"x1": region["x1"],
-                    "x2": region["x2"],
-                    "y1": segDim["y"] - region["y1"] - 1,
-                    "y2": segDim["y"] - region["y2"] - 1}
-
-        def _format(region):
-            # Amplifier boundary should always be "rect"
-            return {"type": "rect", "data": region}
-
-        # Use the first segment to determine the dimension
-        tempHeader = ((self.imageHDUs)[0]).header
-        segDim = {"x": tempHeader["NAXIS1"], "y": tempHeader["NAXIS2"]}
-        imageDim = _convertRangeToDim(_convertHeaderRange(tempHeader["DETSIZE"]))
-        ampDim = _convertRangeToDim(_convertHeaderRange(tempHeader["DETSEC"]))
-
-        boundaryArray = []
-        for amp in self.imageHDUs:
-            header = amp.header
-            ampDataSection = _convertHeaderRange(header["DATASEC"])
-            ampDetSec = _convertHeaderRange(header["DETSEC"])
-            ampPostscan = _convertHeaderRange(header["BIASSEC"])
-            ampPrescan = _convertHeaderRange(header["DATASEC"])
-            ampPrescan["x2"] = min(ampPrescan["x1"], ampPrescan["x2"]) - 1
-            ampPrescan["x1"] = 0
-            ampOverscan = {"x1": 0, "x2": segDim["x"] - 1,
-                            "y1": max(ampPrescan["y1"], ampPrescan["y2"]) + 1,
-                            "y2": segDim["y"] - 1}
-
-            ampX = (ampDetSec["x1"]) // ampDim["x"]
-            ampY = (ampDetSec["y1"]) // ampDim["y"]
-            xStart, yStart = ampX*segDim["x"], ampY*segDim["y"]
-            ampSection = {"x1": xStart, "x2": xStart + segDim["x"] - 1,
-                            "y1": yStart, "y2": yStart + segDim["y"] - 1}
-
-            # Calculate the correct boundary
-            if ampDetSec["x1"] > ampDetSec["x2"]:
-                ampPrescan = _reverseX(ampPrescan, segDim)
-                ampDataSection = _reverseX(ampDataSection, segDim)
-                ampPostscan = _reverseX(ampPostscan, segDim)
-
-            if ampDetSec["y1"] > ampDetSec["y2"]:
-                ampPrescan = _reverseY(ampPrescan, segDim)
-                ampDataSection = _reverseY(ampDataSection, segDim)
-                ampPostscan = _reverseY(ampPostscan, segDim)
-                ampOverscan = _reverseY(ampOverscan, segDim)
-
-            # ampInfo will be returned (packed into an array)
-            ampInfo = {}
-            ampInfo["name"] = header["EXTNAME"]
-            ampInfo["all"] = _format(ampSection)
-            ampInfo["data"] = _format(_addOffset(ampDataSection, xStart, yStart))
-            ampInfo["pre"] = _format(_addOffset(ampPrescan, xStart, yStart))
-            ampInfo["post"] = _format(_addOffset(ampPostscan, xStart, yStart))
-            ampInfo["over"] = _format(_addOffset(ampOverscan, xStart, yStart))
-            boundaryArray.append(ampInfo)
-
-        return {"type": "CCD-OVERSCAN",
-                "data": boundaryArray}
+        @author Wei Ren
+        @param String of FITS header value representing boundary or dimension.
+        @return Python dictionary containing X and Y boundaries.
+        '''
+        coord_list = re.split('[,:]', sliceString[1:-1]) # strip the square bracket before spliting.
+        return {"x1" : int(coord_list[0])-1,
+                "x2" : int(coord_list[1])-1,
+                "y1" : int(coord_list[2])-1,
+                "y2" : int(coord_list[3])-1}
 
     def getImageData(self):
         '''Retrive the image data as a two dimensional array.

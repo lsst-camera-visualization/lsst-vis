@@ -9,5 +9,7 @@ export const setSetting = params => {
     const newSettings = {
         [params.setting_name]: params.new_value
     };
+
+    console.log(newSettings);
     store.dispatch(MiscActions.extendSettings(newSettings));
 }

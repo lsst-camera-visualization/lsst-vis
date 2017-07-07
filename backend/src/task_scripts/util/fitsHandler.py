@@ -53,8 +53,16 @@ class fitsHandler:
             self.hduList = fits.open(self.imageName)
             self.primaryHDU = (self.hduList)[0]
             self.header = self.primaryHDU.header
-            self.overscan = self.header["OVERSCAN"]
-            self.level = self.header["LEVEL"]
+            # TODO: The following two hacky try/catch should be removed.
+            # Current images does not have these two keywords yet.
+            try:
+                self.overscan = self.header["OVERSCAN"]
+            except Exception as e:
+                self.overscan = False
+            try:
+                self.level = self.header["LEVEL"]
+            except Exception as e:
+                self.level = "RAFT"
         except Exception as e:
             print("Cannot open the FITS file or the header lacks necessary information.")
             raise
@@ -63,7 +71,7 @@ class fitsHandler:
     def __exit__(self, exc_type, exc_val, exc_tb):
         try:
             self.hduList.close()
-        except AttributeError as e: # Ignore if there is no image
+        except AttributeError as e: # pass if there is no image
             pass
         except Exception as e:
             raise
@@ -90,6 +98,8 @@ class fitsHandler:
             return self.getCCDHeaderJSON()
         elif self.level == "RAFT":
             return self.getRaftHeaderJSON()
+        elif self.level == "FOCALPLANE":
+            return self.getFocalPlaneHeaderJSON()
         else:
             raise NameError("Unknown level for this FITS: " + self.level)
 
@@ -110,6 +120,13 @@ class fitsHandler:
         @return - Python dictionary of header informations
         '''
         pass
+
+    def getFocalPlaneHeaderJSON(self):
+        '''Retrive the header information on a focal plane level FITS.
+        @param - None
+        @return - Python dictionary of header informations
+        '''
+        return {"Error": "Not yet implemented for focal plane level FITS."}
 
     def __rangeToDim(self, region):
         ''' Private helper function for converting a range/slice into

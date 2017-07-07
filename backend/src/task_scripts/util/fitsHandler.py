@@ -102,7 +102,7 @@ class fitsHandler:
         @return - Python dictionary of header informations
         '''
         tempSegYX = "00"
-        prefix = "HIERARCH {} {} SEGMENT {} ".format(R_YX, S_YX, tempSegYX)
+        prefix = "HIERARCH {} {} SEGMENT{} ".format(R_YX, S_YX, tempSegYX)
         header = self.header
         segDim = {"x": header[prefix + "NAXIS1"],
                     "y": header[prefix + "NAXIS2"]}
@@ -112,8 +112,8 @@ class fitsHandler:
         ccdBoundary = []
         for ampX in range(self.A_X_NUM):
             for ampY in range(self.A_Y_NUM):
-                segYX = str(ampX)+str(ampY)
-                prefix = "HIERARCH {} {} SEGMENT {} ".format(R_YX, S_YX, segYX)
+                segYX = str(ampY)+str(ampX)
+                prefix = "HIERARCH {} {} SEGMENT{} ".format(R_YX, S_YX, segYX)
                 ampDataSec = self.__convertRange(header[prefix + "DATASEC"])
                 ampDetSec = self.__convertRange(header[prefix + "DETSEC"])
                 ampPostscan = self.__convertRange(header[prefix + "BIASSEC"])
@@ -215,7 +215,7 @@ class fitsHandler:
         region = self.__addOffset(region, xOffset, yOffset)
         return {"type": "rect", "data": region}
 
-    def __convertRange(sliceString):
+    def __convertRange(self, sliceString):
         '''Convert the boundary coordinates from string(as in the header) to values. It's assumed to be a rectangular region (2-dimensional).
 
         NOTE: slicing are inclusive in the header value.

@@ -45,7 +45,7 @@ export default viewer => {
             "CCD": parseCCD,
             "CCD-OVERSCAN": parseCCDOverscan
         }
-
+        console.log(data);
         if (data.type in parsers) {
             // Parse the regions
             const regions = parsers[data.type](data.data);

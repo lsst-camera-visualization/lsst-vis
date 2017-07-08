@@ -112,7 +112,7 @@ class fitsHandler:
         ccdBoundary = []
         for ampX in range(self.A_X_NUM):
             for ampY in range(self.A_Y_NUM):
-                segYX = str(ampY)+str(ampX)
+                segYX = str(self.A_Y_NUM - 1 - ampY)+str(ampX) # NOTE: Y is inverted
                 prefix = "HIERARCH {} {} SEGMENT{} ".format(R_YX, S_YX, segYX)
                 ampDataSec = self.__convertRange(header[prefix + "DATASEC"])
                 ampDetSec = self.__convertRange(header[prefix + "DETSEC"])
@@ -193,11 +193,11 @@ class fitsHandler:
         '''
         newRegion = copy.deepcopy(region)
         if x:
-            newRegion["x1"] -= (segDim["x"] - 1)
-            newRegion["x2"] -= (segDim["x"] - 1)
+            newRegion["x1"] = (segDim["x"] - 1 - newRegion["x1"])
+            newRegion["x2"] = (segDim["x"] - 1 - newRegion["x2"])
         if y:
-            newRegion["y1"] -= (segDim["y"] - 1)
-            newRegion["y2"] -= (segDim["y"] - 1)
+            newRegion["y1"] = (segDim["y"] - 1 - newRegion["y1"])
+            newRegion["y2"] = (segDim["y"] - 1 - newRegion["y2"])
         return newRegion
 
     def __formatRect(self, region):

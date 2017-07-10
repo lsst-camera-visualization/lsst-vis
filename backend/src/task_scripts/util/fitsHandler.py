@@ -106,45 +106,47 @@ class fitsHandler:
         header = self.header
         segDim = {"x": header[prefix + "NAXIS1"],
                     "y": header[prefix + "NAXIS2"]}
-        ccdImageDim = self.__rangeToDim(self.__convertRange(header[prefix + "DETSIZE"]))
-        ampDim = self.__rangeToDim(self.__convertRange(header[prefix + "DETSEC"]))
 
         ccdBoundary = []
         for ampX in range(self.A_X_NUM):
             for ampY in range(self.A_Y_NUM):
                 segYX = str(self.A_Y_NUM - 1 - ampY)+str(ampX) # NOTE: Y is inverted
                 prefix = "HIERARCH {} {} SEGMENT{} ".format(R_YX, S_YX, segYX)
-                ampDataSec = self.__convertRange(header[prefix + "DATASEC"])
                 ampDetSec = self.__convertRange(header[prefix + "DETSEC"])
-                ampPostscan = self.__convertRange(header[prefix + "BIASSEC"])
-                ampPrescan = copy.deepcopy(ampDataSec)
-                ampPrescan["x1"] = 0
-                ampPrescan["x2"] = min(ampDataSec["x1"], ampDataSec["x2"]) - 1
-                ampOverscan = {"x1": 0, "x2": segDim["x"] - 1}
-                ampOverscan["y1"] = max(ampPrescan["y1"], ampPrescan["y2"]) + 1
-                ampOverscan["y2"] = segDim["y"] - 1
+                if not self.overscan: # ccd without overscan
+                    ccdType = "CCD"
+                    ampInfo = {"data": self.__formatRect(ampDetSec)}
+                else: # ccd with overscan
+                    ccdType = "CCD-OVERSCAN"
+                    ampDataSec = self.__convertRange(header[prefix + "DATASEC"])
+                    ampPostscan = self.__convertRange(header[prefix + "BIASSEC"])
+                    ampPrescan = copy.deepcopy(ampDataSec)
+                    ampPrescan["x1"] = 0
+                    ampPrescan["x2"] = min(ampDataSec["x1"], ampDataSec["x2"]) - 1
+                    ampOverscan = {"x1": 0, "x2": segDim["x"] - 1}
+                    ampOverscan["y1"] = max(ampPrescan["y1"], ampPrescan["y2"]) + 1
+                    ampOverscan["y2"] = segDim["y"] - 1
 
-                xStart, yStart = ampX * segDim["x"], ampY * segDim["y"]
-                ampAll = {"x1": xStart, "x2": xStart + segDim["x"] - 1,
-                            "y1": yStart, "y2": yStart + segDim["y"] - 1}
+                    xStart, yStart = ampX * segDim["x"], ampY * segDim["y"]
+                    ampAll = {"x1": xStart, "x2": xStart + segDim["x"] - 1,
+                                "y1": yStart, "y2": yStart + segDim["y"] - 1}
 
-                xReverse = ampDetSec["x1"] > ampDetSec["x2"]
-                yReverse = ampDetSec["y1"] > ampDetSec["y2"]
-                ampPrescan = self.__rangeComplement(ampPrescan, segDim, x=xReverse, y=yReverse)
-                ampDataSec = self.__rangeComplement(ampDataSec, segDim, x=xReverse, y=yReverse)
-                ampPostscan = self.__rangeComplement(ampPostscan, segDim, x=xReverse, y=yReverse)
-                ampOverscan = self.__rangeComplement(ampOverscan, segDim, x=False, y=yReverse)
+                    xReverse = ampDetSec["x1"] > ampDetSec["x2"]
+                    yReverse = ampDetSec["y1"] > ampDetSec["y2"]
+                    ampPrescan = self.__rangeComplement(ampPrescan, segDim, x=xReverse, y=yReverse)
+                    ampDataSec = self.__rangeComplement(ampDataSec, segDim, x=xReverse, y=yReverse)
+                    ampPostscan = self.__rangeComplement(ampPostscan, segDim, x=xReverse, y=yReverse)
+                    ampOverscan = self.__rangeComplement(ampOverscan, segDim, x=False, y=yReverse)
 
-                ampInfo = {}
-                ampInfo["name"] = header[prefix + "EXTNAME"]
-                ampInfo["all"] = self.__formatRect(ampAll)
-                ampInfo["data"] = self.__formatRectOffset(ampDataSec, xStart, yStart)
-                ampInfo["pre"] = self.__formatRectOffset(ampPrescan, xStart, yStart)
-                ampInfo["post"] = self.__formatRectOffset(ampPostscan, xStart, yStart)
-                ampInfo["over"] = self.__formatRectOffset(ampOverscan, xStart, yStart)
+                    ampInfo = {}
+                    ampInfo["name"] = header[prefix + "EXTNAME"]
+                    ampInfo["all"] = self.__formatRect(ampAll)
+                    ampInfo["data"] = self.__formatRectOffset(ampDataSec, xStart, yStart)
+                    ampInfo["pre"] = self.__formatRectOffset(ampPrescan, xStart, yStart)
+                    ampInfo["post"] = self.__formatRectOffset(ampPostscan, xStart, yStart)
+                    ampInfo["over"] = self.__formatRectOffset(ampOverscan, xStart, yStart)
                 ccdBoundary.append(ampInfo)
-
-        ccdType = "CCD-OVERSCAN" if self.overscan else "CCD"
+                
         return {"type": ccdType, "data": ccdBoundary}
 
     def getRaftHeaderJSON(self):

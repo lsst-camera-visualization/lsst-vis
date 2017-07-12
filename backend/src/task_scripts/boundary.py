@@ -9,10 +9,12 @@ def task(filename, task_params):
     '''
 
     with fitsHandler(filename) as fitsImage:
-        headerInfo = fitsImage.getHeader()
+        headerInfo = fitsImage.getHeaderJSON()
 
     return headerInfo, None
 
 # Test/debug
 if __name__ == '__main__':
-    print(task("/home/wei/lsst/lsst_firefly/backend/images/imageE2V.fits", {}))
+    print(task("https://www.dropbox.com/s/3n571i6ak648gmy/default-untrimmed.fits?dl=1", {}))
+    print()
+    print(task("https://www.dropbox.com/s/e7g1rynikrqbxlc/default-trimmed.fits?dl=1", {}))

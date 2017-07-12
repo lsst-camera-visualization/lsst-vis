@@ -1,30 +1,16 @@
 from astropy.io import fits
 import re
-
-def _convertHeaderRange(detsizeString):
-    '''Convert the boundary coordincates from string(as in the header) to values. It's assumed to be a rectangular region (2-dimensional).
-
-    NOTE: slicing are inclusive in the header value.
-
-    @author Wei Ren
-    @param String of FITS header value representing boundary or dimension.
-    @return Dictionary containing X and Y boundaries.
-    '''
-    coord_list = re.split('[,:]', detsizeString[1:-1]) # strip the square bracket before spliting.
-    print(coord_list)
-    return {"x1" : int(coord_list[0])-1,
-            "x2" : int(coord_list[1])-1,
-            "y1" : int(coord_list[2])-1,
-            "y2" : int(coord_list[3])-1}
+import copy
 
 class fitsHandler:
     '''A class for dealing with FITS images in python. It provides
     wrapper functions to get FITS header information and image data.
 
-    Always use `with` statement declaring the object.
+    Note 1: Always use `with` statement when declaring the object.
 
-    Note: currently CCD level FITS images are mostly used. Here's an
-    example of the data layout in general.
+    Note 2: Only works with single-extension FITS file.
+
+    Note 3: Here's an example of the data layout in general.
         Segment/amplifier coordinates in a CCD.
         Format: amplifier[Y][X] (origin at top left corner).
         +----+----+----+----+----+----+----+----+
@@ -34,172 +20,236 @@ class fitsHandler:
         +----+----+----+----+----+----+----+----+
 
     HDU stands for Header/Data Units (HDUs).
+    @author - Wei Ren
     '''
+
+    # Constants for the hardware configuration
+    # LSST nomenclature (i.e RijSijAij)
+    A_X_NUM = 8
+    A_Y_NUM = 2
+    S_X_NUM = 3
+    S_Y_NUM = 3
+    R_X_NUM = 5
+    R_Y_NUM = 5
 
     def __init__(self, imageName):
         self.imageName = imageName
         self.hduList = None
-        self.imageHDUs = None
-        self.isMulti = None
         self.primaryHDU = None
+        self.header = None
+        self.overscan = False
+        self.level = None
+        self.__enter__()
 
     def __enter__(self):
         try:
             self.hduList = fits.open(self.imageName)
             self.primaryHDU = (self.hduList)[0]
-            primaryHeader = (self.primaryHDU).header
-            self.isMulti = ("EXTEND" in primaryHeader) and primaryHeader["EXTEND"]
-            if (self.isMulti):
-                self.imageHDUs = [elem for elem in self.hduList if type(elem).__name__ == 'ImageHDU']
-            else:
-                self.imageHDUs = (self.hduList)[0] # primary header
+            self.header = self.primaryHDU.header
+            # TODO: THE FOLLOWING TWO HACKY TRY/CATCH SHOULD BE REMOVED.
+            # CURRENT IMAGES DOES NOT HAVE THESE TWO KEYWORDS YET.
+            try:
+                self.overscan = self.header["OVERSCAN"]
+            except Exception as e:
+                self.overscan = False
+            try:
+                self.level = self.header["LEVEL"]
+            except Exception as e:
+                self.level = "RAFT"
         except Exception as e:
-            print("Cannot open the FITS file.")
+            print("Cannot open the FITS file or the header lacks necessary information.")
             raise
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         try:
             self.hduList.close()
-        except AttributeError as e: # Ignore if there is no image
+        except AttributeError as e: # pass if there is no image
             pass
         except Exception as e:
             raise
 
-    def __getImageHDUFromHDUList(self, segPosition=""):
-        ''' Helper function. Iterate through HDU list and return one particular
-        image HDU.
-        @author Wei Ren
-        @param segPosition - see getImageData
-        @return A pointer to imageHDU object. Return None if none found.
-        '''
-        for elem in self.imageHDUs:
-            if (elem.header)["EXTNAME"] == "Segment" + segPosition:
-                return elem
-        return None
+    def close(self):
+        self.hduList.close()
 
     def getHeader(self):
-        '''Retrive the header information from FITS file. The information is
-        stored as python dictionary.
-        @author Wei Ren
+        ''' Return the header of the (single-extension) FITS file as an
+        header object.
         @param None
-        @return A dictionary of FITS header keyword and values.
+        @return A HDU header object
         '''
-        def _convertRangeToDim(region):
-            return {"x": 1 + abs(region["x2"]-region["x1"]),
-                    "y": 1 + abs(region["y2"]-region["y1"])}
-
-        def _addOffset(region, xOffset, yOffset):
-            return {"x1": region["x1"] + xOffset,
-                    "x2": region["x2"] + xOffset,
-                    "y1": region["y1"] + yOffset,
-                    "y2": region["y2"] + yOffset}
-
-        def _reverseX(region, segDim):
-            # TODO: Add a flag for x or y axis
-            return {"x1": segDim["x"] - region["x1"] - 1,
-                    "x2": segDim["x"] - region["x2"] - 1,
-                    "y1": region["y1"],
-                    "y2": region["y2"]}
-
-        def _reverseY(region, segDim):
-            # TODO: Add a flag for x or y axis
-            return {"x1": region["x1"],
-                    "x2": region["x2"],
-                    "y1": segDim["y"] - region["y1"] - 1,
-                    "y2": segDim["y"] - region["y2"] - 1}
-
-        def _format(region):
-            # Amplifier boundary should always be "rect"
-            return {"type": "rect", "data": region}
-
-        # Use the first segment to determine the dimension
-        tempHeader = ((self.imageHDUs)[0]).header
-        segDim = {"x": tempHeader["NAXIS1"], "y": tempHeader["NAXIS2"]}
-        imageDim = _convertRangeToDim(_convertHeaderRange(tempHeader["DETSIZE"]))
-        ampDim = _convertRangeToDim(_convertHeaderRange(tempHeader["DETSEC"]))
-
-        boundaryArray = []
-        for amp in self.imageHDUs:
-            header = amp.header
-            ampDataSection = _convertHeaderRange(header["DATASEC"])
-            ampDetSec = _convertHeaderRange(header["DETSEC"])
-            ampPostscan = _convertHeaderRange(header["BIASSEC"])
-            ampPrescan = _convertHeaderRange(header["DATASEC"])
-            ampPrescan["x2"] = min(ampPrescan["x1"], ampPrescan["x2"]) - 1
-            ampPrescan["x1"] = 0
-            ampOverscan = {"x1": 0, "x2": segDim["x"] - 1,
-                            "y1": max(ampPrescan["y1"], ampPrescan["y2"]) + 1,
-                            "y2": segDim["y"] - 1}
-
-            ampX = (ampDetSec["x1"]) // ampDim["x"]
-            ampY = (ampDetSec["y1"]) // ampDim["y"]
-            xStart, yStart = ampX*segDim["x"], ampY*segDim["y"]
-            ampSection = {"x1": xStart, "x2": xStart + segDim["x"] - 1,
-                            "y1": yStart, "y2": yStart + segDim["y"] - 1}
-
-            # Calculate the correct boundary
-            if ampDetSec["x1"] > ampDetSec["x2"]:
-                ampPrescan = _reverseX(ampPrescan, segDim)
-                ampDataSection = _reverseX(ampDataSection, segDim)
-                ampPostscan = _reverseX(ampPostscan, segDim)
-
-            if ampDetSec["y1"] > ampDetSec["y2"]:
-                ampPrescan = _reverseY(ampPrescan, segDim)
-                ampDataSection = _reverseY(ampDataSection, segDim)
-                ampPostscan = _reverseY(ampPostscan, segDim)
-                ampOverscan = _reverseY(ampOverscan, segDim)
-
-            # ampInfo will be returned (packed into an array)
-            ampInfo = {}
-            ampInfo["name"] = header["EXTNAME"]
-            ampInfo["all"] = _format(ampSection)
-            ampInfo["data"] = _format(_addOffset(ampDataSection, xStart, yStart))
-            ampInfo["pre"] = _format(_addOffset(ampPrescan, xStart, yStart))
-            ampInfo["post"] = _format(_addOffset(ampPostscan, xStart, yStart))
-            ampInfo["over"] = _format(_addOffset(ampOverscan, xStart, yStart))
-            boundaryArray.append(ampInfo)
-
-        return {"type": "CCD-OVERSCAN",
-                "data": boundaryArray}
+        return self.header
 
     def getHeaderJSON(self):
-        '''Retrive the header information in JSON format. It is used in
-        the communication of frontend and backend.
-        @author Wei Ren
-        @param
-        @return JSON object of header information (including segments)
+        '''Retrive the header information in JSON compatible format
+        (python dictionary). It is used in the communication of frontend
+        and backend.
+        @param - None
+        @return - Python dictionary of header informations
         '''
-        pass
-
-    def getImageData(self, segPosition=""):
-        '''Retrive the image data as a two dimensional array. It retrives data
-        of one segment if the FITS is in multi-extension format.
-        @author Wei Ren
-        @param segPosition - String (optional) speicify the "position" of
-                                an extension if it is a multi-extension FITS.On
-                                single-extension FITS this argument is ignored.
-        @return A 2-D numpy array of pixel values.
-        '''
-        if self.isMulti:
-            if not re.match(r"^\d{2}$", segPosition):
-                raise ValueError("Wrong argument segPosition passed in. Expected to be string of two digits, e.g. '17'")
-            hdu = self.__getImageHDUFromHDUList(segPosition)
-            return hdu.data
+        if self.level == "CCD":
+            return self.getCCDHeaderJSON()
+        elif self.level == "RAFT":
+            return self.getRaftHeaderJSON()
+        elif self.level == "FOCALPLANE":
+            return self.getFocalPlaneHeaderJSON()
         else:
-            return self.primaryHDU.data
+            raise NameError("Unknown level for this FITS: " + self.level)
 
-    def getSegmentHeader(self, segPosition=""):
-        '''Retrive the header of one segment. It will return the primary header
-        if the FITS image is single-extension.
-        @author Wei Ren
-        @param segPosition - see getImageData
-        @return A pointer to the astropy.fits header object.
+    def getCCDHeaderJSON(self, R_YX="R99", S_YX="S99"):
+        '''Retrive the header information on a CCD-level FITS.
+        @param - None
+        @return - Python dictionary of header informations
         '''
-        if self.isMulti:
-            if not re.match(r"^\d{2}$", segPosition):
-                raise ValueError("Wrong argument segPosition passed in. Expected to be string of two digits, e.g. '17'")
-            hdu = self.__getImageHDUFromHDUList(segPosition)
-            return hdu.header
-        else:
-            return self.primaryHDU.header
+        tempSegYX = "00"
+        prefix = "HIERARCH {} {} SEGMENT{} ".format(R_YX, S_YX, tempSegYX)
+        header = self.header
+        segDim = {"x": header[prefix + "NAXIS1"],
+                    "y": header[prefix + "NAXIS2"]}
+
+        ccdBoundary = []
+        for ampX in range(self.A_X_NUM):
+            for ampY in range(self.A_Y_NUM):
+                segYX = str(self.A_Y_NUM - 1 - ampY)+str(ampX) # NOTE: Y is inverted
+                prefix = "HIERARCH {} {} SEGMENT{} ".format(R_YX, S_YX, segYX)
+                ampDetSec = self.__convertRange(header[prefix + "DETSEC"])
+                if not self.overscan: # ccd without overscan
+                    ccdType = "CCD"
+                    ampInfo = {"data": self.__formatRect(ampDetSec)}
+                else: # ccd with overscan
+                    ccdType = "CCD-OVERSCAN"
+                    ampDataSec = self.__convertRange(header[prefix + "DATASEC"])
+                    ampPostscan = self.__convertRange(header[prefix + "BIASSEC"])
+                    ampPrescan = copy.deepcopy(ampDataSec)
+                    ampPrescan["x1"] = 0
+                    ampPrescan["x2"] = min(ampDataSec["x1"], ampDataSec["x2"]) - 1
+                    ampOverscan = {"x1": 0, "x2": segDim["x"] - 1}
+                    ampOverscan["y1"] = max(ampPrescan["y1"], ampPrescan["y2"]) + 1
+                    ampOverscan["y2"] = segDim["y"] - 1
+
+                    xStart, yStart = ampX * segDim["x"], ampY * segDim["y"]
+                    ampAll = {"x1": xStart, "x2": xStart + segDim["x"] - 1,
+                                "y1": yStart, "y2": yStart + segDim["y"] - 1}
+
+                    xReverse = ampDetSec["x1"] > ampDetSec["x2"]
+                    yReverse = ampDetSec["y1"] > ampDetSec["y2"]
+                    ampPrescan = self.__rangeComplement(ampPrescan, segDim, x=xReverse, y=yReverse)
+                    ampDataSec = self.__rangeComplement(ampDataSec, segDim, x=xReverse, y=yReverse)
+                    ampPostscan = self.__rangeComplement(ampPostscan, segDim, x=xReverse, y=yReverse)
+                    ampOverscan = self.__rangeComplement(ampOverscan, segDim, x=False, y=yReverse)
+
+                    ampInfo = {}
+                    ampInfo["name"] = header[prefix + "EXTNAME"]
+                    ampInfo["all"] = self.__formatRect(ampAll)
+                    ampInfo["data"] = self.__formatRectOffset(ampDataSec, xStart, yStart)
+                    ampInfo["pre"] = self.__formatRectOffset(ampPrescan, xStart, yStart)
+                    ampInfo["post"] = self.__formatRectOffset(ampPostscan, xStart, yStart)
+                    ampInfo["over"] = self.__formatRectOffset(ampOverscan, xStart, yStart)
+                ccdBoundary.append(ampInfo)
+
+        return {"type": ccdType, "data": ccdBoundary}
+
+    def getRaftHeaderJSON(self):
+        '''Retrive the header information on a raft-level FITS.
+        @param - None
+        @return - Python dictionary of header informations
+        '''
+        # HARD-CODED
+        # TODO: HIERARCHICAL STRUCTURE!
+        header = self.header
+        boundaryArray = []
+        for raftX in range(self.S_X_NUM):
+            for raftY in range(self.S_Y_NUM):
+                for ampX in range(self.A_X_NUM):
+                    for ampY in range(self.A_Y_NUM):
+                        prefix = "HIERARCH R{}{} S{}{} SEGMENT{}{} ".format(9, 9, raftY, raftX, ampY, ampX)
+                        ampDataSec = self.__convertRange(header[prefix + "DETSEC"])
+                        ampInfo = {}
+                        ampInfo["name"] = "S{}{} SEGMENT{}{}".format(raftY, raftX, ampY, ampX)
+                        xStart, yStart = raftX * (4072 + 20), raftY * (4000 + 20)
+                        ampInfo["data"] = self.__formatRectOffset(ampDataSec, xStart, yStart)
+                        boundaryArray.append(ampInfo)
+        return {"type": "CCD", "data": boundaryArray}
+
+    def getFocalPlaneHeaderJSON(self):
+        '''Retrive the header information on a focal plane level FITS.
+        @param - None
+        @return - Python dictionary of header informations
+        '''
+        return {"Error": "Not yet implemented for focal plane level FITS."}
+
+    def __rangeToDim(self, region):
+        ''' Private helper function for converting a range/slice into
+        a dimenstion
+        @param: region - region in 2D (dictionary with keys: x1, x2, y1, y2)
+        @return: dimension - dictionary with keys: x, y
+        '''
+        return {"x": 1 + abs(region["x2"]-region["x1"]),
+                "y": 1 + abs(region["y2"]-region["y1"])}
+
+    def __addOffset(self, region, xOffset, yOffset):
+        ''' Private helper function to add x and y offset to a region.
+        @param: region - region in 2D (dictionary with keys: x1, x2, y1, y2)
+        @param: xOffset - offset in x to add
+        @param: yOffset - offset in y to add
+        @return: the new range (with offset added)
+        '''
+        return {"x1": region["x1"] + xOffset,
+                "x2": region["x2"] + xOffset,
+                "y1": region["y1"] + yOffset,
+                "y2": region["y2"] + yOffset}
+
+    def __rangeComplement(self, region, segDim, x=False, y=False):
+        ''' Private helper function to convert the region if the
+        coordinates are reversed in the header.
+        @param: region - region in 2D (dictionary with keys: x1, x2, y1, y2)
+        @param: segDim - Dimension of the segment/amplifier
+        @param: x - reversed in x direction or not
+        @param: y - reversed in y direction or not
+        @return: new region with the correct orientation
+        '''
+        newRegion = copy.deepcopy(region)
+        if x:
+            newRegion["x1"] = (segDim["x"] - 1 - newRegion["x1"])
+            newRegion["x2"] = (segDim["x"] - 1 - newRegion["x2"])
+        if y:
+            newRegion["y1"] = (segDim["y"] - 1 - newRegion["y1"])
+            newRegion["y2"] = (segDim["y"] - 1 - newRegion["y2"])
+        return newRegion
+
+    def __formatRect(self, region):
+        ''' Private helper function to convert a region into Rect obejct.
+        @param: region - range in 2D (dictionary with keys: x1, x2, y1, y2)
+        @return: Rect
+        '''
+        return {"type": "rect", "data": region}
+
+    def __formatRectOffset(self, region, xOffset, yOffset):
+        ''' Private helper function to convert a region into Rect with offset.
+        @param: region - range in 2D (dictionary with keys: x1, x2, y1, y2)
+        @return: Rect
+        '''
+        region = self.__addOffset(region, xOffset, yOffset)
+        return {"type": "rect", "data": region}
+
+    def __convertRange(self, sliceString):
+        '''Convert the boundary coordinates from string(as in the header) to values. It's assumed to be a rectangular region (2-dimensional).
+
+        NOTE: slicing are inclusive in the header value.
+
+        @author Wei Ren
+        @param String of FITS header value representing boundary or dimension.
+        @return Python dictionary containing X and Y boundaries.
+        '''
+        coord_list = re.split('[,:]', sliceString[1:-1]) # strip the square bracket before spliting.
+        return {"x1" : int(coord_list[0])-1,
+                "x2" : int(coord_list[1])-1,
+                "y1" : int(coord_list[2])-1,
+                "y2" : int(coord_list[3])-1}
+
+    def getImageData(self):
+        '''Retrive the image data as a two dimensional array.
+        @param - None
+        @return - A 2-D numpy array of pixel values.
+        '''
+        return self.primaryHDU.data

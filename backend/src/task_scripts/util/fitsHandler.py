@@ -149,33 +149,6 @@ class fitsHandler:
 
         return {"type": ccdType, "data": ccdBoundary}
 
-    def getHeaderRaft(self):
-
-        def _addOffset(region, xOffset, yOffset):
-            return {"x1": region["x1"] + xOffset,
-                    "x2": region["x2"] + xOffset,
-                    "y1": region["y1"] + yOffset,
-                    "y2": region["y2"] + yOffset}
-
-        def _format(region):
-            # Amplifier boundary should always be "rect"
-            return {"type": "rect", "data": region}
-
-        primaryHeader = ((self.imageHDUs)[0]).header
-        boundaryArray = []
-        for raftX in range(3):
-            for raftY in range(3):
-                for segmentX in range(8):
-                    for segmentY in range(2):
-                        keyword = "HIERARCH R99 S"+ str(raftY) + str(raftX) + " SEGMENT" + str(segmentY) + str(segmentX) + " DETSEC"
-                        ampDataSection = _convertHeaderRange(primaryHeader[keyword])
-                        ampInfo = {}
-                        ampInfo["Name"] = "S"+ str(raftY) + str(raftX) + " SEGMENT" + str(segmentY) + str(segmentX)
-                        ampInfo["data"] = _format(_addOffset(ampDataSection, raftX*(4072+20), raftY*(4000+20)))
-                        boundaryArray.append(ampInfo)
-        return {"type": "CCD",
-                "data": boundaryArray}
-
     def getRaftHeaderJSON(self):
         '''Retrive the header information on a raft-level FITS.
         @param - None
@@ -192,7 +165,7 @@ class fitsHandler:
                         prefix = "HIERARCH R{}{} S{}{} SEGMENT{}{} ".format(9, 9, raftY, raftX, ampY, ampX)
                         ampDataSec = self.__convertRange(header[prefix + "DETSEC"])
                         ampInfo = {}
-                        ampInfo["Name"] = "S{}{} SEGMENT{}{}".format(raftY, raftX, ampY, ampX)
+                        ampInfo["name"] = "S{}{} SEGMENT{}{}".format(raftY, raftX, ampY, ampX)
                         xStart, yStart = raftX * (4072 + 20), raftY * (4000 + 20)
                         ampInfo["data"] = self.__formatRectOffset(ampDataSec, xStart, yStart)
                         boundaryArray.append(ampInfo)

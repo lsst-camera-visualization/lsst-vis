@@ -158,10 +158,10 @@ class fitsHandler:
         # TODO: HIERARCHICAL STRUCTURE!
         header = self.header
         boundaryArray = []
-        for raftX in self.S_X_NUM:
-            for raftY in self.S_Y_NUM:
-                for ampX in self.A_X_NUM:
-                    for ampY in self.A_Y_NUM:
+        for raftX in range(self.S_X_NUM):
+            for raftY in range(self.S_Y_NUM):
+                for ampX in range(self.A_X_NUM):
+                    for ampY in range(self.A_Y_NUM):
                         prefix = "HIERARCH R{}{} S{}{} SEGMENT{}{} ".format(9, 9, raftY, raftX, ampY, ampX)
                         ampDataSec = self.__convertRange(header[prefix + "DETSEC"])
                         ampInfo = {}

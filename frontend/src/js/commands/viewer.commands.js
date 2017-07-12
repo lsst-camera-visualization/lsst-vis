@@ -36,8 +36,16 @@ export const loadImage = params => {
 export const showBoundary = params => {
     const viewerID = params.viewer_id;
     const viewers = store.getState().viewers;
-    if (!(viewerID in viewers) || !viewers[viewerID].boundaryRegions)
+    if (!(viewerID in viewers)) {
+        var err = "No such viewer: " + viewerID;
+        console.log(err);
         return;
+    }
+    if (!viewers[viewerID].boundaryRegions){
+        var err = "Boundary not fetched for this image."
+        console.log(err);
+        return;
+    }
 
     const viewer = store.getState().viewers[viewerID];
     const regions = viewer.boundaryRegions;

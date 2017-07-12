@@ -46,8 +46,8 @@ class fitsHandler:
             self.hduList = fits.open(self.imageName)
             self.primaryHDU = (self.hduList)[0]
             self.header = self.primaryHDU.header
-            # TODO: The following two hacky try/catch should be removed.
-            # Current images does not have these two keywords yet.
+            # TODO: THE FOLLOWING TWO HACKY TRY/CATCH SHOULD BE REMOVED.
+            # CURRENT IMAGES DOES NOT HAVE THESE TWO KEYWORDS YET.
             try:
                 self.overscan = self.header["OVERSCAN"]
             except Exception as e:
@@ -146,15 +146,57 @@ class fitsHandler:
                     ampInfo["post"] = self.__formatRectOffset(ampPostscan, xStart, yStart)
                     ampInfo["over"] = self.__formatRectOffset(ampOverscan, xStart, yStart)
                 ccdBoundary.append(ampInfo)
-                
+
         return {"type": ccdType, "data": ccdBoundary}
+
+    def getHeaderRaft(self):
+
+        def _addOffset(region, xOffset, yOffset):
+            return {"x1": region["x1"] + xOffset,
+                    "x2": region["x2"] + xOffset,
+                    "y1": region["y1"] + yOffset,
+                    "y2": region["y2"] + yOffset}
+
+        def _format(region):
+            # Amplifier boundary should always be "rect"
+            return {"type": "rect", "data": region}
+
+        primaryHeader = ((self.imageHDUs)[0]).header
+        boundaryArray = []
+        for raftX in range(3):
+            for raftY in range(3):
+                for segmentX in range(8):
+                    for segmentY in range(2):
+                        keyword = "HIERARCH R99 S"+ str(raftY) + str(raftX) + " SEGMENT" + str(segmentY) + str(segmentX) + " DETSEC"
+                        ampDataSection = _convertHeaderRange(primaryHeader[keyword])
+                        ampInfo = {}
+                        ampInfo["Name"] = "S"+ str(raftY) + str(raftX) + " SEGMENT" + str(segmentY) + str(segmentX)
+                        ampInfo["data"] = _format(_addOffset(ampDataSection, raftX*(4072+20), raftY*(4000+20)))
+                        boundaryArray.append(ampInfo)
+        return {"type": "CCD",
+                "data": boundaryArray}
 
     def getRaftHeaderJSON(self):
         '''Retrive the header information on a raft-level FITS.
         @param - None
         @return - Python dictionary of header informations
         '''
-        pass
+        # HARD-CODED
+        # TODO: HIERARCHICAL STRUCTURE!
+        header = self.header
+        boundaryArray = []
+        for raftX in self.S_X_NUM:
+            for raftY in self.S_Y_NUM:
+                for ampX in self.A_X_NUM:
+                    for ampY in self.A_Y_NUM:
+                        prefix = "HIERARCH R{}{} S{}{} SEGMENT{}{} ".format(9, 9, raftY, raftX, ampY, ampX)
+                        ampDataSec = self.__convertRange(header[prefix + "DETSEC"])
+                        ampInfo = {}
+                        ampInfo["Name"] = "S{}{} SEGMENT{}{}".format(raftY, raftX, ampY, ampX)
+                        xStart, yStart = raftX * (4072 + 20), raftY * (4000 + 20)
+                        ampInfo["data"] = self.__formatRectOffset(ampDataSec, xStart, yStart)
+                        boundaryArray.append(ampInfo)
+        return {"type": "CCD", "data": boundaryArray}
 
     def getFocalPlaneHeaderJSON(self):
         '''Retrive the header information on a focal plane level FITS.

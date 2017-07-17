@@ -24,50 +24,31 @@ const parseCCD = data => {
 
 // Displays the boundary regions on a viewer
 export const showBoundary = (params) => {
-    const valid = validateParameters(params, store.getState());
-    if (valid !== null) {
-        store.dispatch(addErrorToHistory("Bad parameters: " + valid));
+    if (!validateBoundaryCommandInput(params)){
         return;
     }
 
     const viewers = store.getState().viewers;
     const viewer = viewers[params.viewer_id];
-
-    if (!viewer.boundaryRegions){
-        const err = "Boundary not fetched for this image. Try to fetch now."
-        console.log(err);
-        loadBoundary(viewer);
-        return;
-    }
-
     store.dispatch(clearLayer(viewer.id, layerName));
     const regions = viewer.boundaryRegionsDS9;
     const opts = {
         color: "red",
         width: 1
     };
-
     // Draw the boundary regions
     store.dispatch(drawDS9Regions(viewer.id, layerName, regions, opts));
 }
 
 export const hideBoundary = (params) => {
-    const valid = validateParameters(params, store.getState());
-    if (valid !== null) {
-        store.dispatch(addErrorToHistory("Bad parameters: " + valid));
+    if (!validateBoundaryCommandInput(params)){
         return;
     }
-    const viewerID = params.viewer_id;
     const viewers = store.getState().viewers;
-    const viewer = viewers[viewerID];
+    const viewer = viewers[params.viewer_id];
+    checkBoundary(viewer);
 
-    // TODO: move boundary functions to a separate js file
-    if (!viewer.boundaryRegions){
-        const err = "Boundary not fetched for this image."
-        console.log(err);
-        return;
-    }
-    store.dispatch(clearLayer(viewerID, layerName));
+    store.dispatch(clearLayer(viewer.id, layerName));
 }
 
 // Parse CCD with overscan format
@@ -94,6 +75,14 @@ const checkBoundary = (viewer) => {
     }
 }
 
+const validateBoundaryCommandInput = (params) => {
+    const valid = validateParameters(params, store.getState());
+    if (valid !== null) {
+        store.dispatch(addErrorToHistory("Bad parameters: " + valid));
+        return false;
+    }
+    return true;
+}
 // Loads the hardware region boundaries.
 // Because this is only called internally, it accepts the viewer to work on,
 //      rather than a list of parameters enter by the user.

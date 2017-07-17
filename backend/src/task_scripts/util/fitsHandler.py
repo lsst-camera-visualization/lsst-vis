@@ -147,7 +147,7 @@ class fitsHandler:
                     ampInfo["over"] = self.__formatRectOffset(ampOverscan, xStart, yStart)
                 ccdBoundary.append(ampInfo)
 
-        return {"type": ccdType, "data": ccdBoundary}
+        return {"type": ccdType, "value": ccdBoundary}
 
     def getRaftHeaderJSON(self):
         '''Retrive the header information on a raft-level FITS.
@@ -169,7 +169,7 @@ class fitsHandler:
                         xStart, yStart = raftX * (4072 + 20), raftY * (4000 + 20)
                         ampInfo["data"] = self.__formatRectOffset(ampDataSec, xStart, yStart)
                         boundaryArray.append(ampInfo)
-        return {"type": "CCD", "data": boundaryArray}
+        return {"type": "CCD", "value": boundaryArray}
 
     def getFocalPlaneHeaderJSON(self):
         '''Retrive the header information on a focal plane level FITS.
@@ -222,7 +222,7 @@ class fitsHandler:
         @param: region - range in 2D (dictionary with keys: x1, x2, y1, y2)
         @return: Rect
         '''
-        return {"type": "rect", "data": region}
+        return {"type": "rect", "value": region}
 
     def __formatRectOffset(self, region, xOffset, yOffset):
         ''' Private helper function to convert a region into Rect with offset.
@@ -230,7 +230,7 @@ class fitsHandler:
         @return: Rect
         '''
         region = self.__addOffset(region, xOffset, yOffset)
-        return {"type": "rect", "data": region}
+        return {"type": "rect", "value": region}
 
     def __convertRange(self, sliceString):
         '''Convert the boundary coordinates from string(as in the header) to values. It's assumed to be a rectangular region (2-dimensional).

@@ -94,7 +94,7 @@ export const loadBoundary = (viewer) => {
         console.log(data);
         if (data.type in parsers) {
             // Parse the regions
-            const regions = parsers[data.type](data.data);
+            const regions = parsers[data.type](data.value);
             store.dispatch(setBoundaryRegions(viewer.id, regions));
             const opts = {
                 color: "red",

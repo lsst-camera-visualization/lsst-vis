@@ -15,13 +15,10 @@ const defaultImage = "https://www.dropbox.com/s/3n571i6ak648gmy/default-untrimme
 // Raft level
 // const defaultImage = "https://www.dropbox.com/s/k18d9x2hr2otj2y/20170304160038.fits?dl=1"
 
-const defaultImageTrimmed = "https://www.dropbox.com/s/e7g1rynikrqbxlc/default-trimmed.fits?dl=1"
-
 export class Viewer {
     constructor(id, image = defaultImage) {
         this.id = id;
         this.image = image;
-        this.original_image_url = defaultImageTrimmed;
         this.layers = [];
 
         this.cursorPoint = { x: 0, y: 0 };

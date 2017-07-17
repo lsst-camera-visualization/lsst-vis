@@ -27,7 +27,6 @@ export const showBoundary = (params) => {
     if (!validateBoundaryCommandInput(params)){
         return;
     }
-
     const viewers = store.getState().viewers;
     const viewer = viewers[params.viewer_id];
     store.dispatch(clearLayer(viewer.id, layerName));

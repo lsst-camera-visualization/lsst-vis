@@ -30,7 +30,7 @@ export class Viewer {
         AddExtension(id, "Choose command", "AREA_SELECT", this.onChooseCommand);
     }
 
-    removeLayer = layer => {
+    removeRegionLayer = layer => {
         const idx = this.layers.indexOf(layer);
         if (idx !== -1) {
             ClearLayer(this.id, layer);
@@ -38,7 +38,7 @@ export class Viewer {
         }
     }
 
-    removeAllLayers = () => {
+    removeAllRegionLayers = () => {
         JSUtil.Foreach(this.layers, layer => {
             ClearLayer(this.id, layer);
         });
@@ -53,7 +53,10 @@ export class Viewer {
     }
 
     loadImage = image => {
+        this.removeAllRegionLayers();
         this.image = image;
+        loadBoundary(this);
+        console.log(this);
     }
 
     calculateHoveredAmpName = () => {

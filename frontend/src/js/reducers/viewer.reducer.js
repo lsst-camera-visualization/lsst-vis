@@ -8,7 +8,7 @@ const commands = {
             return state;
 
         let newState = Object.assign({...state}, {});
-        newState[action.id].removeLayer(action.layer);
+        newState[action.id].removeRegionLayer(action.layer);
 
         return newState;
     },
@@ -18,7 +18,7 @@ const commands = {
             return state;
 
         let newState = Object.assign({...state}, {});
-        newState[action.id].removeAllLayers();
+        newState[action.id].removeAllRegionLayers();
 
         return newState;
     },

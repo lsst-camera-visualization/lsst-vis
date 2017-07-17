@@ -113,9 +113,10 @@ class fitsHandler:
                 segYX = str(self.A_Y_NUM - 1 - ampY)+str(ampX) # NOTE: Y is inverted
                 prefix = "HIERARCH {} {} SEGMENT{} ".format(R_YX, S_YX, segYX)
                 ampDetSec = self.__convertRange(header[prefix + "DETSEC"])
+                ampInfo = {"name": "A{}".format(segYX)}
                 if not self.overscan: # ccd without overscan
                     ccdType = "CCD"
-                    ampInfo = {"data": self.__formatRect(ampDetSec)}
+                    ampInfo["data"] = self.__formatRect(ampDetSec)
                 else: # ccd with overscan
                     ccdType = "CCD-OVERSCAN"
                     ampDataSec = self.__convertRange(header[prefix + "DATASEC"])
@@ -138,8 +139,6 @@ class fitsHandler:
                     ampPostscan = self.__rangeComplement(ampPostscan, segDim, x=xReverse, y=yReverse)
                     ampOverscan = self.__rangeComplement(ampOverscan, segDim, x=False, y=yReverse)
 
-                    ampInfo = {}
-                    ampInfo["name"] = header[prefix + "EXTNAME"]
                     ampInfo["all"] = self.__formatRect(ampAll)
                     ampInfo["data"] = self.__formatRectOffset(ampDataSec, xStart, yStart)
                     ampInfo["pre"] = self.__formatRectOffset(ampPrescan, xStart, yStart)
@@ -165,7 +164,7 @@ class fitsHandler:
                         prefix = "HIERARCH R{}{} S{}{} SEGMENT{}{} ".format(9, 9, raftY, raftX, ampY, ampX)
                         ampDataSec = self.__convertRange(header[prefix + "DETSEC"])
                         ampInfo = {}
-                        ampInfo["name"] = "S{}{} SEGMENT{}{}".format(raftY, raftX, ampY, ampX)
+                        ampInfo["name"] = "S{}{}A{}{}".format(raftY, raftX, ampY, ampX)
                         xStart, yStart = raftX * (4072 + 20), raftY * (4000 + 20)
                         ampInfo["data"] = self.__formatRectOffset(ampDataSec, xStart, yStart)
                         boundaryArray.append(ampInfo)

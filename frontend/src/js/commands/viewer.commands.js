@@ -58,7 +58,26 @@ export const showBoundary = params => {
         color: "red",
         width: 1
     };
-    
+
     // Draw the boundary regions
     store.dispatch(ViewerActions.drawDS9Regions(viewerID, regionLayer, regions, opts));
+}
+
+export const hideBoundary = params => {
+    const valid = validateParameters(params, store.getState());
+    if (valid !== null) {
+        store.dispatch(addErrorToHistory("Bad parameters: " + valid));
+        return;
+    }
+    const viewerID = params.viewer_id;
+    const viewers = store.getState().viewers;
+    const viewer = viewers[viewerID];
+    const regionLayer = "BOUNDARY";
+    // TODO: move boundary functions to a separate js file
+    if (!viewer.boundaryRegions){
+        const err = "Boundary not fetched for this image."
+        console.log(err);
+        return;
+    }
+    store.dispatch(clearLayer(viewerID, regionLayer));
 }

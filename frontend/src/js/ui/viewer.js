@@ -1,6 +1,6 @@
 import { AddActionListener, AddExtension } from "../util/firefly";
 import * as ViewerActions from "../actions/viewer.actions";
-import loadBoundary from "../commands/boundary.commands";
+import { loadBoundary } from "../commands/boundary.commands";
 import { ClearLayer, DrawRegions } from "../util/firefly";
 import { JSUtil } from "../util/jsutil";
 import { openCommandPanel } from "../actions/commandPanel.actions";
@@ -26,23 +26,7 @@ export class Viewer {
 
         this.cursorPoint = { x: 0, y: 0 };
 
-        loadBoundary(this).then( () => {
-            // Display options
-            const opts = {
-                color: "red",
-                width: 1
-            };
-
-            // Create the list of ds9 regions from all of the boundary regions
-            let regions = [];
-            for (let i = 0; i < this.boundaryRegions.length; i++) {
-                const b = this.boundaryRegions[i];
-                regions = regions.concat(b.toDS9());
-            }
-
-            const a = ViewerActions.drawDS9Regions(this.id, "BOUNDARY", regions, opts);
-            store.dispatch(a);
-        });
+        loadBoundary(this);
 
         AddActionListener("READOUT_DATA", this.onCursorMove);
 

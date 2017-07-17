@@ -73,6 +73,13 @@ const commands = {
 
         let newState = Object.assign({...state});
         newState[action.id].boundaryRegions = action.regions;
+        // Store new boundaries in DS9 format
+        let regionsDS9 = [];
+        for (let i = 0; i < action.regions.length; i++) {
+            const b = action.regions[i];
+            regionsDS9 = regionsDS9.concat(b.toDS9());
+        }
+        newState[action.id].boundaryRegionsDS9 = regionsDS9;
         return newState;
     },
 

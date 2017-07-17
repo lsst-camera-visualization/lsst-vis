@@ -7,6 +7,8 @@ import { addErrorToHistory } from "../actions/terminal.actions";
 
 import store from "../store";
 
+const layerName = "BOUNDARY";
+
 // Parse CCD format
 // data: An array of objects containing the boundary info
 const parseCCD = data => {
@@ -21,35 +23,35 @@ const parseCCD = data => {
 }
 
 // Displays the boundary regions on a viewer
-export const showBoundary = params => {
+export const showBoundary = (params) => {
     const valid = validateParameters(params, store.getState());
     if (valid !== null) {
         store.dispatch(addErrorToHistory("Bad parameters: " + valid));
         return;
     }
-    const viewerID = params.viewer_id;
+
     const viewers = store.getState().viewers;
-    const viewer = viewers[viewerID];
-    const regionLayer = "BOUNDARY";
+    const viewer = viewers[params.viewer_id];
 
     if (!viewer.boundaryRegions){
-        const err = "Boundary not fetched for this image."
+        const err = "Boundary not fetched for this image. Try to fetch now."
         console.log(err);
+        loadBoundary(viewer);
         return;
     }
 
-    store.dispatch(clearLayer(viewerID, regionLayer));
-    const regions = viewer.boundaryRegions;
+    store.dispatch(clearLayer(viewer.id, layerName));
+    const regions = viewer.boundaryRegionsDS9;
     const opts = {
         color: "red",
         width: 1
     };
 
     // Draw the boundary regions
-    store.dispatch(drawDS9Regions(viewerID, regionLayer, regions, opts));
+    store.dispatch(drawDS9Regions(viewer.id, layerName, regions, opts));
 }
 
-export const hideBoundary = params => {
+export const hideBoundary = (params) => {
     const valid = validateParameters(params, store.getState());
     if (valid !== null) {
         store.dispatch(addErrorToHistory("Bad parameters: " + valid));
@@ -58,14 +60,14 @@ export const hideBoundary = params => {
     const viewerID = params.viewer_id;
     const viewers = store.getState().viewers;
     const viewer = viewers[viewerID];
-    const regionLayer = "BOUNDARY";
+
     // TODO: move boundary functions to a separate js file
     if (!viewer.boundaryRegions){
         const err = "Boundary not fetched for this image."
         console.log(err);
         return;
     }
-    store.dispatch(clearLayer(viewerID, regionLayer));
+    store.dispatch(clearLayer(viewerID, layerName));
 }
 
 // Parse CCD with overscan format
@@ -84,12 +86,18 @@ const parseCCDOverscan = data => {
     });
 }
 
-
+const checkBoundary = (viewer) => {
+    if (!viewer.boundaryRegions || !viewer.boundaryRegionsDS9) {
+        const err = "Boundary not fetched for this image. Try to fetch now."
+        console.log(err);
+        loadBoundary(viewer);
+    }
+}
 
 // Loads the hardware region boundaries.
 // Because this is only called internally, it accepts the viewer to work on,
 //      rather than a list of parameters enter by the user.
-export default viewer => {
+export const loadBoundary = (viewer) => {
     const onSuccess = data => {
         const parsers = {
             "CCD": parseCCD,
@@ -100,6 +108,11 @@ export default viewer => {
             // Parse the regions
             const regions = parsers[data.type](data.data);
             store.dispatch(setBoundaryRegions(viewer.id, regions));
+            const opts = {
+                color: "red",
+                width: 1
+            };
+            store.dispatch(drawDS9Regions(viewer.id, layerName, viewer.boundaryRegionsDS9, opts));
         }
         else {
             console.log("ERROR: INVALID BOUNDARY REGION TYPE");

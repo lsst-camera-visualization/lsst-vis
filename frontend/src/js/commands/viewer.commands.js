@@ -52,7 +52,7 @@ export const showBoundary = params => {
         return;
     }
 
-    store.dispatch(clearLayer(viewerID, regionLayer));
+    store.dispatch(ViewerActions.clearLayer(viewerID, regionLayer));
     const regions = viewer.boundaryRegions;
     const opts = {
         color: "red",
@@ -79,5 +79,5 @@ export const hideBoundary = params => {
         console.log(err);
         return;
     }
-    store.dispatch(clearLayer(viewerID, regionLayer));
+    store.dispatch(ViewerActions.clearLayer(viewerID, regionLayer));
 }

@@ -3,6 +3,7 @@ import * as ViewerCommands from "./viewer.commands";
 import * as UVCommands from "./uv.commands";
 import * as TerminalCommands from "./terminal.commands";
 import * as MiscCommands from "./misc.commands";
+import * as BoundaryCommands from "./boundary.commands";
 import averagePixel from "./averagePixel";
 import graphNoise from "./graphNoise";
 import graphPixel from "./graphPixel";
@@ -23,8 +24,6 @@ const commands = {
 
     "create_viewer": ViewerCommands.createViewer,
     "delete_viewer": ViewerCommands.deleteViewer,
-    "show_boundary": ViewerCommands.showBoundary,
-    "hide_boundary": ViewerCommands.hideBoundary,
     "clear_viewer": ViewerCommands.clearViewer,
     "load_image": ViewerCommands.loadImage,
 
@@ -32,6 +31,9 @@ const commands = {
     "uv_pause": UVCommands.pause,
     "uv_resume": UVCommands.resume,
     "uv_update": UVCommands.update,
+
+    "show_boundary": BoundaryCommands.showBoundary,
+    "hide_boundary": BoundaryCommands.hideBoundary,
 
     "average_pixel": averagePixel,
     "graph_noise": graphNoise,

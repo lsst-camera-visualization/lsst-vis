@@ -1,6 +1,6 @@
 import { AddActionListener, AddExtension } from "../util/firefly";
 import * as ViewerActions from "../actions/viewer.actions";
-import loadBoundary from "../commands/loadBoundary";
+import loadBoundary from "../commands/boundary.commands";
 import { ClearLayer, DrawRegions } from "../util/firefly";
 import { JSUtil } from "../util/jsutil";
 import { openCommandPanel } from "../actions/commandPanel.actions";

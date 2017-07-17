@@ -9,11 +9,11 @@ import { Rectangle } from "../util/region";
 import store from "../store";
 
 // CCD level (two images with and without overscan)
-// const defaultImage = "https://www.dropbox.com/s/3n571i6ak648gmy/default-untrimmed.fits?dl=1"
+const defaultImage = "https://www.dropbox.com/s/3n571i6ak648gmy/default-untrimmed.fits?dl=1"
 // const defaultImage = "https://www.dropbox.com/s/e7g1rynikrqbxlc/default-trimmed.fits?dl=1"
 
 // Raft level
-const defaultImage = "https://www.dropbox.com/s/k18d9x2hr2otj2y/20170304160038.fits?dl=1"
+// const defaultImage = "https://www.dropbox.com/s/k18d9x2hr2otj2y/20170304160038.fits?dl=1"
 
 const defaultImageTrimmed = "https://www.dropbox.com/s/e7g1rynikrqbxlc/default-trimmed.fits?dl=1"
 

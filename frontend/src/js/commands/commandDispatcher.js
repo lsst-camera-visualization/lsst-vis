@@ -24,6 +24,7 @@ const commands = {
     "create_viewer": ViewerCommands.createViewer,
     "delete_viewer": ViewerCommands.deleteViewer,
     "show_boundary": ViewerCommands.showBoundary,
+    "hide_boundary": ViewerCommands.hide_boundary,
     "clear_viewer": ViewerCommands.clearViewer,
     "load_image": ViewerCommands.loadImage,
 

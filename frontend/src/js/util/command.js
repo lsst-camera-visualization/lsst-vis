@@ -2,9 +2,9 @@ import { JSUtil } from "./jsutil";
 
 // Validates parameters based on their value
 const parameterValidators = {
-    box_id: (parameter, state) => {
-        if (!(parameter in state.boxes))
-            return "Invalid box ID!";
+    box_id: (box, state) => {
+        if (!(box in state.boxes))
+            return `Invalid box ID: ${box}`;
         return null;
     },
 
@@ -29,6 +29,8 @@ const parameterValidators = {
 
 // Used to validate the user entered parameters for a task
 export const validateParameters = (parameters, state) => {
+    console.log(parameters);
+    console.log(parameterValidators);
     // Loop through each parameter, and validate if necessary
     for (const p in parameters) {
         if (parameters.hasOwnProperty(p) && p in parameterValidators) {

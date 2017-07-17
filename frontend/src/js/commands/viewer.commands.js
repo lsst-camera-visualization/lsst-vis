@@ -1,6 +1,8 @@
 import * as ViewerActions from "../actions/viewer.actions";
 import { setDefault } from "../actions/terminal.actions";
 import { JSUtil } from "../util/jsutil";
+import { validateParameters } from "../util/command";
+import { addErrorToHistory } from "../actions/terminal.actions";
 
 import store from "../store";
 
@@ -34,26 +36,29 @@ export const loadImage = params => {
 
 // Displays the boundary regions on a viewer
 export const showBoundary = params => {
-    const viewerID = params.viewer_id;
-    const viewers = store.getState().viewers;
-    if (!(viewerID in viewers)) {
-        var err = "No such viewer: " + viewerID;
-        console.log(err);
+    const valid = validateParameters(params, store.getState());
+    if (valid !== null) {
+        store.dispatch(addErrorToHistory("Bad parameters: " + valid));
         return;
     }
-    if (!viewers[viewerID].boundaryRegions){
-        var err = "Boundary not fetched for this image."
+    const viewerID = params.viewer_id;
+    const viewers = store.getState().viewers;
+    const viewer = viewers[viewerID];
+    const regionLayer = "BOUNDARY";
+
+    if (!viewer.boundaryRegions){
+        const err = "Boundary not fetched for this image."
         console.log(err);
         return;
     }
 
-    const viewer = store.getState().viewers[viewerID];
+    store.dispatch(clearLayer(viewerID, regionLayer));
     const regions = viewer.boundaryRegions;
     const opts = {
         color: "red",
         width: 1
     };
-
+    
     // Draw the boundary regions
-    store.dispatch(ViewerActions.drawDS9Regions(viewerID, "BOUNDARY", regions, opts));
+    store.dispatch(ViewerActions.drawDS9Regions(viewerID, regionLayer, regions, opts));
 }

@@ -113,9 +113,10 @@ class fitsHandler:
                 segYX = str(self.A_Y_NUM - 1 - ampY)+str(ampX) # NOTE: Y is inverted
                 prefix = "HIERARCH {} {} SEGMENT{} ".format(R_YX, S_YX, segYX)
                 ampDetSec = self.__convertRange(header[prefix + "DETSEC"])
+                ampInfo = {"name": "A{}".format(segYX)}
                 if not self.overscan: # ccd without overscan
                     ccdType = "CCD"
-                    ampInfo = {"data": self.__formatRect(ampDetSec)}
+                    ampInfo["data"] = self.__formatRect(ampDetSec)
                 else: # ccd with overscan
                     ccdType = "CCD-OVERSCAN"
                     ampDataSec = self.__convertRange(header[prefix + "DATASEC"])
@@ -138,8 +139,6 @@ class fitsHandler:
                     ampPostscan = self.__rangeComplement(ampPostscan, segDim, x=xReverse, y=yReverse)
                     ampOverscan = self.__rangeComplement(ampOverscan, segDim, x=False, y=yReverse)
 
-                    ampInfo = {}
-                    ampInfo["name"] = header[prefix + "EXTNAME"]
                     ampInfo["all"] = self.__formatRect(ampAll)
                     ampInfo["data"] = self.__formatRectOffset(ampDataSec, xStart, yStart)
                     ampInfo["pre"] = self.__formatRectOffset(ampPrescan, xStart, yStart)
@@ -147,7 +146,7 @@ class fitsHandler:
                     ampInfo["over"] = self.__formatRectOffset(ampOverscan, xStart, yStart)
                 ccdBoundary.append(ampInfo)
 
-        return {"type": ccdType, "data": ccdBoundary}
+        return {"type": ccdType, "value": ccdBoundary}
 
     def getRaftHeaderJSON(self):
         '''Retrive the header information on a raft-level FITS.
@@ -165,11 +164,11 @@ class fitsHandler:
                         prefix = "HIERARCH R{}{} S{}{} SEGMENT{}{} ".format(9, 9, raftY, raftX, ampY, ampX)
                         ampDataSec = self.__convertRange(header[prefix + "DETSEC"])
                         ampInfo = {}
-                        ampInfo["name"] = "S{}{} SEGMENT{}{}".format(raftY, raftX, ampY, ampX)
+                        ampInfo["name"] = "S{}{}A{}{}".format(raftY, raftX, ampY, ampX)
                         xStart, yStart = raftX * (4072 + 20), raftY * (4000 + 20)
                         ampInfo["data"] = self.__formatRectOffset(ampDataSec, xStart, yStart)
                         boundaryArray.append(ampInfo)
-        return {"type": "CCD", "data": boundaryArray}
+        return {"type": "CCD", "value": boundaryArray}
 
     def getFocalPlaneHeaderJSON(self):
         '''Retrive the header information on a focal plane level FITS.
@@ -222,7 +221,7 @@ class fitsHandler:
         @param: region - range in 2D (dictionary with keys: x1, x2, y1, y2)
         @return: Rect
         '''
-        return {"type": "rect", "data": region}
+        return {"type": "rect", "value": region}
 
     def __formatRectOffset(self, region, xOffset, yOffset):
         ''' Private helper function to convert a region into Rect with offset.
@@ -230,7 +229,7 @@ class fitsHandler:
         @return: Rect
         '''
         region = self.__addOffset(region, xOffset, yOffset)
-        return {"type": "rect", "data": region}
+        return {"type": "rect", "value": region}
 
     def __convertRange(self, sliceString):
         '''Convert the boundary coordinates from string(as in the header) to values. It's assumed to be a rectangular region (2-dimensional).

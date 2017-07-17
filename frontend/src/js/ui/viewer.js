@@ -1,6 +1,6 @@
 import { AddActionListener, AddExtension } from "../util/firefly";
 import * as ViewerActions from "../actions/viewer.actions";
-import loadBoundary from "../commands/loadBoundary";
+import { loadBoundary } from "../commands/boundary.commands";
 import { ClearLayer, DrawRegions } from "../util/firefly";
 import { JSUtil } from "../util/jsutil";
 import { openCommandPanel } from "../actions/commandPanel.actions";
@@ -9,47 +9,28 @@ import { Rectangle } from "../util/region";
 import store from "../store";
 
 // CCD level (two images with and without overscan)
-// const defaultImage = "https://www.dropbox.com/s/3n571i6ak648gmy/default-untrimmed.fits?dl=1"
+const defaultImage = "https://www.dropbox.com/s/3n571i6ak648gmy/default-untrimmed.fits?dl=1"
 // const defaultImage = "https://www.dropbox.com/s/e7g1rynikrqbxlc/default-trimmed.fits?dl=1"
 
 // Raft level
-const defaultImage = "https://www.dropbox.com/s/k18d9x2hr2otj2y/20170304160038.fits?dl=1"
-
-const defaultImageTrimmed = "https://www.dropbox.com/s/e7g1rynikrqbxlc/default-trimmed.fits?dl=1"
+// const defaultImage = "https://www.dropbox.com/s/k18d9x2hr2otj2y/20170304160038.fits?dl=1"
 
 export class Viewer {
     constructor(id, image = defaultImage) {
         this.id = id;
         this.image = image;
-        this.original_image_url = defaultImageTrimmed;
         this.layers = [];
 
         this.cursorPoint = { x: 0, y: 0 };
 
-        loadBoundary(this).then( () => {
-            // Display options
-            const opts = {
-                color: "red",
-                width: 1
-            };
-
-            // Create the list of ds9 regions from all of the boundary regions
-            let regions = [];
-            for (let i = 0; i < this.boundaryRegions.length; i++) {
-                const b = this.boundaryRegions[i];
-                regions = regions.concat(b.toDS9());
-            }
-
-            const a = ViewerActions.drawDS9Regions(this.id, "BOUNDARY", regions, opts);
-            store.dispatch(a);
-        });
+        loadBoundary(this);
 
         AddActionListener("READOUT_DATA", this.onCursorMove);
 
         AddExtension(id, "Choose command", "AREA_SELECT", this.onChooseCommand);
     }
 
-    removeLayer = layer => {
+    removeRegionLayer = layer => {
         const idx = this.layers.indexOf(layer);
         if (idx !== -1) {
             ClearLayer(this.id, layer);
@@ -57,7 +38,7 @@ export class Viewer {
         }
     }
 
-    removeAllLayers = () => {
+    removeAllRegionLayers = () => {
         JSUtil.Foreach(this.layers, layer => {
             ClearLayer(this.id, layer);
         });
@@ -72,7 +53,10 @@ export class Viewer {
     }
 
     loadImage = image => {
+        this.removeAllRegionLayers();
         this.image = image;
+        loadBoundary(this);
+        console.log(this);
     }
 
     calculateHoveredAmpName = () => {

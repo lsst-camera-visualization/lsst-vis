@@ -1,8 +1,12 @@
 import * as ViewerActions from "../actions/viewer.actions";
 import { setDefault } from "../actions/terminal.actions";
 import { JSUtil } from "../util/jsutil";
+import { validateParameters } from "../util/command";
+import { addErrorToHistory } from "../actions/terminal.actions";
 
 import store from "../store";
+
+// TODO: ADD validateParameters!!!
 
 // Clears all region layers on a viewer
 export const clearViewer = params => {
@@ -30,22 +34,4 @@ export const deleteViewer = params => {
 // Loads a new image into a viewer
 export const loadImage = params => {
     store.dispatch(ViewerActions.loadImage(params.viewer_id, params.url));
-}
-
-// Displays the boundary regions on a viewer
-export const showBoundary = params => {
-    const viewerID = params.viewer_id;
-    const viewers = store.getState().viewers;
-    if (!(viewerID in viewers) || !viewers[viewerID].boundaryRegions)
-        return;
-
-    const viewer = store.getState().viewers[viewerID];
-    const regions = viewer.boundaryRegions;
-    const opts = {
-        color: "red",
-        width: 1
-    };
-
-    // Draw the boundary regions
-    store.dispatch(ViewerActions.drawDS9Regions(viewerID, "BOUNDARY", regions, opts));
 }

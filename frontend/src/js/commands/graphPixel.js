@@ -3,7 +3,7 @@ import { ParseRegion } from "../util/region";
 import { createHistogram, drawHistogram } from "../actions/histogram.actions";
 import { drawRegion, clearLayer } from "../actions/viewer.actions";
 import { validateParameters } from "../util/command";
-import { addErrorToHistory } from "../actions/terminal.actions";
+import { addErrorToHistory, addWarnToHistory, addInfoToHistory } from "../actions/terminal.actions";
 
 import store from "../store";
 
@@ -96,7 +96,7 @@ export default (params) => {
             }
         ];
         if (logFlag){
-            store.dispatch(addErrorToHistory("Option \"log\" is seen in the input. Thus Y axis is set to log scale."));
+            store.dispatch(addInfoToHistory("Option \"log\" is seen in the input. Thus Y axis is set to log scale."));
         }
         const opts = {
             title: "Graph Pixel: " + params.viewer_id,

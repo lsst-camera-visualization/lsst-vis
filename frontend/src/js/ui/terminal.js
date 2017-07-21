@@ -74,6 +74,20 @@ export class Terminal {
         this.trimHistory();
     }
 
+    // Adds a warning message to the history
+    addWarn = warnMsg => {
+        this.history.push({ msg: warnMsg, type: "WARN" });
+
+        this.trimHistory();
+    }
+
+    // Adds relavent information to the history
+    addInfo = infoMsg => {
+        this.history.push({ msg: infoMsg, type: "INFO" });
+
+        this.trimHistory();
+    }
+
     // Adds a command for this terminal to use
     addCommand = command => {
         this.autoCompleteArray.insert(command);

@@ -27,6 +27,18 @@ const commands = {
         return newState;
     },
 
+    "ADD_WARN_TO_HISTORY": (state, action) => {
+        let newState = state.clone();
+        newState.addWarn(action.warn);
+        return newState;
+    },
+
+    "ADD_INFO_TO_HISTORY": (state, action) => {
+        let newState = state.clone();
+        newState.addInfo(action.info);
+        return newState;
+    },
+
     "ADD_PARAMETER_DESC": (state, action) => {
         let newState = state.clone();
         newState.setParameterDesc(action.parameter, action.desc);

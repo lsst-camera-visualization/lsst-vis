@@ -21,6 +21,7 @@ export default class Histogram extends React.Component {
 
     // Update and draw the actual histogram from Firefly
     componentDidMount() {
+        console.log(this);
         const id = this.props.id;
         const h = this.props.histograms[id];
 

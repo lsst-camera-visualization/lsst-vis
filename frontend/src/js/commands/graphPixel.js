@@ -19,12 +19,27 @@ export default (params) => {
     const region = params.region;
 
     // The parameters to pass to the backend
+    var numBins = parseInt(params.num_bins);
+    if (!numBins || numBins < 0){
+        store.dispatch(addErrorToHistory("Cannot parse num_bins. The value will be set automatically instead."));
+        numBins = "auto";
+    }
+    var rangeMin = parseInt(params.min);
+    var rangeMax = parseInt(params.max);
+    if (!rangeMin || !rangeMax || rangeMin<0 || rangeMax<0){
+        store.dispatch(addErrorToHistory("Cannot parse the given input range. The values will be set automatically instead."));
+        rangeMin = "auto";
+        rangeMax = "auto";
+    }
+
     const backendParameters = {
         region: region.toBackendFormat(),
-        bins: parseInt(params.num_bins) || 10,
-        min: parseFloat(params.min) || -1,
-        max: parseFloat(params.max) || -1
+        bins: numBins,
+        min: rangeMin,
+        max: rangeMax
     }
+
+    console.log(backendParameters);
 
     const onSuccess = data => {
         // Reset the viewer regions

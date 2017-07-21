@@ -20,22 +20,42 @@ export default (params) => {
 
     // The parameters to pass to the backend
     let numBins = parseInt(params.num_bins);
-    if (!numBins || numBins < 0){
-        store.dispatch(addErrorToHistory("Cannot parse num_bins. The value will be set automatically instead."));
-        numBins = "auto";
-    }
     let rangeMin = parseInt(params.min);
     let rangeMax = parseInt(params.max);
-    if (!rangeMin || !rangeMax || rangeMin<0 || rangeMax<0){
-        store.dispatch(addErrorToHistory("Cannot parse the given input range. The values will be set automatically instead."));
+    let logFlag = false;
+
+    if (params.num_bins == "log"){
+        numBins = "auto";
         rangeMin = "auto";
         rangeMax = "auto";
+        logFlag = true;
     } else {
-        // Ensure min is always smaller than max
-        if (rangeMin > rangeMax){
-            let temp = rangeMax;
-            rangeMax = rangeMin;
-            rangeMin = temp;
+        if (!numBins || numBins<0){
+            if (params.num_bins != "auto"){
+                store.dispatch(addErrorToHistory("Cannot parse num_bins. The value will be set automatically instead."));
+            }
+            numBins = "auto";
+        }
+        if (params.min == "log"){
+            rangeMin = "auto";
+            rangeMax = "auto";
+            logFlag = true;
+        }else{
+            logFlag = params["[scale]"] == "log";
+            if (!rangeMin || !rangeMax || rangeMin<0 || rangeMax<0){
+                if (params.min != "auto" || params.max != "auto"){
+                    store.dispatch(addErrorToHistory("Cannot parse the given input range. The values will be set automatically instead."));
+                }
+                rangeMin = "auto";
+                rangeMax = "auto";
+            } else {
+                // Ensure min is always smaller than max
+                if (rangeMin > rangeMax){
+                    let temp = rangeMax;
+                    rangeMax = rangeMin;
+                    rangeMin = temp;
+                }
+            }
         }
     }
 
@@ -75,7 +95,9 @@ export default (params) => {
                 name: "Overflow"
             }
         ];
-        const logFlag = params["num_bins"]=="log" || params["min"]=="log" || params["max"];
+        if (logFlag){
+            store.dispatch(addErrorToHistory("Option \"log\" is seen in the input. Thus Y axis is set to log scale."));
+        }
         const opts = {
             title: "Graph Pixel: " + params.viewer_id,
             xaxis: "Pixel Value",

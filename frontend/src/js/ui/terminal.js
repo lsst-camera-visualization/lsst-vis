@@ -23,7 +23,9 @@ export class Terminal {
     // Loads the terminal from the previous state
     loadFromState = state => {
         this._copy(this, state);
-        this.history = state.history.filter(d => d.type !== "ERROR");
+        this.history = state.history.filter( (msg) => {
+            return msg.type!="ERROR" && msg.type!="WARN" && msg.type!="INFO";
+        });
         this.index = this.history.length;
         return this;
     }

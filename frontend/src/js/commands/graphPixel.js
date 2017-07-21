@@ -19,17 +19,24 @@ export default (params) => {
     const region = params.region;
 
     // The parameters to pass to the backend
-    var numBins = parseInt(params.num_bins);
+    let numBins = parseInt(params.num_bins);
     if (!numBins || numBins < 0){
         store.dispatch(addErrorToHistory("Cannot parse num_bins. The value will be set automatically instead."));
         numBins = "auto";
     }
-    var rangeMin = parseInt(params.min);
-    var rangeMax = parseInt(params.max);
+    let rangeMin = parseInt(params.min);
+    let rangeMax = parseInt(params.max);
     if (!rangeMin || !rangeMax || rangeMin<0 || rangeMax<0){
         store.dispatch(addErrorToHistory("Cannot parse the given input range. The values will be set automatically instead."));
         rangeMin = "auto";
         rangeMax = "auto";
+    } else {
+        // Ensure min is always smaller than max
+        if (rangeMin > rangeMax){
+            let temp = rangeMax;
+            rangeMax = rangeMin;
+            rangeMin = temp;
+        }
     }
 
     const backendParameters = {
@@ -68,10 +75,11 @@ export default (params) => {
                 name: "Overflow"
             }
         ];
+        const logFlag = params["num_bins"]=="log" || params["min"]=="log" || params["max"];
         const opts = {
             title: "Graph Pixel: " + params.viewer_id,
             xaxis: "Pixel Value",
-            logs: (params["[scale]"] === "log") ? "y" : undefined
+            logs: logFlag ? "y" : undefined
         }
         store.dispatch(createHistogram(histoData, opts));
     }

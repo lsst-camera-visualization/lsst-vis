@@ -47,10 +47,12 @@ export const addWarnToHistory = warn => {
 }
 
 export const addInfoToHistory = info => {
-    return {
+    const action =  {
         type: "ADD_INFO_TO_HISTORY",
         info
     }
+    console.log(action);
+    return action;
 }
 
 // Executes a command from the terminal

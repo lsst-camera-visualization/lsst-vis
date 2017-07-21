@@ -32,7 +32,7 @@ export default (params) => {
     } else {
         if (!numBins || numBins<0){
             if (params.num_bins != "auto"){
-                store.dispatch(addErrorToHistory("Cannot parse num_bins. The value will be set automatically instead."));
+                store.dispatch(addWarnToHistory("Cannot parse \"num_bins\". The value will be set automatically instead."));
             }
             numBins = "auto";
         }
@@ -44,7 +44,7 @@ export default (params) => {
             logFlag = params["[scale]"] == "log";
             if (!rangeMin || !rangeMax || rangeMin<0 || rangeMax<0){
                 if (params.min != "auto" || params.max != "auto"){
-                    store.dispatch(addErrorToHistory("Cannot parse the given input range. The values will be set automatically instead."));
+                    store.dispatch(addWarnToHistory("Cannot parse the given input range (\"min\" and \"max\"). The values will be set automatically instead."));
                 }
                 rangeMin = "auto";
                 rangeMax = "auto";

@@ -12,6 +12,14 @@ export default class TerminalBody extends React.Component {
                 return <p className="term-body-error" key={i}>{"Error: " + entry.msg}</p>
             }
 
+            case "WARN": {
+                return <p className="term-body-warn" key={i}>{"Warning: " + entry.msg}</p>
+            }
+
+            case "INFO": {
+                return <p className="term-body-info" key={i}>{"Info: " + entry.msg}</p>
+            }
+
             default:
                 return null;
         }

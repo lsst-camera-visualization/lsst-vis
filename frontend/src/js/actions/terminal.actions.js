@@ -37,6 +37,24 @@ export const addErrorToHistory = error => {
     }
 }
 
+export const addWarnToHistory = warn => {
+    const action = {
+        type: "ADD_WARN_TO_HISTORY",
+        warn
+    }
+    console.log(action);
+    return action;
+}
+
+export const addInfoToHistory = info => {
+    const action =  {
+        type: "ADD_INFO_TO_HISTORY",
+        info
+    }
+    console.log(action);
+    return action;
+}
+
 // Executes a command from the terminal
 export const executeCommand = (command, params) => {
     return {

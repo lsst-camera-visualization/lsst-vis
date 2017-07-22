@@ -80,20 +80,29 @@
 }
 
 .term-body-entry {
-    font-size: 150%;
+    font-size: 125%;
 }
 
 .term-body-error {
-    font-size: 150%;
-    color: #F66;
+    font-size: 125%;
+    color: #FF0000;
 }
 
+.term-body-warn {
+    font-size: 125%;
+    color: #CD853F;
+}
+
+.term-body-info {
+    font-size: 125%;
+    color: #778899;
+}
 
 
 .term-input-input {
   background-color: #1E1E1E;
   color: #fff;
-  font-size: 150%;
+  font-size: 125%;
   width: 100%;
   padding: 3px 0px;
 }

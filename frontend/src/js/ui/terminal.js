@@ -23,7 +23,9 @@ export class Terminal {
     // Loads the terminal from the previous state
     loadFromState = state => {
         this._copy(this, state);
-        this.history = state.history.filter(d => d.type !== "ERROR");
+        this.history = state.history.filter( (msg) => {
+            return msg.type!="ERROR" && msg.type!="WARN" && msg.type!="INFO";
+        });
         this.index = this.history.length;
         return this;
     }
@@ -70,6 +72,20 @@ export class Terminal {
     // Adds a new error message to the history
     addError = error => {
         this.history.push({ msg: error, type: "ERROR" });
+
+        this.trimHistory();
+    }
+
+    // Adds a warning message to the history
+    addWarn = warnMsg => {
+        this.history.push({ msg: warnMsg, type: "WARN" });
+
+        this.trimHistory();
+    }
+
+    // Adds relavent information to the history
+    addInfo = infoMsg => {
+        this.history.push({ msg: infoMsg, type: "INFO" });
 
         this.trimHistory();
     }

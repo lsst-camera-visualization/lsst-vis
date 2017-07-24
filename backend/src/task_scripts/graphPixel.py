@@ -20,16 +20,20 @@ def task(filename, taskParams):
         # Largest floating point number
         maxFloat = np.finfo(float).max
         def histogram(a):
-            if (not minValue=="auto" and not maxValue=="auto"):
-                return np.histogram(a, bins=numBins, range=(minValue, maxValue))
-            # return np.histogram(a, bins=numBins, range=(minValue, maxValue))
+            if (minValue=="auto" or maxValue=="auto"):
+                _range = (a.min(), a.max())
             else:
-                return np.histogram(a, bins=numBins)
+                _range = (minValue, maxValue)
+            # Good estimator for number of bins
+            _numBins = numBins if numBins != "auto" else "doane"
+            return np.histogram(a, bins=_numBins, range=_range)
+
         def underflow(a):
             if (not minValue=="auto" and not maxValue=="auto"):
                 return np.histogram(a, bins=1, range=(-maxFloat, minValue - np.finfo(float).eps))
             else:
                 return False
+
         def overflow(a):
             if (not minValue=="auto" and not maxValue=="auto"):
                 return np.histogram(a, bins=1, range=(maxValue + np.finfo(float).eps, maxFloat))

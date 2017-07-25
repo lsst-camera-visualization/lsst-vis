@@ -2,9 +2,9 @@
     "viewer_id": "The ID of the viewer to use",
     "box_id": "The ID of the box to use",
     "region": "A valid region - rect, circ, amp, or sel",
-    "num_bins": "The number of bins to use for the histogram. (Use \"auto\" to let backend automatically decide binning.)",
-    "min": "Minimum value of histogram range. (\"auto\" will use the minimum pixel value inside the region)",
-    "max": "Maximum value of histogram range. (\"auto\" will use the maximum pixel value inside the region)",
+    "num_bins": "The number of bins or \"auto\"",
+    "min": "Minimum value of histogram range; Or use \"auto\" (min value in the region)",
+    "max": "Maximum value of histogram range; Or use \"auto\" (max value in the region)",
     "[scale]": "The axis scaling type - lin (for linear) or log (for logarithmic)",
     "new_value": "The new value, leave empty for the default value"
 }

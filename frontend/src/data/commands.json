@@ -17,7 +17,7 @@
     {
         "commandName": "graph_pixel",
         "params": [ "viewer_id", "region", "num_bins", "min", "max", "[scale]" ],
-        "desc": "Histograms the pixel values in a region"
+        "desc": "Histograms the pixel values in a region. (append \"log\" to plot in logarithmic scale)"
     },
     {
         "commandName": "graph_proj",

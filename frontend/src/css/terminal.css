@@ -28,7 +28,7 @@
 
 
 .term-help-ctr {
-    font-size: 150%;
+    font-size: 125%;
     color: #888;
     width: 100%;
     border-bottom: 1px solid #AAA;
@@ -101,8 +101,9 @@
 
 .term-input-input {
   background-color: #1E1E1E;
+  font-family: Consolas, Monaco, "Lucida Console", monospace;
   color: #fff;
-  font-size: 125%;
+  font-size: 110%;
   width: 100%;
   padding: 3px 0px;
 }

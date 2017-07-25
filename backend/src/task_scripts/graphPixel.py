@@ -23,8 +23,15 @@ def task(filename, taskParams):
         if (_rangeMin > _rangeMax):
             _rangeMin, _rangeMax = _rangeMax, _rangeMin
 
+        def getDataType(a):
+            try:
+                return np.finfo(a.dtype).eps
+            except Exception as e:
+                return 1
+
         # Largest floating point number
         maxFloat = np.finfo(float).max
+        epsilon = region.execute(img, getDataType)
 
         def histogram(a):
             # Good estimator for number of bins
@@ -32,18 +39,10 @@ def task(filename, taskParams):
             return np.histogram(a, bins=_numBins, range=(_rangeMin, _rangeMax))
 
         def underflow(a):
-            # return False
-            return np.histogram(a, bins=1, range=(-maxFloat, _rangeMin - np.finfo(float).eps))
-            # if (not minValue=="auto" and not maxValue=="auto"):
-            # else:
-            #     return False
+            return np.histogram(a, bins=1, range=(-maxFloat, _rangeMin - epsilon))
 
         def overflow(a):
-            # return False
-            return np.histogram(a, bins=1, range=(_rangeMax + np.finfo(float).eps, maxFloat))
-            # if (not minValue=="auto" and not maxValue=="auto"):
-            # else:
-            #     return False
+            return np.histogram(a, bins=1, range=(_rangeMax + epsilon, maxFloat))
 
         # Gives us the histogram for the values in the range
         h = region.execute(img, histogram)

@@ -19,9 +19,9 @@ export default (params) => {
     const region = params.region;
 
     // The parameters to pass to the backend
-    let numBins = parseInt(params.num_bins);
-    let rangeMin = parseInt(params.min);
-    let rangeMax = parseInt(params.max);
+    let numBins = parseFloat(params.num_bins);
+    let rangeMin = parseFloat(params.min);
+    let rangeMax = parseFloat(params.max);
     const logFlag = (params["[scale]"]=="log") || (params["num_bins"]=="log") || (params["min"]=="log") || (params["max"]=="log");
 
     if (params.num_bins == "log" || params.num_bins == "auto"){

@@ -57,5 +57,6 @@ typings/
 # dotenv environment variables file
 .env
 
-# client.min.js
+# custom file
 src/client.min.js
+src/version.html

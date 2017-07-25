@@ -22,15 +22,14 @@ export default (params) => {
     let numBins = parseInt(params.num_bins);
     let rangeMin = parseInt(params.min);
     let rangeMax = parseInt(params.max);
-    let logFlag = false;
+    const logFlag = (params["[scale]"]=="log") || (params["num_bins"]=="log") || (params["min"]=="log") || (params["max"]=="log");
 
-    if (params.num_bins == "log"){
+    if (params.num_bins == "log" || params.num_bins == "auto"){
         numBins = "auto";
         rangeMin = "auto";
         rangeMax = "auto";
-        logFlag = true;
-    } else {
-        if (!numBins || numBins<0){
+    }else{
+        if (!numBins || numBins < 0){
             if (params.num_bins != "auto"){
                 store.dispatch(addWarnToHistory("Cannot parse \"num_bins\". The value will be set automatically instead."));
             }
@@ -39,21 +38,21 @@ export default (params) => {
         if (params.min == "log"){
             rangeMin = "auto";
             rangeMax = "auto";
-            logFlag = true;
         }else{
-            logFlag = params["[scale]"] == "log";
-            if (!rangeMin || !rangeMax || rangeMin<0 || rangeMax<0){
-                if (params.min != "auto" || params.max != "auto"){
-                    store.dispatch(addWarnToHistory("Cannot parse the given input range (\"min\" and \"max\"). The values will be set automatically instead."));
+            if (!rangeMin || rangeMin < 0){
+                if (params.min != "auto"){
+                    store.dispatch(addWarnToHistory("Cannot parse \"min\". Will use min pixel value in the region."));
                 }
                 rangeMin = "auto";
+            }
+            if (params.max == "log"){
                 rangeMax = "auto";
-            } else {
-                // Ensure min is always smaller than max
-                if (rangeMin > rangeMax){
-                    let temp = rangeMax;
-                    rangeMax = rangeMin;
-                    rangeMin = temp;
+            }else{
+                if (!rangeMax || rangeMax < 0){
+                    if (params.max != "auto"){
+                        store.dispatch(addWarnToHistory("Cannot parse \"max\". Will use max pixel value in the reigon"));
+                    }
+                    rangeMax = "auto";
                 }
             }
         }

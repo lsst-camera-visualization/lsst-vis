@@ -24,7 +24,8 @@ export default (params) => {
     let rangeMax = parseFloat(params.max);
     const logFlag = (params["[scale]"]=="log") || (params["num_bins"]=="log") || (params["min"]=="log") || (params["max"]=="log");
 
-    if (params.num_bins == "log" || params.num_bins == "auto"){
+    console.log(params);
+    if (params.num_bins == "log" || params.num_bins == "auto" || params.num_bins == undefined){
         numBins = "auto";
         rangeMin = "auto";
         rangeMax = "auto";

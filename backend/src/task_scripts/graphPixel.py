@@ -23,15 +23,8 @@ def task(filename, taskParams):
         if (_rangeMin > _rangeMax):
             _rangeMin, _rangeMax = _rangeMax, _rangeMin
 
-        def getDataType(a):
-            try:
-                return np.finfo(a.dtype).eps
-            except Exception as e:
-                return 1
-
         # Largest floating point number
         maxFloat = np.finfo(float).max
-        epsilon = region.execute(img, getDataType)
 
         def histogram(a):
             # Good estimator for number of bins
@@ -39,10 +32,12 @@ def task(filename, taskParams):
             return np.histogram(a, bins=_numBins, range=(_rangeMin, _rangeMax))
 
         def underflow(a):
-            return np.histogram(a, bins=1, range=(-maxFloat, _rangeMin - epsilon))
+            underflowBin = np.where(a.flatten() < _rangeMin)[0]
+            return underflowBin.size
 
         def overflow(a):
-            return np.histogram(a, bins=1, range=(_rangeMax + epsilon, maxFloat))
+            overflowBin = np.where(a.flatten() > _rangeMax)[0]
+            return overflowBin.size
 
         # Gives us the histogram for the values in the range
         h = region.execute(img, histogram)
@@ -51,6 +46,6 @@ def task(filename, taskParams):
 
         fireflyHist = NumpyToFireflyHist(h)
         binWidth = float(h[1][1] - h[1][0])
-        underflow = [ [ float(u[0]), _rangeMin - binWidth, _rangeMin ] ] if u else None
-        overflow  = [ [ float(o[0]), _rangeMax, _rangeMax + binWidth ] ] if o else None
+        underflow = [ [ float(u), _rangeMin - binWidth, _rangeMin ] ]
+        overflow  = [ [ float(o), _rangeMax, _rangeMax + binWidth ] ]
     return { "main": fireflyHist, "underflow": underflow, "overflow": overflow }, None

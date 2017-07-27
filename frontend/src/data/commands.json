@@ -33,7 +33,7 @@
     {
         "commandName": "help",
         "params": [],
-        "desc": "Show a link to usage of commands"
+        "desc": "Show link to the usage of commands"
     },
 
     {

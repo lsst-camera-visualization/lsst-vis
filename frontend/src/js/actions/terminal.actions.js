@@ -59,7 +59,6 @@ export const addLinkToHistory = link => {
         type: "ADD_LINK_TO_HISTORY",
         link
     };
-    console.log(action);
     return action;
 }
 

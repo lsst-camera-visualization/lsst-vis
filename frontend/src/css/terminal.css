@@ -98,10 +98,20 @@
     color: #778899;
 }
 
-.term-body-link {
+.term-body-link:link {
+    color: cyan;
     font-size: 125%;
+    text-decoration:none;
 }
-
+.term-body-link:visited {
+    color: cyan;
+    font-size: 125%;
+    text-decoration:none;
+}
+.term-body-link:hover, .term-body-link:active {
+    font-size: 125%;
+    text-decoration:underline;
+}
 
 .term-input-input {
   background-color: #1E1E1E;

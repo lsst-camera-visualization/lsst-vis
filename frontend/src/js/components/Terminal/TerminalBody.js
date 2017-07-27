@@ -20,7 +20,7 @@ export default class TerminalBody extends React.Component {
                 return <p className="term-body-info" key={i}>{"Info: " + entry.msg}</p>;
             }
             case "LINK": {
-                return <p className="term-body-link" key={i}>{<a href={entry.msg.link}>{entry.msg.displayText}</a>}</p>;
+                return <a className="term-body-link" key={i} href={entry.msg.link}>{entry.msg.displayText}</a>;
             }
 
             default:

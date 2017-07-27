@@ -84,39 +84,39 @@
 }
 
 .term-body-error {
-    font-size: 125%;
+    font-size: 110%;
     color: #FF0000;
 }
 
 .term-body-warn {
-    font-size: 125%;
+    font-size: 110%;
     color: #CD853F;
 }
 
 .term-body-info {
-    font-size: 125%;
+    font-size: 110%;
     color: #778899;
 }
 
 .term-body-link:link {
     color: cyan;
-    font-size: 125%;
+    font-size: 110%;
     text-decoration:none;
 }
 .term-body-link:visited {
     color: cyan;
-    font-size: 125%;
+    font-size: 110%;
     text-decoration:none;
 }
 .term-body-link:hover, .term-body-link:active {
-    font-size: 125%;
+    font-size: 110%;
     text-decoration:underline;
 }
 
 .term-input-input {
   background-color: #1E1E1E;
   color: #fff;
-  font-size: 100%;
+  font-size: 110%;
   width: 100%;
   padding: 3px 0px;
 }

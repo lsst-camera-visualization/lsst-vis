@@ -98,6 +98,10 @@
     color: #778899;
 }
 
+.term-body-link {
+    font-size: 125%;
+}
+
 
 .term-input-input {
   background-color: #1E1E1E;

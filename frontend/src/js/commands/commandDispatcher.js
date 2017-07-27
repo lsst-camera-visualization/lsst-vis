@@ -11,6 +11,8 @@ import graphProj from "./graphProj";
 import hotPixel from "./hotPixel";
 import noise from "./noise";
 
+import {helpCommand} from "./help"
+
 import { ParseRegion } from "../util/region";
 import store from "../store";
 
@@ -41,6 +43,8 @@ const commands = {
     "graph_proj": graphProj,
     "hot_pixel": hotPixel,
     "noise": noise,
+
+    "help": helpCommand,
 
     "set_default": TerminalCommands.setDefault,
     "set_setting": MiscCommands.setSetting

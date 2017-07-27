@@ -39,6 +39,12 @@ const commands = {
         return newState;
     },
 
+    "ADD_LINK_TO_HISTORY": (state, action) => {
+        let newState = state.clone();
+        newState.addLink(action.link);
+        return newState;
+    },
+
     "ADD_PARAMETER_DESC": (state, action) => {
         let newState = state.clone();
         newState.setParameterDesc(action.parameter, action.desc);

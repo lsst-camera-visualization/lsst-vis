@@ -24,7 +24,7 @@ export class Terminal {
     loadFromState = state => {
         this._copy(this, state);
         this.history = state.history.filter( (msg) => {
-            return msg.type!="ERROR" && msg.type!="WARN" && msg.type!="INFO";
+            return msg.type!="ERROR" && msg.type!="WARN" && msg.type!="INFO" && msg.type!="LINK";
         });
         this.index = this.history.length;
         return this;
@@ -64,29 +64,34 @@ export class Terminal {
     addEntry = entry => {
         const last = this.findLastMessage(this.history.length - 1);
         if (this.history.length === 0 || (last && entry !== last.msg))
-            this.history.push({ msg: entry, type: "COMMAND" });
+            this.history.push({msg: entry, type: "COMMAND"});
 
         this.trimHistory();
     }
 
     // Adds a new error message to the history
     addError = error => {
-        this.history.push({ msg: error, type: "ERROR" });
+        this.history.push({msg: error, type: "ERROR"});
 
         this.trimHistory();
     }
 
     // Adds a warning message to the history
     addWarn = warnMsg => {
-        this.history.push({ msg: warnMsg, type: "WARN" });
+        this.history.push({msg: warnMsg, type: "WARN"});
 
         this.trimHistory();
     }
 
     // Adds relavent information to the history
     addInfo = infoMsg => {
-        this.history.push({ msg: infoMsg, type: "INFO" });
+        this.history.push({msg: infoMsg, type: "INFO"});
 
+        this.trimHistory();
+    }
+
+    addLink = linkMsg => {
+        this.history.push({msg: linkMsg, type: "LINK"});
         this.trimHistory();
     }
 

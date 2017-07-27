@@ -30,7 +30,11 @@
         "desc": "Calculates the pixel noise in a region"
     },
 
-
+    {
+        "commandName": "help",
+        "params": [],
+        "desc": "Show link to the usage of commands"
+    },
 
     {
         "commandName": "set_default",

@@ -34,7 +34,7 @@ export default class TerminalInput extends React.Component {
             <input
                 className="term-input-input"
                 ref={ this.props.setInput }
-                placeholder="Enter command here"
+                placeholder="Enter command here (type `help` for available commands)"
                 onKeyDown={this.handleKeyDown}
                 onKeyUp={this.props.onKeyUp}
                 onChange={this.props.onChange}

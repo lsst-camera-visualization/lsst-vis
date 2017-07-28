@@ -63,31 +63,38 @@ const getSettingsFromLocal = () => {
     return savedSettings;
 }
 
-JSUtil.LoadFileContents("settings.ini")
-    .then(data => {
-        const entries = data.match(/[^\r\n]+/g);
-        let settings = { _defaults: {} };
+const loadSettings = data => {
+    const entries = data.match(/[^\r\n]+/g);
 
-        const localSavedSettings = getSettingsFromLocal();
-        entries.map(e => {
-            const stored = localSavedSettings[key];
-            if (stored)
-                settings[key] = stored;
+    const localSavedSettings = getSettingsFromLocal();
+    entries.map(e => {
+        const stored = localSavedSettings[key];
+        if (stored){
+            settings[key] = stored;
+        }
 
-            let key, value;
-            [key, value] = e.split(/=(.+)/);
+        let key, value;
+        [key, value] = e.split(/=(.+)/);
+        if (key && value){
             settings[key] = value;
-            settings._defaults[key] = value;
-        });
-
-        store.dispatch(extendSettings(settings));
-    })
-    .catch(error => {
-        const localSavedSettings = getSettingsFromLocal();
-        store.dispatch(extendSettings(localSavedSettings));
-        console.error("Warning: Cannot get settings.ini file", error);
+        }
     });
 
+    store.dispatch(extendSettings(settings));
+};
+
+const loadSettingsOnError = error => {
+    const localSavedSettings = getSettingsFromLocal();
+    store.dispatch(extendSettings(localSavedSettings));
+    console.error("Warning: Cannot get settings.ini file", error);
+}
+
+JSUtil.LoadFileContents("settings.mine.ini")
+.then(loadSettings)
+.catch(JSUtil.LoadFileContents("settings.ini")
+        .then(loadSettings)
+        .catch(loadSettingsOnError)
+);
 
 // For debugging
 if (process.env.NODE_ENV !== "production")

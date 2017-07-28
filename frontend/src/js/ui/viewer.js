@@ -9,7 +9,7 @@ import { Rectangle } from "../util/region";
 import store from "../store";
 
 // CCD level (two images with and without overscan)
-const imageLinkFromSettings = () => {
+const defaultImage = () => {
     let image = store.getState().settings.defaultImage;
     // If default image is not set in settings, make a default for it.
     if (image && (image == "")){
@@ -25,10 +25,8 @@ const imageLinkFromSettings = () => {
     return image;
 };
 
-// const defaultImage = imageLinkFromSettings();
-
 export class Viewer {
-    constructor(id, image = imageLinkFromSettings()) {
+    constructor(id, image = defaultImage()) {
         this.id = id;
         this.image = image;
         this.layers = [];

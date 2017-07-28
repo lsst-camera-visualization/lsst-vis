@@ -70,14 +70,14 @@ JSUtil.LoadFileContents("settings.ini")
 
         const localSavedSettings = getSettingsFromLocal();
         entries.map(e => {
-            let key, value;
-            [key, value] = e.split(/=/);
-            settings[key] = value;
-            settings._defaults[key] = value;
-
             const stored = localSavedSettings[key];
             if (stored)
                 settings[key] = stored;
+
+            let key, value;
+            [key, value] = e.split(/=(.+)/);
+            settings[key] = value;
+            settings._defaults[key] = value;
         });
 
         store.dispatch(extendSettings(settings));

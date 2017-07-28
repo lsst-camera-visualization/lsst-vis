@@ -116,7 +116,7 @@ export class UVController {
     }
 
     query = () => {
-        const imageRepo = store.getState().settings.imagerepo;
+        const imageRepo = store.getState().settings.imageRepo;
         if (imageRepo) {
             JSUtil.LoadJSONFromPath(imageRepo)
                 .then(data => {

@@ -50,34 +50,43 @@ const loadParameters = () => {
 
 loadCommands()
     .then(loadParameters)
-    .catch(error => console.log(error));
+    .catch(error => console.error("Error loading commands", error));
 
 // Load the default settings
+
+const getSettingsFromLocal = () => {
+    let savedSettings = localStorage.getItem("settings");
+    if (savedSettings)
+        savedSettings = JSON.parse(savedSettings);
+    else
+        savedSettings = {};
+    return savedSettings;
+}
+
 JSUtil.LoadFileContents("settings.ini")
     .then(data => {
         const entries = data.match(/[^\r\n]+/g);
         let settings = { _defaults: {} };
 
-        let savedSettings = localStorage.getItem("settings");
-        if (savedSettings)
-            savedSettings = JSON.parse(savedSettings);
-        else
-            savedSettings = {};
-
+        const localSavedSettings = getSettingsFromLocal();
         entries.map(e => {
             let key, value;
             [key, value] = e.split(/=/);
             settings[key] = value;
             settings._defaults[key] = value;
 
-            const stored = savedSettings[key];
+            const stored = localSavedSettings[key];
             if (stored)
                 settings[key] = stored;
         });
 
         store.dispatch(extendSettings(settings));
     })
-    .catch(error => {console.error("Warning: Cannot get settings.ini file", error);});
+    .catch(error => {
+        const localSavedSettings = getSettingsFromLocal();
+        store.dispatch(extendSettings(localSavedSettings));
+        console.error("Warning: Cannot get settings.ini file", error);
+    });
 
 
 // For debugging

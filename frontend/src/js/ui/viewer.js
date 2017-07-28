@@ -123,7 +123,7 @@ export class UVController {
                     const imageURL = data.uri;
                     store.dispatch(ViewerActions.loadImage(this._viewer, imageURL));
                 })
-                .catch(error => null);
+                .catch(error => console.error("Cannot load image requested", error));
         }
     }
 

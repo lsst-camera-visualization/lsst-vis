@@ -77,7 +77,7 @@ JSUtil.LoadFileContents("settings.ini")
 
         store.dispatch(extendSettings(settings));
     })
-    .catch(error => null);
+    .catch(error => {console.error("Warning: Cannot get settings.ini file", error);});
 
 
 // For debugging

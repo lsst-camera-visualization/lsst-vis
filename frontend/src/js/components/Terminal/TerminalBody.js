@@ -17,7 +17,7 @@ export default class TerminalBody extends React.Component {
             }
 
             case "INFO": {
-                return <p className="term-body-info" key={i}>{"Info: " + entry.msg}</p>;
+                return <div className="term-body-info" key={i}>{entry.msg}</div>;
             }
             case "LINK": {
                 return <a className="term-body-link" key={i} href={entry.msg.link} target="_blank">{entry.msg.displayText}</a>;

@@ -65,6 +65,7 @@ const getSettingsFromLocal = () => {
 
 const loadSettings = data => {
     const entries = data.match(/[^\r\n]+/g);
+    let settings = {};
 
     const localSavedSettings = getSettingsFromLocal();
     entries.map(e => {
@@ -89,12 +90,15 @@ const loadSettingsOnError = error => {
     console.error("Warning: Cannot get settings.ini file", error);
 }
 
+const loadMineSettingsOnError = error => {
+    console.error("Warning: cannot load settings.mine.ini (will use the default settings.ini instead)");
+    JSUtil.LoadFileContents("settings.ini")
+            .then(loadSettings)
+            .catch(loadSettingsOnError);
+}
 JSUtil.LoadFileContents("settings.mine.ini")
 .then(loadSettings)
-.catch(JSUtil.LoadFileContents("settings.ini")
-        .then(loadSettings)
-        .catch(loadSettingsOnError)
-);
+.catch(loadMineSettingsOnError);
 
 // For debugging
 if (process.env.NODE_ENV !== "production")

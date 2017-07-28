@@ -9,14 +9,24 @@ import { Rectangle } from "../util/region";
 import store from "../store";
 
 // CCD level (two images with and without overscan)
-const defaultImage = "https://www.dropbox.com/s/3n571i6ak648gmy/default-untrimmed.fits?dl=1"
-// const defaultImage = "https://www.dropbox.com/s/e7g1rynikrqbxlc/default-trimmed.fits?dl=1"
+const defaultImage = () => {
+    let image = store.getState().settings.defaultImage;
+    // If default image is not set in settings, make a default for it.
+    if (image && (image == "")){
+        const ccdWithOverscan = "https://www.dropbox.com/s/3n571i6ak648gmy/default-untrimmed.fits?dl=1";
 
-// Raft level
-// const defaultImage = "https://www.dropbox.com/s/k18d9x2hr2otj2y/20170304160038.fits?dl=1"
+        const ccdWithoutOverscan = "https://www.dropbox.com/s/e7g1rynikrqbxlc/default-trimmed.fits?dl=1";
+
+        // Raft level is not recommended since it takes long to download.
+        const raftWithoutOverscan = "https://www.dropbox.com/s/k18d9x2hr2otj2y/20170304160038.fits?dl=1";
+
+        image = ccdWithoutOverscan;
+    }
+    return image;
+};
 
 export class Viewer {
-    constructor(id, image = defaultImage) {
+    constructor(id, image = defaultImage()) {
         this.id = id;
         this.image = image;
         this.layers = [];
@@ -116,14 +126,14 @@ export class UVController {
     }
 
     query = () => {
-        const imageRepo = store.getState().settings.imagerepo;
+        const imageRepo = store.getState().settings.imageRepo;
         if (imageRepo) {
             JSUtil.LoadJSONFromPath(imageRepo)
                 .then(data => {
                     const imageURL = data.uri;
                     store.dispatch(ViewerActions.loadImage(this._viewer, imageURL));
                 })
-                .catch(error => null);
+                .catch(error => console.error("Cannot load image requested", error));
         }
     }
 

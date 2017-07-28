@@ -50,35 +50,55 @@ const loadParameters = () => {
 
 loadCommands()
     .then(loadParameters)
-    .catch(error => console.log(error));
+    .catch(error => console.error("Error loading commands", error));
 
 // Load the default settings
-JSUtil.LoadFileContents("settings.ini")
-    .then(data => {
-        const entries = data.match(/[^\r\n]+/g);
-        let settings = { _defaults: {} };
 
-        let savedSettings = localStorage.getItem("settings");
-        if (savedSettings)
-            savedSettings = JSON.parse(savedSettings);
-        else
-            savedSettings = {};
+const getSettingsFromLocal = () => {
+    let savedSettings = localStorage.getItem("settings");
+    if (savedSettings)
+        savedSettings = JSON.parse(savedSettings);
+    else
+        savedSettings = {};
+    return savedSettings;
+}
 
-        entries.map(e => {
-            let key, value;
-            [key, value] = e.split(/=/);
+const loadSettings = data => {
+    const entries = data.match(/[^\r\n]+/g);
+    let settings = {};
+
+    const localSavedSettings = getSettingsFromLocal();
+    entries.map(e => {
+        const stored = localSavedSettings[key];
+        if (stored){
+            settings[key] = stored;
+        }
+
+        let key, value;
+        [key, value] = e.split(/=(.+)/);
+        if (key && value){
             settings[key] = value;
-            settings._defaults[key] = value;
+        }
+    });
 
-            const stored = savedSettings[key];
-            if (stored)
-                settings[key] = stored;
-        });
+    store.dispatch(extendSettings(settings));
+};
 
-        store.dispatch(extendSettings(settings));
-    })
-    .catch(error => null);
+const loadSettingsOnError = error => {
+    const localSavedSettings = getSettingsFromLocal();
+    store.dispatch(extendSettings(localSavedSettings));
+    console.error("Warning: Cannot get settings.ini file", error);
+}
 
+const loadMineSettingsOnError = error => {
+    console.error("Warning: cannot load settings.mine.ini (will use the default settings.ini instead)");
+    JSUtil.LoadFileContents("settings.ini")
+            .then(loadSettings)
+            .catch(loadSettingsOnError);
+}
+JSUtil.LoadFileContents("settings.mine.ini")
+.then(loadSettings)
+.catch(loadMineSettingsOnError);
 
 // For debugging
 if (process.env.NODE_ENV !== "production")

@@ -60,3 +60,4 @@ typings/
 # custom file
 src/client.min.js
 src/version.html
+src/settings.mine.ini

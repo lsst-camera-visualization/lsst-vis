@@ -96,6 +96,7 @@
 .term-body-info {
     font-size: 110%;
     color: #778899;
+    word-wrap: normal;
 }
 
 .term-body-link:link {

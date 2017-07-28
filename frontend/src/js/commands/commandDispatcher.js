@@ -92,4 +92,8 @@ class CommandDispatcher {
     }
 }
 
+export const availableCommands = () => {
+    return Object.keys(commands);
+}
+
 export default new CommandDispatcher();

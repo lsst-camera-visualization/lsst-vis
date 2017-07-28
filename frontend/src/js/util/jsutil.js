@@ -118,6 +118,8 @@ export const JSUtil = {
                 }
             };
             xhr.open("GET", path, true);
+            // Assume this function is always used to load plain text settings.
+            xhr.overrideMimeType("text/plain");
             xhr.send();
         });
     },
@@ -135,6 +137,7 @@ export const JSUtil = {
                 }
             };
             xhr.open("GET", path, true);
+            xhr.overrideMimeType("application/json");
             xhr.send();
         });
     },

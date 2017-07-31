@@ -20,7 +20,7 @@ export const AddExtension = (id, title, type, f) => {
 
 // Clears a region layer on a viewer
 export const ClearLayer = (plotID, layer) => {
-    firefly.action.dispatchDeleteRegionLayer(layer, plotID);
+    firefly.action.dispatchDeleteRegionLayer(plotID + layer, plotID);
 }
 
 // Draws regions on a viewer

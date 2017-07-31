@@ -58,7 +58,7 @@ const commands = {
 
 
 const initialState = {
-    "ffbox": new Box("ffbox")
+    // "ffbox": new Box("ffbox")
 }
 
 const boxReducer = (state = initialState, action) => {

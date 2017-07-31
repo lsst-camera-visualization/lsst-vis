@@ -36,7 +36,10 @@ export const DrawRegions = (plotID, layer, regions, options = {}) => {
 
     // Creates the DS9 regions
     const ds9regions = regions.map( r => prefix + r + optString );
-    firefly.action.dispatchCreateRegionLayer(layer, layer, null, ds9regions, plotID);
+    console.log("ds9regions: " + ds9regions);
+    console.log("layer: " + layer);
+    console.log("plotID: " + plotID);
+    firefly.action.dispatchCreateRegionLayer(plotID+layer, plotID+layer, null, ds9regions, plotID);
 }
 
 // Draws a firefly histogram

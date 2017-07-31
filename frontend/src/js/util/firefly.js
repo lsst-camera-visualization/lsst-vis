@@ -20,7 +20,8 @@ export const AddExtension = (id, title, type, f) => {
 
 // Clears a region layer on a viewer
 export const ClearLayer = (plotID, layer) => {
-    firefly.action.dispatchDeleteRegionLayer(plotID + layer, plotID);
+    const layerID = plotID + "-" + layer;
+    firefly.action.dispatchDeleteRegionLayer(layerID, plotID);
 }
 
 // Draws regions on a viewer
@@ -36,10 +37,8 @@ export const DrawRegions = (plotID, layer, regions, options = {}) => {
 
     // Creates the DS9 regions
     const ds9regions = regions.map( r => prefix + r + optString );
-    console.log("ds9regions: " + ds9regions);
-    console.log("layer: " + layer);
-    console.log("plotID: " + plotID);
-    firefly.action.dispatchCreateRegionLayer(plotID+layer, plotID+layer, null, ds9regions, plotID);
+    const layerID = plotID + "-" + layer;
+    firefly.action.dispatchCreateRegionLayer(layerID, layerID, null, ds9regions, plotID);
 }
 
 // Draws a firefly histogram

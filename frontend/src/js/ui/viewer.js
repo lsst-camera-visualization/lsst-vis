@@ -33,11 +33,11 @@ export class Viewer {
 
         this.cursorPoint = { x: 0, y: 0 };
 
-        loadBoundary(this);
-
         AddActionListener("READOUT_DATA", this.onCursorMove);
 
         AddExtension(id, "Choose command", "AREA_SELECT", this.onChooseCommand);
+
+        loadBoundary(this);
     }
 
     removeRegionLayer = layer => {

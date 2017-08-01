@@ -1,10 +1,14 @@
-import { JSUtil } from "./jsutil";
+import {JSUtil} from "./jsutil.js";
+import {createBox} from "../commands/box.commands.js";
+import store from "../store.js";
 
 // Validates parameters based on their value
 const parameterValidators = {
     box_id: (box, state) => {
-        if (!(box in state.boxes))
-            return `Invalid box ID: ${box}`;
+        if (!(box in state.boxes)){
+            const cbParam = {box_id: box};
+            createBox(cbParam);
+        }
         return null;
     },
 

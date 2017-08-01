@@ -7,7 +7,7 @@ import { addErrorToHistory } from "../actions/terminal.actions";
 
 import store from "../store";
 
-const layerName = "BOUNDARY";
+const LAYERNAME = "BOUNDARY";
 
 // Parse CCD format
 // data: An array of objects containing the boundary info
@@ -20,34 +20,6 @@ const parseCCD = data => {
 
         return new HardwareRegions.CCD(name, regions);
     });
-}
-
-// Displays the boundary regions on a viewer
-export const showBoundary = (params) => {
-    if (!validateBoundaryCommandInput(params)){
-        return;
-    }
-    const viewers = store.getState().viewers;
-    const viewer = viewers[params.viewer_id];
-    store.dispatch(clearLayer(viewer.id, layerName));
-    const regions = viewer.boundaryRegionsDS9;
-    const opts = {
-        color: "red",
-        width: 1
-    };
-    // Draw the boundary regions
-    store.dispatch(drawDS9Regions(viewer.id, layerName, regions, opts));
-}
-
-export const hideBoundary = (params) => {
-    if (!validateBoundaryCommandInput(params)){
-        return;
-    }
-    const viewers = store.getState().viewers;
-    const viewer = viewers[params.viewer_id];
-    checkBoundary(viewer);
-
-    store.dispatch(clearLayer(viewer.id, layerName));
 }
 
 // Parse CCD with overscan format
@@ -66,6 +38,36 @@ const parseCCDOverscan = data => {
     });
 }
 
+// Displays the boundary regions on a viewer
+export const showBoundary = (params) => {
+    if (!validateBoundaryCommandInput(params)){
+        return;
+    }
+    const viewers = store.getState().viewers;
+    const viewer = viewers[params.viewer_id];
+
+    checkBoundary(viewer);
+    store.dispatch(clearLayer(viewer.id, LAYERNAME));
+    const regions = viewer.boundaryRegionsDS9;
+    const opts = {
+        color: "red",
+        width: 1
+    };
+    // Draw the boundary regions
+    store.dispatch(drawDS9Regions(viewer.id, LAYERNAME, regions, opts));
+}
+
+export const hideBoundary = (params) => {
+    if (!validateBoundaryCommandInput(params)){
+        return;
+    }
+    const viewers = store.getState().viewers;
+    const viewer = viewers[params.viewer_id];
+    checkBoundary(viewer);
+
+    store.dispatch(clearLayer(viewer.id, LAYERNAME));
+}
+
 const checkBoundary = (viewer) => {
     if (!viewer.boundaryRegions || !viewer.boundaryRegionsDS9) {
         const err = "Boundary not fetched for this image. Try to fetch now."
@@ -82,6 +84,7 @@ const validateBoundaryCommandInput = (params) => {
     }
     return true;
 }
+
 // Loads the hardware region boundaries.
 // Because this is only called internally, it accepts the viewer to work on,
 //      rather than a list of parameters enter by the user.
@@ -100,10 +103,11 @@ export const loadBoundary = (viewer) => {
                 color: "red",
                 width: 1
             };
-            store.dispatch(drawDS9Regions(viewer.id, layerName, viewer.boundaryRegionsDS9, opts));
+            store.dispatch(clearLayer(viewer.id, LAYERNAME));
+            store.dispatch(drawDS9Regions(viewer.id, LAYERNAME, viewer.boundaryRegionsDS9, opts));
         }
         else {
-            console.log("ERROR: INVALID BOUNDARY REGION TYPE");
+            console.error("ERROR: INVALID BOUNDARY REGION TYPE");
         }
     }
 

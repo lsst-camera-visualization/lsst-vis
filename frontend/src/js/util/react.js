@@ -87,9 +87,11 @@ export const ReactUtil = {
         render() {
             return (
                 <div className={this.props.className}>
-                    <img
+                    <a
                         className="toolbar-close-button"
-                        src="./images/close_40x40.png"
+                        onClick={this.props.onClose} />
+                    <a
+                        className="toolbar-minimize-button"
                         onClick={this.props.onClose} />
                     {this.props.children}
                 </div>

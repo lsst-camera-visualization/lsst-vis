@@ -6,7 +6,7 @@ body {
     display: block;
     width: 1000px;
     height: 750px;
-    
+
     background: #494949;
 }
 
@@ -54,11 +54,44 @@ body {
     background-color: #FFF;
 }
 
+a.toolbar-close-button{
+    float:right;
+    margin-top:3px;
+    margin-right:3px;
+    cursor:pointer;
+    color: #fff;
+    border: 1px solid #AEAEAE;
+    border-radius: 30px;
+    background: #605F61;
+    font-size: 31px;
+    font-weight: bold;
+    display: inline-block;
+    line-height: 0px;
+    padding: 11px 3px;
+}
 
+.toolbar-close-button:before {
+    content: "×";
 
-.toolbar-close-button {
-    color: #000;
-    position: absolute;
-    right: 3px;
-    top: 3px;
+}
+
+a.toolbar-minimize-button{
+    float:right;
+    margin-top:3px;
+    margin-right:3px;
+    cursor:pointer;
+    color: #fff;
+    border: 1px solid #AEAEAE;
+    border-radius: 30px;
+    background: #605F61;
+    font-size: 31px;
+    font-weight: bold;
+    display: inline-block;
+    line-height: 0px;
+    padding: 11px 6px;
+}
+
+.toolbar-minimize-button:before {
+    content: "-";
+
 }

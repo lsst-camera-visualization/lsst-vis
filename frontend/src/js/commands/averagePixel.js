@@ -24,7 +24,7 @@ export default (params) => {
 
     const onSuccess = data => {
         // Reset the viewer regions
-        const regionLayer = "AVERAGE_PIXEL";
+        const regionLayer = params.box_id + "-" + "AVERAGE_PIXEL";
         store.dispatch(clearLayer(params.viewer_id, regionLayer));
         const regionOpts = {
             color: "blue"

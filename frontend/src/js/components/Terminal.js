@@ -1,6 +1,7 @@
 import React from "react";
-
+import Draggable from 'react-draggable';
 import Resizable from "react-resizable-box";
+
 import TerminalHelp from "./Terminal/TerminalHelp";
 import TerminalBody from "./Terminal/TerminalBody";
 import TerminalInput from "./Terminal/TerminalInput";
@@ -147,27 +148,29 @@ export default class Terminal extends React.Component {
         };
 
         return (
-            <div onClick={this.handleClick}>
-                <Resizable
-                    className="term-ctr"
-                    width={this.props.width}
-                    height={this.props.height} >
-                        <TerminalHelp
-                            commands={this.props.commands}
-                            terminal={this.props.terminal}
-                            onHighlightParameter={this.handleHighlightParameter}
-                            input={this.state.input}
-                            caretPos={this.state.caretPos} />
-                        <TerminalBody terminal={this.props.terminal}/>
-                        <TerminalInput
-                            onChange={this.handleChange}
-                            onKeyDown={this.handleKeyDown}
-                            onKeyUp={this.handleKeyUp}
-                            onEnter={this.handleEnter}
-                            onTab={this.handleTab}
-                            setInput={this.setInput} />
-                </Resizable>
-            </div>
+            <Draggable>
+                <div onClick={this.handleClick}>
+                    <Resizable
+                        className="term-ctr"
+                        width={this.props.width}
+                        height={this.props.height} >
+                            <TerminalHelp
+                                commands={this.props.commands}
+                                terminal={this.props.terminal}
+                                onHighlightParameter={this.handleHighlightParameter}
+                                input={this.state.input}
+                                caretPos={this.state.caretPos} />
+                            <TerminalBody terminal={this.props.terminal}/>
+                            <TerminalInput
+                                onChange={this.handleChange}
+                                onKeyDown={this.handleKeyDown}
+                                onKeyUp={this.handleKeyUp}
+                                onEnter={this.handleEnter}
+                                onTab={this.handleTab}
+                                setInput={this.setInput} />
+                    </Resizable>
+                </div>
+            </Draggable>
         );
     }
 }

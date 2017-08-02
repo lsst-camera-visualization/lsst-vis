@@ -1,5 +1,6 @@
 .histo-ctr {
-    position: absolute;
+    position: relative;
+    display: inline-block;
     left: 500px;
     top: 50px;
 

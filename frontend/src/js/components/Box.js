@@ -11,6 +11,10 @@ export default class Box extends React.Component {
         commandDispatcher.dispatch("delete_box", { box_id: this.props.id });
     }
 
+    handleMinimize = () => {
+        commandDispatcher.dispatch("hide_box", {box_id: this.props.id});
+    }
+
     render() {
         const id = this.props.id;
         const ctrClassName = (this.props.boxes[id].bMini) ? "box-ctr-mini" : "";
@@ -20,7 +24,8 @@ export default class Box extends React.Component {
                 onStart={this.handleStart} >
                 <div className={"box-ctr " + ctrClassName} >
                     <ReactUtil.Toolbar
-                        onClose={this.handleClose}>
+                        onClose={this.handleClose}
+                        onMinimize={this.handleMinimize}>
                         <p className="box-title">{id}</p>
                         <BoxBody
                             text={this.props.boxes[id].text}

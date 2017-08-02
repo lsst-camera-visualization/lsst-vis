@@ -92,7 +92,7 @@ export const ReactUtil = {
                         onClick={this.props.onClose} />
                     <a
                         className="toolbar-minimize-button"
-                        onClick={this.props.onClose} />
+                        onClick={this.props.onMinimize} />
                     {this.props.children}
                 </div>
             );

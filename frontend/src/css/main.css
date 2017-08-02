@@ -88,7 +88,7 @@ a.toolbar-minimize-button{
     font-weight: bold;
     display: inline-block;
     line-height: 0px;
-    padding: 11px 6px;
+    padding: 9px 6px 13px 6px;
 }
 
 .toolbar-minimize-button:before {

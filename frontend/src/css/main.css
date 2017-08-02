@@ -56,7 +56,7 @@ body {
 
 a.toolbar-close-button{
     float:right;
-    margin-top:3px;
+    margin-top:0px;
     margin-right:3px;
     cursor:pointer;
     color: #fff;
@@ -76,7 +76,7 @@ a.toolbar-close-button{
 
 a.toolbar-minimize-button{
     float:right;
-    margin-top:3px;
+    margin-top:0px;
     margin-right:3px;
     cursor:pointer;
     color: #fff;
@@ -96,7 +96,7 @@ a.toolbar-minimize-button{
 
 a.toolbar-maxmize-button{
     float:right;
-    margin-top:3px;
+    margin-top:0px;
     margin-right:3px;
     cursor:pointer;
     color: #fff;

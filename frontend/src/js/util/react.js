@@ -85,17 +85,30 @@ export const ReactUtil = {
     //      onClose : Function - The handler function for closing this element
     Toolbar: class extends React.Component {
         render() {
-            return (
-                <div className={this.props.className}>
-                    <a
-                        className="toolbar-close-button"
-                        onClick={this.props.onClose} />
-                    <a
-                        className="toolbar-minimize-button"
-                        onClick={this.props.onMinimize} />
-                    {this.props.children}
-                </div>
-            );
+            if (this.props.hasOwnProperty("isMini")){
+                const clickFnMinMax = (this.props.isMini) ? this.props.onMaximize : this.props.onMinimize;
+                const classNameMinMax = (this.props.isMini) ? "toolbar-maxmize-button" : "toolbar-minimize-button";
+                return (
+                    <div className={this.props.className}>
+                        <a
+                            className="toolbar-close-button"
+                            onClick={this.props.onClose} />
+                        <a
+                            className={classNameMinMax}
+                            onClick={clickFnMinMax} />
+                        {this.props.children}
+                    </div>
+                );
+            } else {
+                return (
+                    <div className={this.props.className}>
+                        <a
+                            className="toolbar-close-button"
+                            onClick={this.props.onClose} />
+                        {this.props.children}
+                    </div>
+                );
+            }
         }
     },
 }

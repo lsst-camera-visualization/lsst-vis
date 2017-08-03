@@ -85,7 +85,6 @@ export const ReactUtil = {
     //      onClose : Function - The handler function for closing this element
     Toolbar: class extends React.Component {
         render() {
-            console.log(this.props);
             const iconStyle = {
                 display: "inline-block",
                 float:"right",
@@ -119,9 +118,7 @@ export const ReactUtil = {
             } else {
                 return (
                     <div className={this.props.className}>
-                        <a
-                            className="toolbar-close-button"
-                            onClick={this.props.onClose} />
+                        {closeButton}
                         {this.props.children}
                     </div>
                 );

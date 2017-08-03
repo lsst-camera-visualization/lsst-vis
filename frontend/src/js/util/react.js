@@ -90,7 +90,8 @@ export const ReactUtil = {
                 float:"right",
                 marginTop:"-2px",
                 marginRight:"0px",
-                cursor:"pointer"
+                cursor:"pointer",
+                userSelect: "none"
             };
             const iconClass = "material-icons md-36 md-light";
             const closeButton = (<i className={iconClass}

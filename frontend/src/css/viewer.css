@@ -1,6 +1,6 @@
 .viewer-ctr {
     display: inline-block;
-    min-width: 650px;
+    min-width: 850px;
     overflow: hidden;
 
     padding: 5px 10px;
@@ -27,7 +27,7 @@
     resize: both;
     overflow: auto;
     width: 100%;
-    height: 610px;
+    height: 620px;
 }
 
 

@@ -88,11 +88,11 @@ export const ReactUtil = {
             const iconStyle = {
                 display: "inline-block",
                 float:"right",
-                marginTop:"0px",
+                marginTop:"-2px",
                 marginRight:"0px",
                 cursor:"pointer"
             };
-            const iconClass = "material-icons md-24 md-light";
+            const iconClass = "material-icons md-36 md-light";
             const closeButton = (<i className={iconClass}
                                     style={iconStyle}
                                     onClick={this.props.onClose}>

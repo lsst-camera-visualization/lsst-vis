@@ -7,6 +7,7 @@ import TerminalBody from "./Terminal/TerminalBody";
 import TerminalInput from "./Terminal/TerminalInput";
 import { JSUtil, DOMUtil } from "../util/jsutil";
 import { Util } from "../util/util";
+import { ReactUtil } from "../util/react";
 import commandDispatcher from "../commands/commandDispatcher";
 
 export default class Terminal extends React.Component {
@@ -144,6 +145,12 @@ export default class Terminal extends React.Component {
         }
     }
 
+    handleMinimize = () => {
+        this.state.isMini = !this.state.isMini;
+        console.log(this);
+        this.state.resizable.updateSize({ width: 200, height: 300 });
+    }
+
     render() {
         const style = {
             width: this.props.width,
@@ -153,14 +160,16 @@ export default class Terminal extends React.Component {
         const getWidthHeight = (event, direction, refToElement, delta) => {
             this.state.height = refToElement.clientHeight;
             this.state.width = refToElement.clientWidth
-            console.log(this);
         }
 
         return (
             <Draggable>
+            <div>
+                <ReactUtil.Toolbar onClose={this.handleMinimize}>
                 <div onClick={this.handleClick}>
                     <Resizable
                         className="term-ctr"
+                        ref={r => {this.state.resizable=r;}}
                         width={this.props.width}
                         height={this.props.height}
                         onResizeStop={getWidthHeight}>
@@ -179,6 +188,8 @@ export default class Terminal extends React.Component {
                                 onTab={this.handleTab}
                                 setInput={this.setInput} />
                     </Resizable>
+                </div>
+                </ReactUtil.Toolbar>
                 </div>
             </Draggable>
         );

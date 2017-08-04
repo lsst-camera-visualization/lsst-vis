@@ -87,7 +87,7 @@ body {
     transition: opacity 150ms ease;
 }
 
-.material-icons.md-light:hover {
+.material-icons:hover {
     opacity: 0.3;
     filter: alpha(opacity=30);
     zoom: 1;

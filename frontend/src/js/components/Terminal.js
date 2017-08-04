@@ -10,10 +10,13 @@ import { Util } from "../util/util";
 import commandDispatcher from "../commands/commandDispatcher";
 
 export default class Terminal extends React.Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = {
-            input: ""
+            input: "",
+            isMini: false,
+            height: props.height,
+            width: props.width
         };
     }
 
@@ -147,13 +150,20 @@ export default class Terminal extends React.Component {
             height: this.props.height
         };
 
+        const getWidthHeight = (event, direction, refToElement, delta) => {
+            this.state.height = refToElement.clientHeight;
+            this.state.width = refToElement.clientWidth
+            console.log(this);
+        }
+
         return (
             <Draggable>
                 <div onClick={this.handleClick}>
                     <Resizable
                         className="term-ctr"
                         width={this.props.width}
-                        height={this.props.height} >
+                        height={this.props.height}
+                        onResizeStop={getWidthHeight}>
                             <TerminalHelp
                                 commands={this.props.commands}
                                 terminal={this.props.terminal}

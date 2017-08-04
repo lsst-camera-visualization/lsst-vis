@@ -93,7 +93,10 @@ export const ReactUtil = {
                 cursor:"pointer",
                 userSelect: "none"
             };
-            const iconClass = "material-icons md-36 md-light";
+            let iconClass = "material-icons md-36 md-light";
+            if (this.props.hasOwnProperty("isDarkBackground") && !this.props.isDarkBackground){
+                iconClass = "material-icons md-36 md-dark";
+            }
             const closeButton = (<i className={iconClass}
                                     style={iconStyle}
                                     onClick={this.props.onClose}>

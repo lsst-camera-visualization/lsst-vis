@@ -70,13 +70,13 @@
 
 
 .term-body-ctr {
-  width: 100%;
-  overflow: auto;
-  margin-bottom: 10px;
+    width: 100%;
+    overflow: auto;
+    margin-bottom: 10px;
 
-  -webkit-box-flex: 1;
-      -ms-flex-positive: 1;
-          flex-grow: 1;
+    -webkit-box-flex: 1;
+        -ms-flex-positive: 1;
+            flex-grow: 1;
 }
 
 .term-body-entry {
@@ -115,9 +115,9 @@
 }
 
 .term-input-input {
-  background-color: #1E1E1E;
-  color: #fff;
-  font-size: 110%;
-  width: 100%;
-  padding: 3px 0px;
+    background-color: #1E1E1E;
+    color: #fff;
+    font-size: 110%;
+    width: 100%;
+    padding: 3px 0px;
 }

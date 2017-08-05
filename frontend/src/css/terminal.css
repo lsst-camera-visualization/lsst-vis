@@ -121,3 +121,20 @@
     width: 100%;
     padding: 3px 0px;
 }
+
+.term-hover .material-icons {
+    display: inline-block;
+    float: right;
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    transition: all 300ms ease-in-out;
+    transform: translateY(100%);
+        -webkit-transform: translateY(100%);
+}
+
+.term-hover:hover .material-icons {
+    transition: all 300ms ease-in-out;
+    transform: translateY(0%);
+        -webkit-transform: translateY(0%);
+}

@@ -97,7 +97,7 @@ export const ReactUtil = {
             if (this.props.hasOwnProperty("isDarkBackground") && !this.props.isDarkBackground){
                 iconClass = "material-icons md-36 md-dark";
             }
-            const closeButton = (<i className={iconClass}
+            const iconClose = (<i className={iconClass}
                                     style={iconStyle}
                                     onClick={this.props.onClose}>
                                     close
@@ -114,7 +114,7 @@ export const ReactUtil = {
 
                 return (
                     <div className={this.props.className}>
-                        {closeButton}
+                        {iconClose}
                         {miniButton}
                         {this.props.children}
                     </div>
@@ -122,11 +122,31 @@ export const ReactUtil = {
             } else {
                 return (
                     <div className={this.props.className}>
-                        {closeButton}
+                        {iconClose}
                         {this.props.children}
                     </div>
                 );
             }
+        }
+    },
+
+    TermToolbar: class extends React.Component {
+        render() {
+            const iconClass = "material-icons md-36 md-light";
+            let icon = "expand_less";
+            if (!this.props.isMini){
+                icon = "expand_more";
+            }
+            const iconMinMax = (<i className={iconClass}
+                                    onClick={this.props.onClickMinMax}>
+                                    {icon}
+                                </i>);
+            return (
+                <div className={this.props.className}>
+                    {iconMinMax}
+                    {this.props.children}
+                </div>
+            );
         }
     },
 }

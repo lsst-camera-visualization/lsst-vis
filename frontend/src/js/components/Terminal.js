@@ -17,7 +17,10 @@ export default class Terminal extends React.Component {
             input: "",
             isMini: false,
             height: props.height,
-            width: props.width
+            width: props.width,
+            defaultWidth: props.width,
+            defaultHeight: props.height,
+            minHeight: 100
         };
     }
 
@@ -145,10 +148,10 @@ export default class Terminal extends React.Component {
         }
     }
 
-    handleMinimize = () => {
-        this.state.isMini = !this.state.isMini;
-        console.log(this);
-        this.state.resizable.updateSize({ width: 200, height: 300 });
+    handleMinMax = () => {
+        const termDim = this.state.isMini ? ({width: this.state.width, height: this.state.height}) : ({width: this.state.defaultWidth, height: this.state.minHeight});
+        this.state.resizable.updateSize(termDim);
+        this.setState({isMini: !this.state.isMini});
     }
 
     render() {
@@ -157,22 +160,26 @@ export default class Terminal extends React.Component {
             height: this.props.height
         };
 
-        const getWidthHeight = (event, direction, refToElement, delta) => {
+        const handleOnResize = (event, direction, refToElement, delta) => {
             this.state.height = refToElement.clientHeight;
-            this.state.width = refToElement.clientWidth
-        }
+            this.state.width = refToElement.clientWidth;
+            this.state.isMini = false;
+        };
 
         return (
             <Draggable>
-            <div>
-                <ReactUtil.Toolbar onClose={this.handleMinimize}>
+            <div className="term-hover">
+                <ReactUtil.TermToolbar className="term-toolbar"
+                    onClickMinMax={this.handleMinMax}
+                    isMini={this.state.isMini}>
+                </ReactUtil.TermToolbar>
                 <div onClick={this.handleClick}>
                     <Resizable
                         className="term-ctr"
                         ref={r => {this.state.resizable=r;}}
                         width={this.props.width}
                         height={this.props.height}
-                        onResizeStop={getWidthHeight}>
+                        onResizeStop={handleOnResize}>
                             <TerminalHelp
                                 commands={this.props.commands}
                                 terminal={this.props.terminal}
@@ -189,7 +196,6 @@ export default class Terminal extends React.Component {
                                 setInput={this.setInput} />
                     </Resizable>
                 </div>
-                </ReactUtil.Toolbar>
                 </div>
             </Draggable>
         );

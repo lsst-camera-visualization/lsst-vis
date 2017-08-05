@@ -14,7 +14,7 @@ export default class Viewer extends React.Component {
 
         this.state = {
             imageURL: null
-        }
+        };
     }
 
     // On click handler for executing command over selected region

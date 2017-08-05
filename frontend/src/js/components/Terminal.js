@@ -148,21 +148,26 @@ export default class Terminal extends React.Component {
     }
 
     handleMinMax = () => {
-        const termDim = this.state.isMini ? ({width: this.state.width, height: this.state.height}) : ({width: this.state.defaultWidth, height: this.state.minHeight});
+        const termDim = this.state.isMini
+            ? ({width: this.state.width, height: this.state.height})
+            : ({width: this.state.defaultWidth, height: this.state.minHeight});
         this.state.resizable.updateSize(termDim);
         this.setState({isMini: !this.state.isMini});
+    }
+
+    handleOnResize = (event, direction, refToElement, delta) => {
+        const updater = {
+            height: refToElement.clientHeight,
+            width: refToElement.clientWidth,
+            isMini: false
+        };
+        this.setState(updater);
     }
 
     render() {
         const style = {
             width: this.props.width,
             height: this.props.height
-        };
-
-        const handleOnResize = (event, direction, refToElement, delta) => {
-            this.state.height = refToElement.clientHeight;
-            this.state.width = refToElement.clientWidth;
-            this.state.isMini = false;
         };
 
         return (
@@ -178,7 +183,7 @@ export default class Terminal extends React.Component {
                         ref={r => {this.state.resizable=r;}}
                         width={this.props.width}
                         height={this.props.height}
-                        onResizeStop={handleOnResize}>
+                        onResizeStop={this.handleOnResize}>
                             <TerminalHelp
                                 commands={this.props.commands}
                                 terminal={this.props.terminal}
@@ -203,11 +208,8 @@ export default class Terminal extends React.Component {
 
 class TermToolbar extends React.Component {
     render() {
-        const iconClass = "material-icons md-36 md-light";
-        let icon = "expand_less";
-        if (!this.props.isMini){
-            icon = "expand_more";
-        }
+        const iconClass = "material-icons md-48 md-light";
+        const icon = (this.props.isMini) ?  "expand_less" : "expand_more";
         const iconMinMax = (<i className={iconClass}
                                 onClick={this.props.onClickMinMax}>
                                 {icon}

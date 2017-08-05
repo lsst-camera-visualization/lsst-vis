@@ -7,7 +7,6 @@ import TerminalBody from "./Terminal/TerminalBody";
 import TerminalInput from "./Terminal/TerminalInput";
 import { JSUtil, DOMUtil } from "../util/jsutil";
 import { Util } from "../util/util";
-import { ReactUtil } from "../util/react";
 import commandDispatcher from "../commands/commandDispatcher";
 
 export default class Terminal extends React.Component {
@@ -169,10 +168,10 @@ export default class Terminal extends React.Component {
         return (
             <Draggable>
             <div className="term-hover">
-                <ReactUtil.TermToolbar className="term-toolbar"
+                <TermToolbar className="term-toolbar"
                     onClickMinMax={this.handleMinMax}
                     isMini={this.state.isMini}>
-                </ReactUtil.TermToolbar>
+                </TermToolbar>
                 <div onClick={this.handleClick}>
                     <Resizable
                         className="term-ctr"
@@ -198,6 +197,26 @@ export default class Terminal extends React.Component {
                 </div>
                 </div>
             </Draggable>
+        );
+    }
+}
+
+class TermToolbar extends React.Component {
+    render() {
+        const iconClass = "material-icons md-36 md-light";
+        let icon = "expand_less";
+        if (!this.props.isMini){
+            icon = "expand_more";
+        }
+        const iconMinMax = (<i className={iconClass}
+                                onClick={this.props.onClickMinMax}>
+                                {icon}
+                            </i>);
+        return (
+            <div className={this.props.className}>
+                {iconMinMax}
+                {this.props.children}
+            </div>
         );
     }
 }

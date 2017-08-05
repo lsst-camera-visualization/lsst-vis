@@ -129,24 +129,4 @@ export const ReactUtil = {
             }
         }
     },
-
-    TermToolbar: class extends React.Component {
-        render() {
-            const iconClass = "material-icons md-36 md-light";
-            let icon = "expand_less";
-            if (!this.props.isMini){
-                icon = "expand_more";
-            }
-            const iconMinMax = (<i className={iconClass}
-                                    onClick={this.props.onClickMinMax}>
-                                    {icon}
-                                </i>);
-            return (
-                <div className={this.props.className}>
-                    {iconMinMax}
-                    {this.props.children}
-                </div>
-            );
-        }
-    },
 }

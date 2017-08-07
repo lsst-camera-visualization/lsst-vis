@@ -9,12 +9,18 @@ import { JSUtil, DOMUtil } from "../util/jsutil";
 import { Util } from "../util/util";
 import commandDispatcher from "../commands/commandDispatcher";
 
+import store from "../store.js";
+import {getSettingsFromLocal} from "../store.js";
+import { extendSettings } from "../actions/misc.actions.js";
+
 export default class Terminal extends React.Component {
     constructor(props) {
         super(props);
         this.fontSizeArrary = [
             "50%",
+            "67%",
             "75%",
+            "80%",
             "90%",
             "100%",
             "110%",
@@ -23,6 +29,13 @@ export default class Terminal extends React.Component {
             "175%",
             "200%"
         ];
+        const settings = getSettingsFromLocal();
+        let fontSize = "110%";
+        if (settings.hasOwnProperty("termFontSize") && this.fontSizeArrary.indexOf(settings.termFontSize)!=-1) {
+            fontSize = settings.termFontSize;
+        }
+        this.updateLocalFontSize(fontSize);
+        const idx = this.fontSizeArrary.indexOf(fontSize);
         this.state = {
             input: "",
             isMini: false,
@@ -32,7 +45,7 @@ export default class Terminal extends React.Component {
             defaultHeight: props.height,
             minHeight: 60,
             minWidth: 300,
-            fontSizeIdx: this.fontSizeArrary.indexOf("110%"),
+            fontSizeIdx: idx,
         };
     }
 
@@ -46,8 +59,6 @@ export default class Terminal extends React.Component {
         // Put focus on the input when we click anywhere on the terminal
         this.input.focus();
     }
-
-
 
     // Execute command handler
     handleEnter = input => {
@@ -195,6 +206,7 @@ export default class Terminal extends React.Component {
         let idx = this.state.fontSizeIdx;
         if ((idx + 1) < this.fontSizeArrary.length){
             idx++;
+            this.updateLocalFontSize(this.fontSizeArrary[idx]);
         }
         const updater = {
             fontSizeIdx: idx
@@ -206,11 +218,19 @@ export default class Terminal extends React.Component {
         let idx = this.state.fontSizeIdx;
         if (idx >= 1){
             idx--;
+            this.updateLocalFontSize(this.fontSizeArrary[idx]);
         }
         const updater = {
             fontSizeIdx: idx
         };
         this.setState(updater);
+    }
+
+    updateLocalFontSize = (fontSize) => {
+        const settings = {
+            termFontSize: fontSize
+        };
+        store.dispatch(extendSettings(settings));
     }
 
     render() {
@@ -224,6 +244,8 @@ export default class Terminal extends React.Component {
                     onClickReset={this.handleReset}
                     onClickIncreaseFont={this.handleIncreaseFontSize}
                     onClickDecreaseFont={this.handleDecreaseFontSize}
+                    fontSizeIdx={this.state.fontSizeIdx}
+                    fontSizeArraryLen={this.fontSizeArrary.length}
                     isMini={this.state.isMini}>
                 </TermToolbar>
                 <div onClick={this.handleClick}>
@@ -293,15 +315,18 @@ class TermToolbar extends React.Component {
             </i>
         );
 
+        const isIncreaseInactive = (this.props.fontSizeIdx+1 >= this.props.fontSizeArraryLen) ? " md-inactive" : "";
+
         const iconIncreaseFont = (
-            <i className={iconClass}
+            <i className={iconClass + isIncreaseInactive}
                 onClick={this.props.onClickIncreaseFont}>
                 add_circle_outline
             </i>
         );
 
+        const isDecreaseInactive = (this.props.fontSizeIdx <= 0) ? " md-inactive" : "";
         const iconDecreaseFont = (
-            <i className={iconClass}
+            <i className={iconClass + isDecreaseInactive}
                 onClick={this.props.onClickDecreaseFont}>
                 remove_circle_outline
             </i>

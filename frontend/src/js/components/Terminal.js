@@ -19,7 +19,8 @@ export default class Terminal extends React.Component {
             width: props.width,
             defaultWidth: props.width,
             defaultHeight: props.height,
-            minHeight: 100
+            minHeight: 60,
+            minWidth: 300
         };
     }
 
@@ -150,7 +151,7 @@ export default class Terminal extends React.Component {
     handleMinMax = () => {
         const termDim = this.state.isMini
             ? ({width: this.state.width, height: this.state.height})
-            : ({width: this.state.defaultWidth, height: this.state.minHeight});
+            : ({width: this.state.minWidth, height: this.state.minHeight});
         this.state.resizable.updateSize(termDim);
         this.setState({isMini: !this.state.isMini});
     }
@@ -164,17 +165,29 @@ export default class Terminal extends React.Component {
         this.setState(updater);
     }
 
-    render() {
-        const style = {
-            width: this.props.width,
-            height: this.props.height
+    handleReset = () => {
+        const updater = {
+            height: this.state.defaultHeight,
+            width: this.state.defaultWidth,
+            isMini: false
         };
+        const termDim = {
+            width: this.state.defaultWidth,
+            height: this.state.defaultHeight
+        };
+        this.state.resizable.updateSize(termDim);
+        this.setState(updater);
+    }
 
+    render() {
+        const styleFontSize = {
+            fontSize: "125%"
+        };
         return (
-            <Draggable>
             <div className="term-hover">
                 <TermToolbar className="term-toolbar"
                     onClickMinMax={this.handleMinMax}
+                    onClickReset={this.handleReset}
                     isMini={this.state.isMini}>
                 </TermToolbar>
                 <div onClick={this.handleClick}>
@@ -189,34 +202,83 @@ export default class Terminal extends React.Component {
                                 terminal={this.props.terminal}
                                 onHighlightParameter={this.handleHighlightParameter}
                                 input={this.state.input}
-                                caretPos={this.state.caretPos} />
-                            <TerminalBody terminal={this.props.terminal}/>
+                                caretPos={this.state.caretPos}
+                                isMini={this.state.isMini}
+                                style={styleFontSize}/>
+                            <TerminalBody
+                                terminal={this.props.terminal}
+                                isMini={this.state.isMini}
+                                style={styleFontSize}/>
                             <TerminalInput
                                 onChange={this.handleChange}
                                 onKeyDown={this.handleKeyDown}
                                 onKeyUp={this.handleKeyUp}
                                 onEnter={this.handleEnter}
                                 onTab={this.handleTab}
-                                setInput={this.setInput} />
+                                setInput={this.setInput}
+                                isMini={this.state.isMini}
+                                style={styleFontSize}/>
                     </Resizable>
                 </div>
                 </div>
-            </Draggable>
         );
     }
 }
 
 class TermToolbar extends React.Component {
     render() {
-        const iconClass = "material-icons md-48 md-light";
-        const icon = (this.props.isMini) ?  "expand_less" : "expand_more";
-        const iconMinMax = (<i className={iconClass}
-                                onClick={this.props.onClickMinMax}>
-                                {icon}
-                            </i>);
+        const iconClass = "material-icons md-36 md-light";
+        const iconMinMaxName = (this.props.isMini) ?  "expand_less" : "expand_more";
+        const iconMinMax = (
+            <i className={iconClass}
+                onClick={this.props.onClickMinMax}>
+                {iconMinMaxName}
+            </i>
+        );
+
+        const iconShowBoundary = (
+            <i className={iconClass}
+                onClick={this.props.onClickShowBoundary}>
+                grid_on
+            </i>
+        );
+
+        const iconHideBoundary = (
+            <i className={iconClass}
+                onClick={this.props.onClickHideBoundary}>
+                grid_off
+            </i>
+        );
+
+        const iconReset = (
+            <i className={iconClass}
+                onClick={this.props.onClickReset}>
+                restore
+            </i>
+        );
+
+        const iconIncreaseFont = (
+            <i className={iconClass}
+                onClick={this.props.onClickIncreaseFont}>
+                add_circle_outline
+            </i>
+        );
+
+        const iconDecreaseFont = (
+            <i className={iconClass}
+                onClick={this.props.onClickDecreaseFont}>
+                remove_circle_outline
+            </i>
+        );
+
         return (
             <div className={this.props.className}>
                 {iconMinMax}
+                {iconReset}
+                {iconDecreaseFont}
+                {iconIncreaseFont}
+                {iconHideBoundary}
+                {iconShowBoundary}
                 {this.props.children}
             </div>
         );

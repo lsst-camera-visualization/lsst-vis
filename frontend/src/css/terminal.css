@@ -5,7 +5,7 @@
   border-radius: 10px;
   border: 1px solid #AAA;
 
-  padding: 10px 20px;
+  padding: 0px 20px 8px;
 
   display: -webkit-box;
   display: -ms-flexbox;
@@ -28,7 +28,6 @@
 
 
 .term-help-ctr {
-    font-size: 125%;
     color: #888;
     width: 100%;
     border-bottom: 1px solid #AAA;
@@ -79,45 +78,56 @@
             flex-grow: 1;
 }
 
+.term-body-ctr-mini {
+    display: none;
+    width: 100%;
+    overflow: auto;
+    margin-bottom: 10px;
+
+    -webkit-box-flex: 1;
+        -ms-flex-positive: 1;
+            flex-grow: 1;
+}
+
 .term-body-entry {
-    font-size: 125%;
 }
 
 .term-body-error {
-    font-size: 110%;
     color: #FF0000;
 }
 
 .term-body-warn {
-    font-size: 110%;
     color: #CD853F;
 }
 
 .term-body-info {
-    font-size: 100%;
     color: #778899;
     word-wrap: normal;
 }
 
 .term-body-link:link {
     color: cyan;
-    font-size: 110%;
     text-decoration:none;
 }
 .term-body-link:visited {
     color: cyan;
-    font-size: 110%;
     text-decoration:none;
 }
 .term-body-link:hover, .term-body-link:active {
-    font-size: 110%;
     text-decoration:underline;
 }
 
 .term-input-input {
     background-color: #1E1E1E;
     color: #fff;
-    font-size: 110%;
+    width: 100%;
+    padding: 3px 0px;
+}
+
+.term-input-input-mini {
+    display: none;
+    background-color: #1E1E1E;
+    color: #fff;
     width: 100%;
     padding: 3px 0px;
 }
@@ -131,6 +141,7 @@
     transition: all 300ms ease-in-out;
     transform: translateY(100%);
         -webkit-transform: translateY(100%);
+    padding: 0px 3px;
 }
 
 .term-hover:hover .material-icons {

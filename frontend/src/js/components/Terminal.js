@@ -189,10 +189,13 @@ export default class Terminal extends React.Component {
     }
 
     handleReset = () => {
+        const defaultFontSize = "110%";
+        this.updateLocalFontSize(defaultFontSize);
         const updater = {
             height: this.state.defaultHeight,
             width: this.state.defaultWidth,
-            isMini: false
+            isMini: false,
+            fontSizeIdx: this.fontSizeArrary.indexOf(defaultFontSize),
         };
         const termDim = {
             width: this.state.defaultWidth,

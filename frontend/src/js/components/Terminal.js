@@ -236,6 +236,20 @@ export default class Terminal extends React.Component {
         store.dispatch(extendSettings(settings));
     }
 
+    handleShowBoundary = () => {
+        const command = "show_boundary";
+        const defaultViewer = store.getState().terminal.defaults["viewer_id"];
+        const params = {viewer_id: defaultViewer};
+        commandDispatcher.dispatch(command, params);
+    }
+
+    handleHideBoundary = () => {
+        const command = "hide_boundary";
+        const defaultViewer = store.getState().terminal.defaults["viewer_id"];
+        const params = {viewer_id: defaultViewer};
+        commandDispatcher.dispatch(command, params);
+    }
+
     render() {
         const styleFontSize = {
             fontSize: this.fontSizeArrary[this.state.fontSizeIdx]
@@ -247,6 +261,8 @@ export default class Terminal extends React.Component {
                     onClickReset={this.handleReset}
                     onClickIncreaseFont={this.handleIncreaseFontSize}
                     onClickDecreaseFont={this.handleDecreaseFontSize}
+                    onClickShowBoundary={this.handleShowBoundary}
+                    onClickHideBoundary={this.handleHideBoundary}
                     fontSizeIdx={this.state.fontSizeIdx}
                     fontSizeArraryLen={this.fontSizeArrary.length}
                     isMini={this.state.isMini}>
@@ -341,8 +357,8 @@ class TermToolbar extends React.Component {
                 {iconReset}
                 {iconIncreaseFont}
                 {iconDecreaseFont}
-                {iconHideBoundary}
                 {iconShowBoundary}
+                {iconHideBoundary}
                 {this.props.children}
             </div>
         );

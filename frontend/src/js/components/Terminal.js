@@ -12,6 +12,17 @@ import commandDispatcher from "../commands/commandDispatcher";
 export default class Terminal extends React.Component {
     constructor(props) {
         super(props);
+        this.fontSizeArrary = [
+            "50%",
+            "75%",
+            "90%",
+            "100%",
+            "110%",
+            "125%",
+            "150%",
+            "175%",
+            "200%"
+        ];
         this.state = {
             input: "",
             isMini: false,
@@ -20,7 +31,8 @@ export default class Terminal extends React.Component {
             defaultWidth: props.width,
             defaultHeight: props.height,
             minHeight: 60,
-            minWidth: 300
+            minWidth: 300,
+            fontSizeIdx: this.fontSizeArrary.indexOf("110%"),
         };
     }
 
@@ -179,15 +191,39 @@ export default class Terminal extends React.Component {
         this.setState(updater);
     }
 
+    handleIncreaseFontSize = () => {
+        let idx = this.state.fontSizeIdx;
+        if ((idx + 1) < this.fontSizeArrary.length){
+            idx++;
+        }
+        const updater = {
+            fontSizeIdx: idx
+        };
+        this.setState(updater);
+    }
+
+    handleDecreaseFontSize = () => {
+        let idx = this.state.fontSizeIdx;
+        if (idx >= 1){
+            idx--;
+        }
+        const updater = {
+            fontSizeIdx: idx
+        };
+        this.setState(updater);
+    }
+
     render() {
         const styleFontSize = {
-            fontSize: "125%"
+            fontSize: this.fontSizeArrary[this.state.fontSizeIdx]
         };
         return (
             <div className="term-hover">
                 <TermToolbar className="term-toolbar"
                     onClickMinMax={this.handleMinMax}
                     onClickReset={this.handleReset}
+                    onClickIncreaseFont={this.handleIncreaseFontSize}
+                    onClickDecreaseFont={this.handleDecreaseFontSize}
                     isMini={this.state.isMini}>
                 </TermToolbar>
                 <div onClick={this.handleClick}>
@@ -275,8 +311,8 @@ class TermToolbar extends React.Component {
             <div className={this.props.className}>
                 {iconMinMax}
                 {iconReset}
-                {iconDecreaseFont}
                 {iconIncreaseFont}
+                {iconDecreaseFont}
                 {iconHideBoundary}
                 {iconShowBoundary}
                 {this.props.children}

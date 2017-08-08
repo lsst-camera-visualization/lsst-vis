@@ -94,7 +94,6 @@ export const loadBoundary = (viewer) => {
             "CCD": parseCCD,
             "CCD-OVERSCAN": parseCCDOverscan
         }
-        console.log(data);
         if (data.type in parsers) {
             // Parse the regions
             const regions = parsers[data.type](data.value);
@@ -112,5 +111,5 @@ export const loadBoundary = (viewer) => {
     }
 
     return LaunchTask("boundary", {}, viewer)
-        .then( onSuccess, error => console.log("Error: ", error) )
+        .then( onSuccess, error => console.error("Error: ", error) )
 }

@@ -82,7 +82,7 @@ class CommandDispatcher {
             if ("region" in params) {
                 params.region = fixRegion(params.viewer_id, params.region);
                 if (!params.region) {
-                    console.log("INVALID REGION");
+                    console.error("INVALID REGION");
                     return;
                 }
             }

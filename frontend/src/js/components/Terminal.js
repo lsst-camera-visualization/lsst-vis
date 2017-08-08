@@ -44,8 +44,8 @@ export default class Terminal extends React.Component {
             width: props.width,
             defaultWidth: props.width,
             defaultHeight: props.height,
-            minHeight: 60,
-            minWidth: 300,
+            minHeight: 50,
+            minWidth: 400,
             fontSizeIdx: idx,
         };
     }
@@ -275,7 +275,6 @@ export default class Terminal extends React.Component {
         const styleFontSize = {
             fontSize: this.fontSizeArrary[this.state.fontSizeIdx]
         };
-        console.log(store.getState());
         const defaultViewerName = store.getState().terminal.defaults["viewer_id"];
         const defaultViewer = store.getState().viewers[defaultViewerName];
         let isBoundaryDisplayed = false;

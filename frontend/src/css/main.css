@@ -54,18 +54,6 @@ body {
     background-color: #FFF;
 }
 
-@keyframes materialResponse {
-    0% {
-        width: 0;
-        height: 0;
-        margin: 0;
-        background: rgba(255,255,255,0.1);
-    }
-    100% {
-        background: rgba(255,255,255,0.4);
-    }
-}
-
 /* Rules for sizing the icon. */
 .material-icons.md-18 { font-size: 18px; }
 .material-icons.md-24 { font-size: 24px; }

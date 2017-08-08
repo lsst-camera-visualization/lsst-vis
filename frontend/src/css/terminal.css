@@ -149,3 +149,23 @@
     transform: translateY(0%);
         -webkit-transform: translateY(0%);
 }
+
+.term-hover .term-font-size-text {
+    font-size: 18px;
+    color: rgba(255, 255, 255, 0.3);
+    display: inline-block;
+    float: left;
+    cursor: auto;
+    user-select: none;
+    position: relative;
+    transition: all 300ms ease-in-out;
+    transform: translateY(20px);
+        -webkit-transform: translateY(20px);
+    padding: 16px 20px 0px;
+}
+
+.term-hover:hover .term-font-size-text {
+    transition: all 300ms ease-in-out;
+    transform: translateY(0%);
+        -webkit-transform: translateY(0%);
+}

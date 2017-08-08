@@ -66,7 +66,7 @@ export default class TerminalHelp extends React.Component {
         let paramHeader, paramDesc = null;
 
         if (this.props.isMini){
-            helpString = <p>{this.defaultHelpString} minimized</p>;
+            helpString = <p>CLI minimized</p>;
             descHeader = desc = null;
             paramHeader = paramDesc = null;
         }else {
@@ -94,7 +94,7 @@ export default class TerminalHelp extends React.Component {
 
         return(
             <div className={helpClassName}>
-                <div style={{fontSize:"16px"}}>{helpString}</div>
+                <div style={this.props.style}>{helpString}</div>
                 <div className="term-help-info-ctr" style={this.props.style}>
                     <div className="term-help-desc">
                         <span className="term-help-descHeader">{descHeader}</span>

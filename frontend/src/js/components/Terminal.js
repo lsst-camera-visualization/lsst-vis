@@ -16,6 +16,7 @@ import { extendSettings } from "../actions/misc.actions.js";
 export default class Terminal extends React.Component {
     constructor(props) {
         super(props);
+        this.defaultFontSize = "125%";
         this.fontSizeArrary = [
             "50%",
             "67%",
@@ -30,12 +31,12 @@ export default class Terminal extends React.Component {
             "200%"
         ];
         const settings = getSettingsFromLocal();
-        let fontSize = "110%";
+        let defaultFontSize = this.defaultFontSize;
         if (settings.hasOwnProperty("termFontSize") && this.fontSizeArrary.indexOf(settings.termFontSize)!=-1) {
-            fontSize = settings.termFontSize;
+            defaultFontSize = settings.termFontSize;
         }
-        this.updateLocalFontSize(fontSize);
-        const idx = this.fontSizeArrary.indexOf(fontSize);
+        this.updateLocalFontSize(defaultFontSize);
+        const idx = this.fontSizeArrary.indexOf(defaultFontSize);
         this.state = {
             input: "",
             isMini: false,
@@ -189,7 +190,7 @@ export default class Terminal extends React.Component {
     }
 
     handleReset = () => {
-        const defaultFontSize = "110%";
+        const defaultFontSize = this.defaultFontSize;
         this.updateLocalFontSize(defaultFontSize);
         const updater = {
             height: this.state.defaultHeight,
@@ -206,6 +207,10 @@ export default class Terminal extends React.Component {
     }
 
     handleIncreaseFontSize = () => {
+        if (this.state.isMini) {
+            return;
+        }
+
         let idx = this.state.fontSizeIdx;
         if ((idx + 1) < this.fontSizeArrary.length){
             idx++;
@@ -218,6 +223,10 @@ export default class Terminal extends React.Component {
     }
 
     handleDecreaseFontSize = () => {
+        if (this.state.isMini) {
+            return;
+        }
+
         let idx = this.state.fontSizeIdx;
         if (idx >= 1){
             idx--;
@@ -250,10 +259,29 @@ export default class Terminal extends React.Component {
         commandDispatcher.dispatch(command, params);
     }
 
+    handleBoundary = () => {
+        const defaultViewerName = store.getState().terminal.defaults["viewer_id"];
+        const defaultViewer = store.getState().viewers[defaultViewerName];
+        if (defaultViewer){
+            if (defaultViewer.isBoundaryDisplayed){
+                this.handleHideBoundary();
+            }else {
+                this.handleShowBoundary();
+            }
+        }
+    }
+
     render() {
         const styleFontSize = {
             fontSize: this.fontSizeArrary[this.state.fontSizeIdx]
         };
+        console.log(store.getState());
+        const defaultViewerName = store.getState().terminal.defaults["viewer_id"];
+        const defaultViewer = store.getState().viewers[defaultViewerName];
+        let isBoundaryDisplayed = false;
+        if (defaultViewer && defaultViewer.isBoundaryDisplayed){
+            isBoundaryDisplayed = true;
+        }
         return (
             <div className="term-hover">
                 <TermToolbar className="term-toolbar"
@@ -261,10 +289,11 @@ export default class Terminal extends React.Component {
                     onClickReset={this.handleReset}
                     onClickIncreaseFont={this.handleIncreaseFontSize}
                     onClickDecreaseFont={this.handleDecreaseFontSize}
-                    onClickShowBoundary={this.handleShowBoundary}
-                    onClickHideBoundary={this.handleHideBoundary}
+                    onClickBoundary={this.handleBoundary}
                     fontSizeIdx={this.state.fontSizeIdx}
                     fontSizeArraryLen={this.fontSizeArrary.length}
+                    fontSize={styleFontSize.fontSize}
+                    isBoundaryDisplayed={isBoundaryDisplayed}
                     isMini={this.state.isMini}>
                 </TermToolbar>
                 <div onClick={this.handleClick}>
@@ -305,25 +334,20 @@ export default class Terminal extends React.Component {
 class TermToolbar extends React.Component {
     render() {
         const iconClass = "material-icons md-36 md-light";
-        const iconMinMaxName = (this.props.isMini) ?  "expand_less" : "expand_more";
+        const iconNameMinMax = (this.props.isMini) ?  "expand_less" : "expand_more";
         const iconMinMax = (
             <i className={iconClass}
                 onClick={this.props.onClickMinMax}>
-                {iconMinMaxName}
+                {iconNameMinMax}
             </i>
         );
 
-        const iconShowBoundary = (
-            <i className={iconClass}
-                onClick={this.props.onClickShowBoundary}>
-                grid_on
-            </i>
-        );
+        const iconNameBoundary = (this.props.isBoundaryDisplayed) ? "grid_off" : "grid_on";
 
-        const iconHideBoundary = (
+        const iconBoundary = (
             <i className={iconClass}
-                onClick={this.props.onClickHideBoundary}>
-                grid_off
+                onClick={this.props.onClickBoundary}>
+                {iconNameBoundary}
             </i>
         );
 
@@ -334,7 +358,7 @@ class TermToolbar extends React.Component {
             </i>
         );
 
-        const isIncreaseInactive = (this.props.fontSizeIdx+1 >= this.props.fontSizeArraryLen) ? " md-inactive" : "";
+        const isIncreaseInactive = (this.props.fontSizeIdx+1 >= this.props.fontSizeArraryLen) || this.props.isMini ? " md-inactive" : "";
 
         const iconIncreaseFont = (
             <i className={iconClass + isIncreaseInactive}
@@ -343,12 +367,18 @@ class TermToolbar extends React.Component {
             </i>
         );
 
-        const isDecreaseInactive = (this.props.fontSizeIdx <= 0) ? " md-inactive" : "";
+        const isDecreaseInactive = (this.props.fontSizeIdx <= 0) || this.props.isMini ? " md-inactive" : "";
         const iconDecreaseFont = (
             <i className={iconClass + isDecreaseInactive}
                 onClick={this.props.onClickDecreaseFont}>
                 remove_circle_outline
             </i>
+        );
+
+        const fontSize = (
+            <a className="term-font-size-text">
+            {"Font size: " + this.props.fontSize}
+            </a>
         );
 
         return (
@@ -357,8 +387,8 @@ class TermToolbar extends React.Component {
                 {iconReset}
                 {iconIncreaseFont}
                 {iconDecreaseFont}
-                {iconShowBoundary}
-                {iconHideBoundary}
+                {iconBoundary}
+                {fontSize}
                 {this.props.children}
             </div>
         );

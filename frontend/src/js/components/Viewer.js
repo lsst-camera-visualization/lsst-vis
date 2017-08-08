@@ -14,7 +14,7 @@ export default class Viewer extends React.Component {
 
         this.state = {
             imageURL: null
-        }
+        };
     }
 
     // On click handler for executing command over selected region
@@ -59,7 +59,7 @@ export default class Viewer extends React.Component {
 
         return (
             <Draggable
-                defaultPosition={{x: 100, y: 50}}
+                defaultPosition={{x: 50, y: 30}}
                 cancel=".viewer-imgViewer" >
                 <div className="viewer-ctr">
                     <ReactUtil.Toolbar

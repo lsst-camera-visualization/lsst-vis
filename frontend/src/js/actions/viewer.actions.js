@@ -75,15 +75,6 @@ export const loadImage = (id, url) => {
     }
 }
 
-// Sets the image's boundary regions
-export const setBoundaryRegions = (id, regions) => {
-    return {
-        type: "SET_BOUNDARY_REGIONS",
-        id,
-        regions
-    }
-}
-
 export const selectRegion = (id, region) => {
     return {
         type: "SELECT_REGION",
@@ -92,6 +83,14 @@ export const selectRegion = (id, region) => {
     }
 }
 
+// Sets the image's boundary regions
+export const setBoundaryRegions = (id, regions) => {
+    return {
+        type: "SET_BOUNDARY_REGIONS",
+        id,
+        regions
+    }
+}
 
 // Updates the cursor coordinates for a viewer
 export const updateCursorPos = (id, pos) => {

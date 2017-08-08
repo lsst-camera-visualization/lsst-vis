@@ -30,15 +30,17 @@ export default class TerminalInput extends React.Component {
 
 
     render() {
+        const inputClassName = this.props.isMini ? "term-input-input-mini" : "term-input-input";
         return (
             <input
-                className="term-input-input"
+                className={inputClassName}
                 ref={ this.props.setInput }
-                placeholder="Enter command here (type `help` for available commands)"
+                placeholder="Enter command here (type `help` for more information)"
                 onKeyDown={this.handleKeyDown}
                 onKeyUp={this.props.onKeyUp}
                 onChange={this.props.onChange}
                 autoFocus
+                style={this.props.style}
             />
         );
     }

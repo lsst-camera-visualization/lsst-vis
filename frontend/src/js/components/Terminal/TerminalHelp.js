@@ -5,7 +5,7 @@ import { JSUtil } from "../../util/jsutil";
 export default class TerminalHelp extends React.Component {
     constructor() {
         super();
-        this.defaultHelpString = "Command line interface";
+        this.defaultHelpString = "Command Line Interface";
     }
 
     // Gets the description info for the command we are typing
@@ -60,35 +60,42 @@ export default class TerminalHelp extends React.Component {
     render() {
         const info = this.getCurrentCommandInfo();
 
+        const helpClassName = "term-help-ctr";
         let helpString = null;
         let descHeader, desc = null;
         let paramHeader, paramDesc = null;
 
-        if (info) {
-            // Valid command
-            const caretIndex = JSUtil.GetWordNumFromCaret(this.props.input, this.props.caretPos);
-            helpString = this.highlightString(info.str, caretIndex, "term-help-highlight");
-
-            descHeader = "Command Description: ";
-            desc = info.desc;
-
-            const parameterDescs = this.props.terminal.parameterDescs;
-            if (this.currParam && parameterDescs && this.currParam in parameterDescs) {
-                paramHeader = this.currParam + ": ";
-                paramDesc = parameterDescs[this.currParam];
-            }
-        }
-        else {
-            // Invalid command
-            helpString = <p>{this.defaultHelpString}</p>;
+        if (this.props.isMini){
+            helpString = <p>CLI minimized</p>;
             descHeader = desc = null;
             paramHeader = paramDesc = null;
+        }else {
+            if (info) {
+                // Valid command
+                const caretIndex = JSUtil.GetWordNumFromCaret(this.props.input, this.props.caretPos);
+                helpString = this.highlightString(info.str, caretIndex, "term-help-highlight");
+
+                descHeader = "Command Description: ";
+                desc = info.desc;
+
+                const parameterDescs = this.props.terminal.parameterDescs;
+                if (this.currParam && parameterDescs && this.currParam in parameterDescs) {
+                    paramHeader = this.currParam + ": ";
+                    paramDesc = parameterDescs[this.currParam];
+                }
+            }
+            else {
+                // Invalid command
+                helpString = <p>{this.defaultHelpString}</p>;
+                descHeader = desc = null;
+                paramHeader = paramDesc = null;
+            }
         }
 
         return(
-            <div className="term-help-ctr">
-                <div>{helpString}</div>
-                <div className="term-help-info-ctr">
+            <div className={helpClassName}>
+                <div style={this.props.style}>{helpString}</div>
+                <div className="term-help-info-ctr" style={this.props.style}>
                     <div className="term-help-desc">
                         <span className="term-help-descHeader">{descHeader}</span>
                         <span>{desc}</span>

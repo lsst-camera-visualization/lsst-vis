@@ -51,7 +51,7 @@ const commands = {
         if (!(action.id in state))
             return state;
 
-        let newState = Object.assign({...state}, {});
+        let newState = Object.assign({}, {...state});
         newState[action.id].drawRegions(action.layer, action.regions, action.opts);
 
         return newState;
@@ -64,6 +64,15 @@ const commands = {
         let newState = Object.assign({...state}, {});
         newState[action.id].loadImage(action.url);
 
+        return newState;
+    },
+
+    "SELECT_REGION": (state, action) => {
+        if (!(action.id in state))
+            return state;
+
+        let newState = Object.assign({...state});
+        newState[action.id].selectedRegion = action.region;
         return newState;
     },
 
@@ -80,15 +89,6 @@ const commands = {
             regionsDS9 = regionsDS9.concat(b.toDS9());
         }
         newState[action.id].boundaryRegionsDS9 = regionsDS9;
-        return newState;
-    },
-
-    "SELECT_REGION": (state, action) => {
-        if (!(action.id in state))
-            return state;
-
-        let newState = Object.assign({...state});
-        newState[action.id].selectedRegion = action.region;
         return newState;
     },
 

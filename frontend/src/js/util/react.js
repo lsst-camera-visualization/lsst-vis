@@ -85,15 +85,48 @@ export const ReactUtil = {
     //      onClose : Function - The handler function for closing this element
     Toolbar: class extends React.Component {
         render() {
-            return (
-                <div className={this.props.className}>
-                    <img
-                        className="toolbar-close-button"
-                        src="./images/close_40x40.png"
-                        onClick={this.props.onClose} />
-                    {this.props.children}
-                </div>
-            );
+            const iconStyle = {
+                display: "inline-block",
+                float:"right",
+                marginTop:"-2px",
+                marginRight:"0px",
+                cursor:"pointer",
+                userSelect: "none"
+            };
+            let iconClass = "material-icons md-36 md-light";
+            if (this.props.hasOwnProperty("isDarkBackground") && !this.props.isDarkBackground){
+                iconClass = "material-icons md-36 md-dark";
+            }
+            const iconClose = (<i className={iconClass}
+                                    style={iconStyle}
+                                    onClick={this.props.onClose}>
+                                    close
+                                </i>);
+
+            if (this.props.hasOwnProperty("isMini")){
+                const clickFnMinMax = (this.props.isMini) ? this.props.onMaximize : this.props.onMinimize;
+                const iconMinMax = (this.props.isMini) ?  "expand_more" : "expand_less";
+                const miniButton = (<i className={iconClass}
+                                        style={iconStyle}
+                                        onClick={clickFnMinMax}>
+                                        {iconMinMax}
+                                    </i>);
+
+                return (
+                    <div className={this.props.className}>
+                        {iconClose}
+                        {miniButton}
+                        {this.props.children}
+                    </div>
+                );
+            } else {
+                return (
+                    <div className={this.props.className}>
+                        {iconClose}
+                        {this.props.children}
+                    </div>
+                );
+            }
         }
     },
 }

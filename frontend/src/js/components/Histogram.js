@@ -52,7 +52,8 @@ export default class Histogram extends React.Component {
                 handle=".histo-title" >
                 <div id={id + "-ctr"} className="histo-ctr" ref={ this.setCtrRef }>
                     <ReactUtil.Toolbar
-                        onClose={this.handleClose}>
+                        onClose={this.handleClose}
+                        isDarkBackground={false}>
                         <p
                             className="histo-title"
                             ref={ this.setTitleRef }>

@@ -39,8 +39,11 @@ export default class TerminalBody extends React.Component {
     }
 
     render() {
+        const bodyClassName = this.props.isMini ? "term-body-ctr-mini" : "term-body-ctr";
         return(
-            <div className="term-body-ctr" ref={ e => this.bodyElem = e } >
+            <div className={bodyClassName}
+                ref={ e => this.bodyElem = e }
+                style={this.props.style}>
                 {this.createHistory()}
             </div>
         );

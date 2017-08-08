@@ -54,7 +54,8 @@ loadCommands()
 
 // Load the default settings
 
-const getSettingsFromLocal = () => {
+export const getSettingsFromLocal = () => {
+    console.log(localStorage);
     let savedSettings = localStorage.getItem("settings");
     if (savedSettings)
         savedSettings = JSON.parse(savedSettings);
@@ -69,13 +70,13 @@ const loadSettings = data => {
 
     const localSavedSettings = getSettingsFromLocal();
     entries.map(e => {
+        let key, value;
+        [key, value] = e.split(/=(.+)/);
         const stored = localSavedSettings[key];
         if (stored){
             settings[key] = stored;
         }
 
-        let key, value;
-        [key, value] = e.split(/=(.+)/);
         if (key && value){
             settings[key] = value;
         }
@@ -96,6 +97,7 @@ const loadMineSettingsOnError = error => {
             .then(loadSettings)
             .catch(loadSettingsOnError);
 }
+
 JSUtil.LoadFileContents("settings.mine.ini")
 .then(loadSettings)
 .catch(loadMineSettingsOnError);

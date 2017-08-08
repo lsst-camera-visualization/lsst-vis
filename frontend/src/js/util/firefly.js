@@ -73,8 +73,9 @@ export const LoadImage = (plotID, imageURL) => {
             plotId: plotID,
             URL: imageURL,
             Title: imageURL,
-            ZoomType: "TO_WIDTH",
-            ZoomToWidth: "100%"
+            ZoomType: "FULL_SCREEN",
+            ZoomToWidth: "100%",
+            ZoomToHeight: "100%"
         });
     } else {
         // Otherwise we'll assume the image is located at local disk
@@ -82,8 +83,9 @@ export const LoadImage = (plotID, imageURL) => {
             plotId: plotID,
             File: imageURL,
             Title: imageURL,
-            ZoomType: "TO_WIDTH",
-            ZoomToWidth: "100%"
+            ZoomType: "FULL_SCREEN",
+            ZoomToWidth: "100%",
+            ZoomToHeight: "100%"
         });
     }
 }

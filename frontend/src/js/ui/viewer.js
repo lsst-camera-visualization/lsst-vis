@@ -30,6 +30,7 @@ export class Viewer {
         this.id = id;
         this.image = image;
         this.layers = [];
+        this.isBoundaryDisplayed = false;
 
         this.cursorPoint = { x: 0, y: 0 };
 
@@ -45,6 +46,9 @@ export class Viewer {
         if (idx !== -1) {
             ClearLayer(this.id, layer);
             this.layers.splice(idx, 1);
+            if (layer == "BOUNDARY"){
+                this.isBoundaryDisplayed = false;
+            }
         }
     }
 
@@ -52,6 +56,7 @@ export class Viewer {
         JSUtil.Foreach(this.layers, layer => {
             ClearLayer(this.id, layer);
         });
+        this.isBoundaryDisplayed = false;
         this.layers = [];
     }
 
@@ -59,6 +64,9 @@ export class Viewer {
         if (this.layers.indexOf(layer) === -1)
             this.layers.push(layer);
 
+        if (layer=="BOUNDARY"){
+            this.isBoundaryDisplayed = true;
+        }
         DrawRegions(this.id, layer, regions, opts);
     }
 

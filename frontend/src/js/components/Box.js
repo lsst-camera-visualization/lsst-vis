@@ -11,16 +11,28 @@ export default class Box extends React.Component {
         commandDispatcher.dispatch("delete_box", { box_id: this.props.id });
     }
 
+    handleMinimize = () => {
+        commandDispatcher.dispatch("hide_box", {box_id: this.props.id});
+    }
+
+    handleMaximize = () => {
+        commandDispatcher.dispatch("show_box", {box_id: this.props.id});
+    }
+
     render() {
         const id = this.props.id;
-        const ctrClassName = (this.props.boxes[id].bMini) ? "box-ctr-mini" : "";
+        const isMini = this.props.boxes[id].bMini;
+        const ctrClassName = (isMini) ? "box-ctr-mini" : "";
         return (
             <Draggable
                 handle=".box-title"
                 onStart={this.handleStart} >
                 <div className={"box-ctr " + ctrClassName} >
                     <ReactUtil.Toolbar
-                        onClose={this.handleClose}>
+                        isMini={isMini}
+                        onClose={this.handleClose}
+                        onMinimize={this.handleMinimize}
+                        onMaximize={this.handleMaximize}>
                         <p className="box-title">{id}</p>
                         <BoxBody
                             text={this.props.boxes[id].text}

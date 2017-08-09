@@ -1,5 +1,6 @@
 import React from "react";
 import commandDispatcher from "../../commands/commandDispatcher.js";
+import store from "../../store.js";
 
 export default class ViewerUVPanel extends React.Component {
     constructor(props) {
@@ -31,11 +32,21 @@ export default class ViewerUVPanel extends React.Component {
             </i>
         );
 
+        const interval = store.getState().uvControllers[this.state.viewerID]._interval;
+
+        const pausedStatus = this.state.paused ? "(paused)" : "(resumed)";
+        const textStatus = (
+            <a className="viewer-uvPanel-status"
+                >
+            {"Time interval: " + interval +  "ms " + pausedStatus}
+            </a>
+        );
+
         return (
             <div className="viewer-info-panel viewer-uvPanel">
                 <p className="viewer-info-header">Update Viewer Settings</p>
                 {buttonPauseResume}
-                <input className="button" type="button" value="There are no new images"/>
+                {textStatus}
             </div>
         );
     }

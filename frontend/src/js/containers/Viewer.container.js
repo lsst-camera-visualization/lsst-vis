@@ -20,14 +20,6 @@ const mapDispatchToProps = dispatch => {
         onExecuteOverSelected: (id, region) => {
             dispatch(openCommandPanel(id, region));
         },
-
-        onUVPause: id => {
-            dispatch(pauseUV(id));
-        },
-
-        onUVResume: id => {
-            dispatch(resumeUV(id));
-        }
     }
 }
 

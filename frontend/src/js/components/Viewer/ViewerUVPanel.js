@@ -47,6 +47,7 @@ export default class ViewerUVPanel extends React.Component {
                 <p className="viewer-info-header">Update Viewer Settings</p>
                 {buttonPauseResume}
                 {textStatus}
+                <input className="button" type="button" value="There are no new images"/>
             </div>
         );
     }

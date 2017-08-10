@@ -34,7 +34,7 @@ export default class ViewerUVPanel extends React.Component {
 
         const interval = store.getState().uvControllers[this.state.viewerID]._interval;
 
-        const pausedStatus = this.state.paused ? "(paused)" : "(resumed)";
+        const pausedStatus = this.state.paused ? "(PAUSED)" : "(RESUMED)";
         const textStatus = (
             <a className="viewer-uvPanel-status"
                 >

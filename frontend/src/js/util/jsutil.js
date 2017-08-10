@@ -130,12 +130,21 @@ export const JSUtil = {
             let xhr = new XMLHttpRequest();
             xhr.onreadystatechange = () => {
                 if (xhr.readyState === XMLHttpRequest.DONE) {
-                    if (xhr.status === 200)
-                        resolve(JSON.parse(xhr.responseText));
-                    else
-                        reject(xhr);
+                    if (xhr.status === 200){
+                        const content = JSON.parse(xhr.responseText);
+                        resolve({...content, isNewImage: true});
+                    }else if (xhr.status === 204) {
+                        resolve({isNewImage: false});
+                    }else{
+                        reject(Error(req.statusText));
+                    }
                 }
             };
+
+            xhr.onerror = () => {
+              reject(Error("Network Error"));
+            };
+
             xhr.open("GET", path, true);
             xhr.overrideMimeType("application/json");
             xhr.send();

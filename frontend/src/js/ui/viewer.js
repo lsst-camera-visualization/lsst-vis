@@ -135,11 +135,17 @@ export class UVController {
 
     query = () => {
         const imageRepo = store.getState().settings.imageRepo;
-        if (imageRepo) {
-            JSUtil.LoadJSONFromPath(imageRepo)
+        const requestUrl = (this.since) ? (imageRepo+"?since="+this.since.toString()) : (imageRepo);
+        if (requestUrl) {
+            JSUtil.LoadJSONFromPath(requestUrl)
                 .then(data => {
-                    const imageURL = data.uri;
-                    store.dispatch(ViewerActions.loadImage(this._viewer, imageURL));
+                    if (data.isNewImage) {
+                        const imageURL = data.uri;
+                        this.since = data.timestamp;
+                        store.dispatch(ViewerActions.loadImage(this._viewer, imageURL));
+                    } else {
+                        console.log("There are no new images.");
+                    }
                 })
                 .catch(error => console.error("Cannot load image requested", error));
         }

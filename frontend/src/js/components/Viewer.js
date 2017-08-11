@@ -1,5 +1,7 @@
 import React from "react";
 import Draggable from 'react-draggable';
+import Resizable from "react-resizable-box";
+import Rnd from "react-rnd";
 
 import ViewerImageViewer from "./Viewer/ViewerImageViewer";
 import ViewerUVPanel from "./Viewer/ViewerUVPanel";
@@ -56,8 +58,8 @@ export default class Viewer extends React.Component {
         const uvPanel = <ViewerUVPanel viewerID={id}/>;
 
         return (
-            <Draggable
-                defaultPosition={{x: 50, y: 30}}
+            <Rnd
+                default={{x: 50, y: 30}}
                 cancel=".viewer-imgViewer" >
                 <div className="viewer-ctr">
                     <ReactUtil.Toolbar
@@ -78,7 +80,7 @@ export default class Viewer extends React.Component {
                             onClick={this.handleExecuteOverSelected} />
                     </ReactUtil.Toolbar>
                 </div>
-            </Draggable>
+            </Rnd>
         );
     }
 }

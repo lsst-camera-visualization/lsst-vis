@@ -125,7 +125,7 @@ export const JSUtil = {
     },
 
     // Loads JSON data from a file.
-    LoadJSONFromPath: (path) => {
+    QueryFromURI: (path) => {
         return new Promise((resolve, reject) => {
             let xhr = new XMLHttpRequest();
             xhr.onreadystatechange = () => {
@@ -138,6 +138,29 @@ export const JSUtil = {
                     }else{
                         reject(Error(req.statusText));
                     }
+                }
+            };
+
+            xhr.onerror = () => {
+              reject(Error("Network Error"));
+            };
+
+            xhr.open("GET", path, true);
+            xhr.overrideMimeType("application/json");
+            xhr.send();
+        });
+    },
+
+    // Loads JSON data from a file.
+    LoadJSONFromPath: (path) => {
+        return new Promise((resolve, reject) => {
+            let xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = () => {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200)
+                        resolve(JSON.parse(xhr.responseText));
+                    else
+                        reject(xhr);
                 }
             };
 

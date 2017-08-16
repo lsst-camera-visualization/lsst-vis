@@ -135,7 +135,7 @@ export class UVController {
 
     query = () => {
         const imageRepo = store.getState().settings.imageRepo;
-        const requestUri = (this.since) ? (imageRepo+"?since="+this.since.toString()) : (imageRepo);
+        const requestUri = (this.since) ? (imageRepo+"?since="+this.since.toString()+"&wait="+Math.floor(this._interval/1000)) : (imageRepo);
         if (requestUri) {
             JSUtil.QueryFromURI(requestUri)
                 .then(data => {

@@ -1,6 +1,5 @@
 import React from "react";
 import Draggable from 'react-draggable';
-import Resizable from "react-resizable-box";
 
 import ViewerImageViewer from "./Viewer/ViewerImageViewer";
 import ViewerUVPanel from "./Viewer/ViewerUVPanel";
@@ -59,8 +58,9 @@ export default class Viewer extends React.Component {
         return (
             <Draggable
                 defaultPosition={{x: 50, y: 30}}
-                cancel=".viewer-imgViewer" >
+                handle=".viewer-title">
                 <div className="viewer-ctr">
+
                     <ReactUtil.Toolbar
                         onClose={this.handleClose}>
                         <p className="viewer-title">{id}</p>
@@ -68,6 +68,7 @@ export default class Viewer extends React.Component {
                             e={e}
                             onClick={this.handleSelectRegion}
                             onDblClick={this.handleSelectRegionWhole} />
+
                         <ReactUtil.Col2
                             className="viewer-info"
                             width="50%"

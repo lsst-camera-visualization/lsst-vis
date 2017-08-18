@@ -5,8 +5,8 @@
   "main": "webpack.config.js",
   "scripts": {
     "test": "jest --verbose",
-    "build": "./src/update-version-html.sh && ./node_modules/.bin/webpack -p",
-    "dev": "./node_modules/.bin/webpack-dev-server --content-base src --port 8081 --inline --hot"
+    "build": "./src/update-version-html.sh && ./node_modules/.bin/webpack --progress --colors -p",
+    "dev": "./node_modules/.bin/webpack-dev-server -d --progress --colors --content-base src --port 8081 --inline --hot"
   },
   "author": "",
   "license": "ISC",

@@ -125,6 +125,33 @@ export const JSUtil = {
     },
 
     // Loads JSON data from a file.
+    QueryFromURI: (path) => {
+        return new Promise((resolve, reject) => {
+            let xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = () => {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200){
+                        const content = JSON.parse(xhr.responseText);
+                        resolve({...content, isNewImage: true});
+                    }else if (xhr.status === 204) {
+                        resolve({isNewImage: false});
+                    }else{
+                        reject(Error(req.statusText));
+                    }
+                }
+            };
+
+            xhr.onerror = () => {
+              reject(Error("Network Error"));
+            };
+
+            xhr.open("GET", path, true);
+            xhr.overrideMimeType("application/json");
+            xhr.send();
+        });
+    },
+
+    // Loads JSON data from a file.
     LoadJSONFromPath: (path) => {
         return new Promise((resolve, reject) => {
             let xhr = new XMLHttpRequest();
@@ -136,6 +163,11 @@ export const JSUtil = {
                         reject(xhr);
                 }
             };
+
+            xhr.onerror = () => {
+              reject(Error("Network Error"));
+            };
+
             xhr.open("GET", path, true);
             xhr.overrideMimeType("application/json");
             xhr.send();

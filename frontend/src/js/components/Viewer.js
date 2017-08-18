@@ -1,5 +1,6 @@
 import React from "react";
 import Draggable from 'react-draggable';
+import Resizable from "react-resizable-box";
 
 import ViewerImageViewer from "./Viewer/ViewerImageViewer";
 import ViewerUVPanel from "./Viewer/ViewerUVPanel";
@@ -8,12 +9,17 @@ import ViewerSelectedPanel from "./Viewer/ViewerSelectedPanel";
 import { ReactUtil } from "../util/react";
 import commandDispatcher from "../commands/commandDispatcher";
 
+const WIDTH = 720;
+const HEIGHT = 880;
+
 export default class Viewer extends React.Component {
     constructor() {
         super();
 
         this.state = {
-            imageURL: null
+            imageURL: null,
+            ffWidth: WIDTH,
+            ffHeight: HEIGHT - 230
         };
     }
 
@@ -43,6 +49,24 @@ export default class Viewer extends React.Component {
         }
     }
 
+    handleOnResize = (event, direction, refToElement, delta) => {
+        const heightPadding = 10 + 2 + 6;
+        if (this.refToCol2 && this.refToSelectPanel && this.refToTitle){
+            this.setState({
+                ffWidth: refToElement.clientWidth,
+                ffHeight: refToElement.clientHeight - this.refToCol2.clientHeight - this.refToSelectPanel.clientHeight - this.refToTitle.clientHeight - heightPadding
+            });
+        }else {
+            this.setState((prevState) => {
+                return {
+                    ffWidth: prevState.ffWidth + delta.width,
+                    ffHeight: prevState.ffHeight + delta.height
+                };
+            });
+        }
+
+    }
+
     render() {
         const id = this.props.id;
         const e = this.props.viewers[id];
@@ -55,28 +79,69 @@ export default class Viewer extends React.Component {
                                 hoveredName={hoveredName} />
         const uvPanel = <ViewerUVPanel viewerID={id}/>;
 
+        const resizeEnable = {
+            top:false,
+            right:true,
+            bottom:true,
+            left:false,
+            topRight:false,
+            bottomRight:true,
+            bottomLeft:false,
+            topLeft:false
+        };
+
+        const viewerToolbar = (
+            <ReactUtil.Toolbar
+                onClose={this.handleClose}>
+                <p className="viewer-title"
+                    ref={elem => this.refToTitle = elem}>
+                    {id}
+                </p>
+            </ReactUtil.Toolbar>
+        );
+
+        const imageViewer = (
+            <ViewerImageViewer
+                e={e}
+                height={this.state.ffHeight}
+                width={this.state.ffWidth}
+                onClick={this.handleSelectRegion}
+                onDblClick={this.handleSelectRegionWhole}/>
+        );
+
+        const viewerCol2 = (
+            <ReactUtil.Col2
+                className="viewer-info"
+                width="50%"
+                left={cursorPanel}
+                right={uvPanel}
+                separator={true}
+                col2Ref={elem => this.refToCol2 = elem}/>
+        );
+
+        const viewerSelectPanel = (
+            <ViewerSelectedPanel
+                selectedRegion={e.selectedRegion}
+                onClick={this.handleExecuteOverSelected}
+                col2Ref={elem => this.refToSelectPanel = elem}/>
+        );
+
         return (
             <Draggable
                 defaultPosition={{x: 50, y: 30}}
-                cancel=".viewer-imgViewer" >
+                handle=".viewer-title">
                 <div className="viewer-ctr">
-                    <ReactUtil.Toolbar
-                        onClose={this.handleClose}>
-                        <p className="viewer-title">{id}</p>
-                        <ViewerImageViewer
-                            e={e}
-                            onClick={this.handleSelectRegion}
-                            onDblClick={this.handleSelectRegionWhole} />
-                        <ReactUtil.Col2
-                            className="viewer-info"
-                            width="50%"
-                            left={cursorPanel}
-                            right={uvPanel}
-                            separator={true} />
-                        <ViewerSelectedPanel
-                            selectedRegion={e.selectedRegion}
-                            onClick={this.handleExecuteOverSelected} />
-                    </ReactUtil.Toolbar>
+                <Resizable
+                    className="viewer-resize"
+                    width={WIDTH}
+                    height={HEIGHT}
+                    onResizeStop={this.handleOnResize}
+                    enable={resizeEnable}>
+                    {viewerToolbar}
+                    {imageViewer}
+                    {viewerCol2}
+                    {viewerSelectPanel}
+                </Resizable>
                 </div>
             </Draggable>
         );

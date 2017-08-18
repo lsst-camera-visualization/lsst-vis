@@ -38,7 +38,8 @@ export default class ViewerSelectedPanel extends React.Component {
                 width="50%"
                 left={info}
                 right={help}
-                separator={false} />
+                separator={false}
+                col2Ref={this.props.col2Ref}/>
         );
     }
 }

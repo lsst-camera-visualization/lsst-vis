@@ -66,6 +66,13 @@ export const DrawHistogram = (plotID, data, width, height, options = {}) => {
 
 // Loads an image into the plot id
 export const LoadImage = (plotID, imageURL) => {
+    firefly.util.image.initAutoReadout(firefly.ui.DefaultApiReadout,
+        {
+            MouseReadoutComponent:firefly.ui.PopupMouseReadoutMinimal,
+            showThumb:false,
+            showMag:false
+        }
+    );
     var urlPattern = /^((http|https|file|FILE|File|ftp):\/\/)/;
     if (urlPattern.test(imageURL)){
         // Remote image

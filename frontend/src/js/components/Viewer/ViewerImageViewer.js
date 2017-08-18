@@ -24,10 +24,15 @@ export default class ViewerImageViewer extends React.Component {
     }
 
     render() {
+        const styleWH = {
+            width: this.props.width,
+            height: this.props.height
+        };
         return (
             <div
                 id={this.props.e.id}
                 className="viewer-imgViewer"
+                style={styleWH}
                 onClick={this.props.onClick}
                 onDoubleClick={this.props.onDblClick} >
             </div>

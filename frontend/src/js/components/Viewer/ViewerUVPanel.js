@@ -27,6 +27,7 @@ export default class ViewerUVPanel extends React.Component {
 
         const buttonPauseResume = (
             <i className="material-icons md-36 md-light"
+                style={{userSelect: "none"}}
                 onClick={this.handlePRClick}>
             {buttonName}
             </i>
@@ -34,7 +35,7 @@ export default class ViewerUVPanel extends React.Component {
 
         const interval = store.getState().uvControllers[this.state.viewerID]._interval;
 
-        const pausedStatus = this.state.paused ? "(paused)" : "(resumed)";
+        const pausedStatus = this.state.paused ? "(PAUSED)" : "(RESUMED)";
         const textStatus = (
             <a className="viewer-uvPanel-status"
                 >
@@ -47,8 +48,8 @@ export default class ViewerUVPanel extends React.Component {
                 <p className="viewer-info-header">Update Viewer Settings</p>
                 {buttonPauseResume}
                 {textStatus}
-                <input className="button" type="button" value="There are no new images"/>
             </div>
+            // <input className="button" type="button" value="There are no new images"/>
         );
     }
 }

@@ -1,7 +1,7 @@
 .viewer-ctr {
     display: inline-block;
     /*min-width: 700px;*/
-    overflow: hidden;
+    overflow: visible;
 
     padding: 5px 10px;
     border: 4px solid #000;
@@ -24,7 +24,7 @@
 }
 
 .viewer-imgViewer {
-    resize: both;
+    /*resize: both;*/
     overflow: auto;
     /*width: 100%;*/
     /*height: 640px;*/
@@ -38,6 +38,7 @@
 }
 
 .viewer-info-panel {
+    overflow: auto;
     padding: 5px;
     font-size: 125%;
 }
@@ -77,6 +78,7 @@
 
 
 .viewer-selectedPanel {
+    overflow: auto;
     color: #BBC6D7;
     text-align: center;
     font-size: 125%;

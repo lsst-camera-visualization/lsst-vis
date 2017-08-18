@@ -20,7 +20,9 @@ export const ReactUtil = {
             };
 
             return(
-                <div className={"col-container " + (this.props.className || "")}>
+                <div
+                className={"col-container " + (this.props.className || "")}
+                ref={this.props.col2Ref}>
                     <div class="col-2" style={leftStyle}>
                         {this.props.left}
                     </div>
@@ -113,7 +115,8 @@ export const ReactUtil = {
                                     </i>);
 
                 return (
-                    <div className={this.props.className}>
+                    <div
+                    className={this.props.className}>
                         {iconClose}
                         {miniButton}
                         {this.props.children}
@@ -121,7 +124,8 @@ export const ReactUtil = {
                 );
             } else {
                 return (
-                    <div className={this.props.className}>
+                    <div
+                    className={this.props.className}>
                         {iconClose}
                         {this.props.children}
                     </div>

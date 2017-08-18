@@ -47,12 +47,21 @@ export default class Viewer extends React.Component {
     }
 
     handleOnResize = (event, direction, refToElement, delta) => {
-        this.setState((prevState) => {
-            return {
-                ffWidth: prevState.ffWidth + delta.width,
-                ffHeight: prevState.ffHeight + delta.height
-            };
-        });
+        const heightPadding = 10 + 2 + 6;
+        if (this.refToCol2 && this.refToSelectPanel && this.refToTitle){
+            this.setState({
+                ffWidth: refToElement.clientWidth,
+                ffHeight: refToElement.clientHeight - this.refToCol2.clientHeight - this.refToSelectPanel.clientHeight - this.refToTitle.clientHeight - heightPadding
+            });
+        }else {
+            this.setState((prevState) => {
+                return {
+                    ffWidth: prevState.ffWidth + delta.width,
+                    ffHeight: prevState.ffHeight + delta.height
+                };
+            });
+        }
+
     }
 
     render() {
@@ -85,15 +94,18 @@ export default class Viewer extends React.Component {
                 <div className="viewer-ctr">
                 <Resizable
                     className="viewer-resize"
-                    minWidth="700"
-                    minHeight="900"
                     width="700"
                     height="900"
                     onResizeStop={this.handleOnResize}
                     enable={resizeEnable}>
                     <ReactUtil.Toolbar
                         onClose={this.handleClose}>
-                        <p className="viewer-title">{id}</p>
+                        <p className="viewer-title"
+                            ref={elem => this.refToTitle = elem}>
+                            {id}
+                        </p>
+                        </ReactUtil.Toolbar>
+                        
                         <ViewerImageViewer
                             e={e}
                             height={this.state.ffHeight}
@@ -106,11 +118,12 @@ export default class Viewer extends React.Component {
                             width="50%"
                             left={cursorPanel}
                             right={uvPanel}
-                            separator={true} />
+                            separator={true}
+                            col2Ref={elem => this.refToCol2 = elem}/>
                         <ViewerSelectedPanel
                             selectedRegion={e.selectedRegion}
-                            onClick={this.handleExecuteOverSelected} />
-                    </ReactUtil.Toolbar>
+                            onClick={this.handleExecuteOverSelected}
+                            col2Ref={elem => this.refToSelectPanel = elem}/>
                 </Resizable>
                 </div>
             </Draggable>

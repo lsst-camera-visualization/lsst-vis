@@ -80,3 +80,7 @@ body {
     filter: alpha(opacity=30);
     zoom: 1;
 }
+
+.popup-panel-shadow{
+    display: none;
+}

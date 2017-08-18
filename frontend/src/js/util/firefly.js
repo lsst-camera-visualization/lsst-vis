@@ -95,8 +95,6 @@ export const LoadImage = (plotID, imageURL) => {
             ZoomToHeight: "100%"
         });
     }
-    console.log("Here");
-
 }
 
 // Launches a backend task

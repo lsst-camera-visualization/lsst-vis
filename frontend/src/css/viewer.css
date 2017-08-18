@@ -1,6 +1,6 @@
 .viewer-ctr {
     display: inline-block;
-    min-width: 700px;
+    /*min-width: 700px;*/
     overflow: hidden;
 
     padding: 5px 10px;
@@ -26,8 +26,8 @@
 .viewer-imgViewer {
     resize: both;
     overflow: auto;
-    width: 100%;
-    height: 640px;
+    /*width: 100%;*/
+    /*height: 640px;*/
 }
 
 

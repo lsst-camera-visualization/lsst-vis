@@ -1,5 +1,6 @@
 import React from "react";
 import Draggable from 'react-draggable';
+import Resizable from "react-resizable-box";
 
 import ViewerImageViewer from "./Viewer/ViewerImageViewer";
 import ViewerUVPanel from "./Viewer/ViewerUVPanel";
@@ -13,7 +14,9 @@ export default class Viewer extends React.Component {
         super();
 
         this.state = {
-            imageURL: null
+            imageURL: null,
+            ffWidth: 700,
+            ffHeight: 640
         };
     }
 
@@ -43,6 +46,15 @@ export default class Viewer extends React.Component {
         }
     }
 
+    handleOnResize = (event, direction, refToElement, delta) => {
+        this.setState((prevState) => {
+            return {
+                ffWidth: prevState.ffWidth + delta.width,
+                ffHeight: prevState.ffHeight + delta.height
+            };
+        });
+    }
+
     render() {
         const id = this.props.id;
         const e = this.props.viewers[id];
@@ -55,17 +67,37 @@ export default class Viewer extends React.Component {
                                 hoveredName={hoveredName} />
         const uvPanel = <ViewerUVPanel viewerID={id}/>;
 
+        const resizeEnable = {
+            top:false,
+            right:true,
+            bottom:true,
+            left:false,
+            topRight:false,
+            bottomRight:true,
+            bottomLeft:false,
+            topLeft:false
+        };
+
         return (
             <Draggable
                 defaultPosition={{x: 50, y: 30}}
                 handle=".viewer-title">
                 <div className="viewer-ctr">
-
+                <Resizable
+                    className="viewer-resize"
+                    minWidth="700"
+                    minHeight="900"
+                    width="700"
+                    height="900"
+                    onResizeStop={this.handleOnResize}
+                    enable={resizeEnable}>
                     <ReactUtil.Toolbar
                         onClose={this.handleClose}>
                         <p className="viewer-title">{id}</p>
                         <ViewerImageViewer
                             e={e}
+                            height={this.state.ffHeight}
+                            width={this.state.ffWidth}
                             onClick={this.handleSelectRegion}
                             onDblClick={this.handleSelectRegionWhole} />
 
@@ -79,6 +111,7 @@ export default class Viewer extends React.Component {
                             selectedRegion={e.selectedRegion}
                             onClick={this.handleExecuteOverSelected} />
                     </ReactUtil.Toolbar>
+                </Resizable>
                 </div>
             </Draggable>
         );

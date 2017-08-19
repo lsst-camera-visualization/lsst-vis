@@ -15,7 +15,7 @@ const HEIGHT = 880;
 export default class Viewer extends React.Component {
     constructor() {
         super();
-
+        this.hasRendered = false;
         this.state = {
             imageURL: null,
             ffWidth: WIDTH,
@@ -126,24 +126,54 @@ export default class Viewer extends React.Component {
                 col2Ref={elem => this.refToSelectPanel = elem}/>
         );
 
-        return (
-            <Draggable
-                defaultPosition={{x: 50, y: 30}}
-                handle=".viewer-title">
-                <div className="viewer-ctr">
-                <Resizable
-                    className="viewer-resize"
-                    width={WIDTH}
-                    height={HEIGHT}
-                    onResizeStop={this.handleOnResize}
-                    enable={resizeEnable}>
-                    {viewerToolbar}
-                    {imageViewer}
-                    {viewerCol2}
-                    {viewerSelectPanel}
-                </Resizable>
-                </div>
-            </Draggable>
-        );
+        if (!this.refToResizable){
+            return (
+                <Draggable
+                    defaultPosition={{x: 50, y: 30}}
+                    handle=".viewer-title">
+                    <div className="viewer-ctr">
+                        <Resizable
+                            ref={elem => this.refToResizable = elem}
+                            className="viewer-resize"
+                            width="auto"
+                            height="auto"
+                            onResizeStop={this.handleOnResize}
+                            enable={resizeEnable}>
+                            {viewerToolbar}
+                            {imageViewer}
+                            {viewerCol2}
+                            {viewerSelectPanel}
+                        </Resizable>
+                    </div>
+                </Draggable>
+            );
+        } else {
+            if (!this.hasRendered){
+                this.hasRendered = true;
+                this.autoWidth = this.refToResizable.clientWidth;
+                this.autoHeight = this.refToResizable.clientHeight;
+            }
+            return (
+                <Draggable
+                    defaultPosition={{x: 50, y: 30}}
+                    handle=".viewer-title">
+                    <div className="viewer-ctr">
+                        <Resizable
+                            ref={elem => this.refToResizable = elem}
+                            className="viewer-resize"
+                            width={this.autoWidth}
+                            height={this.autoHeight}
+                            onResizeStop={this.handleOnResize}
+                            enable={resizeEnable}>
+                            {viewerToolbar}
+                            {imageViewer}
+                            {viewerCol2}
+                            {viewerSelectPanel}
+                        </Resizable>
+                    </div>
+                </Draggable>
+            );
+        }
+
     }
 }
